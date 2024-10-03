@@ -27,10 +27,6 @@ client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
 database = client["cs3028_db"]
 users_collection = database["users"]
 
-
-
-
-from user import routes
 try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")
@@ -39,6 +35,7 @@ except pymongo.errors.ConfigurationError as e:
 except pymongo.errors.OperationFailure as e:
     print(f"Operation failure: {e}")
 
+from user import routes
 # Decorators
 def login_required(f):
     """This decorator ensures that a user is logged in before accessing certain routes.

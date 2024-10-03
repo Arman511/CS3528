@@ -52,4 +52,3 @@ class User:
             return self.start_session(user)
 
         return jsonify({"error": "Invalid login credentials"}), 401
-                
