@@ -9,18 +9,18 @@ form.addEventListener("submit", function (e) {
         method: "POST",
         body: formData,
     })
-        .then((response) => {
+        .then( async (response) => {
             if (response.ok) {
                 window.location.href = "/";
             } else if (response.status === 401 || response.status === 400) {
-                return response.text();
+                throw new Error(await response.text());
             } else {
                 throw new Error("Server error");
             }
         })
         .catch((error) => {
             console.error("Error:", error);
-            error_paragraph.textContent =
-                "An error occurred. Please try again.";
+            error_paragraph.textContent = error;
+            error_paragraph.classList.remove("error--hidden");
         });
 });

@@ -46,6 +46,7 @@ class User:
     def login(self):
         """Validates user credentials and returns a JSON response indicating 
         invalid login credentials."""
+        session.clear()
         user = users_collection.find_one({"email": request.form.get("email")})
         
         if user and pbkdf2_sha256.verify(request.form.get('password'), user['password']):
