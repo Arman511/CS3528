@@ -1,0 +1,185 @@
+
+"""
+This module defines the User class which handles user authentication and session management.
+"""
+from flask import jsonify, request, session, redirect
+from ..core import database
+import uuid
+from pymongo import TEXT
+import pandas as pd
+# from passlib.hash import pbkdf2_sha256
+
+
+class Student:
+    def add_student(self):
+        """Adding new student."""
+        student = {
+            "_id": uuid.uuid4().hex,
+            "first_name": request.form.get('first_name'),
+            "last_name": request.form.get('last_name'),
+            "email": request.form.get('email'),
+            "student_id": request.form.get('student_id'),
+            "course": request.form.get('course'),
+            "skills": request.form.get('skills')
+        }
+        
+        if database.students_collection.find_one({"student_id": request.form.get('student_id')}):
+            return jsonify({"error": "Student already in database"}), 400
+        
+        database.students_collection.insert_one(student)
+        
+        if student:
+            return jsonify(student), 200
+        
+        return jsonify({"error": "Student not added"}), 400
+    
+    def get_student_by_id(self):
+        """Getting student."""
+        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        
+        if student:
+            return jsonify(student), 200
+        
+        return jsonify({"error": "Student not found"}), 404
+        
+    def get_students(self):
+        """Getting all students."""
+        students = list(database.students_collection.find())
+        
+        if students:
+            return jsonify(students), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def update_student(self):
+        """Updating student."""
+        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        
+        if student:
+            database.students_collection.update_one({"student_id": request.form.get('student_id')}, {"$set": request.form})
+            return jsonify({"message": "Student updated"}), 200
+        
+        return jsonify({"error": "Student not found"}), 404
+    
+    def delete_student_by_id(self):
+        """Deleting student."""
+        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        
+        if student:
+            database.students_collection.delete_one({"student_id": request.form.get('student_id')})
+            return jsonify({"message": "Student deleted"}), 200
+        
+        return jsonify({"error": "Student not found"}), 404
+    
+    def delete_students(self):
+        """Deleting all students."""
+        students = list(database.students_collection.find())
+        
+        if students:
+            database.students_collection.delete_many({})
+            return jsonify({"message": "All students deleted"}), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def get_student_by_email(self):
+        """Getting student."""
+        
+        
+        student = database.students_collection.find_one({"email": request.form.get('email')})
+        
+        if student:
+            return jsonify(student), 200
+        
+        return jsonify({"error": "Student not found"}), 404
+    
+    def get_students_by_course(self):
+        """Getting students."""
+        students = list(database.students_collection.find({"course": request.form.get('course')}))
+        
+        if students:
+            return jsonify(students), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def get_students_by_skills(self):
+        """Getting students."""
+        students = list(database.students_collection.find({"skills": request.form.get('skills')}))
+        
+        if students:
+            return jsonify(students), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def get_students_by_course_and_skills(self):
+        """Getting students."""
+        students = list(database.students_collection.find({"course": request.form.get('course'), "skills": request.form.get('skills')}))
+        
+        if students:
+            return jsonify(students), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def get_students_by_name(self):
+        """Getting students by name."""
+        # Ensure text index is created on the collection
+        database.students_collection.create_index([("first_name", TEXT), ("last_name", TEXT)])
+
+        students = list(database.students_collection.find({
+            "$text": {"$search": f"{request.form.get('first_name')} {request.form.get('last_name')}"}
+        }))
+        
+        if students:
+            return jsonify(students), 200
+        
+        return jsonify({"error": "No students found"}), 404
+    
+    def import_from_csv(self):
+        """Importing students from CSV file."""
+        
+        if not 'file' in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        try:
+            with open(request.files['file'], 'r') as file:
+                students = file.readlines()
+                students = [student.strip().split(',') for student in students]
+                students = [
+                    {
+                        "_id": uuid.uuid4().hex,
+                        "first_name": student[0],
+                        "last_name": student[1],
+                        "email": student[2],
+                        "student_id": student[3],
+                        "course": student[4],
+                        "skills": student[5]
+                    } for student in students
+                ]
+                database.students_collection.insert_many(students)
+                
+            return jsonify({"message": "Students imported"}), 200
+        except Exception as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
+    
+    def import_from_xlsx(self):
+        """Importing students from Excel file."""
+        
+        if not 'file' in request.files:
+            return jsonify({"error": "No file part"}), 400
+        
+        try:
+            file = request.files['file']
+            df = pd.read_excel(file)
+            
+            students = df.to_dict(orient='records')
+            for student in students:
+                student["_id"] = uuid.uuid4().hex
+            
+            database.students_collection.insert_many(students)
+            
+            return jsonify({"message": "Students imported"}), 200
+        except Exception as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
+       
+    
+        
+    
