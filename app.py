@@ -17,8 +17,7 @@ from functools import wraps
 import pymongo
 from dotenv import load_dotenv
 from flask import Flask, render_template, session, redirect
-from core import database, handlers
-
+from .core import database, handlers
 
 load_dotenv()
  

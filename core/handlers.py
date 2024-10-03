@@ -17,7 +17,7 @@ def configure_routes(app):
         return wrap
     
     # Module Routes
-    from user import routes
+    from ..user import routes
     
         
     @app.route('/')
@@ -29,4 +29,13 @@ def configure_routes(app):
             str: Rendered HTML template for the home page.
         """
         return render_template('home.html')
+    
+    @app.route('/privacy-policy')
+    def privacy_policy():
+        """The privacy policy route which renders the 'privacy_policy.html' template.
+
+        Returns:
+            str: Rendered HTML template for the privacy policy page.
+        """
+        return render_template('privacy_policy.html')
  

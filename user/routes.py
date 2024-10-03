@@ -8,8 +8,8 @@ Routes:
     /user/login_attempt (POST): Attempts to log in a user.
 """
 from flask import render_template
-from user.models import User
-from app import app
+from .models import User
+from ..app import app
 
 @app.route('/user/register_attempt', methods=['POST'])
 def register_attempt():
