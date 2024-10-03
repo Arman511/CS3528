@@ -40,7 +40,7 @@ class User:
             return jsonify({"error": "Email address already in use"}), 400
         
         # Insert the user into the database
-        # users_collection.insert_one(user)
+        users_collection.insert_one(user)
 
         # Start session or return success response
         if user:
