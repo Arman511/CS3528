@@ -23,6 +23,8 @@ load_dotenv()
  
 app = Flask(__name__)
 
+from user import routes
+
 client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
 try:
     client.admin.command('ping')
