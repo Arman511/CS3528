@@ -1,4 +1,4 @@
-# Coding Guide WORK IN PROGRESS
+# Coding Guide
 
 ## Table of Contents
 
