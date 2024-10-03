@@ -30,6 +30,7 @@ This project is part of the CS3028 course. It includes various scripts and modul
 ## How to Run
 
 -   To run the project, execute the following command:
+
     -   On macOS/Linux:
         ```
         ./run
@@ -38,3 +39,8 @@ This project is part of the CS3028 course. It includes various scripts and modul
         ```
         .\run.ps1
         ```
+
+-   To run the production version, use the following command:
+    ```
+    gunicorn --config gunicorn_config.py app:app
+    ```
