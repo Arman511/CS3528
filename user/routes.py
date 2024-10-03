@@ -8,13 +8,18 @@ Routes:
     /user/login_attempt (POST): Attempts to log in a user.
 """
 from flask import render_template
-from app import app
 from user.models import User
+from app import app
 
-@app.route('/user/register', methods=['POST'])
-def signup():
+@app.route('/user/register_attempt', methods=['POST'])
+def register_attempt():
     """Registers a new user."""
     return User().register()
+
+@app.route('/user/register')
+def register():
+    """Give page to register a new user."""
+    return render_template('register.html')
 
 @app.route('/user/signout')
 def signout():

@@ -3,7 +3,10 @@
     <div class="card">
         <h1 class="center">Log In</h1>
 
-        <form name="login_form">
+        <form name="register_form" class="register_form">
+            <label for="name">Name</label>
+            <input type="text" name="name" class="field" required />
+
             <label for="email">Email</label>
             <input type="email" name="email" class="field" required />
 
@@ -16,6 +19,7 @@
         </form>
 
         <p class="center">Do have an account? <a href="/">Register</a></p>
+        <script src="/static/register/script.js"></script>
     </div>
 </div>
 {% endblock %}

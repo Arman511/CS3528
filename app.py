@@ -18,14 +18,19 @@ import pymongo
 from dotenv import load_dotenv
 from flask import Flask, render_template, session, redirect
 
-
 load_dotenv()
  
 app = Flask(__name__)
-
-from user import routes
+app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
 
 client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
+database = client["cs3028_db"]
+users_collection = database["users"]
+
+
+
+
+from user import routes
 try:
     client.admin.command('ping')
     print("Pinged your deployment. You successfully connected to MongoDB!")

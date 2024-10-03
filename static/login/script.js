@@ -12,7 +12,7 @@ form.addEventListener("submit", function (e) {
         .then((response) => {
             if (response.ok) {
                 window.location.href = "/";
-            } else if (response.status === 401) {
+            } else if (response.status === 401 || response.status === 400) {
                 return response.text();
             } else {
                 throw new Error("Server error");
