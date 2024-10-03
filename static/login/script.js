@@ -1,18 +1,26 @@
-let form = document.getElementsByClassName("login_form");
-let error_paragragh = document.getElementById("error_message");
+let form = document.querySelector(".login_form");
+let error_paragraph = document.querySelector(".error");
 
 form.addEventListener("submit", function (e) {
     e.preventDefault();
     let formData = new FormData(form);
-    let xhr = new XMLHttpRequest();
-    xhr.open("POST", "/user/login_attempt", true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            window.location.href = "/";
-        }
-        if (xhr.status === 401) {
-            error_paragragh.textContent = "Incorrent login details";
-        }
-    };
-    xhr.send(formData);
+
+    fetch("/user/login_attempt", {
+        method: "POST",
+        body: formData,
+    })
+        .then((response) => {
+            if (response.ok) {
+                window.location.href = "/";
+            } else if (response.status === 401) {
+                return response.text();
+            } else {
+                throw new Error("Server error");
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            error_paragraph.textContent =
+                "An error occurred. Please try again.";
+        });
 });
