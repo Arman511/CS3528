@@ -3,7 +3,7 @@
 This module defines the User class which handles user authentication and session management.
 """
 from flask import jsonify, request, session, redirect
-from app import users_collection
+from core import database
 from passlib.hash import pbkdf2_sha256
 import uuid
 # from passlib.hash import pbkdf2_sha256
@@ -28,16 +28,17 @@ class User:
             "email": request.form.get('email'),
             "password": request.form.get('password')
         }
-        if users_collection.find_one({"email": request.form.get('email')}):
+        if database.users_collection.find_one({"email": request.form.get('email')}):
             return jsonify({"error": "Email address already in use"}), 400
         
         user['password'] = pbkdf2_sha256.hash(user['password'])
-        users_collection.insert_one(user)
+        database.users_collection.insert_one(user)
         
         if user:
             return self.start_session(user)
     
         return jsonify({"error": "Signup failed"}), 400
+    
     def signout(self):
         """Clears the current session and redirects to the home page."""
         session.clear()
@@ -47,7 +48,7 @@ class User:
         """Validates user credentials and returns a JSON response indicating 
         invalid login credentials."""
         session.clear()
-        user = users_collection.find_one({"email": request.form.get("email")})
+        user = database.users_collection.find_one({"email": request.form.get("email")})
         
         if user and pbkdf2_sha256.verify(request.form.get('password'), user['password']):
             return self.start_session(user)
