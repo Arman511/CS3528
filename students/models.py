@@ -2,13 +2,13 @@
 """
 This module defines the User class which handles user authentication and session management.
 """
-from flask import jsonify, request, session, redirect
+from flask import jsonify, request
 from ..core import database
 import uuid
 from pymongo import TEXT
 import pandas as pd
-# from passlib.hash import pbkdf2_sha256
-
+def allowed_file(filename, types):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
 
 class Student:
     def add_student(self):
@@ -139,22 +139,18 @@ class Student:
         if not 'file' in request.files:
             return jsonify({"error": "No file part"}), 400
         
+        if not allowed_file(request.files['file'].filename, ['csv']):
+            return jsonify({"error": "Invalid file type"}), 400
+        
         try:
-            with open(request.files['file'], 'r') as file:
-                students = file.readlines()
-                students = [student.strip().split(',') for student in students]
-                students = [
-                    {
-                        "_id": uuid.uuid4().hex,
-                        "first_name": student[0],
-                        "last_name": student[1],
-                        "email": student[2],
-                        "student_id": student[3],
-                        "course": student[4],
-                        "skills": student[5]
-                    } for student in students
-                ]
-                database.students_collection.insert_many(students)
+            file = request.files['file']
+            df = pd.read_csv(file)
+
+            students = df.to_dict(orient='records')
+            for student in students:
+                student["_id"] = uuid.uuid4().hex
+
+            database.students_collection.insert_many(students)
                 
             return jsonify({"message": "Students imported"}), 200
         except Exception as e:
@@ -165,6 +161,9 @@ class Student:
         
         if not 'file' in request.files:
             return jsonify({"error": "No file part"}), 400
+        
+        if not allowed_file(request.files['file'].filename, ['xlsx', 'xls']):
+            return jsonify({"error": "Invalid file type"}), 400
         
         try:
             file = request.files['file']

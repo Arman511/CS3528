@@ -10,22 +10,23 @@ Routes:
 from flask import render_template, request
 from .models import Student
 from ..app import app
-ALLOWED_EXTENSIONS = {'xlsx', 'csv'}
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+from ..core import handlers
+
 
 @app.route('/students/add_student', methods=['POST'])
+@handlers.login_required
 def register_attempt():
     """Adding new student."""
     return Student().add_student()
 
 @app.route('/students/upload_csv', methods=['POST'])
+@handlers.login_required
 def upload_csv():
     return Student().import_from_csv()
 
 
 @app.route('/students/upload_xlsx', methods=['POST'])
+@handlers.login_required
 def upload_xlsx():
     return Student().import_from_xlsx()
 
