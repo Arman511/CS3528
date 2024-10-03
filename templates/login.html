@@ -5,11 +5,12 @@
         <h1 class="center">Log In</h1>
 
         <form class="login_form" name="login_form">
-            <label for="email">Email</label>
-            <input type="email" name="email" class="field" required />
+            <input type="email" name="email" class="field" placeholder="Email" required />
 
-            <label for="password">Password</label>
-            <input type="password" name="password" class="field" required />
+            <div class="password-container">
+                <input type="password" name="password" class="field" placeholder="Password" required id="passwordField" />
+                <span class="eye-icon" id="togglePassword" style="cursor: pointer;">👁️</span>
+            </div>
 
             <p class="error error--hidden"></p>
 
