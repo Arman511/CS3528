@@ -15,7 +15,7 @@ from ..core import handlers
 
 @app.route('/students/add_student', methods=['POST'])
 @handlers.login_required
-def register_attempt():
+def register_student_attempt():
     """Adding new student."""
     return Student().add_student()
 

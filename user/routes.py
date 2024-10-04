@@ -12,7 +12,7 @@ from .models import User
 from ..app import app
 
 @app.route('/user/register_attempt', methods=['POST'])
-def register_attempt():
+def register_user_attempt():
     """Registers a new user."""
     return User().register()
 
@@ -32,6 +32,6 @@ def login():
     return render_template('login.html')
 
 @app.route('/user/login_attempt', methods=['POST'])
-def login_attempt():
+def login_user_attempt():
     """Processes login form."""
     return User().login()

@@ -2,20 +2,20 @@ from functools import wraps
 from flask import redirect, render_template, request, session
 import json
 
+# Decorators
+def login_required(f):
+    """This decorator ensures that a user is logged in before accessing certain routes.
+    """
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if 'logged_in' in session:
+            return f(*args, **kwargs)
+        else:
+            return redirect('/user/login')
+
+    return wrap
+
 def configure_routes(app):
-    # Decorators
-    def login_required(f):
-        """This decorator ensures that a user is logged in before accessing certain routes.
-        """
-        @wraps(f)
-        def wrap(*args, **kwargs):
-            if 'logged_in' in session:
-                return f(*args, **kwargs)
-            else:
-                return redirect('/user/login')
-    
-        return wrap
-    
     # Module Routes
     from ..user import routes
     from ..students import routes
