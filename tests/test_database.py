@@ -1,17 +1,6 @@
-from flask import Flask, render_template
-
 import pytest
 from ..core import database
-from _pytest.monkeypatch import MonkeyPatch
 import uuid
-
-@pytest.fixture
-def monkeypatch():
-    mpatch = MonkeyPatch()
-    yield mpatch
-    mpatch.undo()
-
-
 
 def test_ping_success():
     try:

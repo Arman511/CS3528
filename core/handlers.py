@@ -18,6 +18,7 @@ def configure_routes(app):
     
     # Module Routes
     from ..user import routes
+    from ..students import routes
     
         
     @app.route('/')
