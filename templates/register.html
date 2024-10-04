@@ -1,25 +1,34 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 <div class="card-wrapper">
     <div class="card">
-        <h1 class="center">Log In</h1>
+        <h1 class="center">Register</h1>
 
-        <form name="register_form" class="register_form">
-            <label for="name">Name</label>
-            <input type="text" name="name" class="field" required />
+        <form class="register_form" name="register_form">
+            <input type="text" name="name" class="field" placeholder="Name" required />
 
-            <label for="email">Email</label>
-            <input type="email" name="email" class="field" required />
+            <input type="email" name="email" class="field" placeholder="Email" required />
 
-            <label for="password">Password</label>
-            <input type="password" name="password" class="field" required />
+            <div class="password-container">
+                <input type="password" name="password" class="field" placeholder="Password" required id="passwordField" />
+                <span class="eye-icon" id="togglePassword" style="cursor: pointer;">👁️</span>
+            </div>
+
+            <div class="password-container">
+                <input type="password" name="confirm_password" class="field" placeholder="Confirm Password" required id="confirmPasswordField" />
+                <span class="eye-icon" id="toggleConfirmPassword" style="cursor: pointer;">👁️</span>
+            </div>
 
             <p class="error error--hidden"></p>
 
             <input type="submit" value="Register" class="btn" />
         </form>
 
-        <p class="center">Do have an account? <a href="/">Register</a></p>
-        <script src="/static/register/script.js"></script>
+        <p class="center">
+            Already have an account? <a href="/user/login">Sign In</a>
+        </p>
     </div>
 </div>
+
+<script src="/static/register/script.js"></script> <!-- Link to your JavaScript file -->
 {% endblock %}
