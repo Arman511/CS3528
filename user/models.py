@@ -36,11 +36,11 @@ class User:
             "password": pbkdf2_sha256.hash(password)  # Hash only the password
         }
         
-        if users_collection.find_one({"email": request.form.get('email')}):
+        if database.users_collection.find_one({"email": request.form.get('email')}):
             return jsonify({"error": "Email address already in use"}), 400
         
         # Insert the user into the database
-        users_collection.insert_one(user)
+        database.users_collection.insert_one(user)
 
         # Start session or return success response
         if user:
