@@ -9,7 +9,7 @@ Routes:
 """
 from flask import render_template
 from .models import User
-from ..app import app
+from app import app
 
 @app.route('/user/register_attempt', methods=['POST'])
 def register_user_attempt():

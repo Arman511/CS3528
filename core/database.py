@@ -1,4 +1,12 @@
 import os
+"""
+This module handles the connection to a MongoDB database and provides access to specific collections.
+
+Modules:
+    os: Provides a way of using operating system dependent functionality.
+    pymongo: A Python distribution containing tools for working with MongoDB.
+    dotenv: Reads key-value pairs from a .env file and can set them as environment variables.
+"""
 import pymongo
 from dotenv import load_dotenv
 load_dotenv()

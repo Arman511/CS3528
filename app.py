@@ -13,11 +13,11 @@ Routes:
     /: The home route which requires the user to be logged in and renders the 'home.html' template.
 """
 import os
-from functools import wraps
-import pymongo
 from dotenv import load_dotenv
-from flask import Flask, render_template, session, redirect
-from .core import database, handlers
+from flask import Flask
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from core import handlers
 
 load_dotenv()
  

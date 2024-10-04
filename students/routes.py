@@ -9,8 +9,8 @@ Routes:
 """
 from flask import render_template, request
 from .models import Student
-from ..app import app
-from ..core import handlers
+from app import app
+from core import handlers
 
 
 @app.route('/students/add_student', methods=['POST'])

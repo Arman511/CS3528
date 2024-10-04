@@ -3,7 +3,7 @@
 This module defines the User class which handles user authentication and session management.
 """
 from flask import jsonify, request
-from ..core import database
+from core import database
 import uuid
 from pymongo import TEXT
 import pandas as pd

@@ -17,8 +17,8 @@ def login_required(f):
 
 def configure_routes(app):
     # Module Routes
-    from ..user import routes
-    from ..students import routes
+    from user import routes
+    from students import routes
     
         
     @app.route('/')
