@@ -13,49 +13,18 @@ Routes:
     /: The home route which requires the user to be logged in and renders the 'home.html' template.
 """
 import os
-from functools import wraps
-import pymongo
 from dotenv import load_dotenv
-from flask import Flask, render_template, session, redirect
+from flask import Flask
+import sys
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from core import handlers
 
 load_dotenv()
  
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
+app.config['MAX_CONTENT_LENGTH'] = 32 * 1024 * 1024 # 16 MB
+handlers.configure_routes(app)
 
-client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
-database = client["cs3028_db"]
-users_collection = database["users"]
-
-try:
-    client.admin.command('ping')
-    print("Pinged your deployment. You successfully connected to MongoDB!")
-except pymongo.errors.ConfigurationError as e:
-    print(f"Configuration error: {e}")
-except pymongo.errors.OperationFailure as e:
-    print(f"Operation failure: {e}")
-
-from user import routes
-# Decorators
-def login_required(f):
-    """This decorator ensures that a user is logged in before accessing certain routes.
-    """
-    @wraps(f)
-    def wrap(*args, **kwargs):
-        if 'logged_in' in session:
-            return f(*args, **kwargs)
-        else:
-            return redirect('/user/login')
-  
-    return wrap
-    
-@app.route('/')
-@login_required
-def index():
-    """The home route which requires the user to be logged in and renders the 'home.html' template.
-
-    Returns:
-        str: Rendered HTML template for the home page.
-    """
-    return render_template('home.html')
- 
+if __name__ == "__main__":
+    app.run()

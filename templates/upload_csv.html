@@ -1,0 +1,36 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="card-wrapper">
+    <div class="card">
+        <h1 class="center">Upload</h1>
+
+        <form
+            name="upload_csv_form"
+            class="upload_form"
+            enctype="multipart/form-data"
+        >
+            <label for="file">File</label>
+            <input type="file" name="file" class="field" required />
+
+            <p class="error error--hidden"></p>
+
+            <input type="submit" value="Upload" class="btn" />
+        </form>
+        <form
+            name="upload_xls_form"
+            class="upload_form"
+            enctype="multipart/form-data"
+        >
+            <label for="file">File</label>
+            <input type="file" name="file" class="field" required />
+
+            <p class="error error--hidden"></p>
+
+            <input type="submit" value="Upload" class="btn" />
+        </form>
+
+        <script src="/static/upload/script.js"></script>
+    </div>
+</div>
+
+{% endblock %}
