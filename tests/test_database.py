@@ -1,5 +1,5 @@
 import pytest
-from core import database
+from ..core import database
 import uuid
 
 def test_ping_success():
