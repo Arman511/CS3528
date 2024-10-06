@@ -6,7 +6,6 @@ from flask import jsonify, request, session, redirect
 from core import database
 from passlib.hash import pbkdf2_sha256
 import uuid
-# from passlib.hash import pbkdf2_sha256
 
 class User:
     """A class used to represent a User and handle user-related operations 

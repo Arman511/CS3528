@@ -17,8 +17,10 @@ try:
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except pymongo.errors.ConfigurationError as e:
     print(f"Configuration error: {e}")
+    exit(1)
 except pymongo.errors.OperationFailure as e:
     print(f"Operation failure: {e}")
+    exit(1)
 except pymongo.errors.ServerSelectionTimeoutError as e:
     print(f"Server selection timeout error: {e}")
     exit(1)
