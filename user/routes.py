@@ -7,7 +7,7 @@ Routes:
     /user/login: Renders the login page.
     /user/login_attempt (POST): Attempts to log in a user.
 """
-from flask import render_template
+from flask import redirect, render_template, session
 from .models import User
 from app import app
 
@@ -29,6 +29,8 @@ def signout():
 @app.route('/user/login')
 def login():
     """Gives login form to user."""
+    if "logged_in" in session:
+        return redirect('/')
     return render_template('login.html')
 
 @app.route('/user/login_attempt', methods=['POST'])

@@ -22,6 +22,8 @@ except pymongo.errors.OperationFailure as e:
 except pymongo.errors.ServerSelectionTimeoutError as e:
     print(f"Server selection timeout error: {e}")
     exit(1)
+    
+
 database = client["cs3028_db"]
 users_collection = database["users"]
 students_collection = database["students"]

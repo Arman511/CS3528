@@ -30,5 +30,11 @@ def upload_csv():
 def upload_xlsx():
     return Student().import_from_xlsx()
 
+@app.route('/students/get_student_by_id', methods=['GET'])
+@handlers.login_required
+def get_student_by_id():
+    """Getting student."""
+    return Student().get_student_by_id()
+
     
         
