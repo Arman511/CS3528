@@ -77,6 +77,21 @@
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
 }
 
+/*Logout button styling*/
+.LogoutButton::before{
+    content: "Logout";
+    color: #fff;
+    padding: 12px; /* Adjust padding for better look */
+    margin-top: 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    width: 100%; /* Make the button full width */
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
 /* Button styling */
 .btn {
     background-color: #007bff;
