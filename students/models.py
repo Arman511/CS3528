@@ -22,8 +22,9 @@ class Student:
             "course": request.form.get('course'),
             "skills": request.form.get('skills')
         }
+        overwrite = bool(request.form.get('overwrite'))
         
-        if database.students_collection.find_one({"student_id": request.form.get('student_id')}):
+        if not overwrite and database.students_collection.find_one({"student_id": request.form.get('student_id')}):
             return jsonify({"error": "Student already in database"}), 400
         
         database.students_collection.insert_one(student)
@@ -83,8 +84,6 @@ class Student:
     
     def get_student_by_email(self):
         """Getting student."""
-        
-        
         student = database.students_collection.find_one({"email": request.form.get('email')})
         
         if student:
@@ -149,6 +148,7 @@ class Student:
             students = df.to_dict(orient='records')
             for student in students:
                 student["_id"] = uuid.uuid4().hex
+                database.students_collection.delete_one({"student_id": student["student_id"]})
 
             database.students_collection.insert_many(students)
                 
@@ -172,7 +172,7 @@ class Student:
             students = df.to_dict(orient='records')
             for student in students:
                 student["_id"] = uuid.uuid4().hex
-            
+                database.students_collection.delete_one({"student_id": student["student_id"]})
             database.students_collection.insert_many(students)
             
             return jsonify({"message": "Students imported"}), 200

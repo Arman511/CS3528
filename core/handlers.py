@@ -17,10 +17,12 @@ def login_required(f):
 
 def configure_routes(app):
     # Module Routes
-    from user import routes
-    from students import routes
+    from user import routes_user
+    from students import routes_student
     
-        
+    routes_user.add_user_routes(app)
+    routes_student.add_student_routes(app)
+    
     @app.route('/')
     @login_required
     def index():
