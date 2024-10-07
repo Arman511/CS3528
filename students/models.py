@@ -11,6 +11,33 @@ def allowed_file(filename, types):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
 
 class Student:
+    def search_students(self):
+        first_name = request.form.get('first_name')
+        last_name = request.form.get('last_name')
+        email = request.form.get('email')
+        student_id = request.form.get('student_id')
+        
+        query = {}
+        if first_name:
+            query["first_name"] = first_name
+        if last_name:
+            query["last_name"] = last_name
+        if email:
+            query["email"] = email
+        if student_id:
+            query["student_id"] = student_id
+        if request.form.get('course'):
+            query["course"] = request.form.get('course')
+        if request.form.get('skills'):
+            query["skills"] = request.form.get('skills')
+
+        students = list(database.students_collection.find(query))
+        
+        if students:
+            return jsonify(students), 200
+
+        return jsonify({"error": "No students found"}), 404
+    
     def add_student(self):
         """Adding new student."""
         student = {
@@ -33,7 +60,8 @@ class Student:
             return jsonify(student), 200
         
         return jsonify({"error": "Student not added"}), 400
-    
+
+
     def get_student_by_id(self):
         """Getting student."""
         student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
@@ -62,12 +90,12 @@ class Student:
         
         return jsonify({"error": "Student not found"}), 404
     
-    def delete_student_by_id(self):
+    def delete_student_by_id(self, student_id):
         """Deleting student."""
-        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        student = database.students_collection.find_one({"student_id": student_id})
         
         if student:
-            database.students_collection.delete_one({"student_id": request.form.get('student_id')})
+            database.students_collection.delete_one({"student_id": student_id})
             return jsonify({"message": "Student deleted"}), 200
         
         return jsonify({"error": "Student not found"}), 404

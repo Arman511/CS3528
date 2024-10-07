@@ -30,4 +30,6 @@ if os.getenv("IS_GITHUB_ACTIONS") != "True":
 database = client["cs3028_db"]
 users_collection = database["users"]
 students_collection = database["students"]
-oppotunities_collection = database["opportunities"]
+opportunities_collection = database["opportunities"]
+courses_collection = database["courses"]
+skills_collection = database["skills"]

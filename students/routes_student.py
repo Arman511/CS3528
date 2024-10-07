@@ -10,6 +10,8 @@ Routes:
 from flask import render_template, request
 from .models import Student
 from core import handlers
+from ..courses.models import Course
+from ..skills.models import Skill
 
 def add_student_routes(app):
     @app.route('/students/add_student', methods=['POST'])
@@ -28,12 +30,33 @@ def add_student_routes(app):
     @handlers.login_required
     def upload_xlsx():
         return Student().import_from_xlsx()
-
-    @app.route('/students/get_student_by_id', methods=['GET'])
+    
+    @app.route('/students/search')
     @handlers.login_required
-    def get_student_by_id():
+    def search_page():
         """Getting student."""
-        return Student().get_student_by_id()
+        return render_template("search_student.html",skills=Skill().get_skills(),courses=Course().get_courses())
+    
+    @app.route('/students/search_students', methods=['POST'])
+    @handlers.login_required
+    def search_students():
+        """Getting student."""
+        return Student().search_students()
+    
+    @app.route('/students/delete_student/<int:student_id>', methods=['DELETE'])
+    @handlers.login_required
+    def delete_student(student_id):
+        """Delete student."""
+        return Student().delete_student_by_id(student_id)
 
+    @app.route('/student/update/<int:student_id>', methods=['GET', 'POST'])
+    @handlers.login_required
+    def update_student(student_id):
+        """Update student."""
+        if request.method == 'POST':
+            return Student().update_student_by_id(student_id, request.form)
+        student = Student().get_student_by_id(student_id)
+        
+        return render_template("update_student.html", student=student,skills=Skill().get_skills(),courses=Course().get_courses())
     
         
