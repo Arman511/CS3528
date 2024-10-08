@@ -1,6 +1,6 @@
 import uuid
 from flask import jsonify, request
-from ..core import database
+from core import database
 from datetime import datetime, timedelta
 
 # Cache to store courses and the last update time

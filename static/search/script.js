@@ -6,14 +6,6 @@ document.addEventListener("DOMContentLoaded", () => {
         event.preventDefault();
 
         const formData = new FormData(searchForm);
-        const data = {
-            first_name: formData.get("first_name"),
-            last_name: formData.get("last_name"),
-            email: formData.get("email"),
-            student_id: formData.get("student_id"),
-            course: formData.get("course"),
-            skills: formData.get("skills"),
-        };
 
         try {
             const response = await fetch("/students/search_students", {
@@ -21,7 +13,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(data),
+                body: formData,
             });
 
             if (response.ok) {

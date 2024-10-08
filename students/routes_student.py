@@ -10,8 +10,8 @@ Routes:
 from flask import render_template, request
 from .models import Student
 from core import handlers
-from ..courses.models import Course
-from ..skills.models import Skill
+from courses.models import Course
+from skills.models import Skill
 
 def add_student_routes(app):
     @app.route('/students/add_student', methods=['POST'])
