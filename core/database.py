@@ -7,6 +7,7 @@ Modules:
     dotenv: Reads key-value pairs from a .env file and can set them as environment variables.
 """
 import os
+import sys
 import pymongo
 from dotenv import load_dotenv
 load_dotenv()
@@ -18,13 +19,13 @@ if os.getenv("IS_GITHUB_ACTIONS") != "True":
         print("Pinged your deployment. You successfully connected to MongoDB!")
     except pymongo.errors.ConfigurationError as e:
         print(f"Configuration error: {e}")
-        exit(1)
+        sys.exit(1)
     except pymongo.errors.OperationFailure as e:
         print(f"Operation failure: {e}")
-        exit(1)
+        sys.exit(1)
     except pymongo.errors.ServerSelectionTimeoutError as e:
         print(f"Server selection timeout error: {e}")
-        exit(1)
+        sys.exit(1)
     
 
 database = client["cs3028_db"]
