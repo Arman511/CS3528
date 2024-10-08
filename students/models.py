@@ -3,7 +3,7 @@
 This module defines the User class which handles user authentication and session management.
 """
 import uuid
-from flask import jsonify, request
+from flask import jsonify, request, session
 from pymongo import TEXT
 import pandas as pd
 from core import database, handlers
@@ -233,4 +233,21 @@ class Student:
             return jsonify({"message": "Student updated"}), 200
 
         return jsonify({"error": "Student not found"}), 404
+
+    def student_login(self):
+        """Handle student login."""
+        student_id = request.form.get('student_id')
+        password = request.form.get('password')
+
+        # Find the student by email
+        student = database.students_collection.find_one({"_id": password})
+
+        if student and student.get('student_id') == student_id:
+            # Assuming you have a session management system
+            del student['_id']
+            session['student'] = student
+            session['student_logged_in'] = True
+            return jsonify({"message": "Login successful"}), 200
+
+        return jsonify({"error": "Invalid email or password"}), 401
     

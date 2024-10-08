@@ -11,7 +11,7 @@
     Args:
         app (Flask): The Flask application instance to which the routes will be added.
 """
-from flask import render_template, request
+from flask import redirect, render_template, request, session
 from core import handlers
 from courses.models import Course
 from skills.models import Skill
@@ -69,3 +69,16 @@ def add_student_routes(app):
         return render_template("update_student.html",
                                student=student,skills=Skill().get_skills(),
                                courses=Course().get_courses())
+
+    @app.route('/student/login', methods=['GET', 'POST'])
+    def login_student():
+        """Logins a student"""
+        if request.method == 'POST':
+            return Student().student_login()
+        return render_template("student_login")
+
+    @app.route('/student/signout')
+    @handlers.student_login_required
+    def signout_student():
+        session.clear()
+        return redirect('/student/login')
