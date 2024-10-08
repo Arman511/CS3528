@@ -59,7 +59,8 @@ class Opportunity:
             "company": request.form.get('company'),
             "location": request.form.get('location'),
             "skills_required": request.form.get('skills_required'),
-            "course_required": request.form.get('course_required')
+            "course_required": request.form.get('course_required'),
+            "spots_available": request.form.get('spots_available')
         }
 
         database.opportunities_collection.insert_one(opportunity)
@@ -187,7 +188,6 @@ class Opportunity:
             opportunities = df.to_dict(orient='records')
             for opportunity in opportunities:
                 opportunity["_id"] = uuid.uuid4().hex
-                database.opportunities_collection.delete_one({"title": opportunity["title"]})
             database.opportunities_collection.insert_many(opportunities)
 
             return jsonify({"message": "Opportunities imported"}), 200
