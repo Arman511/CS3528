@@ -1,5 +1,5 @@
 """
-This module handles the connection to a MongoDB database and provides access to specific collections.
+Module handles the connection to a MongoDB database and provides access to specific collections.
 
 Modules:
     os: Provides a way of using operating system dependent functionality.
@@ -26,7 +26,7 @@ if os.getenv("IS_GITHUB_ACTIONS") != "True":
     except pymongo.errors.ServerSelectionTimeoutError as e:
         print(f"Server selection timeout error: {e}")
         sys.exit(1)
-    
+
 
 database = client["cs3028_db"]
 users_collection = database["users"]

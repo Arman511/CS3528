@@ -32,4 +32,3 @@ def add_user_routes(app):
         if "logged_in" in session:
             return redirect('/')
         return render_template('login.html')
-
