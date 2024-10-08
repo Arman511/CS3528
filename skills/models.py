@@ -36,7 +36,7 @@ class Skill:
     def add_skill(self):
         """Add Skill to database"""
         skill = {
-            "_id": uuid.uuid4().hex,
+            "_id": uuid.uuid1().hex,
             "skill_name": request.form.get('skill_name'),
             "skill_description": request.form.get('skill_description')
         }

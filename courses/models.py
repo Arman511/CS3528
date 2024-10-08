@@ -33,7 +33,7 @@ class Course:
     def add_course(self):
         """Adds a course to the database."""
         course = {
-            "_id": uuid.uuid4().hex,
+            "_id": uuid.uuid1().hex,
             "course_id": request.form.get('course_id'),
             "course_name": request.form.get('course_name'),
             "course_description": request.form.get('course_description')

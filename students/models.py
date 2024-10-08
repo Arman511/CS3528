@@ -42,7 +42,7 @@ class Student:
     def add_student(self):
         """Adding new student."""
         student = {
-            "_id": uuid.uuid4().hex,
+            "_id": uuid.uuid1().hex,
             "first_name": request.form.get('first_name'),
             "last_name": request.form.get('last_name'),
             "email": request.form.get('email'),
@@ -193,7 +193,7 @@ class Student:
 
             students = df.to_dict(orient='records')
             for student in students:
-                student["_id"] = uuid.uuid4().hex
+                student["_id"] = uuid.uuid1().hex
                 database.students_collection.delete_one({"student_id": student["student_id"]})
 
             database.students_collection.insert_many(students)
@@ -216,7 +216,7 @@ class Student:
 
             students = df.to_dict(orient='records')
             for student in students:
-                student["_id"] = uuid.uuid4().hex
+                student["_id"] = uuid.uuid1().hex
                 database.students_collection.delete_one({"student_id": student["student_id"]})
             database.students_collection.insert_many(students)
 

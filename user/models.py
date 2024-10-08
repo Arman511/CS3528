@@ -29,7 +29,7 @@ class User:
             return jsonify({"error": "Passwords don't match"}), 400
 
         user = {
-            "_id": uuid.uuid4().hex,
+            "_id": uuid.uuid1().hex,
             "name": request.form.get('name'),
             "email": request.form.get('email'),
             "password": pbkdf2_sha256.hash(password)  # Hash only the password

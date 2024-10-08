@@ -52,7 +52,7 @@ class Opportunity:
     def add_opportunity(self):
         """Adding new opportunity."""
         opportunity = {
-            "_id": uuid.uuid4().hex,
+            "_id": uuid.uuid1().hex,
             "title": request.form.get('title'),
             "description": request.form.get('description'),
             "url": request.form.get('url'),
@@ -164,7 +164,7 @@ class Opportunity:
 
             opportunities = df.to_dict(orient='records')
             for opportunity in opportunities:
-                opportunity["_id"] = uuid.uuid4().hex
+                opportunity["_id"] = uuid.uuid1().hex
                 database.opportunities_collection.delete_one({"title": opportunity["title"]})
 
             database.opportunities_collection.insert_many(opportunities)
@@ -187,7 +187,7 @@ class Opportunity:
 
             opportunities = df.to_dict(orient='records')
             for opportunity in opportunities:
-                opportunity["_id"] = uuid.uuid4().hex
+                opportunity["_id"] = uuid.uuid1().hex
             database.opportunities_collection.insert_many(opportunities)
 
             return jsonify({"message": "Opportunities imported"}), 200
