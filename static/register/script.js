@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         let formData = new FormData(register_form);
 
-        fetch("/user/register_attempt", {
+        fetch("/user/register", {
             method: "POST",
             body: formData,
         })

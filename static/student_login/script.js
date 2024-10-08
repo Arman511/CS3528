@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault(); // Prevent form submission
         let formData = new FormData(form); // Collect form data
 
-        fetch("/user/login", {
+        fetch("/student/login", {
             method: "POST",
             body: formData,
         })
