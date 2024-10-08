@@ -1,11 +1,14 @@
 """
-This module defines the routes for user-related actions in the Flask application.
+This module defines the routes for student-related actions in the Flask application.
 
 Routes:
-    /user/register (POST): Registers a new user.
-    /user/signout: Signs out the current user.
-    /user/login: Renders the login page.
-    /user/login_attempt (POST): Attempts to log in a user.
+    /students/add_student (POST): Registers a new student.
+    /students/upload_csv (POST): Uploads student data from a CSV file.
+    /students/upload_xlsx (POST): Uploads student data from an XLSX file.
+    /students/search: Renders the student search page.
+    /students/search_students (POST): Searches for students.
+    /students/delete_student/<int:student_id> (DELETE): Deletes a student by ID.
+    /student/update/<int:student_id> (GET, POST): Updates a student by ID.
 """
 from flask import render_template, request
 from .models import Student
