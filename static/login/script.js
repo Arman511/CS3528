@@ -2,22 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
     let form = document.querySelector(".login_form");
     let error_paragraph = document.querySelector(".error");
 
-    // Select the password field and eye icon
-    const passwordField = document.getElementById("passwordField");
-    const togglePassword = document.getElementById("togglePassword");
-
-    // Initially hide the eye icon
-    togglePassword.style.display = "none";
-
-    // Show/hide the eye icon based on password input
-    passwordField.addEventListener("input", function () {
-        if (passwordField.value.length > 0) {
-            togglePassword.style.display = "inline"; // Show the eye icon
-        } else {
-            togglePassword.style.display = "none"; // Hide the eye icon
-        }
-    });
-
     // Form submission logic
     form.addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent form submission

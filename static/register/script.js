@@ -4,33 +4,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const confirmPasswordField = document.getElementById(
         "confirmPasswordField"
     );
-    const togglePassword = document.getElementById("togglePassword");
-    const toggleConfirmPassword = document.getElementById(
-        "toggleConfirmPassword"
-    );
+
     const error_paragraph = document.querySelector(".error");
     const register_form = document.querySelector(".register_form");
-
-    // Initially hide the eye icons
-    togglePassword.style.display = "none";
-    toggleConfirmPassword.style.display = "none";
-
-    // Show/hide the eye icon based on password input
-    passwordField.addEventListener("input", function () {
-        togglePassword.style.display =
-            passwordField.value.length > 0 ? "inline" : "none";
-    });
-
-    confirmPasswordField.addEventListener("input", function () {
-        toggleConfirmPassword.style.display =
-            confirmPasswordField.value.length > 0 ? "inline" : "none";
-    });
-
-    // Toggle password visibility for the main password field
-    togglePassword.addEventListener("click", function () {
-        const type = passwordField.type === "password" ? "text" : "password";
-        passwordField.type = type; // Change type to text or password
-    });
 
     // Form submission logic
     register_form.addEventListener("submit", function (e) {
