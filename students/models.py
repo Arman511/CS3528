@@ -69,7 +69,9 @@ class Student:
 
     def get_student_by_id(self):
         """Getting student."""
-        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        student = database.students_collection.find_one({
+            "student_id": request.form.get('student_id')
+            })
 
         if student:
             return jsonify(student), 200
@@ -87,10 +89,15 @@ class Student:
 
     def update_student(self):
         """Updating student."""
-        student = database.students_collection.find_one({"student_id": request.form.get('student_id')})
+        student = database.students_collection.find_one({
+            "student_id": request.form.get('student_id')
+            })
 
         if student:
-            database.students_collection.update_one({"student_id": request.form.get('student_id')}, {"$set": request.form})
+            database.students_collection.update_one({
+                "student_id": request.form.get('student_id')}, {
+                    "$set": request.form
+                    })
             return jsonify({"message": "Student updated"}), 200
 
         return jsonify({"error": "Student not found"}), 404
@@ -144,7 +151,10 @@ class Student:
 
     def get_students_by_course_and_skills(self):
         """Getting students."""
-        students = list(database.students_collection.find({"course": request.form.get('course'), "skills": request.form.get('skills')}))
+        students = list(database.students_collection.find({
+            "course": request.form.get('course'),
+            "skills": request.form.get('skills')
+            }))
 
         if students:
             return jsonify(students), 200
@@ -154,10 +164,15 @@ class Student:
     def get_students_by_name(self):
         """Getting students by name."""
         # Ensure text index is created on the collection
-        database.students_collection.create_index([("first_name", TEXT), ("last_name", TEXT)])
+        database.students_collection.create_index([
+            ("first_name", TEXT),
+            ("last_name", TEXT)
+            ])
 
         students = list(database.students_collection.find({
-            "$text": {"$search": f"{request.form.get('first_name')} {request.form.get('last_name')}"}
+            "$text": {
+                "$search": f"{request.form.get('first_name')} {request.form.get('last_name')}"
+                }
         }))
 
         if students:
