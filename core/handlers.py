@@ -33,7 +33,7 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
 
-        return redirect('/user/login')
+        return redirect('/student/login')
 
     return wrap
 
@@ -45,6 +45,8 @@ def student_login_required(f):
         if 'student_logged_in' in session:
             return f(*args, **kwargs)
         return redirect('/student/login')
+
+    return wrap
 
 def configure_routes(app):
     """Configures the routes for the given Flask application.

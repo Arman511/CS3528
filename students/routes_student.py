@@ -63,7 +63,7 @@ def add_student_routes(app):
     def update_student(student_id):
         """Update student."""
         if request.method == 'POST':
-            return Student().update_student_by_id(student_id, request.form)
+            return Student().update_student_by_id(student_id, False)
         student = Student().get_student_by_id(student_id)
 
         return render_template("update_student.html",
@@ -90,6 +90,8 @@ def add_student_routes(app):
         if session['student_id'] != student_id:
             session.clear()
             return redirect('/student/login')
+        if request.method == 'POST':
+            return Student().update_student_by_id(student_id,  True)
         student = Student().get_student_by_id(student_id)
         return render_template("student_details.html", student=student,
                                skills=Skill().get_skills(), courses=Course().get_courses())

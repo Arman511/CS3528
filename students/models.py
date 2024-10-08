@@ -224,12 +224,20 @@ class Student:
         except (pd.errors.EmptyDataError, pd.errors.ParserError, FileNotFoundError) as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def update_student_by_id(self, student_id, form):
+    def update_student_by_id(self, student_id, is_student=True):
         """Updating student."""
         student = database.students_collection.find_one({"student_id": student_id})
 
-        if student:
-            database.students_collection.update_one({"student_id": student_id}, {"$set": form})
+        if student and not is_student:
+            database.students_collection.update_one({"student_id": student_id}, {"$set": request.form})
+            return jsonify({"message": "Student updated"}), 200
+        
+        data = {
+            "course": request.form.get('course'),
+            "skills": request.form.get('skills')
+        }
+        if student and is_student:
+            database.students_collection.update_one({"student_id": student_id}, {"$set": data})
             return jsonify({"message": "Student updated"}), 200
 
         return jsonify({"error": "Student not found"}), 404
