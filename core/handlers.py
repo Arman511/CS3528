@@ -44,24 +44,24 @@ def configure_routes(app):
     Args:
         app (Flask): The Flask application instance.
     Routes:
-        / (GET): The home route which requires the user to be logged in and renders the 'home.html' template.
-        /privacy-policy (GET): The privacy policy route which renders the 'privacy_policy.html' template.
+        /: The home route which needs the user to be logged in and renders the 'home.html' template.
+        /privacy-policy: The privacy policy route which renders the 'privacy_policy.html' template.
     """
-    
+
     routes_user.add_user_routes(app)
     routes_student.add_student_routes(app)
     routes_opportunites.add_opportunities_routes(app)
-    
+
     @app.route('/')
     @login_required
     def index():
-        """The home route which requires the user to be logged in and renders the 'home.html' template.
+        """The home route which needs the user to be logged in and renders the 'home.html' template.
 
         Returns:
             str: Rendered HTML template for the home page.
         """
         return render_template('home.html')
-    
+
     @app.route('/privacy-policy')
     def privacy_policy():
         """The privacy policy route which renders the 'privacy_policy.html' template.

@@ -6,10 +6,8 @@ import uuid
 from flask import jsonify, request
 from pymongo import TEXT
 import pandas as pd
-from core import database
-def allowed_file(filename, types):
-    """Check if file type is allowed."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
+from core import database, handlers
+
 
 class Student:
     """Student class."""
@@ -186,7 +184,7 @@ class Student:
         if not 'file' in request.files:
             return jsonify({"error": "No file part"}), 400
 
-        if not allowed_file(request.files['file'].filename, ['csv']):
+        if not handlers.allowed_file(request.files['file'].filename, ['csv']):
             return jsonify({"error": "Invalid file type"}), 400
 
         try:
@@ -209,7 +207,7 @@ class Student:
         if not 'file' in request.files:
             return jsonify({"error": "No file part"}), 400
 
-        if not allowed_file(request.files['file'].filename, ['xlsx', 'xls']):
+        if not handlers.allowed_file(request.files['file'].filename, ['xlsx', 'xls']):
             return jsonify({"error": "Invalid file type"}), 400
 
         try:
