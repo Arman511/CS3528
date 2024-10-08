@@ -18,16 +18,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // Toggle password visibility when the eye icon is clicked
-    togglePassword.addEventListener("click", function () {
-        // Toggle the type attribute
-        const type = passwordField.type === "password" ? "text" : "password";
-        passwordField.type = type; // Change type to text or password
-
-        // Change the eye icon to indicate visibility
-        togglePassword.textContent = type === "password" ? "👁️" : "👁️‍🗨️"; // Change icon based on visibility
-    });
-
     // Form submission logic
     form.addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent form submission

@@ -32,13 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
         passwordField.type = type; // Change type to text or password
     });
 
-    // Toggle password visibility for the confirm password field
-    toggleConfirmPassword.addEventListener("click", function () {
-        const type =
-            confirmPasswordField.type === "password" ? "text" : "password";
-        confirmPasswordField.type = type; // Change type to text or password
-    });
-
     // Form submission logic
     register_form.addEventListener("submit", function (e) {
         e.preventDefault(); // Prevent form submission
