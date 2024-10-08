@@ -75,7 +75,7 @@ def add_student_routes(app):
         """Logins a student"""
         if request.method == 'POST':
             return Student().student_login()
-        return render_template("student_login")
+        return render_template("student_login.html")
 
     @app.route('/student/signout')
     @handlers.student_login_required
