@@ -54,11 +54,13 @@ class Student:
         }
         overwrite = bool(request.form.get('overwrite'))
 
-        if not overwrite and database.students_collection.find_one({"student_id": request.form.get('student_id')}):
+        if not overwrite and database.students_collection.find_one(
+            {"student_id": request.form.get('student_id')}
+            ):
             return jsonify({"error": "Student already in database"}), 400
 
         database.students_collection.insert_one(student)
-        
+
         if student:
             return jsonify(student), 200
 
