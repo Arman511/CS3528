@@ -64,7 +64,7 @@ def add_student_routes(app):
         """Update student."""
         if request.method == 'POST':
             return Student().update_student_by_id(student_id, request.form)
-        student = Student().get_student_by_id()
+        student = Student().get_student_by_id(student_id)
 
         return render_template("update_student.html",
                                student=student,skills=Skill().get_skills(),
@@ -83,7 +83,7 @@ def add_student_routes(app):
         session.clear()
         return redirect('/student/login')
 
-    @app.route('/student/details<int:student_id>', methods=['GET', 'POST']):
+    @app.route('/student/details<int:student_id>', methods=['GET', 'POST'])
     @handlers.student_login_required
     def student_details(student_id):
         """Getting student."""
@@ -91,4 +91,5 @@ def add_student_routes(app):
             session.clear()
             return redirect('/student/login')
         student = Student().get_student_by_id(student_id)
-        return render_template("student_details.html", student=student)
+        return render_template("student_details.html", student=student,
+                               skills=Skill().get_skills(), courses=Course().get_courses())

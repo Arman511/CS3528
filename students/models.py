@@ -65,10 +65,10 @@ class Student:
         return jsonify({"error": "Student not added"}), 400
 
 
-    def get_student_by_id(self):
+    def get_student_by_id(self, student_id):
         """Getting student."""
         student = database.students_collection.find_one({
-            "student_id": request.form.get('student_id')
+            "student_id": student_id
             })
 
         if student:
