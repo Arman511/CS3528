@@ -7,7 +7,7 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from .core import handlers  # pylint: disable=C0413
+from core import handlers  # pylint: disable=C0413
 
 load_dotenv()
 
