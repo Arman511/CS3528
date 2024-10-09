@@ -2,7 +2,7 @@
 
 <div class="card-wrapper">
     <div class="card">
-        <h1 class="center">Search Students</h1>
+        <h1 class="center">Upload</h1>
 
         <form id="searchForm">
             <div
@@ -49,9 +49,7 @@
                     <label for="course">Course:</label>
                     <select id="course" name="course" class="form-control">
                         {% for course in courses %}
-                        <option value="{{ course.course_id }}">
-                            {{ course.course_name }}
-                        </option>
+                        <option value="{{ course }}">{{ course }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -64,9 +62,7 @@
                         multiple
                     >
                         {% for skill in skills %}
-                        <option value="{{ skill.skill_name }}">
-                            {{ skill.skill_name }}
-                        </option>
+                        <option value="{{ skill }}">{{ skill }}</option>
                         {% endfor %}
                     </select>
                 </div>
@@ -96,7 +92,7 @@
                 <tbody id="student-table"></tbody>
             </table>
         </div>
-        <script src="/static/search_student/script.js"></script>
+        <script src="/static/upload/script.js"></script>
     </div>
 
     {% endblock %}
