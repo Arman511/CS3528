@@ -12,6 +12,7 @@ instance/
 .webassets-cache
 
 __pypackages__/
+.vs/
 .vs
 
 # Environments
