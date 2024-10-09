@@ -32,7 +32,7 @@ def add_user_routes(app):
         if "logged_in" in session:
             return redirect('/')
         return render_template('login.html')
-    
+
     @app.route('/user/change_password', methods=['GET', 'POST'])
     def change_password():
         """Change user password."""

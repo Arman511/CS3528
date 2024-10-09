@@ -1,21 +1,27 @@
 # requirements.txt
 
+astroid==3.3.5
 blinker==1.8.2
 certifi==2024.8.30
 click==8.1.7
+dill==0.3.9
 dnspython==2.6.1
 exceptiongroup==1.2.2
 Flask==3.0.3
 gunicorn==23.0.0
 iniconfig==2.0.0
+isort==5.13.2
 itsdangerous==2.2.0
 Jinja2==3.1.4
-MarkupSafe==2.1.5
+MarkupSafe==3.0.1
+mccabe==0.7.0
 numpy==2.1.1
 packaging==24.1
 pandas==2.2.3
 passlib==1.7.4
+platformdirs==4.3.6
 pluggy==1.5.0
+pylint==3.3.1
 pymongo==4.10.1
 pytest==8.3.3
 python-dateutil==2.9.0.post0
@@ -23,5 +29,7 @@ python-dotenv==1.0.1
 pytz==2024.2
 six==1.16.0
 tomli==2.0.2
+tomlkit==0.13.2
+typing_extensions==4.12.2
 tzdata==2024.2
 Werkzeug==3.0.4

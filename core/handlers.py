@@ -26,7 +26,8 @@ def allowed_file(filename, types):
 
 # Decorators
 def login_required(f):
-    """This decorator ensures that a user is logged in before accessing certain routes.
+    """
+    This decorator ensures that a user is logged in before accessing certain routes.
     """
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -38,7 +39,8 @@ def login_required(f):
     return wrap
 
 def student_login_required(f):
-    """This decorator ensures that a user is logged in before accessing certain routes.
+    """
+    This decorator ensures that a student is logged in is logged in before accessing certain routes.
     """
     @wraps(f)
     def wrap(*args, **kwargs):
@@ -73,7 +75,7 @@ def configure_routes(app):
         """
         return render_template('home.html')
 
-    @app.route('/privacy-policy')
+    @app.route('/privacy_policy')
     def privacy_policy():
         """The privacy policy route which renders the 'privacy_policy.html' template.
 
@@ -81,4 +83,13 @@ def configure_routes(app):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template('privacy_policy.html')
+    
+    @app.route('/robots.txt')
+    def robots():
+        """The robots.txt route which renders the 'robots.txt' template.
+
+        Returns:
+            str: Rendered robots.txt template.
+        """
+        return app.send_static_file('robots.txt')
  
