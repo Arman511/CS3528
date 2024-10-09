@@ -1,10 +1,12 @@
-{% extends "base.html" %} 
-{% block content %}
-    <h2>Hello Team</h2>
-    <button id="signOutBtn" class="btn btn-outline-danger">Sign Out</button> <!-- Sign Out button only on this page -->
-    <script>
-        document.getElementById("signOutBtn").addEventListener("click", function () {
+{% extends "base.html" %} {% block content %}
+<h2>Hello Team</h2>
+<button id="signOutBtn" class="btn btn-outline-danger">Sign Out</button>
+<!-- Sign Out button only on this page -->
+<script>
+    document
+        .getElementById("signOutBtn")
+        .addEventListener("click", function () {
             window.location.href = "/user/signout";
         });
-    </script>
+</script>
 {% endblock %}
