@@ -38,11 +38,17 @@
     flex-direction: column;
     gap: 15px; /* Add spacing between elements */
 }
+/* Form layout */
+.change_password {
+    display: flex;
+    flex-direction: column;
+    gap: 15px; /* Add spacing between elements */
+}
 
-/* Input field styling with placeholders */
+/* Input field styling */
 .field {
     padding: 12px;
-    margin: 0; /* Remove margin between inputs */
+    margin: 0;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 16px;
@@ -50,7 +56,6 @@
     box-sizing: border-box;
     transition: box-shadow 0.3s, border-color 0.3s;
 }
-
 .password-container {
     position: relative;
 }
@@ -62,21 +67,18 @@
     transform: translateY(-50%); /* Adjust for vertical alignment */
     font-size: 20px; /* Adjust icon size */
 }
-
-
-/* Placeholder styling (optional for lighter color) */
+/* Placeholder styling */
 .field::placeholder {
-    color: #888; /* Lighter color for placeholder */
+    color: #888;
     font-style: italic;
 }
 
-/* Input field focus effect */
+/* Input focus effect */
 .field:focus {
     border-color: #007bff;
     outline: none;
     box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
 }
-
 /*Logout button styling*/
 .LogoutButton::before{
     content: "Logout";
@@ -91,28 +93,25 @@
     width: 100%; /* Make the button full width */
     transition: background-color 0.3s ease, transform 0.2s;
 }
-
 /* Button styling */
 .btn {
     background-color: #007bff;
-    color: #fff;
-    padding: 12px; /* Adjust padding for better look */
+    color: white;
+    padding: 12px;
     margin-top: 20px;
     border: none;
     border-radius: 8px;
     cursor: pointer;
     font-size: 16px;
     font-weight: bold;
-    width: 100%; /* Make the button full width */
+    width: 100%; /* Full width */
     transition: background-color 0.3s ease, transform 0.2s;
 }
 
-/* Button hover effect */
 .btn:hover {
     background-color: #0056b3;
-    transform: translateY(-2px); /* Slight lift effect */
+    transform: translateY(-2px);
 }
-
 
 /* Error message styling */
 .error {
@@ -124,8 +123,6 @@
 .error--hidden {
     display: none;
 }
-
-/* Link styling for the 'Already have an account?' */
 a {
     color: #007bff;
     text-decoration: none;
@@ -138,7 +135,7 @@ a:hover {
     text-decoration: underline;
 }
 
-/* Responsive design for smaller screens */
+/* Responsive for smaller screens */
 @media (max-width: 600px) {
     .card {
         width: 90%;

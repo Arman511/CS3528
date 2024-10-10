@@ -1,38 +1,35 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %} 
+{% block content %}
 <div class="card-wrapper">
     <div class="card">
-        <h1 class="center">Log In</h1>
+        <h1 class="center">Admin Log In</h1>
 
         <form class="login_form" name="login_form">
-            <input
-                type="email"
-                name="email"
-                class="field"
-                placeholder="Email"
-                required
-            />
+            <input type="email" name="email" class="field" placeholder="Email" required />
 
             <div class="password-container">
-                <input
-                    type="password"
-                    name="password"
-                    class="field"
-                    placeholder="Password"
-                    required
-                />
+                <input type="password" name="password" class="field" placeholder="Password" required />
             </div>
+
             <p class="error error--hidden"></p>
 
             <input type="submit" value="Log In" class="btn" />
+
+            <!-- Add "Change Password" link under login button -->
+            <p class="center">
+                <a href="/user/change_password">Forgotten password?</a>
+            </p>
+
+            <p class="center">
+                Don't have an account? <a href="/user/register">Register</a>
+            </p>
+            <p class="center">
+                Are you a student?<br>
+                <a href="/student/login">Student Login</a>
+            </p>
         </form>
-        <p class="center">
-            Don't have an account? <a href="/user/register">Register</a>
-        </p>
-        <p class="center">
-            Are you a student?
-            <a href="/student/login">Student Login</a>
-        </p>
+
+        <script src="/static/login/script.js"></script> <!-- JavaScript file for handling form -->
     </div>
-    <script src="/static/login/script.js"></script>
 </div>
 {% endblock %}
