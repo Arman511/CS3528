@@ -14,6 +14,6 @@ def add_opportunities_routes(app):
             return Opportunity().search_opportunities()
         
         return render_template("opportunities/search.html")
-        pass
+        
     
     
