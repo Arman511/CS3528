@@ -63,23 +63,23 @@ class User:
 
         return jsonify({"error": "Invalid login credentials"}), 401
 
-    def change_password(self):
-        """Change user password."""
-        user = session.get('user')
-        old_password = request.form.get('old_password')
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
+    # def change_password(self):
+    #     """Change user password."""
+    #     user = session.get('user')
+    #     old_password = request.form.get('old_password')
+    #     new_password = request.form.get('new_password')
+    #     confirm_password = request.form.get('confirm_password')
 
-        if not pbkdf2_sha256.verify(old_password, user['password']):
-            return jsonify({"error": "Invalid old password"}), 400
+    #     if not pbkdf2_sha256.verify(old_password, user['password']):
+    #         return jsonify({"error": "Invalid old password"}), 400
 
-        if new_password != confirm_password:
-            return jsonify({"error": "Passwords don't match"}), 400
+    #     if new_password != confirm_password:
+    #         return jsonify({"error": "Passwords don't match"}), 400
 
-        database.users_collection.update_one(
-            {"_id": user['_id']},
-            {"$set": {"password": pbkdf2_sha256.hash(new_password)}}
-        )
+    #     database.users_collection.update_one(
+    #         {"_id": user['_id']},
+    #         {"$set": {"password": pbkdf2_sha256.hash(new_password)}}
+    #     )
 
-        return jsonify({"message": "Password updated successfully"}), 200
+    #     return jsonify({"message": "Password updated successfully"}), 200
     
