@@ -63,7 +63,6 @@
     font-size: 20px; /* Adjust icon size */
 }
 
-
 /* Placeholder styling (optional for lighter color) */
 .field::placeholder {
     color: #888; /* Lighter color for placeholder */
@@ -78,7 +77,7 @@
 }
 
 /*Logout button styling*/
-.LogoutButton::before{
+.LogoutButton::before {
     content: "Logout";
     color: #fff;
     padding: 12px; /* Adjust padding for better look */
@@ -112,7 +111,6 @@
     background-color: #0056b3;
     transform: translateY(-2px); /* Slight lift effect */
 }
-
 
 /* Error message styling */
 .error {

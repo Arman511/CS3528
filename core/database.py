@@ -11,7 +11,6 @@ import sys
 import pymongo
 from dotenv import load_dotenv
 load_dotenv()
-
 client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
 if os.getenv("IS_GITHUB_ACTIONS") != "True":
     try:
