@@ -59,7 +59,7 @@ class Matching:
                     print(f"{choice} has no matches yet.")
                     mapped.insert(0, student)
                     
-        print("Unmatched students:", unmapped)
+        print("Unmatched students: \n", unmapped)
         return self.potential_match
 
 
@@ -82,13 +82,13 @@ employer_weights = {
     "company_1": {"skills": 0.5, "experience": 0.2, "education": 0.1, "certifications": 0.2, "positions": 2},
     "company_2": {"skills": 0.6, "experience": 0.3, "education": 0.05, "certifications": 0.05, "positions": 1},
     "company_3": {"skills": 0.4, "experience": 0.4, "education": 0.1, "certifications": 0.1, "positions": 3},
-    "company_4": {"skills": 0.7, "experience": 0.2, "education": 0.05, "certifications": 0.05, "positions": 0},
-    "company_5": {"skills": 0.5, "experience": 0.25, "education": 0.15, "certifications": 0.1, "positions": 0},
-    "company_6": {"skills": 0.3, "experience": 0.4, "education": 0.25, "certifications": 0.05, "positions": 0},
-    "company_7": {"skills": 0.8, "experience": 0.1, "education": 0.05, "certifications": 0.05, "positions": 0},
-    "company_8": {"skills": 0.6, "experience": 0.3, "education": 0.05, "certifications": 0.05, "positions": 0},
-    "company_9": {"skills": 0.5, "experience": 0.3, "education": 0.1, "certifications": 0.1, "positions": 0},
-    "company_10": {"skills": 0.4, "experience": 0.4, "education": 0.15, "certifications": 0.05, "positions": 0},
+    "company_4": {"skills": 0.7, "experience": 0.2, "education": 0.05, "certifications": 0.05, "positions": 2},
+    "company_5": {"skills": 0.5, "experience": 0.25, "education": 0.15, "certifications": 0.1, "positions": 1},
+    "company_6": {"skills": 0.3, "experience": 0.4, "education": 0.25, "certifications": 0.05, "positions": 3},
+    "company_7": {"skills": 0.8, "experience": 0.1, "education": 0.05, "certifications": 0.05, "positions": 2},
+    "company_8": {"skills": 0.6, "experience": 0.3, "education": 0.05, "certifications": 0.05, "positions": 1},
+    "company_9": {"skills": 0.5, "experience": 0.3, "education": 0.1, "certifications": 0.1, "positions": 2},
+    "company_10": {"skills": 0.4, "experience": 0.4, "education": 0.15, "certifications": 0.05, "positions": 3},
 }
 
 students_preference = {
