@@ -15,6 +15,7 @@ from flask import redirect, render_template, request, session
 from core import handlers
 from courses.models import Course
 from skills.models import Skill
+from course_modules.models import Module
 from .models import Student
 
 def add_student_routes(app):
@@ -68,7 +69,8 @@ def add_student_routes(app):
 
         return render_template("/student/update_student.html",
                                student=student,skills=Skill().get_skills(),
-                               courses=Course().get_courses())
+                               courses=Course().get_courses(),
+                               modules=Module().get_modules())
 
     @app.route('/student/login', methods=['GET', 'POST'])
     def login_student():
@@ -93,5 +95,7 @@ def add_student_routes(app):
         if request.method == 'POST':
             return Student().update_student_by_id(student_id,  True)
         student = Student().get_student_by_id(student_id)
-        return render_template("student/student_details.html", student=student,
-                               skills=Skill().get_skills(), courses=Course().get_courses())
+        return render_template("student/student_details.html", 
+                              student=student, skills=Skill().get_skills(),
+                              courses=Course().get_courses(),
+                              modules=Module().get_modules())
