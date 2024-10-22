@@ -19,6 +19,7 @@ from flask import render_template, session, redirect
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunites
+from skills import routes_skills
 
 def allowed_file(filename, types):
     """Check if file type is allowed."""
@@ -64,6 +65,7 @@ def configure_routes(app):
     routes_user.add_user_routes(app)
     routes_student.add_student_routes(app)
     routes_opportunites.add_opportunities_routes(app)
+    routes_skills.add_skills_routes(app)
 
     @app.route('/')
     @login_required
