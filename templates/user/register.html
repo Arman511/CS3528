@@ -1,61 +1,38 @@
-{% extends "base.html" %} {% block content %}
-<div class="card-wrapper">
-    <div class="card">
-        <h1 class="center">Register</h1>
-
-        <form class="register_form" name="register_form">
-            <input
-                type="text"
-                name="name"
-                class="field"
-                placeholder="Name"
-                required
-            />
-
-            <input
-                type="email"
-                name="email"
-                class="field"
-                placeholder="Email"
-                required
-            />
-
-            <div class="password-container">
-                <input
-                    type="password"
-                    name="password"
-                    id="passwordField"
-                    class="field"
-                    placeholder="Password"
-                    required
-                />
-            </div>
-
-            <div class="password-container">
-                <input
-                    type="password"
-                    name="confirm_password"
-                    id="confirmPasswordField"
-                    class="field"
-                    placeholder="Confirm Password"
-                    required
-                />
-            </div>
-
-            <p class="error error--hidden"></p>
-
-            <input type="submit" value="Register" class="btn" />
-        </form>
-
-        <p class="center">
-            Already have an account? <a href="/user/login">Sign In</a>
-        </p>
-        <p class="center">
-            Are you a student?
-            <a href="/student//login">Student Login</a>
-        </p>
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Register</h1>
+            <form class="register_form" name="register_form">
+                <input type="text" name="name" class="field" placeholder="Name" required />
+                <input type="email" name="email" class="field" placeholder="Email" required />
+                <div class="password-container">
+                    <input type="password"
+                           name="password"
+                           id="passwordField"
+                           class="field"
+                           placeholder="Password"
+                           required />
+                </div>
+                <div class="password-container">
+                    <input type="password"
+                           name="confirm_password"
+                           id="confirmPasswordField"
+                           class="field"
+                           placeholder="Confirm Password"
+                           required />
+                </div>
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Register" class="btn" />
+            </form>
+            <p class="center">
+                Already have an account? <a href="/user/login">Sign In</a>
+            </p>
+            <p class="center">
+                Are you a student?
+                <a href="/student/login">Student Login</a>
+            </p>
+        </div>
     </div>
-</div>
-
-<script src="/static/register/script.js"></script>
+    <script src="/static/register/script.js"></script>
 {% endblock %}
