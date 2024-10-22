@@ -38,6 +38,12 @@ def add_student_routes(app):
     def upload_xlsx():
         """Route to upload students from a XLSX file."""
         return Student().import_from_xlsx()
+    
+    @app.route('/students/upload', methods=['GET'])
+    @handlers.login_required
+    def upload_page():
+        """Route to upload students from a XLSX file."""
+        return render_template("/student/upload_student_data.html")
 
     @app.route('/students/search')
     @handlers.login_required

@@ -75,7 +75,7 @@ def configure_routes(app):
         Returns:
             str: Rendered HTML template for the home page.
         """
-        return render_template('home.html')
+        return render_template('/user/home.html')
 
     @app.route('/privacy_policy')
     def privacy_policy():
