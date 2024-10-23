@@ -1,0 +1,163 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="card-wrapper">
+    <div class="card">
+        <h2 class="center">Update your Details</h2>
+
+        <form id="updateForm">
+            <div class="form-group">
+                <label for="student_id">Student Number:</label>
+                <input
+                    name="student_id"
+                    id="student.id"
+                    class="form-control"
+                    type="text"
+                    value="{{ student.student_id }}"
+                    readonly
+                />
+            </div>
+            <div class="form-group">
+                <label for="first_name">First Name:</label>
+                <input
+                    type="text"
+                    id="first_name"
+                    name="first_name"
+                    class="form-control"
+                    value="{{ student.first_name }}"
+                    readonly
+                />
+            </div>
+            <div class="form-group">
+                <label for="last_name">Last Name:</label>
+                <input
+                    type="text"
+                    id="last_name"
+                    name="last_name"
+                    class="form-control"
+                    value="{{ student.last_name }}"
+                    readonly
+                />
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    class="form-control"
+                    value="{{ student.email }}"
+                    readonly
+                />
+            </div>
+            <div class="form-group">
+                <label for="student_id">Student Number:</label>
+                <input
+                    type="text"
+                    id="student_id"
+                    name="student_id"
+                    class="form-control"
+                    value="{{ student.student_id }}"
+                    readonly
+                />
+            </div>
+            <div class="form-group">
+                <label for="course">Course:</label>
+                <select id="course" name="course" class="form-control" required>
+                    {% for course in courses %}
+                        <option value="{{ course.course_id }}" {% if course.course_id == student.course_id %} selected {% endif %}>
+                            {{ course.course_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="skills">Skills:</label>
+                <select id="skills" name="skills" class="form-control" multiple required>
+                    {% for skill in skills %}
+                        <option value="{{ skill._id }}" title="{{ skill.skill_description }}" {% if skill._id in student.skills %} selected {% endif %}>
+                            {{ skill.skill_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="new_skill">Add New Skill:</label>
+                <input
+                    type="text"
+                    id="new_skill"
+                    name="new_skill"
+                    class="form-control"
+                    placeholder="Type a new skill"
+                />
+                <button type="button" id="add_skill" class="btn">Add Skill</button>
+            </div>
+            <script>
+                document.getElementById('add_skill').addEventListener('click', function() {
+                    var newSkill = document.getElementById('new_skill').value;
+                    if (newSkill) {
+                        var select = document.getElementById('skills');
+                        var option = document.createElement('option');
+                        let response = fetch('/skills/attept_add_skill_student', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                skill_name: newSkill,
+                            }),
+                        });
+                        if (!response.ok) {
+                            return;
+                        }
+                        response = response.json();
+                        option.title = response.skill_description;
+                        option.value = response._id;
+                        option.text = newSkill;
+                        option.selected = true;
+                        select.appendChild(option);
+                        document.getElementById('new_skill').value = '';
+                    }
+                });
+            </script>
+            <div class="form-group">
+                <label for="placement_duration">Placement Duration:</label>
+                <select id="placement_duration" name="placement_duration" class="form-control" required>
+                    <option value="1_day">1 Day</option>
+                    <option value="1_week">1 Week</option>
+                    <option value="1_month">1 Month</option>
+                    <option value="3_months">3 Months</option>
+                    <option value="6_months">6 Months</option>
+                    <option value="12_months">12 Months</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="has_car">Do you have a car?</label>
+                <input type="checkbox" id="has_car" name="has_car" {% if student.has_car %} checked {% endif %}>
+            </div>
+            <div class="form-group">
+                <label for="modules">Modules:</label>
+                <select id="modules" name="modules" class="form-control" multiple required>
+                     {% for module in modules %}
+                        <option value="{{ module.module_id }}" {% if module.module_id in student.module %} selected {% endif %}>
+                            {{ module.module_id }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="comments">Any Other Comments:</label>
+                <textarea
+                    id="comments"
+                    name="comments"
+                    class="form-control"
+                    rows="4"
+                >{{ student.comments }}</textarea>
+            </div>
+            <p class="error error--hidden"></p>
+            <p class="success success--hidden"></p>
+            <input type="submit" value="Update" class="btn" />
+        </form>
+        <script src="/static/student_update/script.js"></script>
+    </div>
+</div>
+{% endblock %}
