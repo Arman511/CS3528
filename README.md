@@ -32,7 +32,7 @@ This project is part of the CS3028 course. Using model route framework ontop of 
         .\venv\Scripts\activate.ps1
         ```
 4. Install packages
-    ``` 
+    ```
     pip3 install -r ./requirements.txt
     ```
 
@@ -53,3 +53,5 @@ This project is part of the CS3028 course. Using model route framework ontop of 
     ```
     gunicorn --config gunicorn_config.py app:app
     ```
+
+https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k

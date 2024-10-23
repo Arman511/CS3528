@@ -19,11 +19,7 @@ function uploadFile(form, url) {
     })
         .then((response) => response.json())
         .then((data) => {
-            if (data.success) {
-                alert("File uploaded successfully");
-            } else {
-                alert("File upload failed");
-            }
+            alert("File uploaded successfully");
         })
         .catch((error) => {
             console.error("Error:", error);
