@@ -14,7 +14,8 @@ load_dotenv()
 if os.getenv("IS_GITHUB_ACTIONS") == "False":
     client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
 else:
-    client = pymongo.MongoClient(os.getenv("MONGODB_HOST"), os.getenv("MONGODB_PORT"))
+    client = pymongo.MongoClient()
+
 
 try:
     client.admin.command('ping')
