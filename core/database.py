@@ -11,7 +11,6 @@ import sys
 import pymongo
 from dotenv import load_dotenv
 load_dotenv()
-
 client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
 if os.getenv("IS_GITHUB_ACTIONS") != "True":
     try:
@@ -27,10 +26,11 @@ if os.getenv("IS_GITHUB_ACTIONS") != "True":
         print(f"Server selection timeout error: {e}")
         sys.exit(1)
 
-
 database = client["cs3028_db"]
 users_collection = database["users"]
 students_collection = database["students"]
 opportunities_collection = database["opportunities"]
 courses_collection = database["courses"]
 skills_collection = database["skills"]
+attempted_skills_collection = database["attempted_skills"]
+modules_collection = database["modules"]

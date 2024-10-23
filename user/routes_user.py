@@ -17,7 +17,7 @@ def add_user_routes(app):
         """Give page to register a new user."""
         if request.method == 'POST':
             return User().register()
-        return render_template('register.html')
+        return render_template('user/register.html')
 
     @app.route('/user/signout')
     def signout():
@@ -31,11 +31,11 @@ def add_user_routes(app):
             return User().login()
         if "logged_in" in session:
             return redirect('/')
-        return render_template('login.html')
-    
+        return render_template('user/login.html')
+
     @app.route('/user/change_password', methods=['GET', 'POST'])
     def change_password():
         """Change user password."""
         if request.method == 'POST':
             return User().change_password()
-        return render_template('change_password.html')
+        return render_template('user/change_password.html')

@@ -103,3 +103,24 @@ class Skill:
             return jsonify(skills), 200
 
         return jsonify({"error": "No skills found"}), 404
+    
+    def attempt_add_skill(self):
+        """Add skill to attempted skills"""
+        skill_name = request.body.get('skill_name')
+        found_skill = database.attempted_skills_collection.find_one({"skill_name": skill_name})
+        
+        if found_skill:
+            database.attempted_skills_collection.update_one({"_id": found_skill["_id"]}, {"$inc": {"used": 1}})
+            return jsonify(found_skill), 200
+        
+        new_skill = {
+            "_id": uuid.uuid1().hex,
+            "skill_name": skill_name,
+            "skill_description": "",
+            "used": 1
+        }
+        
+        database.attempted_skills_collection.insert_one(new_skill)
+        return jsonify(new_skill), 200
+        
+        
