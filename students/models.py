@@ -46,9 +46,7 @@ class Student:
             "first_name": request.form.get('first_name'),
             "last_name": request.form.get('last_name'),
             "email": request.form.get('email'),
-            "student_id": request.form.get('student_id'),
-            "course": request.form.get('course'),
-            "skills": request.form.get('skills')
+            "student_id": request.form.get('student_id')
         }
         overwrite = bool(request.form.get('overwrite'))
 

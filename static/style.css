@@ -4,18 +4,18 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #f5f5f5;
+    background-color: rgb(241, 241, 241); /*background*/
 }
 
 /* Card styling */
 .card {
-    background-color: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 40px;
-    width: 100%;
-    max-width: 400px;
-    text-align: center;
+    background-color: transparent; /*login box*/
+    border: none;
+    box-shadow: none;
+    padding: 40px; 
+    width: 100%; 
+    max-width: 400px; 
+    text-align: center; 
 }
 
 /* Title styling */
@@ -44,7 +44,7 @@
     padding: 12px;
     margin: 0; /* Remove margin between inputs */
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 8px; 
     font-size: 16px;
     width: 100%; /* Ensure full width of the form */
     box-sizing: border-box;
@@ -63,24 +63,23 @@
     font-size: 20px; /* Adjust icon size */
 }
 
-
 /* Placeholder styling (optional for lighter color) */
 .field::placeholder {
-    color: #888; /* Lighter color for placeholder */
+    color: rgb(153, 153, 153); /* Password/User text color*/
     font-style: italic;
 }
 
 /* Input field focus effect */
 .field:focus {
-    border-color: #007bff;
+    border-color: rgb(153, 153, 153);
     outline: none;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+    box-shadow: 0 0 8px rgba(153, 153, 153); 
 }
 
 /*Logout button styling*/
-.LogoutButton::before{
+.LogoutButton::before {
     content: "Logout";
-    color: #fff;
+    color: rgb(34, 69, 151);
     padding: 12px; /* Adjust padding for better look */
     margin-top: 20px;
     border: none;
@@ -94,8 +93,8 @@
 
 /* Button styling */
 .btn {
-    background-color: #007bff;
-    color: #fff;
+    background-color: rgb(34, 69, 151);
+    color: rgb(254, 254, 255);
     padding: 12px; /* Adjust padding for better look */
     margin-top: 20px;
     border: none;
@@ -109,16 +108,19 @@
 
 /* Button hover effect */
 .btn:hover {
-    background-color: #0056b3;
+    background-color: rgb(20, 40, 89);
+    color: rgb(255, 255, 255);
     transform: translateY(-2px); /* Slight lift effect */
 }
 
-
 /* Error message styling */
 .error {
-    color: red;
+    background-color: rgb(209, 17, 17);
+    color: rgb(255, 255, 255);
     margin-top: 10px;
-    font-size: 14px;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 16px;
 }
 
 .error--hidden {
@@ -127,14 +129,14 @@
 
 /* Link styling for the 'Already have an account?' */
 a {
-    color: #007bff;
+    color: rgb(34, 69, 151);  /* "Register" and "Login" text */
     text-decoration: none;
     font-weight: bold;
     transition: color 0.3s ease;
 }
 
 a:hover {
-    color: #0056b3;
+    color: rgb(20, 40, 89);  
     text-decoration: underline;
 }
 

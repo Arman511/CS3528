@@ -60,7 +60,8 @@ class Opportunity:
             "location": request.form.get('location'),
             "skills_required": request.form.get('skills_required'),
             "course_required": request.form.get('course_required'),
-            "spots_available": request.form.get('spots_available')
+            "spots_available": request.form.get('spots_available'),
+            "duration": request.form.get('duration'),
         }
 
         database.opportunities_collection.insert_one(opportunity)
