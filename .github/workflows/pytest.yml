@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [20.x, 22.x]
-        mongodb-version: ['6.0', '7.0', '8.0']
+        node-version: [22.x]
+        mongodb-version: ['8.0']
 
     steps:
     - name: Git checkout
@@ -33,7 +33,9 @@ jobs:
         mongodb-port: 42069
       env:
         CI: true
-        DB_LOGIN: mongodb://localhost:42069
+        MONGODB_HOST: localhost
+        MONGODB_PORT: 42069
+        IS_GITHUB_ACTION: "True"
 
     - name: Set up Python 3.10
       uses: actions/setup-python@v3
