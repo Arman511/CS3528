@@ -30,11 +30,10 @@ jobs:
       with:
         mongodb-version: ${{ matrix.mongodb-version }}
         mongodb-replica-set: test-rs
-        mongodb-port: 42069
       env:
         CI: true
         MONGODB_HOST: localhost
-        MONGODB_PORT: 42069
+        MONGODB_PORT: 27017
         IS_GITHUB_ACTION: "True"
 
     - name: Set up Python 3.10
