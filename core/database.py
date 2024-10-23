@@ -11,20 +11,23 @@ import sys
 import pymongo
 from dotenv import load_dotenv
 load_dotenv()
-client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
-if os.getenv("IS_GITHUB_ACTIONS") != "True":
-    try:
-        client.admin.command('ping')
-        print("Pinged your deployment. You successfully connected to MongoDB!")
-    except pymongo.errors.ConfigurationError as e:
-        print(f"Configuration error: {e}")
-        sys.exit(1)
-    except pymongo.errors.OperationFailure as e:
-        print(f"Operation failure: {e}")
-        sys.exit(1)
-    except pymongo.errors.ServerSelectionTimeoutError as e:
-        print(f"Server selection timeout error: {e}")
-        sys.exit(1)
+if os.getenv("IS_GITHUB_ACTIONS") == "False":
+    client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
+else:
+    client = pymongo.MongoClient(os.getenv("MONGODB_HOST"), os.getenv("MONGODB_PORT"))
+
+try:
+    client.admin.command('ping')
+    print("Pinged your deployment. You successfully connected to MongoDB!")
+except pymongo.errors.ConfigurationError as e:
+    print(f"Configuration error: {e}")
+    sys.exit(1)
+except pymongo.errors.OperationFailure as e:
+    print(f"Operation failure: {e}")
+    sys.exit(1)
+except pymongo.errors.ServerSelectionTimeoutError as e:
+    print(f"Server selection timeout error: {e}")
+    sys.exit(1)
 
 database = client["cs3028_db"]
 users_collection = database["users"]

@@ -11,6 +11,13 @@ def test_ping_success():
         pytest.fail(f"Unexpected error: {e}")
         
 def test_find_dummy_login():
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": "dummy"
+    }
+    database.users_collection.insert_one(user)
     user = database.users_collection.find_one({"email": "dummy@dummy.com"})
     
     if user:
