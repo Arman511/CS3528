@@ -9,7 +9,7 @@ def test_ping_success():
         assert True, "Pinged your deployment. You successfully connected to MongoDB!"
     except Exception as e:
         pytest.fail(f"Unexpected error: {e}")
-        
+
 def test_add_and_remove_dummy_login():
     user = {
         "_id": uuid.uuid4().hex,

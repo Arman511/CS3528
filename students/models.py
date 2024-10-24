@@ -207,16 +207,27 @@ class Student:
 
         if not handlers.allowed_file(request.files['file'].filename, ['xlsx', 'xls']):
             return jsonify({"error": "Invalid file type"}), 400
-
         try:
             file = request.files['file']
             df = pd.read_excel(file)
 
             students = df.to_dict(orient='records')
+            temp_student = dict()
+            students_list = []
             for student in students:
-                student["_id"] = uuid.uuid1().hex
-                database.students_collection.delete_one({"student_id": student["student_id"]})
-            database.students_collection.insert_many(students)
+                temp_student["_id"] = uuid.uuid1().hex
+                temp_student["first_name"] = student["First Name"]
+                temp_student["last_name"] = student["Last Name"]
+                temp_student["email"] = student["Email (Uni)"]
+                if temp_student["email"].split("@")[1] != "abdn.ac.uk":
+                    return jsonify({"message": f"Incorrect student {temp_student['first_name']} {temp_student['last_name']}"}), 400
+                temp_student["student_id"] = student["Student Number"]
+                if len(temp_student["student_id"]) == 8:
+                    continue
+                students_list.append(temp_student)
+                database.students_collection.delete_one({"student_id": temp_student["student_id"]})
+            
+            database.students_collection.insert_many(students_list)
 
             return jsonify({"message": "Students imported"}), 200
         except (pd.errors.EmptyDataError, pd.errors.ParserError, FileNotFoundError) as e:
@@ -248,7 +259,7 @@ class Student:
         # Find the student by email
         student = database.students_collection.find_one({"_id": password})
 
-        if student and student.get('student_id') == student_id:
+        if student and str(student.get('student_id')) == student_id:
             # Assuming you have a session management system
             del student['_id']
             session['student'] = student
