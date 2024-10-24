@@ -259,7 +259,7 @@ class Student:
         # Find the student by email
         student = database.students_collection.find_one({"_id": password})
 
-        if student and student.get('student_id') == student_id:
+        if student and str(student.get('student_id')) == student_id:
             # Assuming you have a session management system
             del student['_id']
             session['student'] = student

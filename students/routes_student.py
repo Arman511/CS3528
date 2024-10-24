@@ -65,7 +65,7 @@ def add_student_routes(app):
         """Delete student."""
         return Student().delete_student_by_id(student_id)
 
-    @app.route('/student/update/<int:student_id>', methods=['GET', 'POST'])
+    @app.route('/students/update/<int:student_id>', methods=['GET', 'POST'])
     @handlers.login_required
     def update_student(student_id):
         """Update student."""
@@ -78,30 +78,32 @@ def add_student_routes(app):
                                courses=Course().get_courses(),
                                modules=Module().get_modules())
 
-    @app.route('/student/login', methods=['GET', 'POST'])
+    @app.route('/students/login', methods=['GET', 'POST'])
     def login_student():
         """Logins a student"""
         if request.method == 'POST':
             return Student().student_login()
         return render_template("student/student_login.html")
 
-    @app.route('/student/signout')
+    @app.route('/students/signout')
     @handlers.student_login_required
     def signout_student():
         session.clear()
         return redirect('/student/login')
 
-    @app.route('/student/details<int:student_id>', methods=['GET', 'POST'])
+    @app.route('/students/details/<int:student_id>', methods=['GET', 'POST'])
     @handlers.student_login_required
     def student_details(student_id):
         """Getting student."""
-        if session['student_id'] != student_id:
+        if 'student' not in session:
+            return redirect('/students/login')
+        if session['student']['student_id'] != student_id:
             session.clear()
-            return redirect('/student/login')
+            return redirect('/students/login')
         if request.method == 'POST':
             return Student().update_student_by_id(student_id,  True)
         student = Student().get_student_by_id(student_id)
-        return render_template("student/student_details.html", 
+        return render_template("students/student_details.html", 
                               student=student, skills=Skill().get_skills(),
                               courses=Course().get_courses(),
                               modules=Module().get_modules())

@@ -35,7 +35,7 @@ def login_required(f):
         if 'logged_in' in session:
             return f(*args, **kwargs)
 
-        return redirect('/student/login')
+        return redirect('/students/login')
 
     return wrap
 
@@ -47,7 +47,7 @@ def student_login_required(f):
     def wrap(*args, **kwargs):
         if 'student_logged_in' in session:
             return f(*args, **kwargs)
-        return redirect('/student/login')
+        return redirect('/students/login')
 
     return wrap
 
