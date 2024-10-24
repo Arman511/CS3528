@@ -52,7 +52,7 @@ def add_student_routes(app):
     def search_page():
         """Getting student."""
         return render_template(
-            "search_student.html",
+            "student/search_student.html",
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
         )
@@ -90,13 +90,22 @@ def add_student_routes(app):
         """Logins a student"""
         if request.method == "POST":
             return Student().student_login()
+
+        if (
+            session["student"]
+            and session["student"]["student_id"]
+            and session["student_signed_in"]
+        ):
+            return redirect(
+                "/students/details/" + str(session["student"]["student_id"])
+            )
         return render_template("student/student_login.html")
 
     @app.route("/students/signout")
     @handlers.student_login_required
     def signout_student():
         session.clear()
-        return redirect("/student/login")
+        return redirect("/students/login")
 
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
