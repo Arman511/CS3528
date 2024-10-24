@@ -26,5 +26,4 @@ venv.bak/
 
 .vscode/
 .pytest_cache/
-vercel.json
-.vercel
+.vercel/
