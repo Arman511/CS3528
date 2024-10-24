@@ -19,33 +19,46 @@ Functions:
         (updated within the last week), returns the cached data.
         Updates the cache if the data is fetched from the database.
 """
+
 import uuid
 from datetime import datetime, timedelta
 from flask import jsonify, request
 from core import database
 
 # Cache to store skills and the last update time
-skills_cache = {
-    "data": None,
-    "last_updated": None
-}
+skills_cache = {"data": [], "last_updated": None}
+
 
 class Skill:
     """
     A class used to represent and manage skills in the database."""
+
     def add_skill(self):
         """Add Skill to database"""
-        if not request.form.get('skill_name') or not request.form.get('skill_description'):
+        if not request.form.get("skill_name") or not request.form.get(
+            "skill_description"
+        ):
             return jsonify({"error": "One of the inputs is blank"}), 400
         skill = {
             "_id": uuid.uuid1().hex,
-            "skill_name": request.form.get('skill_name'),
-            "skill_description": request.form.get('skill_description')
+            "skill_name": request.form.get("skill_name"),
+            "skill_description": request.form.get("skill_description"),
         }
 
-        if database.skills_collection.find_one({
-            "skill_name": request.form.get('skill_name')
-            }):
+        # Check if the skill is already in the cache
+        current_time = datetime.now()
+        one_week_ago = current_time - timedelta(weeks=1)
+
+        # Check if cache is valid
+        if skills_cache and skills_cache["last_updated"] > one_week_ago:
+            for cached_skill in skills_cache["data"]:
+                if cached_skill["skill_name"] == request.form.get("skill_name"):
+                    return jsonify({"error": "Skill already in database"}), 400
+
+        # If not found in cache, check the database
+        if database.skills_collection.find_one(
+            {"skill_name": request.form.get("skill_name")}
+        ):
             return jsonify({"error": "Skill already in database"}), 400
 
         database.skills_collection.insert_one(skill)
@@ -66,7 +79,9 @@ class Skill:
         if not skill:
             return jsonify({"error": "Skill not found"}), 404
 
-        database.skills_collection.delete_one({"skill_id": request.form.get('skill_id')})
+        database.skills_collection.delete_one(
+            {"skill_id": request.form.get("skill_id")}
+        )
 
         # Update cache
         skills = list(database.skills_collection.find())
@@ -77,7 +92,9 @@ class Skill:
 
     def get_skill_by_id(self):
         """Get skill by ID tag"""
-        skill = database.skills_collection.find_one({"skill_id": request.form.get('skill_id')})
+        skill = database.skills_collection.find_one(
+            {"skill_id": request.form.get("skill_id")}
+        )
 
         if skill:
             return jsonify(skill), 200
@@ -90,8 +107,11 @@ class Skill:
         one_week_ago = current_time - timedelta(weeks=1)
 
         # Check if cache is valid
-        if (skills_cache["data"] and skills_cache["last_updated"]
-            and skills_cache["last_updated"] > one_week_ago):
+        if (
+            skills_cache["data"]
+            and skills_cache["last_updated"]
+            and skills_cache["last_updated"] > one_week_ago
+        ):
             return jsonify(skills_cache["data"]), 200
 
         # Fetch skills from the database
@@ -104,24 +124,26 @@ class Skill:
             return jsonify(skills), 200
 
         return jsonify({"error": "No skills found"}), 404
-    
+
     def attempt_add_skill(self):
         """Add skill to attempted skills"""
-        skill_name = request.body.get('skill_name')
-        found_skill = database.attempted_skills_collection.find_one({"skill_name": skill_name})
-        
+        skill_name = request.body.get("skill_name")
+        found_skill = database.attempted_skills_collection.find_one(
+            {"skill_name": skill_name}
+        )
+
         if found_skill:
-            database.attempted_skills_collection.update_one({"_id": found_skill["_id"]}, {"$inc": {"used": 1}})
+            database.attempted_skills_collection.update_one(
+                {"_id": found_skill["_id"]}, {"$inc": {"used": 1}}
+            )
             return jsonify(found_skill), 200
-        
+
         new_skill = {
             "_id": uuid.uuid1().hex,
             "skill_name": skill_name,
             "skill_description": "",
-            "used": 1
+            "used": 1,
         }
-        
+
         database.attempted_skills_collection.insert_one(new_skill)
         return jsonify(new_skill), 200
-        
-        

@@ -6,10 +6,12 @@ Modules:
     pymongo: A Python distribution containing tools for working with MongoDB.
     dotenv: Reads key-value pairs from a .env file and can set them as environment variables.
 """
+
 import os
 import sys
 import pymongo
 from dotenv import load_dotenv
+
 load_dotenv()
 if os.getenv("IS_GITHUB_ACTIONS") == "False":
     client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
@@ -18,7 +20,7 @@ else:
 
 
 try:
-    client.admin.command('ping')
+    client.admin.command("ping")
     print("Pinged your deployment. You successfully connected to MongoDB!")
 except pymongo.errors.ConfigurationError as e:
     print(f"Configuration error: {e}")

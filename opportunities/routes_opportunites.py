@@ -4,6 +4,7 @@ from core import handlers
 from courses.models import Course
 from skills.models import Skill
 
+
 def add_opportunities_routes(app):
     """Add routes for opportunites"""
 
@@ -12,8 +13,5 @@ def add_opportunities_routes(app):
     def search_opportunites():
         if request.method == "POST":
             return Opportunity().search_opportunities()
-        
+
         return render_template("opportunities/search.html")
-        
-    
-    
