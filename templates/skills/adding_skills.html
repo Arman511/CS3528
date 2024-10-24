@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Add Skill</h1>
+            <form class="skill_adding_form" name="skill_adding_form">
+                <input type="text"
+                       name="skill_name"
+                       class="field"
+                       placeholder="Skill name"
+                       id="skill_name"
+                       required />
+                <input type="text"
+                       name="skill_description"
+                       class="field"
+                       placeholder="Skill description"
+                       id="skill_description"
+                       required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Add Skill" class="btn" />
+            </form>
+        </div>
+        <script src="/static/adding_skill/script.js"></script>
+    </div>
+{% endblock %}
