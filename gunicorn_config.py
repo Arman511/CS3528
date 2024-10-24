@@ -15,19 +15,20 @@ Environment Variables:
 - GUNICORN_THREADS: Number of threads per worker process.
 - GUNICORN_BIND: The socket to bind.
 """
+
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
 
-workers = int(os.getenv('GUNICORN_PROCESSES', '2'))
+workers = int(os.getenv("GUNICORN_PROCESSES", "2"))
 
-threads = int(os.getenv('GUNICORN_THREADS', '4'))
+threads = int(os.getenv("GUNICORN_THREADS", "4"))
 
 # timeout = int(os.environ.get('GUNICORN_TIMEOUT', '120'))
 
-bind = os.getenv('GUNICORN_BIND', '0.0.0.0:8080')
+bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8080")
 
-FORWARD_ALLOW_IPS = '*'
+FORWARD_ALLOW_IPS = "*"
 
-secure_scheme_headers = { 'X-Forwarded-Proto': 'https' }
+secure_scheme_headers = {"X-Forwarded-Proto": "https"}

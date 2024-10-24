@@ -5,5 +5,3 @@ from ..app import app
 
 def test_create_app():
     pass
-    
-    
