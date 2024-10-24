@@ -92,9 +92,8 @@ def add_student_routes(app):
             return Student().student_login()
 
         if (
-            session["student"]
-            and session["student"]["student_id"]
-            and session["student_signed_in"]
+            "student" in session
+            and "student_signed_in" in session
         ):
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
