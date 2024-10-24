@@ -14,6 +14,7 @@ Routes:
     /privacy-policy:
         The privacy policy route which renders the 'privacy_policy.html' template.
 """
+
 from functools import wraps
 from flask import render_template, session, redirect
 from user import routes_user
@@ -21,35 +22,41 @@ from students import routes_student
 from opportunities import routes_opportunites
 from skills import routes_skills
 
+
 def allowed_file(filename, types):
     """Check if file type is allowed."""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in types
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in types
+
 
 # Decorators
 def login_required(f):
     """
     This decorator ensures that a user is logged in before accessing certain routes.
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'logged_in' in session:
+        if "logged_in" in session:
             return f(*args, **kwargs)
 
-        return redirect('/students/login')
+        return redirect("/students/login")
 
     return wrap
+
 
 def student_login_required(f):
     """
     This decorator ensures that a student is logged in is logged in before accessing certain routes.
     """
+
     @wraps(f)
     def wrap(*args, **kwargs):
-        if 'student_logged_in' in session:
+        if "student_logged_in" in session:
             return f(*args, **kwargs)
-        return redirect('/students/login')
+        return redirect("/students/login")
 
     return wrap
+
 
 def configure_routes(app):
     """Configures the routes for the given Flask application.
@@ -67,7 +74,7 @@ def configure_routes(app):
     routes_opportunites.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)
 
-    @app.route('/')
+    @app.route("/")
     @login_required
     def index():
         """The home route which needs the user to be logged in and renders the 'home.html' template.
@@ -75,23 +82,22 @@ def configure_routes(app):
         Returns:
             str: Rendered HTML template for the home page.
         """
-        return render_template('/user/home.html')
+        return render_template("/user/home.html")
 
-    @app.route('/privacy_policy')
+    @app.route("/privacy_policy")
     def privacy_policy():
         """The privacy policy route which renders the 'privacy_policy.html' template.
 
         Returns:
             str: Rendered HTML template for the privacy policy page.
         """
-        return render_template('privacy_policy.html')
-    
-    @app.route('/robots.txt')
+        return render_template("privacy_policy.html")
+
+    @app.route("/robots.txt")
     def robots():
         """The robots.txt route which renders the 'robots.txt' template.
 
         Returns:
             str: Rendered robots.txt template.
         """
-        return app.send_static_file('robots.txt')
- 
+        return app.send_static_file("robots.txt")
