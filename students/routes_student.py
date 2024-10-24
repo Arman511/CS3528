@@ -102,8 +102,7 @@ def add_student_routes(app):
             return redirect('/students/login')
         if request.method == 'POST':
             return Student().update_student_by_id(student_id,  True)
-        student = Student().get_student_by_id(student_id)
-        return render_template("students/student_details.html", 
-                              student=student, skills=Skill().get_skills(),
+        return render_template("student/student_details.html", 
+                              student=session['student'], skills=Skill().get_skills(),
                               courses=Course().get_courses(),
                               modules=Module().get_modules())
