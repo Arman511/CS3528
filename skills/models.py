@@ -35,14 +35,15 @@ class Skill:
     A class used to represent and manage skills in the database."""
     def add_skill(self):
         """Add Skill to database"""
+        if not request.form.get('skill_name') or not request.form.get('skill_description'):
+            return jsonify({"error": "One of the inputs is blank"}), 400
         skill = {
             "_id": uuid.uuid1().hex,
             "skill_name": request.form.get('skill_name'),
             "skill_description": request.form.get('skill_description')
         }
-        overwrite = bool(request.form.get('overwrite'))
 
-        if not overwrite and database.skills_collection.find_one({
+        if database.skills_collection.find_one({
             "skill_name": request.form.get('skill_name')
             }):
             return jsonify({"error": "Skill already in database"}), 400
