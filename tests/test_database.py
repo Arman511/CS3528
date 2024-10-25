@@ -15,9 +15,9 @@ def test_ping_success():
 def test_add_and_remove_dummy_login():
     user = {
         "_id": uuid.uuid4().hex,
-        "name": "dummy2",
-        "email": "dummy2@dummy.com",
-        "password": "dummy2",
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": "dummy",
     }
     database.users_collection.insert_one(user)
 
