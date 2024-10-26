@@ -8,9 +8,6 @@ on:
 permissions:
     contents: read
 
-env:
-    SECRET_KEY: ${{ secrets.SECRET_KEY }}
-
 jobs:
     build:
         runs-on: ubuntu-latest
@@ -50,5 +47,7 @@ jobs:
                   if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
             - name: Run tests
+              env:
+                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
               run: |
                   pytest
