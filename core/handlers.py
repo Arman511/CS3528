@@ -21,6 +21,7 @@ from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunites
 from skills import routes_skills
+from courses import routes_courses
 
 
 def allowed_file(filename, types):
@@ -73,6 +74,7 @@ def configure_routes(app):
     routes_student.add_student_routes(app)
     routes_opportunites.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)
+    routes_courses.add_course_routes(app)
 
     @app.route("/")
     @login_required
