@@ -48,6 +48,6 @@ jobs:
 
             - name: Run tests
               env:
-                  SECRET_KEY: ${{ secrets.SECRET_KEY }}
+                  SECRET_KEY: "psZsPEYjcq9@?(!6w=dK" # Fake secret key
               run: |
                   pytest
