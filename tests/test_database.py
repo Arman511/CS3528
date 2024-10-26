@@ -15,7 +15,8 @@ def test_ping_success():
 def test_add_and_remove_dummy_login():
     database.users_collection.delete_many({"email": "dummy@dummy.com"})
     user = {
-        "_id": uuid.uuid4().hex,        "name": "dummy",
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
         "email": "dummy@dummy.com",
         "password": "dummy",
     }

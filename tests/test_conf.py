@@ -1,9 +1,8 @@
+"""Tests configuration and routes."""
 import uuid
-from flask import Flask, render_template
-
+from passlib.hash import pbkdf2_sha256
 from ..core import database
 from ..app import app
-from passlib.hash import pbkdf2_sha256
 
 
 def test_create_app():
