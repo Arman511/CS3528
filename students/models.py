@@ -272,14 +272,29 @@ class Student:
             )
             return jsonify({"message": "Student updated"}), 200
 
+        if is_student and student["student_id"] != session["student"]["student_id"]:
+            return (
+                jsonify({"error": "You are not authorized to update this student"}),
+                403,
+            )
         data = {
             "course": request.form.get("course"),
             "skills": request.form.get("skills"),
+            "attempted_skills": request.form.get("attempted_skills"),
+            "has_car": request.form.get("has_car"),
+            "placement_duration": request.form.get("placement_duration"),
+            "modules": request.form.get("modules"),
+            "comments": request.form.get("comments"),
         }
         if student and is_student:
             database.students_collection.update_one(
                 {"student_id": student_id}, {"$set": data}
             )
+            return jsonify({"message": "Student updated"}), 200
+
+        if not is_student:
+            database.students_collection.delete_one({"student_id": student_id})
+            database.students_collection.insert_one(request.form)
             return jsonify({"message": "Student updated"}), 200
 
         return jsonify({"error": "Student not found"}), 404

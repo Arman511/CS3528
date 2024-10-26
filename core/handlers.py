@@ -105,3 +105,9 @@ def configure_routes(app):
             str: Rendered robots.txt template.
         """
         return app.send_static_file("robots.txt")
+
+    @app.route("/signout")
+    def signout(self):
+        """Clears the current session and redirects to the home page."""
+        session.clear()
+        return redirect("/")

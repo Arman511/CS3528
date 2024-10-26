@@ -97,12 +97,6 @@ def add_student_routes(app):
             )
         return render_template("student/student_login.html")
 
-    @app.route("/students/signout")
-    @handlers.student_login_required
-    def signout_student():
-        session.clear()
-        return redirect("/students/login")
-
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
     def student_details(student_id):

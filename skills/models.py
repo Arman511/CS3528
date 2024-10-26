@@ -144,7 +144,6 @@ class Skill:
         new_skill = {
             "_id": uuid.uuid1().hex,
             "skill_name": skill_name,
-            "skill_description": "",
             "used": 1,
         }
 
