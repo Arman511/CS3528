@@ -8,11 +8,13 @@ on:
 permissions:
     contents: read
 
+env:
+    SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
 jobs:
     build:
         runs-on: ubuntu-latest
-        env:
-            SECRET_KEY: ${{ secrets.SECRET_KEY }}
+
         strategy:
             matrix:
                 node-version: [22.x, 16.x, 14.x]
