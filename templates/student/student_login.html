@@ -1,35 +1,29 @@
-{% extends "base.html" %} {% block content %}
-<div class="card-wrapper">
-    <div class="card">
-        <h1 class="center">Log In</h1>
-
-        <form class="login_form" name="login_form">
-            <input
-                type="text"
-                name="student_id"
-                class="field"
-                placeholder="Student Number (e.g. 52327765)"
-                required
-            />
-
-            <div class="password-container">
-                <input
-                    type="password"
-                    name="password"
-                    class="field"
-                    placeholder="Password"
-                    required
-                />
-            </div>
-            <p class="error error--hidden"></p>
-
-            <input type="submit" value="Log In" class="btn" />
-        </form>
-        <p class="center">
-            Are you part of the placement team?
-            <a href="/user/login">Login</a>
-        </p>
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Log In</h1>
+            <form class="login_form" name="login_form">
+                <input type="text"
+                       name="student_id"
+                       class="field"
+                       placeholder="Student Number (e.g. 52327765)"
+                       required />
+                <div class="password-container">
+                    <input type="password"
+                           name="password"
+                           class="field"
+                           placeholder="Password"
+                           required />
+                </div>
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Log In" class="btn" />
+            </form>
+            <p class="center">
+                Are you part of the placement team?
+                <a href="/user/login">Login</a>
+            </p>
+        </div>
+        <script src="/static/student_login/script.js"></script>
     </div>
-    <script src="/static/student_login/script.js"></script>
-</div>
-{% endblock %}
+{% endblock content %}

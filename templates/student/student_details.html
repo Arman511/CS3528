@@ -43,7 +43,7 @@
                 <div class="form-group">
                     <label for="course">Course:</label>
                     <select id="course" name="course" class="form-control" required>
-                        {% for course in courses %}
+                        {% for course in courses[0]["json"] %}
                             <option value="{{ course.course_id }}"
                                     {% if course.course_id == student.course_id %}selected{% endif %}>
                                 {{ course.course_name }}
@@ -52,9 +52,9 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label for="skills">Skills:</label>
+                    <label for="skills">Skills (Multiselect, hold ctrl to select them):</label>
                     <select id="skills" name="skills" class="form-control" multiple required>
-                        {% for skill in skills %}
+                        {% for skill in skills[0]["json"] %}
                             <option value="{{ skill._id }}"
                                     title="{{ skill.skill_description }}"
                                     {% if skill._id in student.skills %}selected{% endif %}>
@@ -72,34 +72,6 @@
                            placeholder="Type a new skill" />
                     <button type="button" id="add_skill" class="btn">Add Skill</button>
                 </div>
-                <script>
-                document.getElementById('add_skill').addEventListener('click', function() {
-                    var newSkill = document.getElementById('new_skill').value;
-                    if (newSkill) {
-                        var select = document.getElementById('skills');
-                        var option = document.createElement('option');
-                        let response = fetch('/skills/attept_add_skill_student', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({
-                                skill_name: newSkill,
-                            }),
-                        });
-                        if (!response.ok) {
-                            return;
-                        }
-                        response = response.json();
-                        option.title = response.skill_description;
-                        option.value = response._id;
-                        option.text = newSkill;
-                        option.selected = true;
-                        select.appendChild(option);
-                        document.getElementById('new_skill').value = '';
-                    }
-                });
-                </script>
                 <div class="form-group">
                     <label for="placement_duration">Placement Duration:</label>
                     <select id="placement_duration"
@@ -124,7 +96,7 @@
                 <div class="form-group">
                     <label for="modules">Modules:</label>
                     <select id="modules" name="modules" class="form-control" multiple required>
-                        {% for module in modules %}
+                        {% for module in modules[0]["json"] %}
                             <option value="{{ module.module_id }}"
                                     {% if module.module_id in student.module %}selected{% endif %}>
                                 {{ module.module_id }}
@@ -143,4 +115,4 @@
             <script src="/static/student_update/script.js"></script>
         </div>
     </div>
-{% endblock %}
+{% endblock content %}
