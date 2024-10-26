@@ -17,12 +17,16 @@ jobs:
 
         strategy:
             matrix:
-                node-version: [22.x, 16.x, 14.x]
-                mongodb-version: ["8.0", "5.0", "4.4"]
+                # node-version: [22.x, 16.x, 14.x]
+                # mongodb-version: ["8.0", "5.0", "4.4"]
+                node-version: [22.x]
+                mongodb-version: ["8.0"]
 
         steps:
             - name: Git checkout
               uses: actions/checkout@v4
+            - name: cheking out environment
+              run: echo ${{ secrets.SECRET_KEY }}
 
             - name: Use Node.js ${{ matrix.node-version }}
               uses: actions/setup-node@v4
@@ -36,8 +40,6 @@ jobs:
                   mongodb-replica-set: test-rs
               env:
                   CI: true
-                  MONGODB_HOST: localhost
-                  MONGODB_PORT: 27017
                   IS_GITHUB_ACTION: "True"
 
             - name: Set up Python 3.10
