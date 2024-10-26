@@ -32,4 +32,3 @@ def test_add_and_remove_dummy_login():
     # Confirm the user was deleted
     deleted_user = database.users_collection.find_one({"email": "dummy2@dummy.com"})
     assert deleted_user is None, "User was not deleted"
-
