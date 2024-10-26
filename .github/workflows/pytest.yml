@@ -25,7 +25,6 @@ jobs:
         steps:
             - name: Git checkout
               uses: actions/checkout@v4
-            - name: cheking out environment
             - name: Print secret key
               run: |
                   echo ${{ secrets.SECRET_KEY }}
