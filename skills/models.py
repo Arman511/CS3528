@@ -130,7 +130,7 @@ class Skill:
 
     def attempt_add_skill(self):
         """Add skill to attempted skills"""
-        skill_name = request.body.get("skill_name")
+        skill_name = request.json.get("skill_name")
         found_skill = database.attempted_skills_collection.find_one(
             {"skill_name": skill_name}
         )
