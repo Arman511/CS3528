@@ -8,7 +8,7 @@ from flask import render_template, request
 def add_skills_routes(app):
     """Skills routes"""
 
-    @app.route("/skills/attept_add_skill_student", methods=["POST"])
+    @app.route("/skills/attempt_add_skill_student", methods=["POST"])
     @handlers.student_login_required
     def attempt_add_skill_student():
         """Attempt to add a skill to a student."""

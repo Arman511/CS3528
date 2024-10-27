@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Add Module</h1>
+            <form class="module_adding_form" name="module_adding_form">
+                <input type="text"
+                       name="module_id"
+                       class="field"
+                       placeholder="Module ID"
+                       id="module_id"
+                       required />
+                <input type="text"
+                       name="module_name"
+                       class="field"
+                       placeholder="Module Name"
+                       id="module_name"
+                       required />
+                <input type="text"
+                       name="module_description"
+                       class="field"
+                       placeholder="Module Description"
+                       id="module_description"
+                       required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Add Module" class="btn" />
+            </form>
+        </div>
+        <script src="/static/adding_module/script.js"></script>
+    </div>
+{% endblock content %}

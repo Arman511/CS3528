@@ -22,11 +22,6 @@ def add_user_routes(app):
             return User().register()
         return render_template("user/register.html")
 
-    @app.route("/user/signout")
-    def signout():
-        """Signs out the current user."""
-        return User().signout()
-
     @app.route("/user/login", methods=["GET", "POST"])
     def login():
         """Gives login form to user."""

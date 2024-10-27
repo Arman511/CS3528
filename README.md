@@ -33,7 +33,7 @@ This project is part of the CS3028 course. Using model route framework ontop of 
         ```
 4. Install packages
     ```
-    pip3 install -r ./requirements.txt
+    pip3 install -r ./requirements.txt -U
     ```
 
 ## How to Run
