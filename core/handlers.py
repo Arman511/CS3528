@@ -21,6 +21,8 @@ from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunites
 from skills import routes_skills
+from courses import routes_courses
+from course_modules import routes_modules
 
 
 def allowed_file(filename, types):
@@ -73,6 +75,8 @@ def configure_routes(app):
     routes_student.add_student_routes(app)
     routes_opportunites.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)
+    routes_courses.add_course_routes(app)
+    routes_modules.add_module_routes(app)
 
     @app.route("/")
     @login_required
@@ -101,3 +105,9 @@ def configure_routes(app):
             str: Rendered robots.txt template.
         """
         return app.send_static_file("robots.txt")
+
+    @app.route("/signout")
+    def signout():
+        """Clears the current session and redirects to the home page."""
+        session.clear()
+        return redirect("/")

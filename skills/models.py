@@ -130,7 +130,7 @@ class Skill:
 
     def attempt_add_skill(self):
         """Add skill to attempted skills"""
-        skill_name = request.body.get("skill_name")
+        skill_name = request.json.get("skill_name").lower()
         found_skill = database.attempted_skills_collection.find_one(
             {"skill_name": skill_name}
         )
@@ -144,9 +144,13 @@ class Skill:
         new_skill = {
             "_id": uuid.uuid1().hex,
             "skill_name": skill_name,
-            "skill_description": "",
             "used": 1,
         }
 
         database.attempted_skills_collection.insert_one(new_skill)
         return jsonify(new_skill), 200
+
+    def get_list_attempted_skills(self):
+        """Get list of attempted skills"""
+        attempted_skills = list(database.attempted_skills_collection.find())
+        return jsonify(attempted_skills), 200

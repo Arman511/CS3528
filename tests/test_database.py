@@ -1,5 +1,4 @@
 import pytest
-import os
 from ..core import database
 import uuid
 

@@ -49,11 +49,6 @@ class User:
 
         return jsonify({"error": "Signup failed"}), 400
 
-    def signout(self):
-        """Clears the current session and redirects to the home page."""
-        session.clear()
-        return redirect("/")
-
     def login(self):
         """Validates user credentials and returns a JSON response indicating
         invalid login credentials."""

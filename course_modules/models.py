@@ -39,9 +39,8 @@ class Module:
             "module_name": request.form.get("module_name"),
             "module_description": request.form.get("module_description"),
         }
-        overwrite = bool(request.form.get("overwrite"))
 
-        if not overwrite and database.modules_collection.find_one(
+        if database.modules_collection.find_one(
             {"module_id": request.form.get("module_id")}
         ):
             return jsonify({"error": "module already in database"}), 400
