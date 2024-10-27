@@ -58,12 +58,12 @@ class Opportunity:
             "title": request.form.get("title"),
             "description": request.form.get("description"),
             "url": request.form.get("url"),
-            "company": request.form.get("company"),
+            "employer_id": request.form.get("employer_id"),
             "location": request.form.get("location"),
-            "skills_required": request.form.get("skills_required"),
+            "modules_required": request.form.get("modules_required"),
             "course_required": request.form.get("course_required"),
             "spots_available": request.form.get("spots_available"),
-            "duration": request.form.get("duration"),
+            "duration": request.form.get("duration"),    
         }
 
         database.opportunities_collection.insert_one(opportunity)

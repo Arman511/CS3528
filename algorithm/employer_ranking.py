@@ -6,7 +6,7 @@ class StudentRankingSystem:
 
     def calculate_score(self, student, employer_weights):
         # Calculate the score of a student based on employer's criteria weights
-        score = 0   
+        score = 0
         for criterion, weight in employer_weights.items():
             if criterion == "positions":
                 continue
@@ -17,11 +17,13 @@ class StudentRankingSystem:
     def rank_students(self):
         # Dictionary to store rankings for each employer
         employer_rankings = {}
-        
+
         # Loop over each employer and their weight criteria
         for employer, employer_weights in self.employers.items():
-            student_scores = []  # Temporary list to store scores for the current employer
-            
+            student_scores = (
+                []
+            )  # Temporary list to store scores for the current employer
+
             # Calculate the score for each student based on the employer's weights
             for student in self.students:
                 score = self.calculate_score(student, employer_weights)
@@ -34,10 +36,10 @@ class StudentRankingSystem:
             ranking = {}
             for rank, (student_name, score) in enumerate(student_scores, 1):
                 ranking[student_name] = rank
-            
+
             # Store the ranking for this employer
             employer_rankings[employer] = ranking
-        
+
         return employer_rankings
 
     def display_ranking(self):
@@ -49,7 +51,7 @@ class StudentRankingSystem:
         #     for student, rank in rankings.items():
         #         print(f"  {student}: Rank {rank}")
         print(ranked_students)
-                
+
         return ranked_students
 
 

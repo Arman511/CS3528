@@ -38,16 +38,22 @@ class Matching:
                     # Employer already has the maximum allowed matches, compare with the weakest match
                     weakest_match = current_matches[-1]  # Get the least preferred match
                     weakest_match_rank = self.employerank[choice][weakest_match]
-                    
+
                     # Check if the student is in the employer's ranking
                     if student in self.employerank[choice]:
                         new_candidate_rank = self.employerank[choice][student]
-                        
+
                         # If the new student is ranked higher (lower number), replace the weakest match
                         if new_candidate_rank < weakest_match_rank:
-                            employer_current_match[choice][-1] = student  # Replace weakest match
-                            self.potential_match[choice] = employer_current_match[choice]
-                            mapped.insert(0, weakest_match)  # Re-add the replaced student to the unmatched list
+                            employer_current_match[choice][
+                                -1
+                            ] = student  # Replace weakest match
+                            self.potential_match[choice] = employer_current_match[
+                                choice
+                            ]
+                            mapped.insert(
+                                0, weakest_match
+                            )  # Re-add the replaced student to the unmatched list
                             # print(f"{student} replaces {weakest_match} at {choice}. Current matches: {employer_current_match[choice]}")
                         else:
                             # Add student back to mapped if rejected
@@ -56,12 +62,13 @@ class Matching:
                     else:
                         # Handle case where student is not in employer ranking
                         # print(f"{student} is not ranked by {choice}.")
-                        mapped.insert(0, student)  # Re-add student back to the unmatched list
+                        mapped.insert(
+                            0, student
+                        )  # Re-add student back to the unmatched list
                 else:
                     # If current_matches is empty, avoid accessing it
                     # print(f"{choice} has no matches yet.")
                     mapped.insert(0, student)
-
 
         self.final_result = [unmapped, self.potential_match]
         print(f"Unmapped: {self.final_result[0]} \nMatched: {self.final_result[1]}")

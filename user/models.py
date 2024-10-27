@@ -72,8 +72,8 @@ class User:
         if not pbkdf2_sha256.verify(old_password, user["password"]):
             return jsonify({"error": "Invalid old password"}), 400
 
-    #     if new_password != confirm_password:
-    #         return jsonify({"error": "Passwords don't match"}), 400
+        #     if new_password != confirm_password:
+        #         return jsonify({"error": "Passwords don't match"}), 400
 
         database.users_collection.update_one(
             {"_id": user["_id"]},

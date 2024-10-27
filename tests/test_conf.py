@@ -1,4 +1,5 @@
 """Tests configuration and routes."""
+
 import uuid
 from passlib.hash import pbkdf2_sha256
 from ..core import database

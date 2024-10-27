@@ -48,7 +48,7 @@ def login_required(f):
 
 def student_login_required(f):
     """
-    This decorator ensures that a student is logged in is logged in before accessing certain routes.
+    This decorator ensures that a student is logged in before accessing certain routes.
     """
 
     @wraps(f)
@@ -56,6 +56,20 @@ def student_login_required(f):
         if "student_logged_in" in session:
             return f(*args, **kwargs)
         return redirect("/students/login")
+
+    return wrap
+
+
+def employers_login_required(f):
+    """
+    This decorator ensures that a employer is logged in before accessing certain routes.
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "employer_logged_in" in session:
+            return f(*args, **kwargs)
+        return redirect("/employer/login")
 
     return wrap
 
