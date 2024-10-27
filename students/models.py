@@ -175,7 +175,10 @@ class Student:
             database.students_collection.find(
                 {
                     "$text": {
-                        "$search": f"{request.form.get('first_name')} {request.form.get('last_name')}"
+                        "$search": (
+                            f"{request.form.get('first_name')} "
+                            f"{request.form.get('last_name')}"
+                        )
                     }
                 }
             )
@@ -239,7 +242,10 @@ class Student:
                     return (
                         jsonify(
                             {
-                                "message": f"Incorrect student {temp_student['first_name']} {temp_student['last_name']}"
+                                "message": (
+                                    f"Incorrect student {temp_student['first_name']} "
+                                    f"{temp_student['last_name']}"
+                                )
                             }
                         ),
                         400,
