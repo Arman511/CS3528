@@ -49,11 +49,6 @@ class User:
 
         return jsonify({"error": "Signup failed"}), 400
 
-    def signout(self):
-        """Clears the current session and redirects to the home page."""
-        session.clear()
-        return redirect("/")
-
     def login(self):
         """Validates user credentials and returns a JSON response indicating
         invalid login credentials."""
@@ -77,8 +72,8 @@ class User:
         if not pbkdf2_sha256.verify(old_password, user["password"]):
             return jsonify({"error": "Invalid old password"}), 400
 
-        if new_password != confirm_password:
-            return jsonify({"error": "Passwords don't match"}), 400
+    #     if new_password != confirm_password:
+    #         return jsonify({"error": "Passwords don't match"}), 400
 
         database.users_collection.update_one(
             {"_id": user["_id"]},

@@ -39,9 +39,8 @@ class Course:
             "course_name": request.form.get("course_name"),
             "course_description": request.form.get("course_description"),
         }
-        overwrite = bool(request.form.get("overwrite"))
 
-        if not overwrite and database.courses_collection.find_one(
+        if database.courses_collection.find_one(
             {"course_id": request.form.get("course_id")}
         ):
             return jsonify({"error": "Course already in database"}), 400
