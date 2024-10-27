@@ -12,7 +12,8 @@ instance/
 .webassets-cache
 
 __pypackages__/
-
+.vs/
+.vs
 
 # Environments
 .env
@@ -26,4 +27,3 @@ venv.bak/
 .vscode/
 .pytest_cache/
 .vercel/
-.vercel

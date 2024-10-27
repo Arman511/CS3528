@@ -8,7 +8,12 @@
 
 ## Project Overview
 
-This project is part of the CS3028 course. It includes various scripts and modules to demonstrate different aspects of the course material.
+This project is part of the CS3028 course. Using model route framework ontop of flask. We have decied to allow the placement team to upload students and opportunities. The students will rank opportuniites and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
+
+-   **Flask**: A lightweight WSGI web application framework in Python.
+-   **Pymongo**: An MongoDB toolkit and Object-Relational Mapping (ORM) library for Python.
+-   **Gale-Shapley Algorithm**: Also known as the stable marriage algorithm, used for matching students to opportunities. --NOT IMPLEMENTED YET
+-   **Email Integration**: To send confirmation emails to employers. --NOT IMPLEMENTED YET
 
 ## Setup Instructions
 
@@ -27,8 +32,8 @@ This project is part of the CS3028 course. It includes various scripts and modul
         .\venv\Scripts\activate.ps1
         ```
 4. Install packages
-    ``` 
-    pip3 install -r ./requirements.txt
+    ```
+    pip3 install -r ./requirements.txt -U
     ```
 
 ## How to Run
@@ -48,3 +53,5 @@ This project is part of the CS3028 course. It includes various scripts and modul
     ```
     gunicorn --config gunicorn_config.py app:app
     ```
+
+https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k

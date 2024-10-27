@@ -1,18 +1,21 @@
-let form = document.querySelector(".login_form");
+let form = document.querySelector(".skill_adding_form");
 let error_paragraph = document.querySelector(".error");
-
+let skill_name_box = document.getElementById("skill_name");
+let skill_desc_box = document.getElementById("skill_description");
 // Form submission logic
 form.addEventListener("submit", function (e) {
     e.preventDefault(); // Prevent form submission
     let formData = new FormData(form); // Collect form data
 
-    fetch("/user/login", {
+    fetch("/skills/add_skill", {
         method: "POST",
         body: formData,
     })
         .then(async (response) => {
             if (response.ok) {
-                window.location.href = "/"; // Redirect on successful login
+                skill_name_box.textContent = "";
+                skill_desc_box.textContent = "";
+                alert("Skill added");
             } else if (response.status === 401 || response.status === 400) {
                 let errorResponse = await response.json(); // Parse JSON response
                 throw new Error(errorResponse.error); // Throw error with the extracted message
