@@ -27,3 +27,4 @@ venv.bak/
 .vscode/
 .pytest_cache/
 .vercel/
+.DS_Store
