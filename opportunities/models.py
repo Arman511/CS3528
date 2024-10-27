@@ -63,7 +63,7 @@ class Opportunity:
             "modules_required": request.form.get("modules_required"),
             "course_required": request.form.get("course_required"),
             "spots_available": request.form.get("spots_available"),
-            "duration": request.form.get("duration"),    
+            "duration": request.form.get("duration"),
         }
 
         database.opportunities_collection.insert_one(opportunity)

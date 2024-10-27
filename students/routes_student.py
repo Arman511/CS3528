@@ -83,7 +83,6 @@ def add_student_routes(app):
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
             modules=Module().get_modules(),
-            modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
         )
 
