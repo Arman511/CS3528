@@ -41,6 +41,7 @@
                         </option>
                     {% endfor %}
                 </select>
+                <label for="skills">Skills (Multiselect, hold ctrl to select them):</label>
                 <select id="skills" name="skills" class="form-control" multiple required>
                     {% for skill in skills[0]["json"] %}
                         <option value="{{ skill._id }}"
@@ -59,6 +60,7 @@
                 <select id="placement_duration"
                         name="placement_duration"
                         class="form-control"
+                        multiple
                         required>
                     <option value="1_day">1 Day</option>
                     <option value="1_week">1 Week</option>

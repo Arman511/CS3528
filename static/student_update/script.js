@@ -21,8 +21,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 }
             }
         }
-        let selectedPlacementDuration =
-            document.getElementById("placement_duration").value;
+        let selectedPlacementDuration = [];
+        for (
+            let i = 0;
+            i < document.getElementsByName("placement_duration").length;
+            i++
+        ) {
+            if (document.getElementsByName("placement_duration")[i].checked) {
+                selectedPlacementDuration.push(
+                    document.getElementsByName("placement_duration")[i].value
+                );
+            }
+        }
         let hasCar = document.getElementById("has_car").checked;
         let selectedModules = [];
         let modulesSelect = document.getElementById("modules");
@@ -37,7 +47,10 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("email", student_email);
         formData.append("course", selectedCourse);
         formData.append("skills", JSON.stringify(selectedSkills));
-        formData.append("placement_duration", selectedPlacementDuration);
+        formData.append(
+            "placement_duration",
+            JSON.stringify(selectedPlacementDuration)
+        );
         formData.append("has_car", hasCar);
         formData.append("modules", JSON.stringify(selectedModules));
         formData.append(
@@ -55,11 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
 
             if (response.ok) {
-                const student = await response.json();
-                console.log("Student updated:", student);
-                successElement.textContent = "Student updated successfully";
-                successElement.classList.remove("success--hidden");
-                errorElement.classList.add("error--hidden");
+                window.location.href = "/students/update_success";
             } else {
                 errorElement.textContent = "Error updating student";
                 errorElement.classList.remove("error--hidden");
@@ -78,7 +87,6 @@ document.addEventListener("DOMContentLoaded", () => {
         .getElementById("add_skill")
         .addEventListener("click", async function () {
             var newSkill = document.getElementById("new_skill").value;
-            console.log(newSkill);
             if (newSkill) {
                 var select = document.getElementById("skills");
                 var option = document.createElement("option");

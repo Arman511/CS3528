@@ -115,3 +115,10 @@ def add_student_routes(app):
             courses=Course().get_courses(),
             modules=Module().get_modules(),
         )
+    
+    @app.route("/students/update_success")
+    @handlers.student_login_required
+    def student_update_successful():
+        """Routing to deal with success"""
+        
+        return render_template("student/update_successful_page.html")
