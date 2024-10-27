@@ -66,6 +66,48 @@ def test_get_home_page():
     assert response.status_code == 200 
     database.users_collection.delete_one({"_id": user["_id"]})
     
+def test_get_add_Student():
+    
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+    
+    client = app.test_client()
+    response = client.post("/user/login", data={
+        "email": "dummy@dummy.com",
+        "password": "dummy",
+    })
+    
+    url = "/students/upload"
+    response = client.get(url)
+    assert response.status_code == 200 
+    database.users_collection.delete_one({"_id": user["_id"]})
+    
+def test_get_Search_Student():
+    
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+    
+    client = app.test_client()
+    response = client.post("/user/login", data={
+        "email": "dummy@dummy.com",
+        "password": "dummy",
+    })
+    
+    url = "/students/search"
+    response = client.get(url)
+    assert response.status_code == 200 
+    database.users_collection.delete_one({"_id": user["_id"]})
+
 
 def test_get_adding_skills():
     
@@ -88,3 +130,4 @@ def test_get_adding_skills():
     response = client.get(url)
     assert response.status_code == 200 
     database.users_collection.delete_one({"_id": user["_id"]})
+
