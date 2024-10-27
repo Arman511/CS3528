@@ -41,12 +41,18 @@
                         </option>
                     {% endfor %}
                 </select>
-                <label for="skills">Skills (Multiselect, hold ctrl to select them):</label>
+                <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
                 <select id="skills" name="skills" class="form-control" multiple required>
                     {% for skill in skills[0]["json"] %}
                         <option value="{{ skill._id }}"
                                 title="{{ skill.skill_description }}"
                                 {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
+                    {% endfor %}
+                    {% for attempt in attempted_skills[0]["json"] %}
+                        <option value="{{ attempt._id }}"
+                                {% if attempt._id in student.attempted_skills %}selected{% endif %}>
+                            {{ attempt.skill_name }} (Attempted)
+                        </option>
                     {% endfor %}
                 </select>
                 <label for="new_skill">Add New Skill:</label>
@@ -56,25 +62,31 @@
                        class="form-control"
                        placeholder="Type a new skill" />
                 <button type="button" id="add_skill" class="btn">Add Skill</button>
-                <label for="placement_duration">Placement Duration:</label>
+                <label for="placement_duration">Placement Duration (Multiselect, hold ctrl/command to select them):</label>
                 <select id="placement_duration"
                         name="placement_duration"
                         class="form-control"
                         multiple
                         required>
-                    <option value="1_day">1 Day</option>
-                    <option value="1_week">1 Week</option>
-                    <option value="1_month">1 Month</option>
-                    <option value="3_months">3 Months</option>
-                    <option value="6_months">6 Months</option>
-                    <option value="12_months">12 Months</option>
+                    <option value="1_day"
+                            {% if "1_day" in student.placement_duration %}selected{% endif %}>1 Day</option>
+                    <option value="1_week"
+                            {% if "1_week" in student.placement_duration %}selected{% endif %}>1 Week</option>
+                    <option value="1_month"
+                            {% if "1_month" in student.placement_duration %}selected{% endif %}>1 Month</option>
+                    <option value="3_months"
+                            {% if "3_months" in student.placement_duration %}selected{% endif %}>3 Months</option>
+                    <option value="6_months"
+                            {% if "6_months" in student.placement_duration %}selected{% endif %}>6 Months</option>
+                    <option value="12_months"
+                            {% if "12_months" in student.placement_duration %}selected{% endif %}>12 Months</option>
                 </select>
                 <label for="has_car">Do you have a car?</label>
                 <input type="checkbox"
                        id="has_car"
                        name="has_car"
                        {% if student.has_car %}checked{% endif %}>
-                <label for="modules">Modules (Multiselect, hold ctrl to select them):</label>
+                <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
                 <select id="modules" name="modules" class="form-control" multiple required>
                     {% for module in modules[0]["json"] %}
                         <option value="{{ module.module_id }}"

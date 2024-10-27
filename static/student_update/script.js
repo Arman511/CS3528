@@ -14,7 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
         let skillsSelect = document.getElementById("skills");
         for (let i = 0; i < skillsSelect.options.length; i++) {
             if (skillsSelect.options[i].selected) {
-                if (attemptedSkills.includes(skillsSelect.options[i].value)) {
+                if (skillsSelect.options[i].text.includes("(Attempted)")) {
+                    selecteAttemptedSkills.push(skillsSelect.options[i].value);
+                } else if (
+                    attemptedSkills.includes(skillsSelect.options[i].value)
+                ) {
                     selecteAttemptedSkills.push(skillsSelect.options[i].value);
                 } else {
                     selectedSkills.push(skillsSelect.options[i].value);

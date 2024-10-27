@@ -149,3 +149,8 @@ class Skill:
 
         database.attempted_skills_collection.insert_one(new_skill)
         return jsonify(new_skill), 200
+
+    def get_list_attempted_skills(self):
+        """Get list of attempted skills"""
+        attempted_skills = list(database.attempted_skills_collection.find())
+        return jsonify(attempted_skills), 200
