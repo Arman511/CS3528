@@ -43,7 +43,7 @@ Methods:
 """
 
 import uuid
-from flask import jsonify, request
+from flask import jsonify, request, session
 import pandas as pd
 from core import database, handlers
 
@@ -51,20 +51,46 @@ from core import database, handlers
 class Opportunity:
     """Opportunity class."""
 
-    def add_opportunity(self):
+    def add_update_opportunity(self, is_admin=False):
         """Adding new opportunity."""
+        if is_admin:
+            opportunity = {
+                "_id": request.form.get("_id"),
+                "title": request.form.get("title"),
+                "description": request.form.get("description"),
+                "url": request.form.get("url"),
+                "employer_id": request.form.get("employer_id"),
+                "location": request.form.get("location"),
+                "modules_required": request.form.get("modules_required"),
+                "courses_required": request.form.get("courses_required"),
+                "spots_available": request.form.get("spots_available"),
+                "duration": request.form.get("duration"),
+            }
+            database.opportunities_collection.delete_one(
+                {"_id": request.form.get("_id")}
+            )
+            database.opportunities_collection.insert_one(opportunity)
+            return jsonify(opportunity), 200
+
         opportunity = {
-            "_id": uuid.uuid1().hex,
+            "_id": request.form.get("_id"),
             "title": request.form.get("title"),
             "description": request.form.get("description"),
             "url": request.form.get("url"),
-            "employer_id": request.form.get("employer_id"),
+            "employer_id": session["employer"]["_id"],
             "location": request.form.get("location"),
             "modules_required": request.form.get("modules_required"),
             "courses_required": request.form.get("courses_required"),
             "spots_available": request.form.get("spots_available"),
             "duration": request.form.get("duration"),
         }
+        find_opportunity = database.opportunities_collection.find(
+            {"_id": request.form.get("_id")}
+        )
+        if find_opportunity:
+            if find_opportunity["employer_id"] != session["employer"]["_id"]:
+                return jsonify({"error": "Unauthorized Access."}), 401
+        database.opportunities_collection.delete_one({"_id": request.form.get("_id")})
 
         database.opportunities_collection.insert_one(opportunity)
 
@@ -97,11 +123,14 @@ class Opportunity:
 
         return jsonify({"error": "No opportunities found"}), 404
 
-    def get_opportunity_by_id(self):
+    def get_opportunity_by_id(self, _id=None):
         """Getting opportunity."""
-        opportunity = database.opportunities_collection.find_one(
-            {"_id": request.form.get("_id")}
-        )
+        if _id:
+            opportunity = database.opportunities_collection.find_one({"_id": _id})
+        else:
+            opportunity = database.opportunities_collection.find_one(
+                {"_id": request.form.get("_id")}
+            )
 
         if opportunity:
             return jsonify(opportunity), 200
