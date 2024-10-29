@@ -4,14 +4,20 @@
         <div class="card">
             <h2 class="center">Add/Update placement</h2>
             <form class="update_form">
-                <label for="title">Student Number:</label>
+                <label for="id">ID:</label>
+                <input name="_id"
+                       id="_id"
+                       class="form-control"
+                       type="text"
+                       readonly
+                       value="{{ opportunity._id }}">
+                <label for="title">Title:</label>
                 <input name="title"
                        id="title"
                        class="form-control"
                        type="text"
                        value="{{ opportunity.title }}" />
-                <label for="first_name">First Name:</label>
-                <label for="description">Email:</label>
+                <label for="description">Description:</label>
                 <input type="textarea"
                        id="description"
                        name="description"
@@ -103,9 +109,9 @@
                 </script>
                 <p class="error error--hidden"></p>
                 <p class="success success--hidden"></p>
-                <input type="submit" value="Update" class="btn" />
+                <input type="submit" value="Add/Update" class="btn" />
             </form>
-            <script src="/static/student_update/script.js"></script>
+            <script src="/static/employer_add_update_opportunity/script.js"></script>
         </div>
     </div>
 {% endblock content %}

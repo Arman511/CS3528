@@ -41,7 +41,7 @@
                     {% for course in courses[0]["json"] %}
                         <option value="{{ course.course_id }}"
                                 {% if course.course_id == student.course_id %}selected{% endif %}>
-                            {{ course.course_name }}
+                            {{ course.course_id + ": " + course.course_name }}
                         </option>
                     {% endfor %}
                 </select>
@@ -123,7 +123,7 @@
                     {% for module in modules[0]["json"] %}
                         <option value="{{ module.module_id }}"
                                 {% if module.module_id in student.module %}selected{% endif %}>
-                            {{ module.module_id }}
+                            {{ module.module_id + ": " + module.module_name }}
                         </option>
                     {% endfor %}
                 </select>
