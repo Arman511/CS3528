@@ -61,7 +61,7 @@ class Opportunity:
             "employer_id": request.form.get("employer_id"),
             "location": request.form.get("location"),
             "modules_required": request.form.get("modules_required"),
-            "course_required": request.form.get("course_required"),
+            "courses_required": request.form.get("courses_required"),
             "spots_available": request.form.get("spots_available"),
             "duration": request.form.get("duration"),
         }
