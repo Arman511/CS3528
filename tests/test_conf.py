@@ -165,10 +165,19 @@ def test_Log_out():
     
     #How to test log out
     
+    
+    
     client.get("/user/signout")
     url = "/user/login"
 
+    client = app.test_client()
+    response = client.post("/user/login", data={
+        "email": "",
+        "password": "",
+    })
+
     response = client.get(url)
     assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
+    # Could you not redirect to home page >:(
     
+    database.users_collection.delete_one({"_id": user["_id"]})
