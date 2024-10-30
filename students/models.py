@@ -251,7 +251,14 @@ class Student:
                     )
                 temp_student["student_id"] = str(student["Student Number"])
                 if len(str(temp_student["student_id"])) != 8:
-                    return jsonify({"error": f"Invalid student {temp_student['first_name'], temp_student['last_name']}"}), 400
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid student {temp_student['first_name'], temp_student['last_name']}"
+                            }
+                        ),
+                        400,
+                    )
                 database.students_collection.delete_one(
                     {"student_id": temp_student["student_id"]}
                 )
