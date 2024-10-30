@@ -232,7 +232,6 @@ class Student:
 
             students = df.to_dict(orient="records")
             temp_student = dict()
-            students_list = []
             for student in students:
                 temp_student["_id"] = uuid.uuid1().hex
                 temp_student["first_name"] = student["First Name"]
@@ -250,15 +249,13 @@ class Student:
                         ),
                         400,
                     )
-                temp_student["student_id"] = student["Student Number"]
-                if len(temp_student["student_id"]) == 8:
-                    continue
-                students_list.append(temp_student)
+                temp_student["student_id"] = str(student["Student Number"])
+                if len(str(temp_student["student_id"])) != 8:
+                    return jsonify({"error": f"Invalid student {temp_student['first_name'], temp_student['last_name']}"}), 400
                 database.students_collection.delete_one(
                     {"student_id": temp_student["student_id"]}
                 )
-
-            database.students_collection.insert_many(students_list)
+                database.students_collection.insert_one(temp_student)
 
             return jsonify({"message": "Students imported"}), 200
         except (
