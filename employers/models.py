@@ -2,19 +2,18 @@
 
 import uuid
 from flask import request, jsonify, session, render_template
-from passlib.hash import pbkdf2_sha256
-from core import database
+from core import database, email_handler
 
 
 class Employers:
     """Employer class."""
 
-    def start_session(self, employer):
+    def start_session(self):
         """Starts a session."""
-        del employer["password"]
         session["employer_logged_in"] = True
-        session["employer"] = employer
-        return render_template("employer/employer_home.html", employer=employer)
+        return render_template(
+            "employer/employer_home.html", employer=session["employer"]
+        )
 
     def register_employer(self):
         """Adding new employer."""
@@ -29,7 +28,6 @@ class Employers:
             "first_name": request.form.get("first_name"),
             "last_name": request.form.get("last_name"),
             "email": request.form.get("email"),
-            "password": pbkdf2_sha256.hash(password),
         }
 
         if database.employers_collection.find_one({"email": request.form.get("email")}):
@@ -48,10 +46,9 @@ class Employers:
         employer = database.employers_collection.find_one(
             {"email": request.form.get("email")}
         )
-
-        if employer and pbkdf2_sha256.verify(
-            request.form.get("password"), employer["password"]
-        ):
-            return self.start_session(employer)
+        if employer:
+            email_handler.send_otp(employer["email"])
+            session["employer"] = employer
+            return render_template("employer/otp.html", employer=employer)
 
         return jsonify({"error": "Invalid login credentials."}), 401

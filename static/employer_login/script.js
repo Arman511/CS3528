@@ -17,8 +17,15 @@ document.addEventListener("DOMContentLoaded", async () => {
             formData.append("otp", otp);
             const otp_response = await fetch("/employers/login_otp", {
                 method: "POST",
-                form: formData,
+                body: formData,
             });
+
+            if (otp_response.ok) {
+                window.location.href = "/employers/home";
+            } else {
+                error_paragraph.textContent = "OTP was invalid";
+                error_paragraph.classList.remove("error--hidden");
+            }
         } else {
             error_paragraph.textContent = "Email was invalid";
             error_paragraph.classList.remove("error--hidden");
