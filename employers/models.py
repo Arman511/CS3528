@@ -10,6 +10,7 @@ class Employers:
     """Employer class."""
 
     def start_session(self, employer):
+        """Starts a session."""
         del employer["password"]
         session["employer_logged_in"] = True
         session["employer"] = employer
