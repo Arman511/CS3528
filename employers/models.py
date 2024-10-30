@@ -42,6 +42,7 @@ class Employers:
         return jsonify({"error": "Employer not added"}), 400
 
     def employer_login(self):
+        """Logs in the employer."""
         session.clear()
         employer = database.employers_collection.find_one(
             {"email": request.form.get("email")}
