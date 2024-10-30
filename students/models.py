@@ -208,8 +208,7 @@ class Student:
                 database.students_collection.delete_one(
                     {"student_id": student["student_id"]}
                 )
-
-            database.students_collection.insert_many(students)
+                database.students_collection.insert_one(student)
             return jsonify({"message": "Students imported"}), 200
         except (
             pd.errors.EmptyDataError,
@@ -231,8 +230,8 @@ class Student:
             df = pd.read_excel(file)
 
             students = df.to_dict(orient="records")
-            temp_student = dict()
             for student in students:
+                temp_student = dict()
                 temp_student["_id"] = uuid.uuid1().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
@@ -264,7 +263,7 @@ class Student:
                 )
                 database.students_collection.insert_one(temp_student)
 
-            return jsonify({"message": "Students imported"}), 200
+            return jsonify({"message": f"{len(students)} students imported"}), 200
         except (
             pd.errors.EmptyDataError,
             pd.errors.ParserError,
