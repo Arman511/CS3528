@@ -1,7 +1,7 @@
 """Employer model."""
 
 import uuid
-from flask import request, jsonify, session, render_template
+from flask import redirect, request, jsonify, session
 from core import database, email_handler
 
 
@@ -11,22 +11,14 @@ class Employers:
     def start_session(self):
         """Starts a session."""
         session["employer_logged_in"] = True
-        return render_template(
-            "employer/employer_home.html", employer=session["employer"]
-        )
+        return redirect("/employers/home")
 
     def register_employer(self):
         """Adding new employer."""
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
-
-        if password != confirm_password:
-            return jsonify({"error": "Passwords do not match."}), 400
 
         employer = {
             "_id": uuid.uuid1().hex,
-            "first_name": request.form.get("first_name"),
-            "last_name": request.form.get("last_name"),
+            "company_name": request.form.get("company_name"),
             "email": request.form.get("email"),
         }
 
@@ -49,6 +41,6 @@ class Employers:
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
-            return render_template("employer/otp.html", employer=employer)
+            return jsonify({"message": "OTP sent"}), 200
 
         return jsonify({"error": "Invalid login credentials."}), 401

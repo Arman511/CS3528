@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Add Skill</h1>
+            <form class="employer_adding_form" name="employer_adding_form">
+                <input type="text"
+                       name="company_name"
+                       class="field"
+                       placeholder="Company name"
+                       id="company_name"
+                       required />
+                <input type="email"
+                       name="email"
+                       class="field"
+                       placeholder="Email"
+                       id="email"
+                       required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Add Skill" class="btn" />
+            </form>
+        </div>
+        <script src="/static/adding_employer/script.js"></script>
+    </div>
+{% endblock content %}

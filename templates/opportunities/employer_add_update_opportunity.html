@@ -1,27 +1,40 @@
 {% extends "base.html" %}
 {% block content %}
-<div class="card-wrapper">
-    <div class="card">
-        <h2 class="center">Add/Update placement</h2>
-        <form class="update_add_form">
-            <label for="id">ID:</label>
-            <input name="_id" id="_id" class="form-control" type="text" readonly value="{{ opportunity._id }}">
-            <label for="title">Title:</label>
-            <input name="title" id="title" class="form-control" type="text" value="{{ opportunity.title }}" />
-            <label for="description">Description:</label>
-            <input type="textarea" id="description" name="description" class="form-control"
-                value="{{ opportunity.description }}" readonly />
-            <label for="course">Course (Multiselect, hold ctrl/command to select them):</label>
-            <input type="text" id="course_search" class="form-control" placeholder="Search for a course...">
-            <select id="course" name="course" class="form-control" required multiple>
-                {% for course in courses[0]["json"] %}
-                <option value="{{ course.course_id }}" {% if course.course_id in opportunity.courses_required
-                    %}selected{% endif %}>
-                    {{ course.course_id+": "+ course.course_name }}
-                </option>
-                {% endfor %}
-            </select>
-            <script>
+    <div class="card-wrapper">
+        <div class="card">
+            <h2 class="center">Add/Update placement</h2>
+            <form class="update_add_form">
+                <label for="id" class="d-none">ID:</label>
+                <input name="_id"
+                       id="_id"
+                       class="form-control d-none"
+                       type="text"
+                       readonly
+                       value="{{ opportunity._id }}">
+                <label for="title">Title:</label>
+                <input name="title"
+                       id="title"
+                       class="form-control"
+                       type="text"
+                       value="{{ opportunity.title }}" />
+                <label for="description">Description:</label>
+                <input type="textarea"
+                       id="description"
+                       name="description"
+                       class="form-control"
+                       value="{{ opportunity.description }}" />
+                <label for="course">Course (Multiselect, hold ctrl/command to select them):</label>
+                <input type="text"
+                       id="course_search"
+                       class="form-control"
+                       placeholder="Search for a course...">
+                <select id="course" name="course" class="form-control" required multiple>
+                    {% for course in courses[0]["json"] %}
+                        <option value="{{ course.course_id }}" {% if course.course_id in opportunity.courses_required
+                            %}selected{% endif %}>{{ course.course_id+": "+ course.course_name }}</option>
+                    {% endfor %}
+                </select>
+                <script>
                 document.getElementById('course_search').addEventListener('input', function () {
                     var searchValue = this.value.toLowerCase();
                     var options = document.getElementById('course').options;
@@ -30,41 +43,58 @@
                         options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
                     }
                 });
-            </script>
-            <label for="url">URL:</label>
-            <input type="text" id="url" class="form-control" placeholder="URL for placement"
-                value="{{ opportunity.url }}" />
-            <label for="location">Location (Format as Bldg name/number, street, city, postcode):</label>
-            <input type="text" id="location" class="form-control" placeholder="Location of the placement"
-                value="{{ opportunity.location }}" />
-            <label for="spots_available">Spots Available:</label>
-            <input type="number" id="spots_available" class="form-control" placeholder="Number of spots available"
-                value="{{ opportunity.spots_available }}" />
-            <label for="placement_duration">Placement Duration:</label>
-            <select id="placement_duration" name="placement_duration" class="form-control" required>
-                <option value="1_day" {% if "1_day"==opportunity.placement_duration %}selected{% endif %}>1 Day</option>
-                <option value="1_week" {% if "1_week"==opportunity.placement_duration %}selected{% endif %}>1 Week
-                </option>
-                <option value="1_month" {% if "1_month"==opportunity.placement_duration %}selected{% endif %}>1 Month
-                </option>
-                <option value="3_months" {% if "3_months"==opportunity.placement_duration %}selected{% endif %}>3 Months
-                </option>
-                <option value="6_months" {% if "6_months"==opportunity.placement_duration %}selected{% endif %}>6 Months
-                </option>
-                <option value="12_months" {% if "12_months"==opportunity.placement_duration %}selected{% endif %}>12
-                    Months</option>
-            </select>
-            <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
-            <input type="text" id="modules_search" class="form-control" placeholder="Search for modules...">
-            <select id="modules" name="modules" class="form-control" multiple required>
-                {% for module in modules[0]["json"] %}
-                <option value="{{ module.module_id }}" {% if module.module_id in opportunity.modules_required
-                    %}selected{% endif %}>
-                    {{ module.module_id + ": " + module.module_name }}
-                </option>
-                {% endfor %}
-            </select>
-            <script>
+                </script>
+                <label for="url">URL:</label>
+                <input type="text"
+                       id="url"
+                       class="form-control"
+                       placeholder="URL for placement"
+                       value="{{ opportunity.url }}" />
+                <label for="location">Location (Format as Bldg name/number, street, city, postcode):</label>
+                <input type="text"
+                       id="location"
+                       class="form-control"
+                       placeholder="Location of the placement"
+                       value="{{ opportunity.location }}" />
+                <label for="spots_available">Spots Available:</label>
+                <input type="number"
+                       id="spots_available"
+                       class="form-control"
+                       placeholder="Number of spots available"
+                       value="{{ opportunity.spots_available }}" />
+                <label for="placement_duration">Placement Duration:</label>
+                <select id="placement_duration"
+                        name="placement_duration"
+                        class="form-control"
+                        required>
+                    <option value="1_day"
+                            {% if "1_day"==opportunity.placement_duration %}selected{% endif %}>1 Day</option>
+                    <option value="1_week"
+                            {% if "1_week"==opportunity.placement_duration %}selected{% endif %}>1 Week</option>
+                    <option value="1_month"
+                            {% if "1_month"==opportunity.placement_duration %}selected{% endif %}>1 Month</option>
+                    <option value="3_months"
+                            {% if "3_months"==opportunity.placement_duration %}selected{% endif %}>3 Months</option>
+                    <option value="6_months"
+                            {% if "6_months"==opportunity.placement_duration %}selected{% endif %}>6 Months</option>
+                    <option value="12_months"
+                            {% if "12_months"==opportunity.placement_duration %}selected{% endif %}>
+                        12
+                        Months
+                    </option>
+                </select>
+                <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
+                <input type="text"
+                       id="modules_search"
+                       class="form-control"
+                       placeholder="Search for modules...">
+                <select id="modules" name="modules" class="form-control" multiple required>
+                    {% for module in modules[0]["json"] %}
+                        <option value="{{ module.module_id }}" {% if module.module_id in opportunity.modules_required
+                            %}selected{% endif %}>{{ module.module_id + ": " + module.module_name }}</option>
+                    {% endfor %}
+                </select>
+                <script>
                 document.getElementById('modules_search').addEventListener('input', function () {
                     var searchValue = this.value.toLowerCase();
                     var options = document.getElementById('modules').options;
@@ -73,12 +103,12 @@
                         options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
                     }
                 });
-            </script>
-            <p class="error error--hidden"></p>
-            <p class="success success--hidden"></p>
-            <input type="submit" value="Add/Update" class="btn" />
-        </form>
-        <script src="/static/employer_add_update_opportunity/script.js"></script>
+                </script>
+                <p class="error error--hidden"></p>
+                <p class="success success--hidden"></p>
+                <input type="submit" value="Add/Update" class="btn" />
+            </form>
+            <script src="/static/employer_add_update_opportunity/script.js"></script>
+        </div>
     </div>
-</div>
 {% endblock content %}

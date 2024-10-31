@@ -1,7 +1,10 @@
 """Routes for opportunites"""
+
 import uuid
 from flask import render_template, request
 from core import handlers
+from course_modules.models import Module
+from courses.models import Course
 from .models import Opportunity
 
 
@@ -24,7 +27,7 @@ def add_opportunities_routes(app):
         if request.method == "POST":
             return Opportunity().add_update_opportunity()
         opportunity_id = request.args.get("opportunity_id")
-        if opportunity_id != "":
+        if opportunity_id is not None:
             opportunity = Opportunity().get_opportunity_by_id(opportunity_id)[0]["json"]
         else:
             opportunity = {"_id": uuid.uuid1().hex}
@@ -32,4 +35,6 @@ def add_opportunities_routes(app):
         return render_template(
             "opportunities/employer_add_update_opportunity.html",
             opportunity=opportunity,
+            courses=Course().get_courses(),
+            modules=Module().get_modules(),
         )
