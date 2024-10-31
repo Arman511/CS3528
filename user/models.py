@@ -1,16 +1,16 @@
 """
-This module defines the User class which handles user authentication and session management.
+User model.
 """
 
 import uuid
-from flask import jsonify, request, session, redirect
+from flask import jsonify, request, session
 from passlib.hash import pbkdf2_sha256
 from core import database
 
 
 class User:
     """A class used to represent a User and handle user-related operations
-    such as session management, registration, login, and signout."""
+    such as session management, registration and login."""
 
     def start_session(self, user):
         """Starts a session for the given user by removing the password from the

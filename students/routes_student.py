@@ -1,15 +1,5 @@
 """
-    Registers student-related routes to the given Flask application.
-    Routes:
-        - POST /students/add_student: Adds a new student. Requires login.
-        - POST /students/upload_csv: Uploads students from a CSV file. Requires login.
-        - POST /students/upload_xlsx: Uploads students from an XLSX file. Requires login.
-        - GET /students/search: Renders the student search page. Requires login.
-        - POST /students/search_students: Searches for students. Requires login.
-        - DELETE /students/delete_student/<int:student_id>: Deletes a student by ID. Requires login.
-        - GET, POST /student/update/<int:student_id>: Updates a student by ID. Requires login.
-    Args:
-        app (Flask): The Flask application instance to which the routes will be added.
+Handles routes for the student module.
 """
 
 from flask import redirect, render_template, request, session
