@@ -1,5 +1,4 @@
 """Routes for opportunites"""
-
 import uuid
 from flask import render_template, request
 from core import handlers
