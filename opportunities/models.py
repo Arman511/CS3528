@@ -44,7 +44,7 @@ class Opportunity:
             "spots_available": request.form.get("spots_available"),
             "duration": request.form.get("duration"),
         }
-        find_opportunity = database.opportunities_collection.find(
+        find_opportunity = database.opportunities_collection.find_one(
             {"_id": request.form.get("_id")}
         )
         if find_opportunity:
