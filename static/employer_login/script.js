@@ -13,7 +13,10 @@ document.addEventListener("DOMContentLoaded", async () => {
             });
 
             if (response.ok) {
-                let otp = prompt("Enter the OTP sent to your email");
+                let otp;
+                do {
+                    otp = prompt("Enter the OTP sent to your email");
+                } while (!otp);
                 let formData = new FormData();
                 formData.append("otp", otp);
                 const otp_response = await fetch("/employers/otp", {

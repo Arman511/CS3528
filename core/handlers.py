@@ -58,7 +58,7 @@ def employers_login_required(f):
     def wrap(*args, **kwargs):
         if "employer_logged_in" in session:
             return f(*args, **kwargs)
-        return redirect("/employer/login")
+        return redirect("/employers/login")
 
     return wrap
 
