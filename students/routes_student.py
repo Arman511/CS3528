@@ -2,8 +2,9 @@
 Handles routes for the student module.
 """
 
+import datetime
 from flask import redirect, render_template, request, session
-from core import handlers
+from core import database, handlers
 from courses.models import Course
 from skills.models import Skill
 from course_modules.models import Module
@@ -97,6 +98,8 @@ def add_student_routes(app):
         if session["student"]["student_id"] != student_id:
             session.clear()
             return redirect("/students/login")
+        if datetime.datetime.now().strftime("%Y-%m-%d") >= database.get_deadline():
+            return redirect("/students/rank_preferences")
         if request.method == "POST":
             return Student().update_student_by_id(student_id, True)
         return render_template(
@@ -106,6 +109,24 @@ def add_student_routes(app):
             courses=Course().get_courses(),
             modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
+        )
+
+    @app.route("/students/rank_preferences/<int:student_id>", methods=["GET", "POST"])
+    @handlers.student_login_required
+    def rank_preferences(student_id):
+        """Rank preferences."""
+        if "student" not in session:
+            return redirect("/students/login")
+        if session["student"]["student_id"] != student_id:
+            session.clear()
+            return redirect("/students/login")
+        if datetime.datetime.now().strftime("%Y-%m-%d") < database.get_deadline():
+            return redirect("/students/details/" + str(student_id))
+        if request.method == "POST":
+            return Student().rank_preferences(student_id)
+        return render_template(
+            "student/student_rank_opportunities.html",
+            opportunities=Student().get_opportunities_by_student(student_id),
         )
 
     @app.route("/students/update_success")

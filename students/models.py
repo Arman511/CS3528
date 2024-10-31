@@ -7,6 +7,7 @@ from flask import jsonify, request, session
 from pymongo import TEXT
 import pandas as pd
 from core import database, handlers
+from opportunities.models import Opportunity
 
 
 class Student:
@@ -324,3 +325,30 @@ class Student:
             return jsonify({"message": "Login successful"}), 200
 
         return jsonify({"error": "Invalid email or password"}), 401
+
+    def rank_preferences(self, student_id):
+        """Sets a students preferences."""
+        #!TODO: Implement this method
+        pass
+
+    def get_opportunities_by_student(self, student_id):
+        """Get opportunities that a student could do"""
+        #!TODO: Implement this method
+        opportunities = Opportunity().get_opportunities()
+        find_student = self.get_student_by_id(student_id)
+
+        if not find_student:
+            return jsonify({"error": "Student not found"}), 404
+
+        student = find_student[0].json
+        student["modules"] = set(student["modules"][1:-1].split(","))
+
+        valid_opportunities = list()
+        for opportunity in opportunities:
+            modules_required = set(opportunity["modules_required"][1:-1].split(","))
+            if (
+                modules_required.issubset(student["modules"])
+                and student["course"] in opportunity["course_required"]
+            ):
+                valid_opportunities.append(opportunity)
+        return valid_opportunities

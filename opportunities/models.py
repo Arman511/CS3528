@@ -2,10 +2,13 @@
 Opportunity model.
 """
 
+from datetime import datetime
 import uuid
 from flask import jsonify, request, session
 import pandas as pd
 from core import database, handlers
+
+cache = {"data": [], "last_updated": datetime.now()}
 
 
 class Opportunity:
@@ -30,6 +33,9 @@ class Opportunity:
                 {"_id": request.form.get("_id")}
             )
             database.opportunities_collection.insert_one(opportunity)
+
+            cache["data"] = list(database.opportunities_collection.find())
+            cache["last_updated"] = datetime.now()
             return jsonify(opportunity), 200
 
         opportunity = {
@@ -53,6 +59,9 @@ class Opportunity:
         database.opportunities_collection.delete_one({"_id": request.form.get("_id")})
 
         database.opportunities_collection.insert_one(opportunity)
+
+        cache["data"] = list(database.opportunities_collection.find())
+        cache["last_updated"] = datetime.now()
 
         if opportunity:
             return jsonify(opportunity), 200
@@ -85,12 +94,19 @@ class Opportunity:
 
     def get_opportunity_by_id(self, _id=None):
         """Getting opportunity."""
-        if _id:
-            opportunity = database.opportunities_collection.find_one({"_id": _id})
-        else:
-            opportunity = database.opportunities_collection.find_one(
-                {"_id": request.form.get("_id")}
-            )
+        if not _id:
+            _id = request.form.get("_id")
+
+        if cache["data"] and cache["last_updated"] > datetime.now():
+            for opportunity in cache["data"]:
+                if opportunity["_id"] == _id:
+                    return jsonify(opportunity), 200
+            return jsonify({"error": "Opportunity not found"}), 404
+
+        cache["data"] = list(database.opportunities_collection.find())
+        cache["last_updated"] = datetime.now()
+
+        opportunity = database.opportunities_collection.find_one({"_id": _id})
 
         if opportunity:
             return jsonify(opportunity), 200
@@ -99,12 +115,14 @@ class Opportunity:
 
     def get_opportunities(self):
         """Getting all opportunities."""
-        opportunities = list(database.opportunities_collection.find())
 
-        if opportunities:
-            return jsonify(opportunities), 200
+        if cache["data"] and cache["last_updated"] > datetime.now():
+            return jsonify(cache["data"]), 200
 
-        return jsonify({"error": "No opportunities found"}), 404
+        cache["data"] = list(database.opportunities_collection.find())
+        cache["last_updated"] = datetime.now()
+
+        return jsonify(cache["data"]), 200
 
     def update_opportunity(self):
         """Updating opportunity."""
@@ -116,6 +134,9 @@ class Opportunity:
             database.opportunities_collection.update_one(
                 {"_id": request.form.get("_id")}, {"$set": request.form}
             )
+
+            cache["data"] = list(database.opportunities_collection.find())
+            cache["last_updated"] = datetime.now()
             return jsonify({"message": "Opportunity updated"}), 200
 
         return jsonify({"error": "Opportunity not found"}), 404
@@ -128,6 +149,8 @@ class Opportunity:
 
         if opportunity:
             database.opportunities_collection.delete_one({"_id": opportunity_id})
+            cache["data"] = list(database.opportunities_collection.find())
+            cache["last_updated"] = datetime.now()
             return jsonify({"message": "Opportunity deleted"}), 200
 
         return jsonify({"error": "Opportunity not found"}), 404
@@ -138,6 +161,8 @@ class Opportunity:
 
         if opportunities:
             database.opportunities_collection.delete_many({})
+            cache["data"] = []
+            cache["last_updated"] = datetime.now()
             return jsonify({"message": "All opportunities deleted"}), 200
 
         return jsonify({"error": "No opportunities found"}), 404
