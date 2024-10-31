@@ -1,18 +1,6 @@
 """
-This module contains utility functions and route configurations for a Flask application.
-Functions:
-    allowed_file(filename, types):
-        Check if file type is allowed.
-    login_required(f):
-        Decorator to ensure that a user is logged in before accessing certain routes.
-    configure_routes(app):
-        Configure the routes for the Flask application, including user and student routes, 
-        and define the home and privacy policy routes.
-Routes:
-    /:
-        The home route which requires the user to be logged in and renders the 'home.html' template.
-    /privacy-policy:
-        The privacy policy route which renders the 'privacy_policy.html' template.
+Handles the base routes, adds the module routes, and includes decorators 
+to enforce user access levels.
 """
 
 from functools import wraps

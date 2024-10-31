@@ -1,45 +1,5 @@
 """
-This module defines the Opportunity class, which gives methods for managing jobs in the database.
-
-Classes:
-    Opportunity: A class to represent and manage job opportunities.
-
-Methods:
-    add_opportunity(self):
-        Adds a new opportunity to the database.
-        Returns a JSON response indicating success or failure.
-
-    search_opportunities(self):
-        Searches for opportunities in the database based on provided criteria.
-        Returns a JSON response with the search results or an error message.
-
-    get_opportunity_by_id(self):
-        Retrieves an opportunity from the database by its ID.
-        Returns a JSON response with the opportunity data or an error message.
-
-    get_opportunities(self):
-        Retrieves all opportunities from the database.
-        Returns a JSON response with the list of opportunities or an error message.
-
-    update_opportunity(self):
-        Updates an existing opportunity in the database.
-        Returns a JSON response indicating success or failure.
-
-    delete_opportunity_by_id(self, opportunity_id):
-        Deletes an opportunity from the database by its ID.
-        Returns a JSON response indicating success or failure.
-
-    delete_opportunities(self):
-        Deletes all opportunities from the database.
-        Returns a JSON response indicating success or failure.
-
-    import_opportunities_from_csv(self):
-        Imports opportunities from a CSV file into the database.
-        Returns a JSON response indicating success or failure.
-
-    import_opportunities_from_xlsx(self):
-        Imports opportunities from an Excel file into the database.
-        Returns a JSON response indicating success or failure.
+Opportunity model.
 """
 
 import uuid

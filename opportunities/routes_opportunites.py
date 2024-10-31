@@ -1,7 +1,8 @@
+"""Routes for opportunites"""
 import uuid
 from flask import render_template, request
-from .models import Opportunity
 from core import handlers
+from .models import Opportunity
 
 
 def add_opportunities_routes(app):
@@ -21,7 +22,7 @@ def add_opportunities_routes(app):
     @handlers.employers_login_required
     def employer_add_update_opportunity():
         if request.method == "POST":
-            return Opportunity().employer_add_update_opportunity()
+            return Opportunity().add_update_opportunity()
         opportunity_id = request.args.get("opportunity_id")
         if opportunity_id != "":
             opportunity = Opportunity().get_opportunity_by_id(opportunity_id)[0]["json"]

@@ -1,11 +1,5 @@
 """
-This module defines the routes for user-related actions in the Flask application.
-
-Routes:
-    /user/register (POST): Registers a new user.
-    /user/signout: Signs out the current user.
-    /user/login: Renders the login page.
-    /user/login_attempt (POST): Attempts to log in a user.
+Handles routes for the user module.
 """
 
 from flask import redirect, render_template, session, request
