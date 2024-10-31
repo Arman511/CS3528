@@ -7,7 +7,7 @@
                 <div class="form-group">
                     <label for="student_id">Student Number:</label>
                     <input name="student_id"
-                           id="student.id"
+                           id="student_id"
                            class="form-control"
                            type="text"
                            value="{{ student.student_id }}" />
@@ -37,46 +37,74 @@
                            value="{{ student.email }}" />
                 </div>
                 <div class="form-group">
-                    <label for="student_id">Student Number:</label>
-                    <input type="text"
-                           id="student_id"
-                           name="student_id"
-                           class="form-control"
-                           value="{{ student.student_id }}" />
-                </div>
-                <div class="form-group">
                     <label for="course">Course:</label>
-                    <select id="course" name="course" class="form-control">
-                        {% for course in courses %}
+                    <input type="text"
+                           id="course_search"
+                           class="form-control"
+                           placeholder="Search for a course...">
+                    <select id="course" name="course" class="form-control" required>
+                        {% for course in courses[0]["json"] %}
                             <option value="{{ course.course_id }}"
                                     {% if course.course_id == student.course_id %}selected{% endif %}>
-                                {{ course.course_name }}
+                                {{ +course.course_id + ": " + course.course_name }}
                             </option>
                         {% endfor %}
                     </select>
+                    <script>
+                        document.getElementById('course_search').addEventListener('input', function() {
+                            var searchValue = this.value.toLowerCase();
+                            var options = document.getElementById('course').options;
+                            for (var i = 0; i < options.length; i++) {
+                                var optionText = options[i].text.toLowerCase();
+                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                            }
+                        });
+                    </script>
                 </div>
                 <div class="form-group">
-                    <label for="skills">Skills:</label>
-                    <select id="skills" name="skills" class="form-control" multiple>
+                    <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
+                    <input type="text"
+                           id="skills_search"
+                           class="form-control"
+                           placeholder="Search for skills...">
+                    <select id="skills" name="skills" class="form-control" multiple required>
                         {% for skill in skills %}
                             <option value="{{ skill.skill_name }}"
-                                    {% if skill in student.skills %}selected{% endif %}>
-                                {{ skill.skill_name }}
-                            </option>
+                                    {% if skill in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
                         {% endfor %}
                     </select>
+                    <script>
+                        document.getElementById('skills_search').addEventListener('input', function() {
+                            var searchValue = this.value.toLowerCase();
+                            var options = document.getElementById('skills').options;
+                            for (var i = 0; i < options.length; i++) {
+                                var optionText = options[i].text.toLowerCase();
+                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                            }
+                        });
+                    </script>
                 </div>
                 <div class="form-group">
-                    <label for="placement_duration">Placement Duration:</label>
+                    <label for="placement_duration">Placement Duration (Multiselect, hold ctrl/command to select them):</label>
                     <select id="placement_duration"
                             name="placement_duration"
-                            class="form-control">
-                        <option value="1_day">1 Day</option>
-                        <option value="1_week">1 Week</option>
-                        <option value="1_month">1 Month</option>
-                        <option value="3_months">3 Months</option>
-                        <option value="6_months">6 Months</option>
-                        <option value="12_months">12 Months</option>
+                            class="form-control"
+                            multiple
+                            required>
+                        <option value="1_day"
+                                {% if "1_day" in student.placement_duration %}selected{% endif %}>1 Day</option>
+                        <option value="1_week"
+                                {% if "1_week" in student.placement_duration %}selected{% endif %}>1 Week</option>
+                        <option value="1_month"
+                                {% if "1_month" in student.placement_duration %}selected{% endif %}>1 Month</option>
+                        <option value="3_months"
+                                {% if "3_months" in student.placement_duration %}selected{% endif %}>3 Months</option>
+                        <option value="6_months"
+                                {% if "6_months" in student.placement_duration %}selected{% endif %}>6 Months</option>
+                        <option value="12_months"
+                                {% if "12_months" in student.placement_duration %}selected{% endif %}>
+                            12 Months
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -87,21 +115,36 @@
                            {% if student.has_car %}checked{% endif %}>
                 </div>
                 <div class="form-group">
-                    <label for="modules">Modules:</label>
-                    <select id="modules" name="modules" class="form-control" multiple>
+                    <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
+                    <input type="text"
+                           id="modules_search"
+                           class="form-control"
+                           placeholder="Search for modules...">
+                    <select id="modules" name="modules" class="form-control" multiple required>
                         {% for module in modules %}
                             <option value="{{ module.module_id }}"
                                     {% if module.module_id in student.module %}selected{% endif %}>
-                                {{ module.module_id }}
+                                {{ module.module_id + ": " + module.module_name }}
                             </option>
                         {% endfor %}
                     </select>
+                    <script>
+                        document.getElementById('modules_search').addEventListener('input', function() {
+                            var searchValue = this.value.toLowerCase();
+                            var options = document.getElementById('modules').options;
+                            for (var i = 0; i < options.length; i++) {
+                                var optionText = options[i].text.toLowerCase();
+                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                            }
+                        });
+                    </script>
                 </div>
                 <div class="form-group">
                     <label for="comments">Any Other Comments:</label>
                     <textarea id="comments" name="comments" class="form-control" rows="4">{{ student.comments }}</textarea>
                 </div>
                 <p class="error error--hidden"></p>
+                <p class="success success--hidden"></p>
                 <input type="submit" value="Update" class="btn" />
             </form>
             <script src="/static/admin_update_student/script.js"></script>

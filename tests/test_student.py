@@ -1,7 +1,5 @@
-from flask import Flask, render_template
-
+import pytest
+from flask import Flask, session
+from flask.testing import FlaskClient
 from ..app import app
-
-
-def test_create_app():
-    pass
+from ..students.models import Student

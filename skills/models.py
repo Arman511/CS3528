@@ -1,23 +1,5 @@
 """
-This module defines the Skill class and manages the caching and database operations for skills.
-Classes:
-    Skill: A class used to represent and manage skills in the database.
-Functions:
-    add_skill():
-        Adds a new skill to the database. If the skill already exists and 
-        overwrite is not allowed, returns an error.
-        Updates the cache after adding the skill.
-    delete_skill():
-        Deletes a skill from the database based on the skill ID. If the 
-        skill is not found, returns an error.
-        Updates the cache after deleting the skill.
-    get_skill_by_id():
-        Retrieves a skill from the database based on the skill ID. If the 
-        skill is not found, returns an error.
-    get_skills():
-        Retrieves all skills from the database. If the cache is valid 
-        (updated within the last week), returns the cached data.
-        Updates the cache if the data is fetched from the database.
+Skills model.
 """
 
 import uuid

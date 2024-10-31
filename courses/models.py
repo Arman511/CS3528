@@ -1,23 +1,5 @@
 """
-This module defines the Course class and provides methods to manage courses in the database.
-Classes:
-    Course: A class to represent and manage courses.
-Methods:
-    add_course(self):
-        Adds a new course to the database.
-        Updates the courses cache upon successful addition.
-        Returns a JSON response with the added course or an error message.
-    delete_course(self):
-        Deletes a course from the database based on the course_id provided in the request.
-        Updates the courses cache upon successful deletion.
-        Returns a JSON response with the deleted course or an error message.
-    get_course_by_id(self):
-        Retrieves a course from the database based on the course_id provided in the request.
-        Returns a JSON response with the course details or an error message.
-    get_courses(self):
-        Retrieves all courses from the database. Uses a cache to store courses for up to one week.
-        Returns a JSON response with the list of courses or an error message.
-"""
+Courses model."""
 
 import uuid
 from datetime import datetime, timedelta

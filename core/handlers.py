@@ -1,18 +1,6 @@
 """
-This module contains utility functions and route configurations for a Flask application.
-Functions:
-    allowed_file(filename, types):
-        Check if file type is allowed.
-    login_required(f):
-        Decorator to ensure that a user is logged in before accessing certain routes.
-    configure_routes(app):
-        Configure the routes for the Flask application, including user and student routes, 
-        and define the home and privacy policy routes.
-Routes:
-    /:
-        The home route which requires the user to be logged in and renders the 'home.html' template.
-    /privacy-policy:
-        The privacy policy route which renders the 'privacy_policy.html' template.
+Handles the base routes, adds the module routes, and includes decorators 
+to enforce user access levels.
 """
 
 from functools import wraps
@@ -23,6 +11,7 @@ from opportunities import routes_opportunites
 from skills import routes_skills
 from courses import routes_courses
 from course_modules import routes_modules
+from employers import routes_employers
 
 
 def allowed_file(filename, types):
@@ -48,7 +37,7 @@ def login_required(f):
 
 def student_login_required(f):
     """
-    This decorator ensures that a student is logged in is logged in before accessing certain routes.
+    This decorator ensures that a student is logged in before accessing certain routes.
     """
 
     @wraps(f)
@@ -56,6 +45,20 @@ def student_login_required(f):
         if "student_logged_in" in session:
             return f(*args, **kwargs)
         return redirect("/students/login")
+
+    return wrap
+
+
+def employers_login_required(f):
+    """
+    This decorator ensures that a employer is logged in before accessing certain routes.
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "employer_logged_in" in session:
+            return f(*args, **kwargs)
+        return redirect("/employer/login")
 
     return wrap
 
@@ -77,6 +80,7 @@ def configure_routes(app):
     routes_skills.add_skills_routes(app)
     routes_courses.add_course_routes(app)
     routes_modules.add_module_routes(app)
+    routes_employers.add_employer_routes(app)
 
     @app.route("/")
     @login_required

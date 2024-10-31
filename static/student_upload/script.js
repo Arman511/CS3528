@@ -17,10 +17,14 @@ function uploadFile(form, url) {
         method: "POST",
         body: formData,
     })
-        .then((response) => response.json())
-        .then((data) => {
-            alert("File uploaded successfully");
+        .then((response) => {
+            if (response.ok) {
+                alert(response.text());
+            } else {
+                alert("Error: " + response.json().data.error);
+            }
         })
+        .then((response) => response.json())
         .catch((error) => {
             console.error("Error:", error);
             alert("An error occurred while uploading the file");

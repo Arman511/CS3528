@@ -28,3 +28,4 @@ venv.bak/
 .pytest_cache/
 .vercel/
 .DS_Store
+.mypy_cache/

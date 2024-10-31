@@ -1,22 +1,5 @@
 """
-This module defines the module class and provides methods to manage modules in the database.
-Classes:
-    module: A class to represent and manage modules.
-Methods:
-    add_module(self):
-        Adds a new module to the database.
-        Updates the modules cache upon successful addition.
-        Returns a JSON response with the added module or an error message.
-    delete_module(self):
-        Deletes a module from the database based on the module_id provided in the request.
-        Updates the modules cache upon successful deletion.
-        Returns a JSON response with the deleted module or an error message.
-    get_module_by_id(self):
-        Retrieves a module from the database based on the module_id provided in the request.
-        Returns a JSON response with the module details or an error message.
-    get_modules(self):
-        Retrieves all modules from the database. Uses a cache to store modules for up to one week.
-        Returns a JSON response with the list of modules or an error message.
+Course module model.
 """
 
 import uuid

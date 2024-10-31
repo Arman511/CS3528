@@ -175,7 +175,10 @@ class Student:
             database.students_collection.find(
                 {
                     "$text": {
-                        "$search": f"{request.form.get('first_name')} {request.form.get('last_name')}"
+                        "$search": (
+                            f"{request.form.get('first_name')} "
+                            f"{request.form.get('last_name')}"
+                        )
                     }
                 }
             )
@@ -205,8 +208,7 @@ class Student:
                 database.students_collection.delete_one(
                     {"student_id": student["student_id"]}
                 )
-
-            database.students_collection.insert_many(students)
+                database.students_collection.insert_one(student)
             return jsonify({"message": "Students imported"}), 200
         except (
             pd.errors.EmptyDataError,
@@ -228,9 +230,8 @@ class Student:
             df = pd.read_excel(file)
 
             students = df.to_dict(orient="records")
-            temp_student = dict()
-            students_list = []
             for student in students:
+                temp_student = dict()
                 temp_student["_id"] = uuid.uuid1().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
@@ -239,22 +240,30 @@ class Student:
                     return (
                         jsonify(
                             {
-                                "message": f"Incorrect student {temp_student['first_name']} {temp_student['last_name']}"
+                                "message": (
+                                    f"Incorrect student {temp_student['first_name']} "
+                                    f"{temp_student['last_name']}"
+                                )
                             }
                         ),
                         400,
                     )
-                temp_student["student_id"] = student["Student Number"]
-                if len(temp_student["student_id"]) == 8:
-                    continue
-                students_list.append(temp_student)
+                temp_student["student_id"] = str(student["Student Number"])
+                if len(str(temp_student["student_id"])) != 8:
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid student {temp_student['first_name'], temp_student['last_name']}"
+                            }
+                        ),
+                        400,
+                    )
                 database.students_collection.delete_one(
                     {"student_id": temp_student["student_id"]}
                 )
+                database.students_collection.insert_one(temp_student)
 
-            database.students_collection.insert_many(students_list)
-
-            return jsonify({"message": "Students imported"}), 200
+            return jsonify({"message": f"{len(students)} students imported"}), 200
         except (
             pd.errors.EmptyDataError,
             pd.errors.ParserError,
