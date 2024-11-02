@@ -1,9 +1,10 @@
 """Routes for employers module"""
 
+import os
 from flask import jsonify, request, render_template, session
+from itsdangerous import URLSafeSerializer
 from core import handlers
 from .models import Employers
-
 
 def add_employer_routes(app):
     """Add employer routes."""
@@ -24,9 +25,11 @@ def add_employer_routes(app):
 
     @app.route("/employers/otp", methods=["POST"])
     def employer_otp():
+        otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
-        elif request.form.get("otp") != session["OTP"]:
+        elif request.form.get("otp") != otp_serializer.loads(session["OTP"]):
             return jsonify({"error": "Invalid OTP."}), 400
 
         return Employers().start_session()
