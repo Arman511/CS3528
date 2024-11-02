@@ -6,6 +6,7 @@ from itsdangerous import URLSafeSerializer
 from core import handlers
 from .models import Employers
 
+
 def add_employer_routes(app):
     """Add employer routes."""
 

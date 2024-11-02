@@ -14,6 +14,7 @@ load_dotenv()
 SENDER: str = str(os.getenv("EMAIL"))
 PASSWORD: str = str(os.getenv("EMAIL_PASSWORD"))
 
+
 def generate_otp():
     """Makes an otp"""
     digits = "0123456789"
@@ -22,6 +23,7 @@ def generate_otp():
         otp += digits[math.floor(random.random() * 10)]
 
     return otp
+
 
 def send_otp(recipient):
     """Sends an OTP"""
