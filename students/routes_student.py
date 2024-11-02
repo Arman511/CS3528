@@ -98,7 +98,7 @@ def add_student_routes(app):
         if session["student"]["student_id"] != student_id:
             session.clear()
             return redirect("/students/login")
-        if datetime.datetime.now().strftime("%Y-%m-%d") >= database.get_deadline():
+        if database.is_past_deadline():
             return redirect("/students/rank_preferences")
         if request.method == "POST":
             return Student().update_student_by_id(student_id, True)
@@ -120,7 +120,7 @@ def add_student_routes(app):
         if session["student"]["student_id"] != student_id:
             session.clear()
             return redirect("/students/login")
-        if datetime.datetime.now().strftime("%Y-%m-%d") < database.get_deadline():
+        if not database.is_past_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
             return Student().rank_preferences(student_id)

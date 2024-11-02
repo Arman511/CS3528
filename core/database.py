@@ -60,3 +60,8 @@ def update_deadline(deadline):
 
     deadline_collection.update_one({}, {"$set": {"deadline": deadline}}, upsert=True)
     return jsonify({"message": "Deadline updated successfully"}), 200
+
+def is_past_deadline():
+    """Check if the deadline has passed."""
+    deadline = get_deadline()
+    return datetime.datetime.now().strftime("%Y-%m-%d") >= deadline
