@@ -298,9 +298,8 @@ class Student:
         student["course"] = request.form.get("course")
 
         if student and is_student:
-            database.students_collection.delete_one({"student_id": student["_id"]})
-            database.students_collection.insert_one(
-                {"student_id": student_id}, {"$set": student}
+            database.students_collection.update_one(
+                {"student_id": str(student_id)},  {"$set": student}
             )
             return jsonify({"message": "Student updated"}), 200
 
