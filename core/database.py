@@ -39,6 +39,7 @@ modules_collection = database["modules"]
 employers_collection = database["employers"]
 deadline_collection = database["deadline"]
 
+
 def get_deadline():
     """Get the deadline from the database."""
     find_deadline = deadline_collection.find_one()
@@ -59,6 +60,7 @@ def update_deadline(deadline):
 
     deadline_collection.update_one({}, {"$set": {"deadline": deadline}}, upsert=True)
     return jsonify({"message": "Deadline updated successfully"}), 200
+
 
 def is_past_deadline():
     """Check if the deadline has passed."""

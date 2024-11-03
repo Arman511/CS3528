@@ -274,7 +274,7 @@ class Student:
 
     def update_student_by_id(self, student_id, is_student=True):
         """Updating student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student and not is_student:
             database.students_collection.update_one(
@@ -282,23 +282,25 @@ class Student:
             )
             return jsonify({"message": "Student updated"}), 200
 
-        if is_student and student["student_id"] != session["student"]["student_id"]:
+        if "student" not in session:
+            return jsonify({"error": "You are not logged in"}), 401
+        if is_student and str(student["student_id"]) != session["student"]["student_id"]:
             return (
                 jsonify({"error": "You are not authorized to update this student"}),
                 403,
             )
-        data = {
-            "course": request.form.get("course"),
-            "skills": request.form.get("skills"),
-            "attempted_skills": request.form.get("attempted_skills"),
-            "has_car": request.form.get("has_car"),
-            "placement_duration": request.form.get("placement_duration"),
-            "modules": request.form.get("modules"),
-            "comments": request.form.get("comments"),
-        }
+        student["comments"] = request.form.get("comments")
+        student["skills"] = request.form.get("skills")
+        student["attempted_skills"] = request.form.get("attempted_skills")
+        student["has_car"] = request.form.get("has_car")
+        student["placement_duration"] = request.form.get("placement_duration")
+        student["modules"] = request.form.get("modules")
+        student["course"] = request.form.get("course")
+
         if student and is_student:
-            database.students_collection.update_one(
-                {"student_id": student_id}, {"$set": data}
+            database.students_collection.delete_one({"student_id": student["_id"]})
+            database.students_collection.insert_one(
+                {"student_id": student_id}, {"$set": student}
             )
             return jsonify({"message": "Student updated"}), 200
 
