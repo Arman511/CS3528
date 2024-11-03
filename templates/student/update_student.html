@@ -148,6 +148,23 @@
                 <input type="submit" value="Update" class="btn" />
             </form>
             <script src="/static/admin_update_student/script.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#skills').selectize({
+                        maxItems: 10,
+                        sortField: 'text'
+                    });
+                    $('#modules').selectize({
+                        sortField: 'text'
+                    });
+                    $('#course').selectize({
+                        sortField: 'text'
+                    });
+                    $('#placement_duration').selectize({
+                        sortField: 'text'
+                    });
+                });
+            </script>
         </div>
     </div>
 {% endblock content %}

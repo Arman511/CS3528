@@ -16,32 +16,29 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         let selectedSkills = [];
-        let selecteAttemptedSkills = [];
+        let selectAttemptedSkills = [];
         let skillsSelect = document.getElementById("skills");
         for (let i = 0; i < skillsSelect.options.length; i++) {
             if (skillsSelect.options[i].selected) {
                 if (skillsSelect.options[i].text.includes("(Attempted)")) {
-                    selecteAttemptedSkills.push(skillsSelect.options[i].value);
+                    selectAttemptedSkills.push(skillsSelect.options[i].value);
                 } else if (
                     attemptedSkills.includes(skillsSelect.options[i].value)
                 ) {
-                    selecteAttemptedSkills.push(skillsSelect.options[i].value);
+                    selectAttemptedSkills.push(skillsSelect.options[i].value);
                 } else {
                     selectedSkills.push(skillsSelect.options[i].value);
                 }
             }
         }
         let selectedPlacementDuration = [];
-        for (
-            let i = 0;
-            i < document.getElementsByName("placement_duration").length;
-            i++
-        ) {
-            if (document.getElementsByName("placement_duration")[i].checked) {
-                selectedPlacementDuration.push(
-                    document.getElementsByName("placement_duration")[i].value
-                );
-            }
+        let placementDurationSelect =
+            document.getElementById("placement_duration");
+
+        for (let i = 0; i < placementDurationSelect.options.length; i++) {
+            selectedPlacementDuration.push(
+                placementDurationSelect.options[i].value
+            );
         }
         let hasCar = document.getElementById("has_car").checked;
         let selectedModules = [];
@@ -65,7 +62,7 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("modules", JSON.stringify(selectedModules));
         formData.append(
             "attempted_skills",
-            JSON.stringify(selecteAttemptedSkills)
+            JSON.stringify(selectAttemptedSkills)
         );
         formData.append("comments", comments);
         try {
@@ -97,16 +94,31 @@ document.addEventListener("DOMContentLoaded", () => {
         .getElementById("add_skill")
         .addEventListener("click", async function () {
             var newSkill = document.getElementById("new_skill").value;
+            newSkill = newSkill.trim();
+            if (newSkill === "") {
+                console.log("Skill cannot be empty");
+                alert("Skill cannot be empty");
+                return;
+            }
             if (newSkill) {
-                var select = document.getElementById("skills");
-                var option = document.createElement("option");
-
+                let options = [];
+                let selected_skills = document.getElementById("skills");
+                Array.from(selected_skills.selectedOptions).map((option) =>
+                    options.push(option.text.toLowerCase())
+                );
+                let unselected_skills = document.querySelectorAll(
+                    ".selectize-dropdown-content div"
+                );
+                for (let i = 0; i < unselected_skills.length; i++) {
+                    options.push(unselected_skills[i].innerText.toLowerCase());
+                }
                 if (
-                    [...select.options].some(
-                        (option) => option.text === newSkill
-                    )
+                    options.includes(newSkill.toLowerCase()) ||
+                    attemptedSkills.includes(newSkill) ||
+                    options.includes(newSkill.toLowerCase() + " (attempted)")
                 ) {
                     console.log("Skill already exists");
+                    alert("Skill already exists");
                     return;
                 }
                 let response = await fetch(
@@ -126,13 +138,28 @@ document.addEventListener("DOMContentLoaded", () => {
                     return;
                 }
                 let data = await response.json();
-                option.value = data._id;
-                option.text = newSkill;
-                option.selected = true;
-                select.appendChild(option);
-                document.getElementById("new_skill").value = "";
+                if (attemptedSkills.includes(data._id)) {
+                    alert("Skill already exists");
+                    return;
+                }
                 attemptedSkills.push(data._id);
-                console.log("Skill added:", data);
+
+                var $select = $(document.getElementById("skills")).selectize(
+                    options
+                );
+                var selectize = $select[0].selectize;
+                selectize.addOption({
+                    value: data._id,
+                    text: newSkill + " (Attempted)",
+                });
+                if (selectize.items.length < 10) {
+                    selectize.addItem(data._id);
+                } else {
+                    alert("You cannot add more than 10 skills");
+                }
+                selectize.refreshOptions();
+                document.getElementById("new_skill").value = "";
+                alert("Skill added successfully");
             }
         });
 });

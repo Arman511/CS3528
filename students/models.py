@@ -274,7 +274,7 @@ class Student:
 
     def update_student_by_id(self, student_id, is_student=True):
         """Updating student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student and not is_student:
             database.students_collection.update_one(
@@ -282,7 +282,9 @@ class Student:
             )
             return jsonify({"message": "Student updated"}), 200
 
-        if is_student and student["student_id"] != session["student"]["student_id"]:
+        if "student" not in session:
+            return jsonify({"error": "You are not logged in"}), 401
+        if is_student and str(student["student_id"]) != session["student"]["student_id"]:
             return (
                 jsonify({"error": "You are not authorized to update this student"}),
                 403,
