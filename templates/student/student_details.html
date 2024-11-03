@@ -2,6 +2,9 @@
 {% block content %}
     <div class="card-wrapper">
         <div class="card">
+            <link href="{{ url_for('static', filename='multiselect/multiselect.css') }}"
+                  rel="stylesheet"
+                  type="text/css">
             <h2 class="center">Update your Details</h2>
             <form class="update_form">
                 <label for="student_id">Student Number:</label>
@@ -37,7 +40,13 @@
                        id="course_search"
                        class="form-control"
                        placeholder="Search for a course...">
-                <select id="course" name="course" class="form-control" required>
+                <select id="course"
+                        name="course"
+                        class="form-control"
+                        required
+                        data-multi-select
+                        data-max="1"
+                        data-select-all="false">
                     {% for course in courses[0]["json"] %}
                         <option value="{{ course.course_id }}"
                                 {% if course.course_id == student.course_id %}selected{% endif %}>
@@ -45,22 +54,18 @@
                         </option>
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('course_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('course').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
-                <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
+                <label for="skills">Skills:</label>
                 <input type="text"
                        id="skills_search"
                        class="form-control"
                        placeholder="Search for skills...">
-                <select id="skills" name="skills" class="form-control" multiple required>
+                <select id="skills"
+                        name="skills"
+                        class="form-control"
+                        multiple
+                        required
+                        data-multi-select
+                        data-max="10">
                     {% for skill in skills[0]["json"] %}
                         <option value="{{ skill._id }}"
                                 title="{{ skill.skill_description }}"
@@ -73,16 +78,6 @@
                         </option>
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('skills_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('skills').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
                 <label for="new_skill">Add New Skill:</label>
                 <input type="text"
                        id="new_skill"
@@ -119,7 +114,12 @@
                        id="modules_search"
                        class="form-control"
                        placeholder="Search for modules...">
-                <select id="modules" name="modules" class="form-control" multiple required>
+                <select id="modules"
+                        name="modules"
+                        class="form-control"
+                        multiple
+                        required
+                        data-multi-select>
                     {% for module in modules[0]["json"] %}
                         <option value="{{ module.module_id }}"
                                 {% if module.module_id in student.module %}selected{% endif %}>
@@ -127,16 +127,6 @@
                         </option>
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('modules_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('modules').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
                 <label for="comments">Any Other Comments:</label>
                 <textarea id="comments" name="comments" class="form-control" rows="4">{{ student.comments }}</textarea>
                 <p class="error error--hidden"></p>
@@ -144,6 +134,7 @@
                 <input type="submit" value="Update" class="btn" />
             </form>
             <script src="/static/student_update/script.js"></script>
+            <script src="/static/multiselect/multiselect.js"></script>
         </div>
     </div>
 {% endblock content %}

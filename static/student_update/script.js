@@ -9,6 +9,12 @@ document.addEventListener("DOMContentLoaded", () => {
         let student_id = document.getElementById("student_id").value;
         let student_email = document.getElementById("email").value;
         let selectedCourse = document.getElementById("course").value;
+        if (selectedCourse === "None") {
+            errorElement.textContent = "Please select a course";
+            errorElement.classList.remove("error--hidden");
+            successElement.classList.add("success--hidden");
+            return;
+        }
         let selectedSkills = [];
         let selecteAttemptedSkills = [];
         let skillsSelect = document.getElementById("skills");
