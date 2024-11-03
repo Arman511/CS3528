@@ -19,7 +19,7 @@ def generate_otp():
     """Makes an otp"""
     digits = "0123456789"
     otp = ""
-    for i in range(6):
+    for _i in range(6):
         otp += digits[math.floor(random.random() * 10)]
 
     return otp

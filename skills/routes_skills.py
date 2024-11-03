@@ -1,8 +1,8 @@
 """Handles the routes for the skills module."""
 
+from flask import render_template, request
 from core import handlers
 from .models import Skill
-from flask import render_template, request
 
 
 def add_skills_routes(app):

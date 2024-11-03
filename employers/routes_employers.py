@@ -30,7 +30,7 @@ def add_employer_routes(app):
 
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
-        elif request.form.get("otp") != otp_serializer.loads(session["OTP"]):
+        if request.form.get("otp") != otp_serializer.loads(session["OTP"]):
             return jsonify({"error": "Invalid OTP."}), 400
 
         return Employers().start_session()

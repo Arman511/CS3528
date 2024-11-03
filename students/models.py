@@ -232,7 +232,7 @@ class Student:
 
             students = df.to_dict(orient="records")
             for student in students:
-                temp_student = dict()
+                temp_student = {}
                 temp_student["_id"] = uuid.uuid1().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
@@ -284,7 +284,10 @@ class Student:
 
         if "student" not in session:
             return jsonify({"error": "You are not logged in"}), 401
-        if is_student and str(student["student_id"]) != session["student"]["student_id"]:
+        if (
+            is_student
+            and str(student["student_id"]) != session["student"]["student_id"]
+        ):
             return (
                 jsonify({"error": "You are not authorized to update this student"}),
                 403,
@@ -299,7 +302,7 @@ class Student:
 
         if student and is_student:
             database.students_collection.update_one(
-                {"student_id": str(student_id)},  {"$set": student}
+                {"student_id": str(student_id)}, {"$set": student}
             )
             return jsonify({"message": "Student updated"}), 200
 
@@ -344,7 +347,7 @@ class Student:
         student = find_student[0].json
         student["modules"] = set(student["modules"][1:-1].split(","))
 
-        valid_opportunities = list()
+        valid_opportunities = []
         for opportunity in opportunities:
             modules_required = set(opportunity["modules_required"][1:-1].split(","))
             if (
