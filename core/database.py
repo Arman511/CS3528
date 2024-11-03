@@ -39,7 +39,6 @@ modules_collection = database["modules"]
 employers_collection = database["employers"]
 deadline_collection = database["deadline"]
 
-
 def get_deadline():
     """Get the deadline from the database."""
     find_deadline = deadline_collection.find_one()

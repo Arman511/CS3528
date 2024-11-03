@@ -329,7 +329,7 @@ class Student:
     def rank_preferences(self, student_id):
         """Sets a students preferences."""
         #!TODO: Implement this method
-        pass
+        raise NotImplementedError()
 
     def get_opportunities_by_student(self, student_id):
         """Get opportunities that a student could do"""

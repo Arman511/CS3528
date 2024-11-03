@@ -2,7 +2,6 @@
 Handles routes for the student module.
 """
 
-import datetime
 from flask import redirect, render_template, request, session
 from core import database, handlers
 from courses.models import Course
@@ -82,7 +81,7 @@ def add_student_routes(app):
         """Logins a student"""
         if request.method == "POST":
             return Student().student_login()
-
+            
         if "student" in session and "student_signed_in" in session:
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
@@ -95,7 +94,7 @@ def add_student_routes(app):
         """Getting student."""
         if "student" not in session:
             return redirect("/students/login")
-        if session["student"]["student_id"] != student_id:
+        if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
         if database.is_past_deadline():
@@ -117,7 +116,7 @@ def add_student_routes(app):
         """Rank preferences."""
         if "student" not in session:
             return redirect("/students/login")
-        if session["student"]["student_id"] != student_id:
+        if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
         if not database.is_past_deadline():
