@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         let url = document.getElementById("url").value;
         let location = document.getElementById("location").value;
-        let placement_duration = document.getElementById("placement_duration").value;
+        let placement_duration =
+            document.getElementById("placement_duration").value;
         let selectedModules = [];
         let spots_available = document.getElementById("spots_available").value;
         let modulesSelect = document.getElementById("modules");
@@ -42,9 +43,10 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 alert("Opportunity added/updated.");
                 errorParagraph.classList.add("error--hidden");
-            }
-            else {
-                errorParagraph.textContent = "Error adding/updating opportunity.";
+                window.location.reload();
+            } else {
+                errorParagraph.textContent =
+                    "Error adding/updating opportunity.";
                 errorParagraph.classList.remove("error--hidden");
             }
         } catch (error) {
@@ -52,7 +54,5 @@ document.addEventListener("DOMContentLoaded", () => {
             errorParagraph.textContent = "Error adding/updating opportunity.";
             errorParagraph.classList.remove("error--hidden");
         }
-
-
     });
 });
