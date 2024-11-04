@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Employer Log In</h1>
+            <form class="login_form" name="login_form">
+                <input type="email" name="email" class="field" placeholder="Email" required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Log In" class="btn" />
+            </form>
+            <p class="center">
+                Are you a student?
+                <a href="{{ url_for("login_student") }}">Student Login</a>
+            </p>
+            <p class="center">
+                Are you part of the placement team?
+                <a href="{{ url_for("login") }}">Login</a>
+            </p>
+        </div>
+        <script src="/static/employer_login/script.js"></script>
+    </div>
+{% endblock content %}

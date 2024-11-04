@@ -1,10 +1,5 @@
 """
-Module handles the connection to a MongoDB database and provides access to specific collections.
-
-Modules:
-    os: Provides a way of using operating system dependent functionality.
-    pymongo: A Python distribution containing tools for working with MongoDB.
-    dotenv: Reads key-value pairs from a .env file and can set them as environment variables.
+Handles connection to the MongoDB database and provides access to the collections.
 """
 
 import os
@@ -13,11 +8,10 @@ import pymongo
 from dotenv import load_dotenv
 
 load_dotenv()
+client: pymongo.MongoClient = pymongo.MongoClient()
+
 if os.getenv("IS_GITHUB_ACTIONS") == "False":
     client = pymongo.MongoClient(os.getenv(("DB_LOGIN")))
-else:
-    client = pymongo.MongoClient()
-
 
 try:
     client.admin.command("ping")
@@ -40,3 +34,4 @@ courses_collection = database["courses"]
 skills_collection = database["skills"]
 attempted_skills_collection = database["attempted_skills"]
 modules_collection = database["modules"]
+employers_collection = database["employers"]

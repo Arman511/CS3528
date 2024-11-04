@@ -33,15 +33,33 @@
                        value="{{ student.email }}"
                        readonly />
                 <label for="course">Course:</label>
+                <input type="text"
+                       id="course_search"
+                       class="form-control"
+                       placeholder="Search for a course...">
                 <select id="course" name="course" class="form-control" required>
                     {% for course in courses[0]["json"] %}
                         <option value="{{ course.course_id }}"
                                 {% if course.course_id == student.course_id %}selected{% endif %}>
-                            {{ course.course_name }}
+                            {{ course.course_id + ": " + course.course_name }}
                         </option>
                     {% endfor %}
                 </select>
+                <script>
+                    document.getElementById('course_search').addEventListener('input', function() {
+                        var searchValue = this.value.toLowerCase();
+                        var options = document.getElementById('course').options;
+                        for (var i = 0; i < options.length; i++) {
+                            var optionText = options[i].text.toLowerCase();
+                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                        }
+                    });
+                </script>
                 <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
+                <input type="text"
+                       id="skills_search"
+                       class="form-control"
+                       placeholder="Search for skills...">
                 <select id="skills" name="skills" class="form-control" multiple required>
                     {% for skill in skills[0]["json"] %}
                         <option value="{{ skill._id }}"
@@ -55,6 +73,16 @@
                         </option>
                     {% endfor %}
                 </select>
+                <script>
+                    document.getElementById('skills_search').addEventListener('input', function() {
+                        var searchValue = this.value.toLowerCase();
+                        var options = document.getElementById('skills').options;
+                        for (var i = 0; i < options.length; i++) {
+                            var optionText = options[i].text.toLowerCase();
+                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                        }
+                    });
+                </script>
                 <label for="new_skill">Add New Skill:</label>
                 <input type="text"
                        id="new_skill"
@@ -87,14 +115,28 @@
                        name="has_car"
                        {% if student.has_car %}checked{% endif %}>
                 <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
+                <input type="text"
+                       id="modules_search"
+                       class="form-control"
+                       placeholder="Search for modules...">
                 <select id="modules" name="modules" class="form-control" multiple required>
                     {% for module in modules[0]["json"] %}
                         <option value="{{ module.module_id }}"
                                 {% if module.module_id in student.module %}selected{% endif %}>
-                            {{ module.module_id }}
+                            {{ module.module_id + ": " + module.module_name }}
                         </option>
                     {% endfor %}
                 </select>
+                <script>
+                    document.getElementById('modules_search').addEventListener('input', function() {
+                        var searchValue = this.value.toLowerCase();
+                        var options = document.getElementById('modules').options;
+                        for (var i = 0; i < options.length; i++) {
+                            var optionText = options[i].text.toLowerCase();
+                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
+                        }
+                    });
+                </script>
                 <label for="comments">Any Other Comments:</label>
                 <textarea id="comments" name="comments" class="form-control" rows="4">{{ student.comments }}</textarea>
                 <p class="error error--hidden"></p>

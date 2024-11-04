@@ -3,6 +3,7 @@ This module initializes a Flask application, connects to a MongoDB database,
 and defines routes with login-required decorators.
 """
 
+from datetime import timedelta
 import os
 import sys
 from dotenv import load_dotenv
@@ -16,6 +17,8 @@ load_dotenv()
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
+app.permanent_session_lifetime = timedelta(minutes=30)
+
 handlers.configure_routes(app)
 
 if __name__ == "__main__":
