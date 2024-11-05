@@ -205,7 +205,7 @@ class Student:
 
             students = df.to_dict(orient="records")
             for student in students:
-                student["_id"] = uuid.uuid1().hex
+                student["_id"] = uuid.uuid4().hex
                 database.students_collection.delete_one(
                     {"student_id": student["student_id"]}
                 )
@@ -233,7 +233,7 @@ class Student:
             students = df.to_dict(orient="records")
             for student in students:
                 temp_student = {}
-                temp_student["_id"] = uuid.uuid1().hex
+                temp_student["_id"] = uuid.uuid4().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
