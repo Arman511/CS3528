@@ -76,7 +76,6 @@ def test_get_home_page():
     assert response.status_code == 200
     database.users_collection.delete_one({"_id": user["_id"]})
 
-    
 def test_get_add_Student():
     
     user = {
@@ -118,7 +117,6 @@ def test_get_Search_Student():
     response = client.get(url)
     assert response.status_code == 200 
     database.users_collection.delete_one({"_id": user["_id"]})
-
 
 def test_get_adding_skills():
     database.users_collection.delete_many({"email": "dummy@dummy.com"})
