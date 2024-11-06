@@ -337,7 +337,6 @@ class Student:
 
     def get_opportunities_by_student(self, student_id):
         """Get opportunities that a student could do"""
-        #!TODO: Implement this method
         opportunities = Opportunity().get_opportunities()
         find_student = self.get_student_by_id(student_id)
 
@@ -346,6 +345,7 @@ class Student:
 
         student = find_student[0].json
         student["modules"] = set(student["modules"][1:-1].split(","))
+        student_duration = set(student["placement_duration"][1:-1].split(","))
 
         valid_opportunities = []
         for opportunity in opportunities:
@@ -353,6 +353,8 @@ class Student:
             if (
                 modules_required.issubset(student["modules"])
                 and student["course"] in opportunity["course_required"]
+                and opportunity["duration"] in student_duration
             ):
+
                 valid_opportunities.append(opportunity)
         return valid_opportunities

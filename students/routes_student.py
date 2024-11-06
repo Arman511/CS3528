@@ -5,6 +5,7 @@ Handles routes for the student module.
 from flask import redirect, render_template, request, session
 from core import database, handlers
 from courses.models import Course
+from employers.models import Employers
 from skills.models import Skill
 from course_modules.models import Module
 from .models import Student
@@ -126,6 +127,7 @@ def add_student_routes(app):
         return render_template(
             "student/student_rank_opportunities.html",
             opportunities=Student().get_opportunities_by_student(student_id),
+            employers_col=Employers().get_employer_by_id,
         )
 
     @app.route("/students/update_success")

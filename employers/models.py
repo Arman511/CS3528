@@ -1,8 +1,11 @@
 """Employer model."""
 
+from datetime import datetime, timedelta
 import uuid
 from flask import redirect, request, jsonify, session
 from core import database, email_handler
+
+employers_cache = {"data": None, "last_updated": None}
 
 
 class Employers:
@@ -44,3 +47,23 @@ class Employers:
             return jsonify({"message": "OTP sent"}), 200
 
         return jsonify({"error": "Invalid login credentials."}), 401
+
+    def get_employers(self):
+        """Gets all employers."""
+        if employers_cache["data"] and datetime.now() - employers_cache[
+            "last_updated"
+        ] < timedelta(minutes=5):
+            return employers_cache["data"]
+
+        employers = list(database.employers_collection.find())
+        employers_cache["data"] = employers
+        employers_cache["last_updated"] = datetime.now()
+        return employers
+    
+    def get_employer_by_id(self, employer_id):
+        """Gets an employer by ID."""
+        employers = self.get_employers()
+        
+        for employer in employers:
+            if employer["_id"] == employer_id:
+                return employer

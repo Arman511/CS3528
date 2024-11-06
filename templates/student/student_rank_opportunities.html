@@ -1,0 +1,16 @@
+{% %}{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        {% for opportunity in opportunities %}
+            <div class="card opportunity-item">
+                <h3 class="opportunity-title">{{ opportunity.title }}</h3>
+                <p class="hidden opportunity-id">{{ opportunity._id }}</p>
+                <p class="opportunity-description">{{ opportunity.description }}</p>
+                <p class="opportunity-url">{{ opportunity.url }}</p>
+                <p class="opportunity.location">{{ opportunity.location }}</p>
+                <p class="opportunity-company">Company: {% get_employer_by_id(opportunity.employer_id).company_name %}</p>
+            </div>
+        {% endfor %}
+        <script src="/static/student_rank_opportunites/script.js"></script>
+    </div>
+{% endblock content %}
