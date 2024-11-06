@@ -98,3 +98,4 @@ def test_get_adding_skills():
     response = client.get(url)
     assert response.status_code == 200
     database.users_collection.delete_one({"_id": user["_id"]})
+
