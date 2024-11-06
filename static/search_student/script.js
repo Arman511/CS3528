@@ -35,8 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td>${student.last_name}</td>
                         <td>${student.email}</td>
                         <td>${student.student_id}</td>
-                        <td>${student.course.course_id}</td>
-                        <td>${student.skills.skill_name}</td>
+                        <td>${student.course}</td>
                         <td>
                             <button class="update-button">Update</button>
                             <button class="delete-button">Delete</button>

@@ -32,6 +32,8 @@ class Student:
             query["course"] = request.form.get("course")
         if request.form.get("skills"):
             query["skills"] = request.form.get("skills")
+        if request.form.get("modules"):
+            query["modules"] = request.form.get("modules")
 
         students = list(database.students_collection.find(query))
 
