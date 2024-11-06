@@ -45,7 +45,7 @@ def test_add_and_remove_dummy_login():
     assert deleted_user is None, "User was not deleted"
 
 def test_invalid_email():
-    """Check if an invalid user can be added."""
+    """Check if an invalid email can be added."""
    
     database.users_collection.delete_many({"email": "dummy@dummy.com"})
     user = {
