@@ -77,6 +77,8 @@ def test_get_home_page():
     
 def test_get_add_Student():
     
+    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+    
     user = {
         "_id": uuid.uuid4().hex,
         "name": "dummy",
@@ -95,6 +97,54 @@ def test_get_add_Student():
     response = client.get(url)
     assert response.status_code == 200 
     database.users_collection.delete_one({"_id": user["_id"]})
+    
+def test_get_add_employer():
+    
+    
+    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+    
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+    
+    client = app.test_client()
+    response = client.post("/user/login", data={
+        "email": "dummy@dummy.com",
+        "password": "dummy",
+    })
+    
+    url = "/employers/add_employer"
+    response = client.get(url)
+    assert response.status_code == 200 
+    database.users_collection.delete_one({"_id": user["_id"]})
+    
+def test_get_change_deadline():
+    
+    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+    
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+    
+    client = app.test_client()
+    response = client.post("/user/login", data={
+        "email": "dummy@dummy.com",
+        "password": "dummy",
+    })
+    
+    url = "/user/deadline"
+    response = client.get(url)
+    assert response.status_code == 200 
+    database.users_collection.delete_one({"_id": user["_id"]})
+    
     
 def test_get_Search_Student():
     
@@ -141,6 +191,58 @@ def test_get_adding_skills():
     response = client.get(url)
     assert response.status_code == 200
     database.users_collection.delete_one({"_id": user["_id"]})
+    
+    
+def test_get_courses():
+    
+    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+
+    client = app.test_client()
+    response = client.post(
+        "/user/login",
+        data={
+            "email": "dummy@dummy.com",
+            "password": "dummy",
+        },
+    )
+    
+    url = "/course_modules/add_module"
+    response = client.get(url)
+    assert response.status_code == 200
+    database.users_collection.delete_one({"_id": user["_id"]})
+    
+def test_get_modules():
+    
+    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+    database.users_collection.insert_one(user)
+
+    client = app.test_client()
+    response = client.post(
+        "/user/login",
+        data={
+            "email": "dummy@dummy.com",
+            "password": "dummy",
+        },
+    )
+    
+    url = "/course_modules/add_module"
+    response = client.get(url)
+    assert response.status_code == 200
+    database.users_collection.delete_one({"_id": user["_id"]})
+    
 
 def test_Log_out():
 
@@ -160,11 +262,6 @@ def test_Log_out():
         "email": "dummy@dummy.com",
         "password": "dummy",
     })
-    
-    
-    #How to test log out
-    
-    
     
     client.get("/user/signout")
     url = "/user/login"
