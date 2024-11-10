@@ -124,6 +124,14 @@ class Opportunity:
 
         return jsonify(cache["data"]), 200
 
+    def get_opportunities_by_duration(self, duration):
+        """Getting all opportunities that macth duration."""
+        duration_list = [d.strip().replace('"', "") for d in duration[1:-1].split(",")]
+        data = list(
+            database.opportunities_collection.find({"duration": {"$in": duration_list}})
+        )
+        return jsonify(data), 200
+
     def update_opportunity(self):
         """Updating opportunity."""
         opportunity = database.opportunities_collection.find_one(

@@ -29,7 +29,6 @@ class Employers:
             return jsonify({"error": "Employer already in database"}), 400
 
         database.employers_collection.insert_one(employer)
-
         if employer:
             return jsonify(employer), 200
 
@@ -59,11 +58,11 @@ class Employers:
         employers_cache["data"] = employers
         employers_cache["last_updated"] = datetime.now()
         return employers
-    
+
     def get_employer_by_id(self, employer_id):
         """Gets an employer by ID."""
         employers = self.get_employers()
-        
+
         for employer in employers:
             if employer["_id"] == employer_id:
                 return employer

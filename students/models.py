@@ -66,7 +66,7 @@ class Student:
 
     def get_student_by_id(self, student_id):
         """Getting student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student:
             return jsonify(student), 200
@@ -337,24 +337,38 @@ class Student:
 
     def get_opportunities_by_student(self, student_id):
         """Get opportunities that a student could do"""
-        opportunities = Opportunity().get_opportunities()
         find_student = self.get_student_by_id(student_id)
 
         if not find_student:
             return jsonify({"error": "Student not found"}), 404
 
+        opportunities = Opportunity().get_opportunities()
+
         student = find_student[0].json
-        student["modules"] = set(student["modules"][1:-1].split(","))
-        student_duration = set(student["placement_duration"][1:-1].split(","))
+        student["modules"] = set(
+            [
+                d.strip().replace('"', "")
+                for d in student["modules"][1:-1].split(",")
+                if d.strip().replace('"', "") != ""
+            ]
+        )
 
         valid_opportunities = []
-        for opportunity in opportunities:
-            modules_required = set(opportunity["modules_required"][1:-1].split(","))
-            if (
-                modules_required.issubset(student["modules"])
-                and student["course"] in opportunity["course_required"]
-                and opportunity["duration"] in student_duration
-            ):
+        for opportunity in opportunities[0].json:
+            modules_required = set(
+                [
+                    module.strip().replace('"', "")
+                    for module in opportunity["modules_required"][1:-1].split(",")
+                    if module.strip().replace('"', "") != ""
+                ]
+            )
 
-                valid_opportunities.append(opportunity)
+            if modules_required.issubset(student["modules"]):
+                if (
+                    student["course"] in opportunity["courses_required"]
+                    or opportunity["courses_required"] == ""
+                ):
+                    if opportunity["duration"] in student["placement_duration"]:
+                        valid_opportunities.append(opportunity)
+
         return valid_opportunities

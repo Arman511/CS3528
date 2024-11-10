@@ -99,7 +99,7 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
         if database.is_past_deadline():
-            return redirect("/students/rank_preferences")
+            return redirect(f"/students/rank_preferences/{student_id}")
         if request.method == "POST":
             return Student().update_student_by_id(student_id, True)
         return render_template(
@@ -124,10 +124,12 @@ def add_student_routes(app):
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
             return Student().rank_preferences(student_id)
+        opportunities = Student().get_opportunities_by_student(student_id)
         return render_template(
             "student/student_rank_opportunities.html",
-            opportunities=Student().get_opportunities_by_student(student_id),
+            opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
+            count=len(opportunities),
         )
 
     @app.route("/students/update_success")
