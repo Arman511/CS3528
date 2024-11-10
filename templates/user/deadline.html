@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Update deadline</h1>
+            <form class="deadline_form" name="deadline_form">
+                <input type="date"
+                       name="deadline"
+                       class="field"
+                       id="deadline"
+                       required
+                       value="{{ deadline }}" />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Update Deadline" class="btn" />
+            </form>
+        </div>
+        <script src="/static/deadline/script.js"></script>
+    </div>
+{% endblock content %}

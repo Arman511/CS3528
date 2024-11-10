@@ -14,7 +14,7 @@ form.addEventListener("submit", function (e) {
             if (response.ok) {
                 window.location.href = `/students/details/${formData.get(
                     "student_id"
-                )}`; // Redirect on successful login
+                )}`;
             } else if (response.status === 401 || response.status === 400) {
                 let errorResponse = await response.json(); // Parse JSON response
                 throw new Error(errorResponse.error); // Throw error with the extracted message

@@ -10,8 +10,8 @@ class StudentRankingSystem:
         for criterion, weight in employer_weights.items():
             if criterion == "positions":
                 continue
-            else:
-                score += student[criterion] * weight
+
+            score += student[criterion] * weight
         return score  # Return as float for sorting
 
     def rank_students(self):

@@ -33,11 +33,8 @@
                        value="{{ student.email }}"
                        readonly />
                 <label for="course">Course:</label>
-                <input type="text"
-                       id="course_search"
-                       class="form-control"
-                       placeholder="Search for a course...">
                 <select id="course" name="course" class="form-control" required>
+                    <option value="" disabled selected>Select Course</option>
                     {% for course in courses[0]["json"] %}
                         <option value="{{ course.course_id }}"
                                 {% if course.course_id == student.course_id %}selected{% endif %}>
@@ -45,21 +42,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('course_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('course').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
-                <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
-                <input type="text"
-                       id="skills_search"
-                       class="form-control"
-                       placeholder="Search for skills...">
+                <label for="skills">Skills (Max 10):</label>
                 <select id="skills" name="skills" class="form-control" multiple required>
                     {% for skill in skills[0]["json"] %}
                         <option value="{{ skill._id }}"
@@ -67,30 +50,19 @@
                                 {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
                     {% endfor %}
                     {% for attempt in attempted_skills[0]["json"] %}
-                        <option value="{{ attempt._id }}"
-                                {% if attempt._id in student.attempted_skills %}selected{% endif %}>
-                            {{ attempt.skill_name }} (Attempted)
-                        </option>
+                        {% if attempt._id in student.attempted_skills %}
+                            <option value="{{ attempt._id }}" selected>{{ attempt.skill_name }} (Attempted)</option>
+                        {% endif %}
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('skills_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('skills').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
                 <label for="new_skill">Add New Skill:</label>
                 <input type="text"
                        id="new_skill"
                        name="new_skill"
                        class="form-control"
                        placeholder="Type a new skill" />
-                <button type="button" id="add_skill" class="btn">Add Skill</button>
-                <label for="placement_duration">Placement Duration (Multiselect, hold ctrl/command to select them):</label>
+                <button type="button" id="add_skill" for="new_skill" class="btn">Add Skill</button>
+                <label for="placement_duration">Placement Duration:</label>
                 <select id="placement_duration"
                         name="placement_duration"
                         class="form-control"
@@ -113,12 +85,9 @@
                 <input type="checkbox"
                        id="has_car"
                        name="has_car"
-                       {% if student.has_car %}checked{% endif %}>
-                <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
-                <input type="text"
-                       id="modules_search"
-                       class="form-control"
-                       placeholder="Search for modules...">
+                       {% if student.has_car %}checked{% endif %} />
+                <br />
+                <label for="modules">Modules:</label>
                 <select id="modules" name="modules" class="form-control" multiple required>
                     {% for module in modules[0]["json"] %}
                         <option value="{{ module.module_id }}"
@@ -127,16 +96,6 @@
                         </option>
                     {% endfor %}
                 </select>
-                <script>
-                    document.getElementById('modules_search').addEventListener('input', function() {
-                        var searchValue = this.value.toLowerCase();
-                        var options = document.getElementById('modules').options;
-                        for (var i = 0; i < options.length; i++) {
-                            var optionText = options[i].text.toLowerCase();
-                            options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                        }
-                    });
-                </script>
                 <label for="comments">Any Other Comments:</label>
                 <textarea id="comments" name="comments" class="form-control" rows="4">{{ student.comments }}</textarea>
                 <p class="error error--hidden"></p>
@@ -144,6 +103,23 @@
                 <input type="submit" value="Update" class="btn" />
             </form>
             <script src="/static/student_update/script.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#skills').selectize({
+                        maxItems: 10,
+                        sortField: 'text'
+                    });
+                    $('#modules').selectize({
+                        sortField: 'text'
+                    });
+                    $('#course').selectize({
+                        sortField: 'text'
+                    });
+                    $('#placement_duration').selectize({
+                        sortField: 'text'
+                    });
+                });
+            </script>
         </div>
     </div>
 {% endblock content %}

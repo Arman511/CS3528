@@ -3,11 +3,11 @@
 import smtplib
 from email.mime.text import MIMEText
 import os
-from dotenv import load_dotenv
 import math
 import random
-
+from dotenv import load_dotenv
 from flask import session
+from itsdangerous.url_safe import URLSafeSerializer
 
 load_dotenv()
 
@@ -19,7 +19,7 @@ def generate_otp():
     """Makes an otp"""
     digits = "0123456789"
     otp = ""
-    for i in range(6):
+    for _i in range(6):
         otp += digits[math.floor(random.random() * 10)]
 
     return otp
@@ -27,6 +27,7 @@ def generate_otp():
 
 def send_otp(recipient):
     """Sends an OTP"""
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
     otp = generate_otp()
     body = f"HERE IS YOUR OTP {otp}"
     msg = MIMEText(body)
@@ -37,4 +38,4 @@ def send_otp(recipient):
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipient, msg.as_string())
     print("Message sent!")
-    session["OTP"] = otp
+    session["OTP"] = otp_serializer.dumps(otp)

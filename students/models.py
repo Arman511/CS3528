@@ -7,6 +7,7 @@ from flask import jsonify, request, session
 from pymongo import TEXT
 import pandas as pd
 from core import database, handlers
+from opportunities.models import Opportunity
 
 
 class Student:
@@ -233,7 +234,7 @@ class Student:
 
             students = df.to_dict(orient="records")
             for student in students:
-                temp_student = dict()
+                temp_student = {}
                 temp_student["_id"] = uuid.uuid1().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
@@ -275,7 +276,7 @@ class Student:
 
     def update_student_by_id(self, student_id, is_student=True):
         """Updating student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student and not is_student:
             database.students_collection.update_one(
@@ -283,23 +284,27 @@ class Student:
             )
             return jsonify({"message": "Student updated"}), 200
 
-        if is_student and student["student_id"] != session["student"]["student_id"]:
+        if "student" not in session:
+            return jsonify({"error": "You are not logged in"}), 401
+        if (
+            is_student
+            and str(student["student_id"]) != session["student"]["student_id"]
+        ):
             return (
                 jsonify({"error": "You are not authorized to update this student"}),
                 403,
             )
-        data = {
-            "course": request.form.get("course"),
-            "skills": request.form.get("skills"),
-            "attempted_skills": request.form.get("attempted_skills"),
-            "has_car": request.form.get("has_car"),
-            "placement_duration": request.form.get("placement_duration"),
-            "modules": request.form.get("modules"),
-            "comments": request.form.get("comments"),
-        }
+        student["comments"] = request.form.get("comments")
+        student["skills"] = request.form.get("skills")
+        student["attempted_skills"] = request.form.get("attempted_skills")
+        student["has_car"] = request.form.get("has_car")
+        student["placement_duration"] = request.form.get("placement_duration")
+        student["modules"] = request.form.get("modules")
+        student["course"] = request.form.get("course")
+
         if student and is_student:
             database.students_collection.update_one(
-                {"student_id": student_id}, {"$set": data}
+                {"student_id": str(student_id)}, {"$set": student}
             )
             return jsonify({"message": "Student updated"}), 200
 
@@ -326,3 +331,30 @@ class Student:
             return jsonify({"message": "Login successful"}), 200
 
         return jsonify({"error": "Invalid email or password"}), 401
+
+    def rank_preferences(self, student_id):
+        """Sets a students preferences."""
+        #!TODO: Implement this method
+        raise NotImplementedError()
+
+    def get_opportunities_by_student(self, student_id):
+        """Get opportunities that a student could do"""
+        #!TODO: Implement this method
+        opportunities = Opportunity().get_opportunities()
+        find_student = self.get_student_by_id(student_id)
+
+        if not find_student:
+            return jsonify({"error": "Student not found"}), 404
+
+        student = find_student[0].json
+        student["modules"] = set(student["modules"][1:-1].split(","))
+
+        valid_opportunities = []
+        for opportunity in opportunities:
+            modules_required = set(opportunity["modules_required"][1:-1].split(","))
+            if (
+                modules_required.issubset(student["modules"])
+                and student["course"] in opportunity["course_required"]
+            ):
+                valid_opportunities.append(opportunity)
+        return valid_opportunities
