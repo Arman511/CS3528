@@ -68,7 +68,7 @@ class Student:
 
     def get_student_by_id(self, student_id):
         """Getting student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student:
             return jsonify(student), 200
@@ -207,7 +207,7 @@ class Student:
 
             students = df.to_dict(orient="records")
             for student in students:
-                student["_id"] = uuid.uuid1().hex
+                student["_id"] = uuid.uuid4().hex
                 database.students_collection.delete_one(
                     {"student_id": student["student_id"]}
                 )
@@ -235,7 +235,7 @@ class Student:
             students = df.to_dict(orient="records")
             for student in students:
                 temp_student = {}
-                temp_student["_id"] = uuid.uuid1().hex
+                temp_student["_id"] = uuid.uuid4().hex
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
@@ -334,27 +334,47 @@ class Student:
 
     def rank_preferences(self, student_id):
         """Sets a students preferences."""
-        #!TODO: Implement this method
-        raise NotImplementedError()
+        student = database.students_collection.find_one({"student_id": str(student_id)})
+
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+        database.students_collection.update_one(
+            {"student_id": str(student_id)}, {"$set": {"preferences": preferences}}
+        )
+        return jsonify({"message": "Preferences updated"}), 200
 
     def get_opportunities_by_student(self, student_id):
         """Get opportunities that a student could do"""
-        #!TODO: Implement this method
-        opportunities = Opportunity().get_opportunities()
         find_student = self.get_student_by_id(student_id)
 
         if not find_student:
             return jsonify({"error": "Student not found"}), 404
 
+        opportunities = Opportunity().get_opportunities()
+
         student = find_student[0].json
-        student["modules"] = set(student["modules"][1:-1].split(","))
+        student["modules"] = set(
+            d.strip().replace('"', "")
+            for d in student["modules"][1:-1].split(",")
+            if d.strip().replace('"', "") != ""
+        )
 
         valid_opportunities = []
-        for opportunity in opportunities:
-            modules_required = set(opportunity["modules_required"][1:-1].split(","))
-            if (
-                modules_required.issubset(student["modules"])
-                and student["course"] in opportunity["course_required"]
-            ):
-                valid_opportunities.append(opportunity)
+        for opportunity in opportunities[0].json:
+            modules_required = set(
+                module.strip().replace('"', "")
+                for module in opportunity["modules_required"][1:-1].split(",")
+                if module.strip().replace('"', "") != ""
+            )
+
+            if modules_required.issubset(student["modules"]):
+                if (
+                    student["course"] in opportunity["courses_required"]
+                    or opportunity["courses_required"] == ""
+                ):
+                    if opportunity["duration"] in student["placement_duration"]:
+                        valid_opportunities.append(opportunity)
+
         return valid_opportunities

@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="card-wrapper">
+        <div class="row">
+            <div class="col-12">
+                <h1>Rank Opportunities</h1>
+                <p>
+                    Rank the opportunities below in order of preference. You can only rank each opportunity once. 1 is most preferable {{ opportunities|length }} is least preferable
+                </p>
+            </div>
+            <div class="col-12">
+                <button id="submit-ranks" class="btn btn-primary">Submit</button>
+            </div>
+            {% for opportunity in opportunities %}
+                <div class="col-md-6 col-lg-4 mb-1 px-1">
+                    <div class="opportunity-item card h-100 p-2 bg-light">
+                        <div class="card-body">
+                            <h3 class="opportunity-title">{{ opportunity.title }}</h3>
+                            <p class="opportunity-id d-none">{{ opportunity._id }}</p>
+                            <p class="opportunity-description">{{ opportunity.description }}</p>
+                            <p class="opportunity-url">{{ opportunity.url }}</p>
+                            <p class="opportunity-location">{{ opportunity.location }}</p>
+                            <p class="opportunity-company">Company: {{ employers_col(opportunity.employer_id).company_name }}</p>
+                            <label for="rank-{{ opportunity._id }}">Rank:</label>
+                            <select id="rank-{{ opportunity._id }}"
+                                    name="rank-{{ opportunity._id }}"
+                                    class="opportunity-rank form-select">
+                                <option value="">Select rank</option>
+                                {% for i in range(1, opportunities|length + 1) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    const rankSelects = document.querySelectorAll('.opportunity-rank');
+
+                    rankSelects.forEach(select => {
+                        select.addEventListener('change', function () {
+                            const selectedValue = this.value;
+
+                            rankSelects.forEach(otherSelect => {
+                                if (otherSelect !== this && otherSelect.value === selectedValue) {
+                                    this.value = '';
+                                    alert('You can only rank each opportunity once');
+                                }
+                            });
+                        });
+                    });
+                });
+            </script>
+        </div>
+        <script src="/static/student_rank_opportunites/script.js"></script>
+    </div>
+{% endblock content %}
