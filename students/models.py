@@ -354,21 +354,17 @@ class Student:
 
         student = find_student[0].json
         student["modules"] = set(
-            [
-                d.strip().replace('"', "")
-                for d in student["modules"][1:-1].split(",")
-                if d.strip().replace('"', "") != ""
-            ]
+            d.strip().replace('"', "")
+            for d in student["modules"][1:-1].split(",")
+            if d.strip().replace('"', "") != ""
         )
 
         valid_opportunities = []
         for opportunity in opportunities[0].json:
             modules_required = set(
-                [
-                    module.strip().replace('"', "")
-                    for module in opportunity["modules_required"][1:-1].split(",")
-                    if module.strip().replace('"', "") != ""
-                ]
+                module.strip().replace('"', "")
+                for module in opportunity["modules_required"][1:-1].split(",")
+                if module.strip().replace('"', "") != ""
             )
 
             if modules_required.issubset(student["modules"]):
