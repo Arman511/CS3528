@@ -66,3 +66,5 @@ class Employers:
         for employer in employers:
             if employer["_id"] == employer_id:
                 return employer
+        
+        return None
