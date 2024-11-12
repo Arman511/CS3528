@@ -2,9 +2,6 @@
 {% block content %}
     {% include "employers/navbar.html" %}
     <div class="card-wrapper">
-        <link href="{{ url_for('static', filename='multiselect/multiselect.css') }}"
-              rel="stylesheet"
-              type="text/css">
         <div class="card">
             <h2 class="center">Add/Update placement</h2>
             <form class="update_add_form">
@@ -92,13 +89,15 @@
             <script>
                 $(document).ready(function () {
                     $('#modules').selectize({
-                        sortField: 'text'
+                        plugins: ["remove_button"],
+                        sortField: 'text',
                     });
                     $('#course').selectize({
-                        sortField: 'text'
+                        plugins: [ "remove_button"],
+                        sortField: 'text',
                     });
                     $('#placement_duration').selectize({
-                        sortField: 'text'
+                        sortField: 'text',
                     });
                 });
             </script>
