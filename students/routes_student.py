@@ -136,5 +136,5 @@ def add_student_routes(app):
     @handlers.student_login_required
     def student_update_successful():
         """Routing to deal with success"""
-
+        session.clear()
         return render_template("student/update_successful_page.html")

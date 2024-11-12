@@ -332,8 +332,16 @@ class Student:
 
     def rank_preferences(self, student_id):
         """Sets a students preferences."""
-        #!TODO: Implement this method
-        raise NotImplementedError()
+        student = database.students_collection.find_one({"student_id": str(student_id)})
+
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
+
+        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+        database.students_collection.update_one(
+            {"student_id": str(student_id)}, {"$set": {"preferences": preferences}}
+        )
+        return jsonify({"message": "Preferences updated"}), 200
 
     def get_opportunities_by_student(self, student_id):
         """Get opportunities that a student could do"""
