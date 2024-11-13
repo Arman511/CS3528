@@ -91,4 +91,4 @@ class Course:
             courses_cache["last_updated"] = current_time
             return courses
 
-        raise FileNotFoundError
+        return []

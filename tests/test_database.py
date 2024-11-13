@@ -44,9 +44,10 @@ def test_add_and_remove_dummy_login():
     deleted_user = database.users_collection.find_one({"email": "dummy@dummy.com"})
     assert deleted_user is None, "User was not deleted"
 
+
 def test_invalid_email():
     """Check if an invalid email can be added."""
-   
+
     database.users_collection.delete_many({"email": "dummy@dummy.com"})
     user = {
         "_id": uuid.uuid4().hex,
@@ -58,6 +59,3 @@ def test_invalid_email():
     added_user = database.users_collection.find_one({"email": "dummy@dummy.com"})
     assert added_user is None, "Invalid email was added"
     database.users_collection.delete_one({"email": ""})
-    
-    
-    
