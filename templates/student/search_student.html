@@ -4,39 +4,39 @@
         <div class="card">
             <h1 class="center">Search Students</h1>
             <form id="searchForm">
-                <div class="form-group"
-                     style="display: flex;
-                            justify-content: space-between">
-                    <div style="flex: 1; margin-right: 10px">
+                <div class="form-group">
+                    <div>
                         <label for="first_name">First Name:</label>
                         <input type="text" id="first_name" name="first_name" class="form-control" />
                     </div>
-                    <div style="flex: 1; margin-right: 10px">
+                    <div>
                         <label for="last_name">Last Name:</label>
                         <input type="text" id="last_name" name="last_name" class="form-control" />
                     </div>
-                    <div style="flex: 1; margin-right: 10px">
+                    <div>
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" class="form-control" />
                     </div>
-                    <div style="flex: 1; margin-right: 10px">
+                    <div>
                         <label for="student_id">Student Number:</label>
                         <input type="text" id="student_id" name="student_id" class="form-control" />
                     </div>
-                    <div style="flex: 1; margin-right: 10px">
+                    <div>
                         <label for="course">Course:</label>
                         <select id="course" name="course" class="form-control">
-                            {% for course in courses %}<option value="{{ course.course_id }}">{{ course.course_name }}</option>{% endfor %}
+                            {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
-                    <div style="flex: 1">
+                    <div>
                         <label for="skills">Skills:</label>
                         <select id="skills" name="skills" class="form-control" multiple>
                             {% for skill in skills %}<option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>{% endfor %}
                         </select>
                     </div>
                 </div>
-                <div class="form-group" style="text-align: center; margin-top: 20px">
+                <div class="form-group">
                     <p class="error error--hidden"></p>
                     <input type="submit" value="Search" class="btn" />
                 </div>
@@ -58,6 +58,18 @@
                 </table>
             </div>
             <script src="/static/search_student/script.js"></script>
+            <script>
+                $(document).ready(function () {
+                    $('#skills').selectize({
+                        plugins: ["remove_button"],
+                        sortField: 'text'
+                    });
+                    $('#course').selectize({
+                        plugins: ["remove_button"],
+                        sortField: 'text'
+                    });
+                });
+            </script>
         </div>
     </div>
 {% endblock content %}

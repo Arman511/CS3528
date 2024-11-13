@@ -38,54 +38,26 @@
                 </div>
                 <div class="form-group">
                     <label for="course">Course:</label>
-                    <input type="text"
-                           id="course_search"
-                           class="form-control"
-                           placeholder="Search for a course...">
                     <select id="course" name="course" class="form-control" required>
-                        {% for course in courses[0]["json"] %}
+                        {% for course in courses %}
                             <option value="{{ course.course_id }}"
                                     {% if course.course_id == student.course_id %}selected{% endif %}>
                                 {{ +course.course_id + ": " + course.course_name }}
                             </option>
                         {% endfor %}
                     </select>
-                    <script>
-                        document.getElementById('course_search').addEventListener('input', function() {
-                            var searchValue = this.value.toLowerCase();
-                            var options = document.getElementById('course').options;
-                            for (var i = 0; i < options.length; i++) {
-                                var optionText = options[i].text.toLowerCase();
-                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                            }
-                        });
-                    </script>
                 </div>
                 <div class="form-group">
-                    <label for="skills">Skills (Multiselect, hold ctrl/command to select them):</label>
-                    <input type="text"
-                           id="skills_search"
-                           class="form-control"
-                           placeholder="Search for skills...">
+                    <label for="skills">Skills:</label>
                     <select id="skills" name="skills" class="form-control" multiple required>
                         {% for skill in skills %}
                             <option value="{{ skill.skill_name }}"
                                     {% if skill in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
                         {% endfor %}
                     </select>
-                    <script>
-                        document.getElementById('skills_search').addEventListener('input', function() {
-                            var searchValue = this.value.toLowerCase();
-                            var options = document.getElementById('skills').options;
-                            for (var i = 0; i < options.length; i++) {
-                                var optionText = options[i].text.toLowerCase();
-                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                            }
-                        });
-                    </script>
                 </div>
                 <div class="form-group">
-                    <label for="placement_duration">Placement Duration (Multiselect, hold ctrl/command to select them):</label>
+                    <label for="placement_duration">Placement Duration:</label>
                     <select id="placement_duration"
                             name="placement_duration"
                             class="form-control"
@@ -115,11 +87,7 @@
                            {% if student.has_car %}checked{% endif %}>
                 </div>
                 <div class="form-group">
-                    <label for="modules">Modules (Multiselect, hold ctrl/command to select them):</label>
-                    <input type="text"
-                           id="modules_search"
-                           class="form-control"
-                           placeholder="Search for modules...">
+                    <label for="modules">Modules:</label>
                     <select id="modules" name="modules" class="form-control" multiple required>
                         {% for module in modules %}
                             <option value="{{ module.module_id }}"
@@ -128,16 +96,6 @@
                             </option>
                         {% endfor %}
                     </select>
-                    <script>
-                        document.getElementById('modules_search').addEventListener('input', function() {
-                            var searchValue = this.value.toLowerCase();
-                            var options = document.getElementById('modules').options;
-                            for (var i = 0; i < options.length; i++) {
-                                var optionText = options[i].text.toLowerCase();
-                                options[i].style.display = optionText.includes(searchValue) ? '' : 'none';
-                            }
-                        });
-                    </script>
                 </div>
                 <div class="form-group">
                     <label for="comments">Any Other Comments:</label>
