@@ -97,7 +97,7 @@ class Skill:
             and skills_cache["last_updated"]
             and skills_cache["last_updated"] > one_week_ago
         ):
-            return jsonify(skills_cache["data"]), 200
+            return skills_cache["data"]
 
         # Fetch skills from the database
         skills = list(database.skills_collection.find())
@@ -106,9 +106,9 @@ class Skill:
             # Update cache
             skills_cache["data"] = skills
             skills_cache["last_updated"] = current_time
-            return jsonify(skills), 200
+            return skills
 
-        return jsonify({"error": "No skills found"}), 404
+        return []
 
     def attempt_add_skill(self):
         """Add skill to attempted skills"""

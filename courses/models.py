@@ -80,7 +80,7 @@ class Course:
             and courses_cache["last_updated"]
             and courses_cache["last_updated"] > one_week_ago
         ):
-            return jsonify(courses_cache["data"]), 200
+            return courses_cache["data"]
 
         # Fetch courses from the database
         courses = list(database.courses_collection.find())
@@ -89,6 +89,6 @@ class Course:
             # Update cache
             courses_cache["data"] = courses
             courses_cache["last_updated"] = current_time
-            return jsonify(courses), 200
+            return courses
 
-        return jsonify({"error": "No courses found"}), 404
+        return []

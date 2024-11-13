@@ -30,7 +30,7 @@
                         class="form-control"
                         data-placeholder="Select Course Titles"
                         multiple>
-                    {% for course in courses[0]["json"] %}
+                    {% for course in courses %}
                         <option value="{{ course.course_id }}" {% if course.course_id in opportunity.courses_required
                             %}selected{% endif %}>{{ course.course_id+": "+ course.course_name }}</option>
                     {% endfor %}

@@ -35,7 +35,7 @@
                 <label for="course">Course:</label>
                 <select id="course" name="course" class="form-control" required>
                     <option value="" disabled selected>Select Course</option>
-                    {% for course in courses[0]["json"] %}
+                    {% for course in courses %}
                         <option value="{{ course.course_id }}"
                                 {% if course.course_id == student.course_id %}selected{% endif %}>
                             {{ course.course_id + ": " + course.course_name }}
@@ -44,7 +44,7 @@
                 </select>
                 <label for="skills">Skills (Max 10):</label>
                 <select id="skills" name="skills" class="form-control" multiple required>
-                    {% for skill in skills[0]["json"] %}
+                    {% for skill in skills %}
                         <option value="{{ skill._id }}"
                                 title="{{ skill.skill_description }}"
                                 {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
