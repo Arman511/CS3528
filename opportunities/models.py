@@ -7,6 +7,7 @@ import uuid
 from flask import jsonify, request, session
 import pandas as pd
 from core import database, handlers
+from students.models import Student
 
 cache = {"data": [], "last_updated": datetime.now()}
 
@@ -101,7 +102,7 @@ class Opportunity:
             for opportunity in cache["data"]:
                 if opportunity["_id"] == _id:
                     return jsonify(opportunity), 200
-            return jsonify({"error": "Opportunity not found"}), 404
+            return None
 
         cache["data"] = list(database.opportunities_collection.find())
         cache["last_updated"] = datetime.now()
@@ -109,9 +110,9 @@ class Opportunity:
         opportunity = database.opportunities_collection.find_one({"_id": _id})
 
         if opportunity:
-            return jsonify(opportunity), 200
+            return opportunity
 
-        return jsonify({"error": "Opportunity not found"}), 404
+        return None
 
     def get_opportunities(self):
         """Getting all opportunities."""
@@ -229,3 +230,34 @@ class Opportunity:
             FileNotFoundError,
         ) as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
+
+    def get_valid_students(self, opportunity_id):
+        students = Student().get_students()
+        valid_students = []
+        for student in students:
+            if "preference" in student and opportunity_id in student["preferences"]:
+                student["modules"] = [
+                    d.strip().replace('"', "")
+                    for d in student["modules"][1:-1].split(",")
+                    if d.strip().replace('"', "") != ""
+                ]
+                student["skills"] = [
+                    d.strip().replace('"', "")
+                    for d in student["skills"][1:-1].split(",")
+                    if d.strip().replace('"', "") != ""
+                ]
+                valid_students.append(student)
+        return valid_students
+
+    def rank_preferences(self, opportunity_id):
+        """Sets a opportunity preferences."""
+        opportunity = database.opportunities_collection.find_one({"opportunity_id": opportunity_id})
+
+        if not opportunity:
+            return jsonify({"error": "Opportunity not found"}), 404
+
+        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+        database.opportunities_collection.update_one(
+            {"opportunity_id": opportunity_id}, {"$set": {"preferences": preferences}}
+        )
+        return jsonify({"message": "Preferences updated"}), 200

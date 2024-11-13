@@ -98,11 +98,11 @@ def add_student_routes(app):
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
-        
+
         if database.is_past_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
-        
+
         if database.is_past_details_deadline():
             return redirect(f"/students/rank_preferences/{student_id}")
         if request.method == "POST":
@@ -125,11 +125,11 @@ def add_student_routes(app):
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
-        
+
         if database.is_past_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
-        
+
         if not database.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":

@@ -59,16 +59,22 @@ class Module:
 
         return jsonify(module), 200
 
-    def get_module_by_id(self):
+    def get_module_by_id(self, module_id=None):
         """Retrieves a module by its ID."""
-        module = database.modules_collection.find_one(
-            {"module_id": request.form.get("module_id")}
-        )
+        if module_id == None:
+            module_id = request.form.get("module_id")
+        module = database.modules_collection.find_one({"module_id": module_id})
 
         if module:
-            return jsonify(module), 200
+            return module
 
-        return jsonify({"error": "module not found"}), 404
+        return None
+
+    def get_module_name_by_id(self, id):
+        module = self.get_module_by_id(module)
+        if not module:
+            return None
+        return module["module_name"]
 
     def get_modules(self):
         """Retrieves all modules."""

@@ -76,15 +76,22 @@ class Skill:
 
         return jsonify({"message": "Deleted"}), 200
 
-    def get_skill_by_id(self):
+    def get_skill_by_id(self, skill_id=None):
         """Get skill by ID tag"""
-        skill_id = request.form.get("skill_id")
+        if skill_id == None:
+            skill_id = request.form.get("skill_id")
         skill = self.find_skill(None, skill_id)
 
         if skill:
-            return jsonify(skill), 200
+            return skill
 
-        return jsonify({"error": "Skill not found"}), 404
+        return None
+
+    def get_skill_name_by_id(self, id):
+        skill = self.get_skill_by_id(id)
+        if not skill:
+            return None
+        return skill["skill_name"]
 
     def get_skills(self):
         """Get full list of skills if chached get that instead"""
@@ -135,8 +142,8 @@ class Skill:
     def get_list_attempted_skills(self):
         """Get list of attempted skills"""
         attempted_skills = list(database.attempted_skills_collection.find())
-        
+
         if not attempted_skills:
             return []
-        
+
         return attempted_skills

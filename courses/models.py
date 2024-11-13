@@ -58,16 +58,22 @@ class Course:
 
         return jsonify(course), 200
 
-    def get_course_by_id(self):
+    def get_course_by_id(self, id=None):
         """Retrieves a course by its ID."""
-        course = database.courses_collection.find_one(
-            {"course_id": request.form.get("course_id")}
-        )
+        if not id:
+            id = request.form.get("course_id")
+        course = database.courses_collection.find_one({"course_id": id})
 
         if course:
-            return jsonify(course), 200
+            return course
 
-        return jsonify({"error": "Course not found"}), 404
+        return None
+
+    def get_course_name_by_id(self, id):
+        course = self.get_course_by_id(id)
+        if not course:
+            return None
+        return course["course_name"]
 
     def get_courses(self):
         """Retrieves all courses."""
