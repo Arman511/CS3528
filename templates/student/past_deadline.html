@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="container">
+        <div class="message">Past logout</div>
+        <a href="{{ url_for("signout") }}" class="logout-button">Logout</a>
+    </div>
+{% endblock content %}
