@@ -76,7 +76,7 @@
                 </select>
                 <label for="modules">Modules:</label>
                 <select id="modules" name="modules" class="form-control" multiple>
-                    {% for module in modules[0]["json"] %}
+                    {% for module in modules %}
                         <option value="{{ module.module_id }}" {% if module.module_id in opportunity.modules_required
                             %}selected{% endif %}>{{ module.module_id + ": " + module.module_name }}</option>
                     {% endfor %}

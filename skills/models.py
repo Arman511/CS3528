@@ -135,4 +135,8 @@ class Skill:
     def get_list_attempted_skills(self):
         """Get list of attempted skills"""
         attempted_skills = list(database.attempted_skills_collection.find())
-        return jsonify(attempted_skills), 200
+        
+        if not attempted_skills:
+            return []
+        
+        return attempted_skills

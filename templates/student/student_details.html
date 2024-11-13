@@ -49,7 +49,7 @@
                                 title="{{ skill.skill_description }}"
                                 {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
                     {% endfor %}
-                    {% for attempt in attempted_skills[0]["json"] %}
+                    {% for attempt in attempted_skills %}
                         {% if attempt._id in student.attempted_skills %}
                             <option value="{{ attempt._id }}" selected>{{ attempt.skill_name }} (Attempted)</option>
                         {% endif %}
@@ -89,7 +89,7 @@
                 <br />
                 <label for="modules">Modules:</label>
                 <select id="modules" name="modules" class="form-control" multiple required>
-                    {% for module in modules[0]["json"] %}
+                    {% for module in modules %}
                         <option value="{{ module.module_id }}"
                                 {% if module.module_id in student.module %}selected{% endif %}>
                             {{ module.module_id + ": " + module.module_name }}

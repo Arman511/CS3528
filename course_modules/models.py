@@ -81,7 +81,7 @@ class Module:
             and modules_cache["last_updated"]
             and modules_cache["last_updated"] > one_week_ago
         ):
-            return jsonify(modules_cache["data"]), 200
+            return modules_cache["data"]
 
         # Fetch modules from the database
         modules = list(database.modules_collection.find())
@@ -90,6 +90,6 @@ class Module:
             # Update cache
             modules_cache["data"] = modules
             modules_cache["last_updated"] = current_time
-            return jsonify(modules), 200
+            return modules
 
-        return jsonify({"error": "No modules found"}), 404
+        return []
