@@ -40,18 +40,18 @@ employers_collection = database["employers"]
 deadline_collection = database["deadline"]
 
 
-def get_deadline():
+def get_details_deadline():
     """Get the deadline from the database."""
-    find_deadline = deadline_collection.find_one()
+    find_deadline = deadline_collection.find_one({"type": 0})
     if not find_deadline:
         deadline = datetime.datetime.now().strftime("%Y-%m-%d")
-        deadline_collection.insert_one({"deadline": deadline})
+        deadline_collection.insert_one({"type": 0,"deadline": deadline})
     else:
         deadline = find_deadline["deadline"]
     return deadline
 
 
-def update_deadline(deadline):
+def update_details_deadline(deadline):
     """Update the deadline in the database."""
     try:
         datetime.datetime.strptime(deadline, "%Y-%m-%d")

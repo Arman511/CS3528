@@ -7,7 +7,7 @@ from functools import wraps
 from flask import render_template, session, redirect
 from user import routes_user
 from students import routes_student
-from opportunities import routes_opportunites
+from opportunities import routes_opportunities
 from skills import routes_skills
 from courses import routes_courses
 from course_modules import routes_modules
@@ -76,7 +76,7 @@ def configure_routes(app):
 
     routes_user.add_user_routes(app)
     routes_student.add_student_routes(app)
-    routes_opportunites.add_opportunities_routes(app)
+    routes_opportunities.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)
     routes_courses.add_course_routes(app)
     routes_modules.add_module_routes(app)
