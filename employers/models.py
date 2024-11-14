@@ -34,6 +34,14 @@ class Employers:
 
         return jsonify({"error": "Employer not added"}), 400
 
+    def get_company_name(self, _id):
+        """Get company name"""
+        employer = database.employers_collection.find_one({"_id": _id})
+        if not employer:
+            return ""
+
+        return employer["company_name"]
+
     def employer_login(self):
         """Logs in the employer."""
         session.clear()
@@ -68,3 +76,18 @@ class Employers:
                 return employer
 
         return None
+
+    def rank_preferences(self, opportunity_id):
+        """Sets a students preferences."""
+        opportunity = database.opportunities_collection.find_one(
+            {"_id": opportunity_id}
+        )
+
+        if not opportunity:
+            return jsonify({"error": "Opportunity not found"}), 404
+
+        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+        database.students_collection.update_one(
+            {"_id": opportunity_id}, {"$set": {"preferences": preferences}}
+        )
+        return jsonify({"message": "Preferences updated"}), 200

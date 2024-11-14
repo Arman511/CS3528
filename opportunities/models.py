@@ -70,27 +70,24 @@ class Opportunity:
 
     def search_opportunities(self):
         """Searching opportunities."""
-        title = request.form.get("title")
-        company = request.form.get("company")
-        location = request.form.get("location")
-        skills_required = request.form.get("skills_required")
-
         query = {}
+        title = request.args.get("title")
+        company_name = request.args.get("company")
+
+        if company_name:
+            company = database.employers_collection.find_one(
+                {"name": {"$regex": company_name, "$options": "i"}}
+            )
+            query["employer_id"] = company["employer_id"]
+
         if title:
-            query["title"] = title
-        if company:
-            query["company"] = company
-        if location:
-            query["location"] = location
-        if skills_required:
-            query["skills_required"] = skills_required
+            query["title"] = {"$regex": title, "$options": "i"}
+
+        if "employer" in session:
+            query["employer_id"] = session["employer"]["employer_id"]
 
         opportunities = list(database.opportunities_collection.find(query))
-
-        if opportunities:
-            return jsonify(opportunities), 200
-
-        return jsonify({"error": "No opportunities found"}), 404
+        return opportunities
 
     def get_opportunity_by_id(self, _id=None):
         """Getting opportunity."""
@@ -100,7 +97,7 @@ class Opportunity:
         if cache["data"] and cache["last_updated"] > datetime.now():
             for opportunity in cache["data"]:
                 if opportunity["_id"] == _id:
-                    return jsonify(opportunity), 200
+                    return opportunity
             return None
 
         cache["data"] = list(database.opportunities_collection.find())
@@ -122,7 +119,19 @@ class Opportunity:
         cache["data"] = list(database.opportunities_collection.find())
         cache["last_updated"] = datetime.now()
 
-        return jsonify(cache["data"]), 200
+        return cache["data"]
+
+    def get_opportunities_by_company(self, type=None):
+        if type == "admin":
+            return self.get_opportunities()
+
+        valid_opportunities = []
+        for opp in self.get_opportunities():
+            if opp["employer_id"] == type:
+                opp
+                valid_opportunities.append(opp)
+
+        return valid_opportunities
 
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that macth duration."""
@@ -232,6 +241,7 @@ class Opportunity:
 
     def get_valid_students(self, opportunity_id):
         from students.models import Student
+
         students = Student().get_students()
         valid_students = []
         for student in students:
@@ -251,7 +261,9 @@ class Opportunity:
 
     def rank_preferences(self, opportunity_id):
         """Sets a opportunity preferences."""
-        opportunity = database.opportunities_collection.find_one({"opportunity_id": opportunity_id})
+        opportunity = database.opportunities_collection.find_one(
+            {"opportunity_id": opportunity_id}
+        )
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404

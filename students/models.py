@@ -354,7 +354,7 @@ class Student:
 
         opportunities = Opportunity().get_opportunities()
 
-        student = find_student[0].json
+        student = find_student
         student["modules"] = set(
             d.strip().replace('"', "")
             for d in student["modules"][1:-1].split(",")
