@@ -52,7 +52,7 @@ def add_employer_routes(app):
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
             return jsonify({"error": "Need opportunity ID."}), 400
-        if not database.is_past_ranking_deadline():
+        if not database.is_past_student_ranking_deadline():
             return jsonify({"error": "Ranking Deadline has not passed."})
         if request.method == "POST":
             return Opportunity().rank_preferences(opportunity_id)

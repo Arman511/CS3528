@@ -3,14 +3,29 @@
     {% include "user/navbar.html" %}
     <div class="card-wrapper">
         <div class="card">
-            <h1 class="center">Update deadline</h1>
+            <h1 class="center">Update deadlines</h1>
             <form class="deadline_form" name="deadline_form">
+                <label for="details_deadline">Details Deadline:</label>
                 <input type="date"
-                       name="deadline"
+                       name="details_deadline"
                        class="field"
-                       id="deadline"
+                       id="details_deadline"
                        required
-                       value="{{ deadline }}" />
+                       value="{{ details_deadline }}" />
+                <label for="student_ranking_deadline">Student Ranking Deadline:</label>
+                <input type="date"
+                       name="student_ranking_deadline"
+                       class="field"
+                       id="student_ranking_deadline"
+                       required
+                       value="{{ student_ranking_deadline }}" />
+                <label for="opportunities_ranking_deadline">Opportunities Ranking Deadline:</label>
+                <input type="date"
+                       name="opportunities_ranking_deadline"
+                       class="field"
+                       id="opportunities_ranking_deadline"
+                       required
+                       value="{{ opportunities_ranking_deadline }}" />
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Update Deadline" class="btn" />
             </form>

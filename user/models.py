@@ -83,6 +83,27 @@ class User:
         return jsonify({"message": "Password updated successfully"}), 200
 
     def change_deadline(self):
-        """Change deadline."""
-        deadline = request.form.get("deadline")
-        return database.update_deadline(deadline)
+        """Change deadlines for details, student ranking, and opportunities ranking."""
+        details_deadline = request.form.get("details_deadline")
+        student_ranking_deadline = request.form.get("student_ranking_deadline")
+        opportunities_ranking_deadline = request.form.get(
+            "opportunities_ranking_deadline"
+        )
+
+        details_response = database.update_details_deadline(details_deadline)
+        if details_response[1] != 200:
+            return details_response
+
+        student_response = database.update_student_ranking_deadline(
+            student_ranking_deadline
+        )
+        if student_response[1] != 200:
+            return student_response
+
+        opportunities_response = database.update_opportunities_ranking_deadline(
+            opportunities_ranking_deadline
+        )
+        if opportunities_response[1] != 200:
+            return opportunities_response
+
+        return jsonify({"message": "All deadlines updated successfully"}), 200

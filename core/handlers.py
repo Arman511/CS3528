@@ -73,6 +73,8 @@ def admin_or_employers_required(f):
         if "employer_logged_in" in session or "logged_in" in session:
             return f(*args, **kwargs)
         return redirect("/students/login")
+    
+    return wrap
 
 
 def configure_routes(app):
