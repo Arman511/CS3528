@@ -47,7 +47,9 @@
                     {% for skill in skills %}
                         <option value="{{ skill._id }}"
                                 title="{{ skill.skill_description }}"
-                                {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
+                                {% if skill._id|string in student.skills %}selected{% endif %}>
+                            {{ skill.skill_name }}
+                        </option>
                     {% endfor %}
                     {% for attempt in attempted_skills %}
                         {% if attempt._id in student.attempted_skills %}
