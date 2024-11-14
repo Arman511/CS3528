@@ -87,6 +87,15 @@ class Opportunity:
             query["employer_id"] = session["employer"]["employer_id"]
 
         opportunities = list(database.opportunities_collection.find(query))
+        if "user" in session:
+            employers_map = {
+                company["_id"]: company["name"]
+                for company in database.employers_collection.find()
+            }
+
+            for opp in opportunities:
+                opp["company_name"] = employers_map.get(opp["employer_id"], "")
+
         return opportunities
 
     def get_opportunity_by_id(self, _id=None):
@@ -121,20 +130,19 @@ class Opportunity:
 
         return cache["data"]
 
-    def get_opportunities_by_company(self, type=None):
-        if type == "admin":
+    def get_opportunities_by_company(self, user_type=None):
+        if user_type == "admin":
             return self.get_opportunities()
 
         valid_opportunities = []
         for opp in self.get_opportunities():
-            if opp["employer_id"] == type:
-                opp
+            if opp["employer_id"] == user_type:
                 valid_opportunities.append(opp)
 
         return valid_opportunities
 
     def get_opportunities_by_duration(self, duration):
-        """Getting all opportunities that macth duration."""
+        """Getting all opportunities that match duration."""
         duration_list = [d.strip().replace('"', "") for d in duration[1:-1].split(",")]
         data = list(
             database.opportunities_collection.find({"duration": {"$in": duration_list}})

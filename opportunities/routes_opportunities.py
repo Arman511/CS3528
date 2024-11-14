@@ -1,11 +1,10 @@
-"""Routes for opportunites"""
+"""Routes for opportunities"""
 
 import uuid
 from flask import flash, redirect, render_template, request, session, url_for
 from core import handlers
 from course_modules.models import Module
 from courses.models import Course
-from employers.models import Employers
 from .models import Opportunity
 
 
@@ -18,7 +17,7 @@ def add_opportunities_routes(app):
         if request.method == "POST":
             return Opportunity().search_opportunities()
 
-        user_type= ""
+        user_type = ""
         if "user" in session:
             user_type = "admin"
         if "employer" in session:
@@ -29,7 +28,6 @@ def add_opportunities_routes(app):
         return render_template(
             "opportunities/search.html",
             opportunities=opportunities,
-            company_name=Employers().get_company_name,
             user_type=user_type,
         )
 

@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok) {
                 throw new Error("An error occurred");
             }
-            window.location.href = "/students/update_success";
+            window.location.href = "/opportunities/search";
         } catch (error) {
             alert("An error occurred. Please try again later");
         }

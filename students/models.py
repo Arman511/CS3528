@@ -71,9 +71,9 @@ class Student:
         student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student:
-            return jsonify(student), 200
+            return student
 
-        return jsonify({"error": "Student not found"}), 404
+        return None
 
     def get_students(self):
         """Getting all students."""

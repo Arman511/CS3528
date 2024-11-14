@@ -47,7 +47,7 @@
                             <td>
                                 <a href="{{ opportunity.url }}">{{ opportunity.url }}</a>
                             </td>
-                            {% if user_type == "admin" %}<td>{{ company_name(opportunity.employer_id) }}</td>{% endif %}
+                            {% if user_type == "admin" %}<td>{{ opportunity.company_name }}</td>{% endif %}
                             <td>{{ opportunity.location }}</td>
                             <td>{{ opportunity.modules_required }}</td>
                             <td>{{ opportunity.courses_required }}</td>
@@ -65,6 +65,6 @@
                 </tbody>
             </table>
         </div>
-        <script src="/static/search_opportunities/{{type}}_script.js"></script>
+        <script src="/static/search_opportunities/script.js"></script>
     </div>
 {% endblock content %}
