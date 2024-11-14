@@ -59,16 +59,23 @@ class Module:
 
         return jsonify(module), 200
 
-    def get_module_by_id(self):
+    def get_module_by_id(self, module_id=None):
         """Retrieves a module by its ID."""
-        module = database.modules_collection.find_one(
-            {"module_id": request.form.get("module_id")}
-        )
+        if module_id == None:
+            module_id = request.form.get("module_id")
+        module = database.modules_collection.find_one({"module_id": module_id})
 
         if module:
-            return jsonify(module), 200
+            return module
 
-        return jsonify({"error": "module not found"}), 404
+        return None
+
+    def get_module_name_by_id(self, module_id):
+        """Get module name by id"""
+        module = self.get_module_by_id(module_id)
+        if not module:
+            return None
+        return module["module_name"]
 
     def get_modules(self):
         """Retrieves all modules."""
@@ -81,7 +88,7 @@ class Module:
             and modules_cache["last_updated"]
             and modules_cache["last_updated"] > one_week_ago
         ):
-            return jsonify(modules_cache["data"]), 200
+            return modules_cache["data"]
 
         # Fetch modules from the database
         modules = list(database.modules_collection.find())
@@ -90,6 +97,6 @@ class Module:
             # Update cache
             modules_cache["data"] = modules
             modules_cache["last_updated"] = current_time
-            return jsonify(modules), 200
+            return modules
 
-        return jsonify({"error": "No modules found"}), 404
+        return []

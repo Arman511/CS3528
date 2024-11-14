@@ -1,0 +1,6 @@
+{% extends "base.html" %}
+{% block content %}
+    <h2>Hello {{ employer.company_name }}</h2>
+    <h3>Deadline is {{ deadline }}, please wait till then to start student rankings</h3>
+    {% include "/employers/navbar.html" %}
+{% endblock content %}

@@ -80,9 +80,9 @@ class Student:
         students = list(database.students_collection.find())
 
         if students:
-            return jsonify(students), 200
+            return students
 
-        return jsonify({"error": "No students found"}), 404
+        return []
 
     def update_student(self):
         """Updating student."""
