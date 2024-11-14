@@ -70,8 +70,9 @@ class Module:
 
         return None
 
-    def get_module_name_by_id(self, id):
-        module = self.get_module_by_id(module)
+    def get_module_name_by_id(self, module_id):
+        """Get module name by id"""
+        module = self.get_module_by_id(module_id)
         if not module:
             return None
         return module["module_name"]

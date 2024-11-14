@@ -78,7 +78,7 @@ class Skill:
 
     def get_skill_by_id(self, skill_id=None):
         """Get skill by ID tag"""
-        if skill_id == None:
+        if skill_id is None:
             skill_id = request.form.get("skill_id")
         skill = self.find_skill(None, skill_id)
 
@@ -87,8 +87,9 @@ class Skill:
 
         return None
 
-    def get_skill_name_by_id(self, id):
-        skill = self.get_skill_by_id(id)
+    def get_skill_name_by_id(self, skill_id):
+        """Get skill name by id"""
+        skill = self.get_skill_by_id(skill_id)
         if not skill:
             return None
         return skill["skill_name"]
