@@ -7,7 +7,6 @@ import uuid
 from flask import jsonify, request, session
 import pandas as pd
 from core import database, handlers
-from students.models import Student
 
 cache = {"data": [], "last_updated": datetime.now()}
 
@@ -232,6 +231,7 @@ class Opportunity:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
     def get_valid_students(self, opportunity_id):
+        from students.models import Student
         students = Student().get_students()
         valid_students = []
         for student in students:
