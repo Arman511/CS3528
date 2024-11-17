@@ -3,8 +3,9 @@ Handles routes for the user module.
 """
 
 import random
-from flask import redirect, render_template, session, request
+from flask import jsonify, redirect, render_template, session, request
 
+from algorithm.matching import Matching
 from core import database, handlers
 from students.models import Student
 from .models import User
@@ -79,3 +80,25 @@ def add_user_routes(app):
             if "preferences" in opportunity:
                 valid_opportunities.append(opportunity)
                 continue
+        
+        students_preference = {}
+        
+        for student in valid_students:
+            students_preference[student["_id"]] = student["preferences"]
+        
+        opportunities_preference = {}
+        for opportunity in valid_opportunities:
+            temp = {}
+            temp["positions"] = opportunity["spots_available"]
+            for i, student in enumerate(opportunity["preferences"]):
+                temp[student] = i+1
+            opportunities_preference[opportunity["_id"]] = temp
+        match = Matching(students_preference, opportunities_preference)
+        result = match.find_best_match()
+        print(match)
+        data = {
+            "invalid_students": result[0],
+            "matches": result[1]
+        }
+        return jsonify(data), 200
+        
