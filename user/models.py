@@ -94,26 +94,17 @@ class User:
             "opportunities_ranking_deadline"
         )
 
-        details_response = database.update_details_deadline(details_deadline)
-        if details_response[1] != 200:
-            return details_response
-
-        student_response = database.update_student_ranking_deadline(
-            student_ranking_deadline
+        response = database.update_deadlines(
+            details_deadline, student_ranking_deadline, opportunities_ranking_deadline
         )
-        if student_response[1] != 200:
-            return student_response
 
-        opportunities_response = database.update_opportunities_ranking_deadline(
-            opportunities_ranking_deadline
-        )
-        if opportunities_response[1] != 200:
-            return opportunities_response
-
+        if response[1] != 200:
+            return response
         return jsonify({"message": "All deadlines updated successfully"}), 200
 
     def matching(self):
         """Match students with opportunities."""
+        
         student = Student().get_student_by_uuid(request.form.get("student"))
         opportunity = Opportunity().get_opportunity_by_id(
             request.form.get("opportunity")

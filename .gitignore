@@ -30,3 +30,4 @@ venv.bak/
 .DS_Store
 .mypy_cache/
 not_full_courses.json
+.vercel

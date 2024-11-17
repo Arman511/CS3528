@@ -18,7 +18,7 @@ def add_employer_routes(app):
     def employer_login():
         if request.method == "POST":
             return Employers().employer_login()
-
+        
         return render_template("employers/employer_login.html")
 
     @app.route("/employers/home", methods=["GET"])
@@ -30,8 +30,10 @@ def add_employer_routes(app):
 
     @app.route("/employers/otp", methods=["POST"])
     def employer_otp():
+        
+        if "employer" not in session:
+            return jsonify({"error": "Employer not logged in."}), 400
         otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
-
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
         if request.form.get("otp") != otp_serializer.loads(session["OTP"]):

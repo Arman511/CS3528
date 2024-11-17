@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 import uuid
 from flask import redirect, request, jsonify, session
 from core import database, email_handler
+import time
 
 employers_cache = {"data": None, "last_updated": None}
 
@@ -44,6 +45,7 @@ class Employers:
 
     def employer_login(self):
         """Logs in the employer."""
+        start_time = time.time()
         session.clear()
         employer = database.employers_collection.find_one(
             {"email": request.form.get("email")}
@@ -51,9 +53,10 @@ class Employers:
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
-            return jsonify({"message": "OTP sent"}), 200
-
-        return jsonify({"error": "Invalid login credentials."}), 401
+        else:
+            time.sleep(1.5)
+        
+        return jsonify({"message": "OTP sent if valid"}), 200
 
     def get_employers(self):
         """Gets all employers."""
