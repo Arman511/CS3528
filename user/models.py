@@ -119,7 +119,10 @@ class User:
             request.form.get("opportunity")
         )
         employer_name = Employers().get_company_name(opportunity["employer_id"])
-        recipients = [request.form.get("student_email"), request.form.get("employer_email")]
+        recipients = [
+            request.form.get("student_email"),
+            request.form.get("employer_email"),
+        ]
 
         body = (
             f"<p>Dear {student['first_name']},</p>"
@@ -129,7 +132,7 @@ class User:
             f"to discuss further details.</p>"
             "<p>Best,<br>Skillpoint</p>"
         )
-        
+
         msg = MIMEText(body, "html")
         msg["Subject"] = "Skillpoint: Matched with an opportunity"
         msg["To"] = ", ".join(recipients)
