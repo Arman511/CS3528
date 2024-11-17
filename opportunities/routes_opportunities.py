@@ -2,7 +2,7 @@
 
 import uuid
 from flask import flash, redirect, render_template, request, session, url_for
-from core import handlers
+from core import database, handlers
 from course_modules.models import Module
 from courses.models import Course
 from .models import Opportunity
@@ -36,6 +36,13 @@ def add_opportunities_routes(app):
     )
     @handlers.admin_or_employers_required
     def employer_add_update_opportunity():
+        if database.is_past_details_deadline() and "employer" in session:
+            return render_template(
+                "employers/past_deadline.html",
+                data=f"Adding/Updating details deadline has passed as of {database.get_details_deadline()}",
+                referrer=request.referrer,
+                employer=session["employer"],
+            )
         if request.method == "POST":
             return Opportunity().add_update_opportunity()
         opportunity_id = request.args.get("opportunity_id")
