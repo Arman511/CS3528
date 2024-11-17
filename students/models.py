@@ -75,6 +75,15 @@ class Student:
 
         return None
 
+    def get_student_by_uuid(self, _id):
+        """Getting student."""
+        student = database.students_collection.find_one({"_id": str(_id)})
+
+        if student:
+            return student
+
+        return None
+
     def get_students(self):
         """Getting all students."""
         students = list(database.students_collection.find())

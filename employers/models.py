@@ -91,3 +91,11 @@ class Employers:
             {"_id": opportunity_id}, {"$set": {"preferences": preferences}}
         )
         return jsonify({"message": "Preferences updated"}), 200
+
+    def get_company_email_by_id(self, _id):
+        """Get company email by id"""
+        employer = database.employers_collection.find_one({"_id": _id})
+        if not employer:
+            return ""
+
+        return employer["email"]

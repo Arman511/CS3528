@@ -71,5 +71,5 @@ class Matching:
                     mapped.insert(0, student)
 
         self.final_result = [unmapped, self.potential_match]
-        print(f"Unmapped: {self.final_result[0]} \nMatched: {self.final_result[1]}")
+        # print(f"Unmapped: {self.final_result[0]} \nMatched: {self.final_result[1]}")
         return self.final_result

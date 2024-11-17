@@ -119,6 +119,13 @@ class Opportunity:
 
         return None
 
+    def get_employer_by_id(self, _id):
+        """Get employer_id by ID."""
+        opportunity = self.get_opportunity_by_id(_id)
+        if not opportunity:
+            return ""
+        return opportunity["employer_id"]
+
     def get_opportunities(self):
         """Getting all opportunities."""
 
