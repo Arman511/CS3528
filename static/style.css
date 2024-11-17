@@ -26,6 +26,10 @@
     font-weight: bold;
 }
 
+.plain-center {
+    text-align: center;
+}
+
 .login_form {
     display: flex;
     flex-direction: column;
@@ -154,4 +158,28 @@ a:hover {
     .btn {
         font-size: 14px;
     }
+}
+
+/* Footer styling */
+footer {
+    background-color: rgb(34, 69, 151);
+    color: rgb(255, 255, 255);
+    text-align: center;
+    padding: 20px;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    font-size: 14px;
+}
+
+footer a {
+    color: rgb(255, 255, 255);
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s ease;
+}
+
+footer a:hover {
+    color: rgb(200, 200, 200);
+    text-decoration: underline;
 }

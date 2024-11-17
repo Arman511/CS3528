@@ -58,7 +58,7 @@ def add_opportunities_routes(app):
             modules=Module().get_modules(),
         )
 
-    @app.route("/opportunities/employer_delete_opportunity", methods=["POST"])
+    @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
     @handlers.admin_or_employers_required
     def employer_delete_opportunity():
         opportunity_id = request.args.get("opportunity_id")

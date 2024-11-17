@@ -11,10 +11,10 @@
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item">
-                <a class="nav-link" href="/students/upload">Upload Student XLSX</a>
+                <a class="nav-link" href="{{ url_for("upload_page") }}">Upload Student XLSX</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="/students/search">Search Student</a>
+                <a class="nav-link" href="{{ url_for("search_page") }}">Search Student</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for("add_skill") }}">Add Skill</a>
@@ -27,6 +27,12 @@
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for("add_employer") }}">Add Employer</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for("problems") }}">Problems</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for("matching") }}">Matching</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ url_for("deadline") }}">Change Deadline</a>

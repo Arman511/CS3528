@@ -119,6 +119,13 @@ class Opportunity:
 
         return None
 
+    def get_employer_by_id(self, _id):
+        """Get employer_id by ID."""
+        opportunity = self.get_opportunity_by_id(_id)
+        if not opportunity:
+            return ""
+        return opportunity["employer_id"]
+
     def get_opportunities(self):
         """Getting all opportunities."""
 
@@ -253,7 +260,7 @@ class Opportunity:
         students = Student().get_students()
         valid_students = []
         for student in students:
-            if "preference" in student and opportunity_id in student["preferences"]:
+            if "preferences" in student and opportunity_id in student["preferences"]:
                 student["modules"] = [
                     d.strip().replace('"', "")
                     for d in student["modules"][1:-1].split(",")
@@ -270,7 +277,7 @@ class Opportunity:
     def rank_preferences(self, opportunity_id):
         """Sets a opportunity preferences."""
         opportunity = database.opportunities_collection.find_one(
-            {"opportunity_id": opportunity_id}
+            {"_id": opportunity_id}
         )
 
         if not opportunity:
@@ -278,6 +285,6 @@ class Opportunity:
 
         preferences = [a[5:] for a in request.form.get("ranks").split(",")]
         database.opportunities_collection.update_one(
-            {"opportunity_id": opportunity_id}, {"$set": {"preferences": preferences}}
+            {"_id": opportunity_id}, {"$set": {"preferences": preferences}}
         )
         return jsonify({"message": "Preferences updated"}), 200

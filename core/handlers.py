@@ -4,7 +4,7 @@ to enforce user access levels.
 """
 
 from functools import wraps
-from flask import render_template, session, redirect
+from flask import render_template, request, session, redirect
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities

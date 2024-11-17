@@ -2,10 +2,14 @@
 User model.
 """
 
+from email.mime.text import MIMEText
 import uuid
 from flask import jsonify, request, session
 from passlib.hash import pbkdf2_sha256
-from core import database
+from core import database, email_handler
+from employers.models import Employers
+from opportunities.models import Opportunity
+from students.models import Student
 
 
 class User:
@@ -107,3 +111,30 @@ class User:
             return opportunities_response
 
         return jsonify({"message": "All deadlines updated successfully"}), 200
+
+    def matching(self):
+        """Match students with opportunities."""
+        student = Student().get_student_by_uuid(request.form.get("student"))
+        opportunity = Opportunity().get_opportunity_by_id(
+            request.form.get("opportunity")
+        )
+        employer_name = Employers().get_company_name(opportunity["employer_id"])
+        recipients = [
+            request.form.get("student_email"),
+            request.form.get("employer_email"),
+        ]
+
+        body = (
+            f"<p>Dear {student['first_name']},</p>"
+            f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for the "
+            f"opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
+            f"<a href='mailto:{request.form.get('employer_email')}'>{request.form.get('employer_email')}</a> "
+            f"to discuss further details.</p>"
+            "<p>Best,<br>Skillpoint</p>"
+        )
+
+        msg = MIMEText(body, "html")
+        msg["Subject"] = "Skillpoint: Matched with an opportunity"
+        msg["To"] = ", ".join(recipients)
+        email_handler.send_email(msg, recipients)
+        return jsonify({"message": "Email Sent"}), 200

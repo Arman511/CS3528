@@ -12,7 +12,7 @@
                 <button id="submit-students" class="btn btn-primary">Submit</button>
             </div>
             <p class="d-none" id="opp_id">{{ opportunity_id }}</p>
-            {% for students in students %}
+            {% for student in students %}
                 <div class="col-md-6 col-lg-4 mb-1 px-1">
                     <div class="student-item card h-100 p-2 bg-light">
                         <div class="card-body">
@@ -20,9 +20,11 @@
                             <p class="student-comment">Comment: {{ student.comment }}</p>
                             <p class="student-has_car">Has Car: {{ student.has_car }}</p>
                             <p class="student-course">Course: {{ student.course + ": "+get_course_name(student.course) }}</p>
+                            <p>Modules:</p>
                             <ul class="student-modules">
                                 {% for module in student.modules %}<li>{{ module + ": " + get_module_name(module) }}</li>{% endfor %}
                             </ul>
+                            <p>Skills</p>
                             <ul class="student-skills">
                                 {% for skill in student.skills %}<li>{{ get_skill_name(skill) }}</li>{% endfor %}
                             </ul>
@@ -58,6 +60,7 @@
             });
         });
                 </script>
+                <script src="/static/employers_rank_students/script.js"></script>
             </div>
         </div>
     {% endblock content %}

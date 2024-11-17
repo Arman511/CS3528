@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "/user/navbar.html" %}
+    <div class="container mt-5">
+        <h1 class="text-center">Matching</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Opportunity</th>
+                    <th>Company Name</th>
+                    <th>Person Name</th>
+                    <th>Send Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for match in matches %}
+                    {% for student in match.students %}
+                        <tr>
+                            <td>{{ get_opportunity(match.opportunity)['title'] }}</td>
+                            <td>{{ get_company_name(get_opportunity(match.opportunity)["employer_id"] ) }}</td>
+                            <td>{{ get_student(student).first_name }} {{ get_student(student).last_name }}</td>
+                            <td>
+                                <button type="button"
+                                        class="btn btn-sm btn-primary send-email"
+                                        data-student="{{ student }}"
+                                        data-student-email="{{ get_student(student).email }}"
+                                        data-employer="{{ get_company_email_by_id(get_employer_by_id(match.opportunity) ) }}"
+                                        data-opportunity="{{ match.opportunity }}">Send Email</button>
+                                <p id="response-{{ student }}" class="plain-center"></p>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <script src="/static/matching/script.js"></script>
+{% endblock content %}

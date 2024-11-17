@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "/user/navbar.html" %}
+    <p>{{ data }}</p>
+    <button class="btn btn-primary"
+            onclick='window.location.href="{{ referrer }}"'>Back</button>
+{% endblock content %}
