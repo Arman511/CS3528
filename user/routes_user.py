@@ -115,7 +115,7 @@ def add_user_routes(app):
     def matching():
         if not database.is_past_opportunities_ranking_deadline():
             return render_template(
-                "user/past_deadline",
+                "user/past_deadline.html",
                 referrer=request.referrer,
                 data=f"The final deadline must have passed to do matching, wait till {database.get_opportunities_ranking_deadline()}",
             )
@@ -125,10 +125,17 @@ def add_user_routes(app):
 
         students = list(database.students_collection.find())
         valid_students = []
+        unmatched_students = []
         for student in students:
             if "preferences" in student:
                 valid_students.append(student)
                 continue
+            temp = {}
+            temp["_id"] = student["_id"]
+            temp["student_id"] = student["student_id"]
+            temp["email"] = student["email"]
+            temp["name"] = f"{student['first_name']} {student['last_name']}"
+            unmatched_students.append(temp)
 
             # """Put this for an eirlier time, maybe at system start"""
             # opp_for_student = Student().get_opportunities_by_student(student["student_id"])
@@ -161,9 +168,19 @@ def add_user_routes(app):
             {"opportunity": opportunity, "students": students}
             for opportunity, students in result[1].items()
         ]
+        for student_id in result[0]:
+            student = next((s for s in students if s["_id"] == student_id), None)
+            if student is None:
+                continue
+            temp = {}
+            temp["_id"] = student_id
+            temp["student_id"] = student["student_id"]
+            temp["email"] = student["email"]
+            temp["name"] = f"{student['first_name']} {student['last_name']}"
+            unmatched_students.append(temp)
         return render_template(
             "user/matching.html",
-            not_matched=result[0],
+            not_matched=unmatched_students,
             matches=matches_list,
             get_student=Student().get_student_by_uuid,
             get_opportunity=Opportunity().get_opportunity_by_id,

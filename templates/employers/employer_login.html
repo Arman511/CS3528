@@ -17,6 +17,18 @@
                 <a href="{{ url_for("login") }}">Login</a>
             </p>
         </div>
+        <!-- Modal for OTP -->
+        <div id="otpModal" class="modal">
+            <div class="modal-content">
+                <p>Enter the OTP sent to your email:</p>
+                <input type="text" id="otpInput" class="field" />
+                <p class="error error--hidden otp_error"></p>
+                <br>
+                <br>
+                <button onclick="submitOtp()" class="btn">Submit</button>
+                <button onclick="cancelOtp()" class="btn">Cancel</button>
+            </div>
+        </div>
         <script src="/static/employer_login/script.js"></script>
     </div>
 {% endblock content %}

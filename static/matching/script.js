@@ -36,4 +36,38 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    const deleteButtons = document.querySelectorAll(".delete-button");
+
+    deleteButtons.forEach((button) => {
+        button.addEventListener("click", async function () {
+            const studentId = this.getAttribute("data-target");
+            const row = this.closest("tr");
+
+            console.log(`Delete student with ID: ${studentId}`);
+            try {
+                const response = await fetch(
+                    `/students/delete_student/${studentId}`,
+                    {
+                        method: "DELETE",
+                    }
+                );
+
+                if (response.ok) {
+                    row.remove();
+                    console.log(
+                        `Student with ID: ${studentId} deleted successfully`
+                    );
+                } else {
+                    const error = await response.json();
+                    console.error("Error:", error);
+                    const errorElement = document.querySelector(".error");
+                    errorElement.classList.remove("error--hidden");
+                    errorElement.textContent = error.message;
+                }
+            } catch (error) {
+                console.error("Fetch error:", error);
+            }
+        });
+    });
 });

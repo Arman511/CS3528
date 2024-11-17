@@ -34,5 +34,31 @@
             </tbody>
         </table>
     </div>
+    <br>
+    <div class="container mt-5 mb-5 pb-5">
+        <h1 class="text-center">Unmatched</h1>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Student ID</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in not_matched %}
+                    <tr>
+                        <td>{{ student.name }}</td>
+                        <td>{{ student.student_id }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>
+                            <button class="delete-button btn btn-danger" data-target="{{ student._id }}">Delete</button>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
     <script src="/static/matching/script.js"></script>
 {% endblock content %}
