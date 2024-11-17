@@ -45,7 +45,6 @@ class Employers:
 
     def employer_login(self):
         """Logs in the employer."""
-        start_time = time.time()
         session.clear()
         employer = database.employers_collection.find_one(
             {"email": request.form.get("email")}
