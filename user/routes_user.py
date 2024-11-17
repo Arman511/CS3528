@@ -135,6 +135,7 @@ def add_user_routes(app):
             temp["student_id"] = student["student_id"]
             temp["email"] = student["email"]
             temp["name"] = f"{student['first_name']} {student['last_name']}"
+            temp["reason"] = "Student has not ranked their opportunities"
             unmatched_students.append(temp)
 
             # """Put this for an eirlier time, maybe at system start"""
@@ -177,6 +178,7 @@ def add_user_routes(app):
             temp["student_id"] = student["student_id"]
             temp["email"] = student["email"]
             temp["name"] = f"{student['first_name']} {student['last_name']}"
+            temp["reason"] = "Student was not matched"
             unmatched_students.append(temp)
         return render_template(
             "user/matching.html",
