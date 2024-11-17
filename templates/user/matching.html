@@ -43,6 +43,7 @@
                     <th>Name</th>
                     <th>Student ID</th>
                     <th>Email</th>
+                    <th>Reason</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -52,6 +53,7 @@
                         <td>{{ student.name }}</td>
                         <td>{{ student.student_id }}</td>
                         <td>{{ student.email }}</td>
+                        <td>{{ student.reason }}</td>
                         <td>
                             <button class="delete-button btn btn-danger" data-target="{{ student._id }}">Delete</button>
                         </td>
