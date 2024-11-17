@@ -41,13 +41,9 @@ def send_otp(recipient):
     session["OTP"] = otp_serializer.dumps(otp)
 
 
-def send_email(recipients, subject, body):
+def send_email(msg, recipients):
     """Sends an email"""
-    msg = MIMEText(body)
-    msg["Subject"] = subject
     msg["From"] = SENDER
-    msg["To"] = ", ".join(recipients)
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipients, msg.as_string())
-    print("Message sent!")
