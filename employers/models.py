@@ -55,7 +55,7 @@ class Employers:
             session["employer"] = employer
         else:
             time.sleep(1.5)
-        
+
         return jsonify({"message": "OTP sent if valid"}), 200
 
     def get_employers(self):

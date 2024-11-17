@@ -104,7 +104,7 @@ class User:
 
     def matching(self):
         """Match students with opportunities."""
-        
+
         student = Student().get_student_by_uuid(request.form.get("student"))
         opportunity = Opportunity().get_opportunity_by_id(
             request.form.get("opportunity")
