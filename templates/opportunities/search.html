@@ -40,7 +40,7 @@
                     </tr>
                 </thead>
                 <tbody id="opportunity-table">
-                    {% for opportunity in Opportunities %}
+                    {% for opportunity in opportunities %}
                         <tr>
                             <td>{{ opportunity.title }}</td>
                             <td>{{ opportunity.description }}</td>
@@ -54,10 +54,11 @@
                             <td>{{ opportunity.spots_available }}</td>
                             <td>{{ opportunity.duration }}</td>
                             <td>
+                                <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
+                                   class="btn btn-info btn-sm">Rank</a>
                                 <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
                                    class="btn btn-info btn-sm">Update</a>
-                                <a href
-                                   href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
+                                <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
                                    class="btn btn-danger btn-sm">Delete</a>
                             </td>
                         </tr>

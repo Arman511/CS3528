@@ -15,7 +15,7 @@ class Skill:
     """
     A class used to represent and manage skills in the database."""
 
-    def find_skill(self, skill_name=None, skill_id=None):
+    def find_skill(self, skill_name="", skill_id=""):
         """Check if a skill exists in the database."""
         # Check if the skill is already in the cache
         current_time = datetime.now()

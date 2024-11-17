@@ -12,7 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ranks.push([all_ranks[i].value, all_ranks[i].id]);
         }
         let len = all_ranks.length;
-        if (ranks.length >= 5 || all_ranks.length < 5) {
+        if (ranks.length < 5 && all_ranks.length >= 5) {
             alert("Please rank at least 5 or all of the opportunities");
             return;
         }

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let submit_button = document.getElementById("submit-ranks");
+    let submit_button = document.getElementById("submit-students");
     let opportunity_id = document.getElementById("opp_id").textContent;
     submit_button.addEventListener("click", async function () {
         let all_ranks = document.getElementsByClassName("student-rank");
@@ -9,11 +9,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 continue;
             }
             ranks.push([all_ranks[i].value, all_ranks[i].id]);
-        }
-        let len = all_ranks.length;
-        if (ranks.length >= 5 || all_ranks.length < 5) {
-            alert("Please rank at least 5 or all of the opportunities");
-            return;
         }
         ranks = ranks.sort((a, b) => a[0] - b[0]);
         let actual_ranks = [];

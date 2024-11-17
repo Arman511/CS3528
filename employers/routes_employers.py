@@ -70,7 +70,7 @@ def add_employer_routes(app):
             return Opportunity().rank_preferences(opportunity_id)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(
-            "opportunities/employers_rank_students.html",
+            "opportunities/employer_rank_students.html",
             opportunity_id=opportunity_id,
             students=valid_students,
             get_course_name=Course().get_course_name_by_id,
