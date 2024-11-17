@@ -79,5 +79,3 @@ def add_user_routes(app):
             if "preferences" in opportunity:
                 valid_opportunities.append(opportunity)
                 continue
-            
-        
