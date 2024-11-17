@@ -88,13 +88,12 @@ def add_student_routes(app):
                 "/students/details/" + str(session["student"]["student_id"])
             )
         return render_template("student/student_login.html")
-    
+
     @app.route("/students/passed_deadline")
     def past_deadline():
         """Page for when the deadline has passed."""
         session.clear()
         return render_template("student/past_deadline.html")
-    
 
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
