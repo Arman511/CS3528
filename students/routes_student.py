@@ -99,7 +99,7 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
 
-        if database.is_past_ranking_deadline():
+        if database.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
 
@@ -126,7 +126,7 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
 
-        if database.is_past_ranking_deadline():
+        if database.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
 

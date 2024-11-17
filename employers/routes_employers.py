@@ -49,16 +49,29 @@ def add_employer_routes(app):
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
     def employers_rank_students():
+        if database.is_past_opportunities_ranking_deadline() and "employer" in session:
+            return render_template(
+                "employers/past_deadline.html",
+                data=f"Ranking deadline has passed as of {database.get_opportunities_ranking_deadline()}",
+                referrer=request.referrer,
+                employer=session["employer"],
+            )
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
             return jsonify({"error": "Need opportunity ID."}), 400
-        if not database.is_past_ranking_deadline():
-            return jsonify({"error": "Ranking Deadline has not passed."})
+        if not database.is_past_student_ranking_deadline():
+            return render_template(
+                "employers/past_deadline.html",
+                data=f"""Student ranking deadline must have passed before you can start, wait till of {database.get_student_ranking_deadline()}""",
+                referrer=request.referrer,
+                employer=session["employer"],
+            )
         if request.method == "POST":
-            return Opportunity().add_student_preferences()
+            return Opportunity().rank_preferences(opportunity_id)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(
-            "employers/employers_rank_students.html",
+            "opportunities/employers_rank_students.html",
+            opportunity_id=opportunity_id,
             students=valid_students,
             get_course_name=Course().get_course_name_by_id,
             get_module_name=Module().get_module_name_by_id,

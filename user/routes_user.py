@@ -40,4 +40,10 @@ def add_user_routes(app):
         """Change deadline."""
         if request.method == "POST":
             return User().change_deadline()
-        return render_template("user/deadline.html", deadline=database.get_details_deadline())
+
+        return render_template(
+            "user/deadline.html",
+            details_deadline=database.get_details_deadline(),
+            student_ranking_deadline=database.get_student_ranking_deadline(),
+            opportunities_ranking_deadline=database.get_opportunities_ranking_deadline(),
+        )

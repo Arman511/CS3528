@@ -71,9 +71,9 @@ class Student:
         student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student:
-            return jsonify(student), 200
+            return student
 
-        return jsonify({"error": "Student not found"}), 404
+        return None
 
     def get_students(self):
         """Getting all students."""
@@ -354,7 +354,7 @@ class Student:
 
         opportunities = Opportunity().get_opportunities()
 
-        student = find_student[0].json
+        student = find_student
         student["modules"] = set(
             d.strip().replace('"', "")
             for d in student["modules"][1:-1].split(",")
@@ -362,7 +362,7 @@ class Student:
         )
 
         valid_opportunities = []
-        for opportunity in opportunities[0].json:
+        for opportunity in opportunities:
             modules_required = set(
                 module.strip().replace('"', "")
                 for module in opportunity["modules_required"][1:-1].split(",")

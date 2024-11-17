@@ -1,9 +1,8 @@
 document.addEventListener("DOMContentLoaded", function () {
     let submit_button = document.getElementById("submit-ranks");
-    let url = window.location.href;
-    let student_id = url.substring(url.lastIndexOf("/") + 1);
+    let opportunity_id = document.getElementById("opp_id").textContent;
     submit_button.addEventListener("click", async function () {
-        let all_ranks = document.getElementsByClassName("opportunity-rank");
+        let all_ranks = document.getElementsByClassName("student-rank");
         let ranks = [];
         for (let i = 0; i < all_ranks.length; i++) {
             if (all_ranks[i].value === "") {
@@ -26,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
         formData.append("ranks", actual_ranks);
         try {
             const response = await fetch(
-                `/students/rank_preferences/${student_id}`,
+                `/employers/rank_students?opportunity_id=${opportunity_id}`,
                 {
                     method: "POST",
                     body: formData,
@@ -35,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!response.ok) {
                 throw new Error("An error occurred");
             }
-            window.location.href = "/students/update_success";
+            window.location.href = "/opportunities/search";
         } catch (error) {
             alert("An error occurred. Please try again later");
         }

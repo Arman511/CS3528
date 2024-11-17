@@ -63,6 +63,20 @@ def employers_login_required(f):
     return wrap
 
 
+def admin_or_employers_required(f):
+    """
+    This decorator ensures that a employer or admin is logged in before accessing certain routes.
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "employer_logged_in" in session or "logged_in" in session:
+            return f(*args, **kwargs)
+        return redirect("/students/login")
+
+    return wrap
+
+
 def configure_routes(app):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
