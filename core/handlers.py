@@ -1,5 +1,5 @@
 """
-Handles the base routes, adds the module routes, and includes decorators 
+Handles the base routes, adds the module routes, and includes decorators
 to enforce user access levels.
 """
 

@@ -61,7 +61,7 @@ class Module:
 
     def get_module_by_id(self, module_id=None):
         """Retrieves a module by its ID."""
-        if module_id == None:
+        if module_id is None:
             module_id = request.form.get("module_id")
         module = database.modules_collection.find_one({"module_id": module_id})
 
