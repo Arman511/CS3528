@@ -1,10 +1,10 @@
 """
-Handles the base routes, adds the module routes, and includes decorators 
+Handles the base routes, adds the module routes, and includes decorators
 to enforce user access levels.
 """
 
 from functools import wraps
-from flask import render_template, request, session, redirect
+from flask import render_template, session, redirect
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -77,7 +77,7 @@ def admin_or_employers_required(f):
     return wrap
 
 
-def configure_routes(app):
+def configure_routes(app, cache):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -88,7 +88,7 @@ def configure_routes(app):
         /privacy-policy: The privacy policy route which renders the 'privacy_policy.html' template.
     """
 
-    routes_user.add_user_routes(app)
+    routes_user.add_user_routes(app, cache)
     routes_student.add_student_routes(app)
     routes_opportunities.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)

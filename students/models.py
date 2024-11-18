@@ -204,7 +204,7 @@ class Student:
     def import_from_csv(self):
         """Importing students from CSV file."""
 
-        if not "file" in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
 
         if not handlers.allowed_file(request.files["file"].filename, ["csv"]):
@@ -232,7 +232,7 @@ class Student:
     def import_from_xlsx(self):
         """Importing students from Excel file."""
 
-        if not "file" in request.files:
+        if not "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
 
         if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):

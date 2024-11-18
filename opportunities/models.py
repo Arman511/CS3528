@@ -3,10 +3,8 @@ Opportunity model.
 """
 
 from datetime import datetime
-import uuid
 from flask import jsonify, request, session
-import pandas as pd
-from core import database, handlers
+from core import database
 
 cache = {"data": [], "last_updated": datetime.now()}
 
@@ -138,6 +136,7 @@ class Opportunity:
         return cache["data"]
 
     def get_opportunities_by_company(self, user_type=None):
+        """Getting all opportunities by company."""
         if user_type == "admin":
             return self.get_opportunities()
 
@@ -199,62 +198,9 @@ class Opportunity:
 
         return jsonify({"error": "No opportunities found"}), 404
 
-    def import_opportunities_from_csv(self):
-        """Importing opportunities from CSV file."""
-
-        if not "file" in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["csv"]):
-            return jsonify({"error": "Invalid file type"}), 400
-
-        try:
-            file = request.files["file"]
-            df = pd.read_csv(file)
-
-            opportunities = df.to_dict(orient="records")
-            for opportunity in opportunities:
-                opportunity["_id"] = uuid.uuid1().hex
-                database.opportunities_collection.delete_one(
-                    {"title": opportunity["title"]}
-                )
-
-            database.opportunities_collection.insert_many(opportunities)
-            return jsonify({"message": "Opportunities imported"}), 200
-        except (
-            pd.errors.EmptyDataError,
-            pd.errors.ParserError,
-            FileNotFoundError,
-        ) as e:
-            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
-
-    def import_opportunities_from_xlsx(self):
-        """Importing opportunities from Excel file."""
-
-        if not "file" in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
-            return jsonify({"error": "Invalid file type"}), 400
-
-        try:
-            file = request.files["file"]
-            df = pd.read_excel(file)
-
-            opportunities = df.to_dict(orient="records")
-            for opportunity in opportunities:
-                opportunity["_id"] = uuid.uuid1().hex
-            database.opportunities_collection.insert_many(opportunities)
-
-            return jsonify({"message": "Opportunities imported"}), 200
-        except (
-            pd.errors.EmptyDataError,
-            pd.errors.ParserError,
-            FileNotFoundError,
-        ) as e:
-            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
-
     def get_valid_students(self, opportunity_id):
+        """Get valid students for an opportunity."""
+        # pylint: disable=import-outside-toplevel
         from students.models import Student
 
         students = Student().get_students()

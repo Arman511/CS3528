@@ -37,7 +37,6 @@ def send_otp(recipient):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipient, msg.as_string())
-    print("Message sent!")
     session["OTP"] = otp_serializer.dumps(otp)
 
 

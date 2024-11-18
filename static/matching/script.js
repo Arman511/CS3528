@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
             formData.append("employer_email", employer_email);
             formData.append("opportunity", opportunity);
             try {
-                const response = await fetch("/user/matching", {
+                const response = await fetch("/user/send_match_email", {
                     method: "POST",
                     body: formData,
                 });
@@ -36,6 +36,26 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+    const last_updated = document
+        .getElementById("time-message")
+        .getAttribute("data-last-updated");
+    function updateTimeUntilNextUpdate() {
+        const lastUpdated = new Date(last_updated);
+        const now = new Date();
+        const fiveMinutes = 5 * 60 * 1000;
+        const nextUpdate = new Date(lastUpdated.getTime() + fiveMinutes);
+        const timeUntilUpdate = Math.max(0, nextUpdate - now);
+        const minutesUntilUpdate = Math.floor(timeUntilUpdate / (60 * 1000));
+        const secondsUntilUpdate = Math.floor(
+            (timeUntilUpdate % (60 * 1000)) / 1000
+        );
+        document.getElementById(
+            "time-until-update"
+        ).innerText = ` (${minutesUntilUpdate} minutes and ${secondsUntilUpdate} seconds remaining)`;
+    }
+
+    setInterval(updateTimeUntilNextUpdate, 1000);
+    updateTimeUntilNextUpdate();
 
     const deleteButtons = document.querySelectorAll(".delete-button");
 
@@ -69,5 +89,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Fetch error:", error);
             }
         });
+    });
+
+    const sendAllEmailsButton = document.getElementById("send-all-emails");
+
+    sendAllEmailsButton.addEventListener("click", async function () {
+        for (const button of sendEmailButtons) {
+            await new Promise((resolve) => setTimeout(resolve, 100));
+            await button.click();
+        }
     });
 });

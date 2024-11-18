@@ -102,7 +102,7 @@ class User:
             return response
         return jsonify({"message": "All deadlines updated successfully"}), 200
 
-    def matching(self):
+    def send_match_email(self):
         """Match students with opportunities."""
 
         student = Student().get_student_by_uuid(request.form.get("student"))
@@ -117,8 +117,8 @@ class User:
 
         body = (
             f"<p>Dear {student['first_name']},</p>"
-            f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for the "
-            f"opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
+            f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for "
+            f"the opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
             f"<a href='mailto:{request.form.get('employer_email')}'>{request.form.get('employer_email')}</a> "
             f"to discuss further details.</p>"
             "<p>Best,<br>Skillpoint</p>"
