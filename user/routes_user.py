@@ -2,6 +2,7 @@
 Handles routes for the user module.
 """
 
+from datetime import datetime
 from flask import redirect, render_template, session, request
 from algorithm.matching import Matching
 from core import database, handlers
@@ -11,7 +12,7 @@ from students.models import Student
 from .models import User
 
 
-def add_user_routes(app):
+def add_user_routes(app, cache):
     """Add user routes."""
 
     @app.route("/user/register", methods=["GET", "POST"])
@@ -110,8 +111,15 @@ def add_user_routes(app):
 
         return render_template("user/problems.html", problems=problems)
 
-    @app.route("/user/matching", methods=["GET", "POST"])
+    @app.route("/user/send_match_email", methods=["POST"])
     @handlers.login_required
+    def send_match_email():
+        """Send match email."""
+        return User().send_match_email()
+
+    @app.route("/user/matching", methods=["GET"])
+    @handlers.login_required
+    @cache.cached(timeout=300)
     def matching():
         if not database.is_past_opportunities_ranking_deadline():
             return render_template(
@@ -119,9 +127,6 @@ def add_user_routes(app):
                 referrer=request.referrer,
                 data=f"The final deadline must have passed to do matching, wait till {database.get_opportunities_ranking_deadline()}",
             )
-
-        if request.method == "POST":
-            return User().matching()
 
         students = list(database.students_collection.find())
         valid_students = []
@@ -180,13 +185,19 @@ def add_user_routes(app):
             temp["name"] = f"{student['first_name']} {student['last_name']}"
             temp["reason"] = "Student was not matched"
             unmatched_students.append(temp)
+
+        students_map = {student["_id"]: student for student in students}
+        opportunities_map = {
+            opportunity["_id"]: opportunity for opportunity in opportunities
+        }
+        employers = list(database.employers_collection.find())
+        employers_map = {employer["_id"]: employer for employer in employers}
         return render_template(
             "user/matching.html",
             not_matched=unmatched_students,
             matches=matches_list,
-            get_student=Student().get_student_by_uuid,
-            get_opportunity=Opportunity().get_opportunity_by_id,
-            get_company_name=Employers().get_company_name,
-            get_employer_by_id=Opportunity().get_employer_by_id,
-            get_company_email_by_id=Employers().get_company_email_by_id,
+            students_map=students_map,
+            employers_map=employers_map,
+            opportunities_map=opportunities_map,
+            last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )
