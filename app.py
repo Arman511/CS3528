@@ -24,4 +24,4 @@ cache = Cache(app)
 handlers.configure_routes(app, cache)
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()

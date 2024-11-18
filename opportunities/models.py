@@ -3,10 +3,8 @@ Opportunity model.
 """
 
 from datetime import datetime
-import uuid
 from flask import jsonify, request, session
-import pandas as pd
-from core import database, handlers
+from core import database
 
 cache = {"data": [], "last_updated": datetime.now()}
 
@@ -138,6 +136,7 @@ class Opportunity:
         return cache["data"]
 
     def get_opportunities_by_company(self, user_type=None):
+        """Getting all opportunities by company."""
         if user_type == "admin":
             return self.get_opportunities()
 

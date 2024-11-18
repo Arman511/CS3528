@@ -7,7 +7,6 @@ from flask import redirect, render_template, session, request
 from algorithm.matching import Matching
 from core import database, handlers
 from employers.models import Employers
-from opportunities.models import Opportunity
 from students.models import Student
 from .models import User
 
