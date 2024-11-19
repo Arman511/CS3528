@@ -54,7 +54,10 @@ def add_employer_routes(app):
         if database.is_past_opportunities_ranking_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",
-                data=f"Ranking deadline has passed as of {database.get_opportunities_ranking_deadline()}",
+                data=(
+                    f"Ranking deadline has passed as of "
+                    f"{database.get_opportunities_ranking_deadline()}"
+                ),
                 referrer=request.referrer,
                 employer=session["employer"],
             )
@@ -64,7 +67,10 @@ def add_employer_routes(app):
         if not database.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",
-                data=f"""Student ranking deadline must have passed before you can start, wait till of {database.get_student_ranking_deadline()}""",
+                data=(
+                    "Student ranking deadline must have passed before you can start, "
+                    f"wait till {database.get_student_ranking_deadline()}"
+                ),
                 referrer=request.referrer,
                 employer=session["employer"],
             )

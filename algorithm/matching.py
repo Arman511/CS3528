@@ -1,18 +1,28 @@
+"""
+The matching algorithm is a stable marriage algorithm that matches students 
+to placements based on their preferences. The algorithm is implemented in the 
+`Matching` class. The `find_best_match` method finds the best match for students and placements. 
+"""
+
 from typing import List, Dict, Tuple
 
 
 class Matching:
+    """Class to match students to placements based on their preferences."""
+
     def __init__(
         self,
         student_rank: Dict[str, List[str]],
         placement_rank: Dict[str, Dict[str, int]],
     ):
-        self.student_rank = student_rank  # Students' preferences
-        self.placement_rank = (
-            placement_rank  # Employers' rankings, includes "positions" key
-        )
-        self.potential_match = {}  # To store the final matches
-        self.final_result = []  # To store the final matches (Unmatched, Matched)
+        # Students' preferences
+        self.student_rank = student_rank
+        # Employers' rankings, includes "positions" key
+        self.placement_rank = placement_rank
+        # To store the final matches
+        self.potential_match: Dict[str, List[str]] = {}
+        # To store the final matches (Unmatched, Matched)
+        self.final_result: Tuple[List[str], Dict[str, List[str]]] = ([], {})
 
     def find_best_match(self) -> Tuple[List[str], Dict[str, List[str]]]:
         """Find the best match for students and placements."""
@@ -43,7 +53,7 @@ class Matching:
 
             else:
                 if current_matches:
-                    # Employer already has the maximum allowed matches, compare with the weakest match
+                    # Employer has the maximum allowed matches, compare with the weakest match
                     weakest_match = current_matches[-1]  # Get the least preferred match
                     weakest_match_rank = self.placement_rank[choice][weakest_match]
 
@@ -51,7 +61,7 @@ class Matching:
                     if student in self.placement_rank[choice]:
                         new_candidate_rank = self.placement_rank[choice][student]
 
-                        # If the new student is ranked higher (lower number), replace the weakest match
+                        # If new student is ranked higher (lower number), replace the weakest match
                         if new_candidate_rank < weakest_match_rank:
                             placement_current_match[choice][
                                 -1
@@ -75,6 +85,10 @@ class Matching:
                     # If current_matches is empty, avoid accessing it
                     mapped.insert(0, student)
 
-        self.final_result = [unmapped, self.potential_match]
+        self.final_result = (unmapped, self.potential_match)
         # print(f"Unmapped: {self.final_result[0]} \nMatched: {self.final_result[1]}")
+        return self.final_result
+
+    def get_matches(self) -> Tuple[List[str], Dict[str, List[str]]]:
+        """Get final result"""
         return self.final_result

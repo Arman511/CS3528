@@ -39,7 +39,10 @@ def add_opportunities_routes(app):
         if database.is_past_details_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",
-                data=f"Adding/Updating details deadline has passed as of {database.get_details_deadline()}",
+                data=(
+                    "Adding/Updating details deadline has passed as of "
+                    f"{database.get_details_deadline()}"
+                ),
                 referrer=request.referrer,
                 employer=session["employer"],
             )
