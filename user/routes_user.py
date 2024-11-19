@@ -30,12 +30,12 @@ def add_user_routes(app, cache):
             return redirect("/")
         return render_template("user/login.html")
 
-    @app.route("/user/change_password", methods=["GET", "POST"])
-    def change_password():
-        """Change user password."""
-        if request.method == "POST":
-            return User().change_password()
-        return render_template("user/change_password.html")
+    # @app.route("/user/change_password", methods=["GET", "POST"])
+    # def change_password():
+    #     """Change user password."""
+    #     if request.method == "POST":
+    #         return User().change_password()
+    #     return render_template("user/change_password.html")
 
     @app.route("/user/deadline", methods=["GET", "POST"])
     @handlers.login_required
@@ -67,11 +67,13 @@ def add_user_routes(app, cache):
             if "modules" not in student:
                 problems.append(
                     {
-                        "description": f"Student {student['student_id']}, has not filled in their details "
-                        + (
-                            "the deadline has passed so can not complete it"
-                            if passed_details_deadline
-                            else " the deadline has not passed yet"
+                        "description": (
+                            f"Student {student['student_id']}, has not filled in their details "
+                            + (
+                                "the deadline has passed so can not complete it"
+                                if passed_details_deadline
+                                else " the deadline has not passed yet"
+                            )
                         ),
                         "email": student["email"],
                     }
@@ -80,11 +82,13 @@ def add_user_routes(app, cache):
             if "preferences" not in student:
                 problems.append(
                     {
-                        "description": f"Student {student['student_id']}, has not ranked their opportunities "
-                        + (
-                            "the deadline has passed so can not complete it"
-                            if passed_student_ranking_deadline
-                            else " the deadline has not passed yet"
+                        "description": (
+                            f"Student {student['student_id']}, has not ranked their opportunities "
+                            + (
+                                "the deadline has passed so can not complete it"
+                                if passed_student_ranking_deadline
+                                else " the deadline has not passed yet"
+                            )
                         ),
                         "email": student["email"],
                     }
@@ -96,11 +100,14 @@ def add_user_routes(app, cache):
             if "preferences" not in opportunity:
                 problems.append(
                     {
-                        "description": f"Opportunity {opportunity['title']} with id {opportunity['_id']}, has not ranked their students "
-                        + (
-                            "the deadline has passed so can not complete it"
-                            if passed_opportunities_ranking_deadline
-                            else " the deadline has not passed yet"
+                        "description": (
+                            f"Opportunity {opportunity['title']} with id {opportunity['_id']}, "
+                            "has not ranked their students "
+                            + (
+                                "the deadline has passed so can not complete it"
+                                if passed_opportunities_ranking_deadline
+                                else " the deadline has not passed yet"
+                            )
                         ),
                         "email": Employers().get_employer_by_id(
                             opportunity["employer_id"]
@@ -124,15 +131,18 @@ def add_user_routes(app, cache):
             return render_template(
                 "user/past_deadline.html",
                 referrer=request.referrer,
-                data=f"The final deadline must have passed to do matching, wait till {database.get_opportunities_ranking_deadline()}",
+                data=(
+                    "The final deadline must have passed to do matching, "
+                    f"wait till {database.get_opportunities_ranking_deadline()}"
+                ),
             )
 
         students = list(database.students_collection.find())
-        valid_students = []
         unmatched_students = []
+        students_preference = {}
         for student in students:
             if "preferences" in student:
-                valid_students.append(student)
+                students_preference[student["_id"]] = student["preferences"]
                 continue
             temp = {}
             temp["_id"] = student["_id"]
@@ -142,33 +152,20 @@ def add_user_routes(app, cache):
             temp["reason"] = "Student has not ranked their opportunities"
             unmatched_students.append(temp)
 
-            # """Put this for an eirlier time, maybe at system start"""
-            # opp_for_student = Student().get_opportunities_by_student(student["student_id"])
-            # random.shuffle(opp_for_student)
-            # student["preferences"] =  opp_for_student
-            # valid_students.append(student)
-
         opportunities = list(database.opportunities_collection.find())
-        valid_opportunities = []
+        opportunities_preference = {}
         for opportunity in opportunities:
             if "preferences" in opportunity:
-                valid_opportunities.append(opportunity)
+                temp = {}
+                temp["positions"] = opportunity["spots_available"]
+                for i, student in enumerate(opportunity["preferences"]):
+                    temp[student] = i + 1
+                opportunities_preference[opportunity["_id"]] = temp
                 continue
 
-        students_preference = {}
-
-        for student in valid_students:
-            students_preference[student["_id"]] = student["preferences"]
-
-        opportunities_preference = {}
-        for opportunity in valid_opportunities:
-            temp = {}
-            temp["positions"] = opportunity["spots_available"]
-            for i, student in enumerate(opportunity["preferences"]):
-                temp[student] = i + 1
-            opportunities_preference[opportunity["_id"]] = temp
-        match = Matching(students_preference, opportunities_preference)
-        result = match.find_best_match()
+        result = Matching(
+            students_preference, opportunities_preference
+        ).find_best_match()
         matches_list = [
             {"opportunity": opportunity, "students": students}
             for opportunity, students in result[1].items()
@@ -185,18 +182,17 @@ def add_user_routes(app, cache):
             temp["reason"] = "Student was not matched"
             unmatched_students.append(temp)
 
-        students_map = {student["_id"]: student for student in students}
-        opportunities_map = {
-            opportunity["_id"]: opportunity for opportunity in opportunities
-        }
-        employers = list(database.employers_collection.find())
-        employers_map = {employer["_id"]: employer for employer in employers}
         return render_template(
             "user/matching.html",
             not_matched=unmatched_students,
             matches=matches_list,
-            students_map=students_map,
-            employers_map=employers_map,
-            opportunities_map=opportunities_map,
+            students_map={student["_id"]: student for student in students},
+            employers_map={
+                employer["_id"]: employer
+                for employer in list(database.employers_collection.find())
+            },
+            opportunities_map={
+                opportunity["_id"]: opportunity for opportunity in opportunities
+            },
             last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         )

@@ -118,16 +118,19 @@ def update_deadlines(
             ),
             400,
         )
-    elif student_ranking_deadline > opportunities_ranking_deadline:
+    if student_ranking_deadline > opportunities_ranking_deadline:
         return (
             jsonify(
                 {
-                    "error": "Student Ranking deadline cannot be later than Opportunities Ranking deadline."
+                    "error": (
+                        "Student Ranking deadline cannot be later than "
+                        "Opportunities Ranking deadline."
+                    )
                 }
             ),
             400,
         )
-    elif details_deadline > opportunities_ranking_deadline:
+    if details_deadline > opportunities_ranking_deadline:
         return (
             jsonify(
                 {

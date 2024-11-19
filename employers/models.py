@@ -1,10 +1,10 @@
 """Employer model."""
 
 from datetime import datetime, timedelta
+import time
 import uuid
 from flask import redirect, request, jsonify, session
 from core import database, email_handler
-import time
 
 employers_cache = {"data": None, "last_updated": None}
 

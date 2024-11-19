@@ -66,25 +66,25 @@ class User:
 
         return jsonify({"error": "Invalid login credentials"}), 401
 
-    def change_password(self):
-        """Change user password."""
-        user = session.get("user")
-        old_password = request.form.get("old_password")
-        new_password = request.form.get("new_password")
-        confirm_password = request.form.get("confirm_password")
+    # def change_password(self):
+    #     """Change user password."""
+    #     user = session.get("user")
+    #     old_password = request.form.get("old_password")
+    #     new_password = request.form.get("new_password")
+    #     confirm_password = request.form.get("confirm_password")
 
-        if not pbkdf2_sha256.verify(old_password, user["password"]):
-            return jsonify({"error": "Invalid old password"}), 400
+    #     if not pbkdf2_sha256.verify(old_password, user["password"]):
+    #         return jsonify({"error": "Invalid old password"}), 400
 
-        if new_password != confirm_password:
-            return jsonify({"error": "Passwords don't match"}), 400
+    #     if new_password != confirm_password:
+    #         return jsonify({"error": "Passwords don't match"}), 400
 
-        database.users_collection.update_one(
-            {"_id": user["_id"]},
-            {"$set": {"password": pbkdf2_sha256.hash(new_password)}},
-        )
+    #     database.users_collection.update_one(
+    #         {"_id": user["_id"]},
+    #         {"$set": {"password": pbkdf2_sha256.hash(new_password)}},
+    #     )
 
-        return jsonify({"message": "Password updated successfully"}), 200
+    #     return jsonify({"message": "Password updated successfully"}), 200
 
     def change_deadline(self):
         """Change deadlines for details, student ranking, and opportunities ranking."""
@@ -119,7 +119,8 @@ class User:
             f"<p>Dear {student['first_name']},</p>"
             f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for "
             f"the opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
-            f"<a href='mailto:{request.form.get('employer_email')}'>{request.form.get('employer_email')}</a> "
+            f"<a href='mailto:{request.form.get('employer_email')}'>"
+            f"{request.form.get('employer_email')}</a> "
             f"to discuss further details.</p>"
             "<p>Best,<br>Skillpoint</p>"
         )

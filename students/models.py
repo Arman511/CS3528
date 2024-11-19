@@ -265,7 +265,10 @@ class Student:
                     return (
                         jsonify(
                             {
-                                "error": f"Invalid student {temp_student['first_name'], temp_student['last_name']}"
+                                "error": (
+                                    f"Invalid student {temp_student['first_name']}, "
+                                    f"{temp_student['last_name']}"
+                                )
                             }
                         ),
                         400,
