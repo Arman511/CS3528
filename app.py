@@ -12,6 +12,7 @@ from flask_caching import Cache
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core import handlers  # pylint: disable=C0413
+
 load_dotenv()
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
