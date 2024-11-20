@@ -5,6 +5,7 @@ from flask import flash, redirect, render_template, request, session, url_for
 from core import database, handlers
 from course_modules.models import Module
 from courses.models import Course
+from employers.models import Employers
 from .models import Opportunity
 
 
@@ -24,11 +25,14 @@ def add_opportunities_routes(app):
             user_type = session["employer"]["_id"]
 
         opportunities = Opportunity().get_opportunities_by_company(user_type)
-
+        employers_map = {
+            employer["_id"]: employer for employer in list(Employers().get_employers())
+        }
         return render_template(
             "opportunities/search.html",
             opportunities=opportunities,
             user_type=user_type,
+            employers_map=employers_map,
         )
 
     @app.route(

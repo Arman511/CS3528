@@ -1,5 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
+    {% if user_type == "admin" %}
+        {% include "/user/navbar.html" %}
+    {% else %}
+        {% include "/employers/navbar.html" %}
+    {% endif %}
     <div class="container mt-5">
         <div class="card">
             <div class="card-header text-center">
@@ -31,6 +36,7 @@
                         <th>Title</th>
                         <th>Description</th>
                         <th>URL</th>
+                        {% if user_type == "admin" %}<th>Company Name</th>{% endif %}
                         <th>Location</th>
                         <th>Modules Required</th>
                         <th>Courses Required</th>
@@ -47,7 +53,7 @@
                             <td>
                                 <a href="{{ opportunity.url }}">{{ opportunity.url }}</a>
                             </td>
-                            {% if user_type == "admin" %}<td>{{ opportunity.company_name }}</td>{% endif %}
+                            {% if user_type == "admin" %}<td>{{ employers_map[opportunity.employer_id]["company_name"] }}</td>{% endif %}
                             <td>{{ opportunity.location }}</td>
                             <td>{{ opportunity.modules_required }}</td>
                             <td>{{ opportunity.courses_required }}</td>
