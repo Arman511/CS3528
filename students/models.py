@@ -232,7 +232,7 @@ class Student:
     def import_from_xlsx(self):
         """Importing students from Excel file."""
 
-        if not "file" not in request.files:
+        if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
 
         if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
@@ -273,10 +273,10 @@ class Student:
                         ),
                         400,
                     )
-                database.students_collection.delete_one(
-                    {"student_id": temp_student["student_id"]}
-                )
-                database.students_collection.insert_one(temp_student)
+                # database.students_collection.delete_one(
+                #     {"student_id": temp_student["student_id"]}
+                # )
+                # database.students_collection.insert_one(temp_student)
 
             return jsonify({"message": f"{len(students)} students imported"}), 200
         except (
