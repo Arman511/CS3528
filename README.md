@@ -7,6 +7,7 @@
 3. [How to Run](#how-to-run)
 
 ## Project Overview
+
 This project is part of the CS3028 course. Using model route framework ontop of flask. We have decied to allow the placement team to upload students and opportunities. The students will rank opportuniites and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
 
 -   **Flask**: A lightweight WSGI web application framework in Python.
@@ -54,3 +55,9 @@ This project is part of the CS3028 course. Using model route framework ontop of 
     ```
 
 https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
+
+Coverage
+
+```
+coverage run -m pytest && coverage report
+```
