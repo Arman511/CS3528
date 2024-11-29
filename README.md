@@ -56,7 +56,7 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
-Coverage
+## Coverage
 
 ```
 coverage run -m pytest && coverage report
