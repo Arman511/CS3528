@@ -56,6 +56,36 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
+
+## Admininstration Login Details
+
+- Email : admin@example.com
+- Password: admin
+
+## Student Login Details
+
+- Student 1: 
+    Username : 12345678
+    Password : 54d37f9c96a711ef93523388226f7343
+
+- Student 2: 
+    Username : 52207669
+    Password : 649fe83e96a711ef93523388226f7343
+
+- Student 3: 
+    Username : 45327347
+    Password : 6b31741a96a711ef93523388226f7343
+
+## Employer Login
+
+- To sign in as an employer, the employers email address should be in the database which can only be added by the admin team. once completed, the employer fill in their email address and receive an OTP (check spam folder).
+
+## Deadlines
+
+- There are 3 deadlines which are managed by the admin team which throughout their duration restrict the data that can be inputted and user views available
+    1. The students fill in their profile information
+    2. Employers upload the placements offered
+    3. The students and employers rank one another
 ## Coverage
 
 ```
