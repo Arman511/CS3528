@@ -58,4 +58,4 @@ def test_invalid_email():
     database.users_collection.insert_one(user)
     added_user = database.users_collection.find_one({"email": "dummy@dummy.com"})
     assert added_user is None, "Invalid email was added"
-    database.users_collection.delete_one({"email": ""})
+    database.users_collection.delete_one({"email": "dummy2"})
