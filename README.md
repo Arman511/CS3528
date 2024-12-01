@@ -80,7 +80,7 @@ https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
 ## Deadlines
 
-- There are 3 deadlines
+- There are 3 deadlines which are managed by the admin team which throughout their duration restrict the data that can be inputted and user views available
     1. The students fill in their profile information
     2. Employers upload the placements offered
     3. The students and employers rank one another
