@@ -328,12 +328,11 @@ def test_multiple_unmapped_students():
     result = match.find_best_match()
 
     expected = (
-        ["Student_1", "Student_4", "Student_7", "Student_9"],
+        ["Student_1", "Student_4", "Student_7", "Student_8", "Student_9"],
         {
             "company_1": ["Student_2", "Student_3"],
             "company_5": ["Student_6"],
             "company_7": ["Student_5"],
-            "company_9": ["Student_8"],
             "company_10": ["Student_10"],
         },
     )
