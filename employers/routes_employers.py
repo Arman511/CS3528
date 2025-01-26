@@ -19,13 +19,13 @@ def add_employer_routes(app):
         if request.method == "POST":
             return Employers().employer_login()
 
-        return render_template("employers/employer_login.html")
+        return render_template("employers/employer_login.html", user_type="employer")
 
     @app.route("/employers/home", methods=["GET"])
     @handlers.employers_login_required
-    def employer_home():
+    def employer_home(employer):
         return render_template(
-            "employers/employer_home.html", employer=session["employer"]
+            "employers/employer_home.html", employer=employer, user_type="employer"
         )
 
     @app.route("/employers/otp", methods=["POST"])
@@ -46,7 +46,7 @@ def add_employer_routes(app):
     def add_employer():
         if request.method == "POST":
             return Employers().register_employer()
-        return render_template("employers/add_employer.html")
+        return render_template("employers/add_employer.html", user_type="admin")
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required

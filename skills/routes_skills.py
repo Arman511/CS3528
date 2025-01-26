@@ -18,5 +18,5 @@ def add_skills_routes(app):
     @handlers.login_required
     def add_skill():
         if request.method == "GET":
-            return render_template("/skills/adding_skills.html")
+            return render_template("/skills/adding_skills.html", user_type="admin")
         return Skill().add_skill()

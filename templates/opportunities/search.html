@@ -1,77 +1,86 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if user_type == "admin" %}
-        {% include "/user/navbar.html" %}
-    {% else %}
-        {% include "/employers/navbar.html" %}
-    {% endif %}
-    <div class="container mt-5">
+{% if user_type == "employer" %}
+    {% include "employers/navbar.html" %}
+{% elif user_type == "admin" %}
+    {% include "user/navbar.html" %}
+{% endif %}
+    <div class="card-wrapper">
+        <!-- First Card: Search Form -->
         <div class="card">
-            <div class="card-header text-center">
-                <h1>Search Opportunities</h1>
-            </div>
-            <div class="card-body">
-                <form id="searchForm" class="row g-3">
-                    <div class="col-md-6">
-                        <label for="title" class="form-label">Title:</label>
-                        <input type="text" id="title" name="title" class="form-control" />
+            <h1 class="center">Search Opportunities</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <div>
+                        <label for="title">Title:</label>
+                        <input type="text" id="title" name="title" class="field" />
                     </div>
                     {% if user_type == "admin" %}
-                        <div class="col-md-6">
-                            <label for="company" class="form-label">Company:</label>
-                            <input type="text" id="company" name="company" class="form-control" />
-                        </div>
-                    {% endif %}
-                    <div class="col-12 text-center mt-3">
-                        <p class="error error--hidden text-danger"></p>
-                        <button type="submit" class="btn btn-primary">Search</button>
+                    <div>
+                        <label for="company">Company:</label>
+                        <input type="text" id="company" name="company" class="field" />
                     </div>
-                </form>
-            </div>
+                    {% endif %}
+                </div>
+                <div class="form-group">
+                    <p class="error error--hidden"></p>
+                    <input type="submit" value="Search" class="btn" />
+                </div>
+            </form>
         </div>
-        <div class="table-responsive mt-5">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Title</th>
-                        <th>Description</th>
-                        <th>URL</th>
-                        {% if user_type == "admin" %}<th>Company Name</th>{% endif %}
-                        <th>Location</th>
-                        <th>Modules Required</th>
-                        <th>Courses Required</th>
-                        <th>Spots Available</th>
-                        <th>Duration</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="opportunity-table">
-                    {% for opportunity in opportunities %}
+
+        <!-- Second Card: Table -->
+        <div class="card wide-card no-scroll">
+            <h2 class="center">Opportunities</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Company Name</th> <!-- Display Company Name for Both Admin and Employer -->
+                            <th>URL</th>
+                            <th>Location</th>
+                            <th>Modules Required</th>
+                            <th>Courses Required</th>
+                            <th>Spots Available</th>
+                            <th>Duration</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="opportunity-table">
+                        {% for opportunity in opportunities %}
                         <tr>
                             <td>{{ opportunity.title }}</td>
                             <td>{{ opportunity.description }}</td>
-                            <td>
-                                <a href="{{ opportunity.url }}">{{ opportunity.url }}</a>
-                            </td>
-                            {% if user_type == "admin" %}<td>{{ employers_map[opportunity.employer_id]["company_name"] }}</td>{% endif %}
+                            <td>{{ opportunity.company_name }}</td>
+                            <td><a href="{{ opportunity.url }}">{{ opportunity.url }}</a></td>
                             <td>{{ opportunity.location }}</td>
                             <td>{{ opportunity.modules_required }}</td>
                             <td>{{ opportunity.courses_required }}</td>
                             <td>{{ opportunity.spots_available }}</td>
                             <td>{{ opportunity.duration }}</td>
                             <td>
-                                <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
+                                {% if user_type == "employer" %}
+                                <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}" 
                                    class="btn btn-info btn-sm">Rank</a>
-                                <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
+                                <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}" 
                                    class="btn btn-info btn-sm">Update</a>
-                                <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
+                                <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}" 
                                    class="btn btn-danger btn-sm">Delete</a>
+                                {% elif user_type == "admin" %}
+                                <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}" 
+                                   class="btn btn-info btn-sm">Update</a>
+                                <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}" 
+                                   class="btn btn-danger btn-sm">Delete</a>
+                                {% endif %}
                             </td>
                         </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <script src="/static/search_opportunities/script.js"></script>
     </div>
+    <script src="/static/search_opportunities/script.js"></script>
 {% endblock content %}

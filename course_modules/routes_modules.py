@@ -12,5 +12,7 @@ def add_module_routes(app):
     @handlers.login_required
     def add_course_module():
         if request.method == "GET":
-            return render_template("course_modules/adding_modules.html")
+            return render_template(
+                "course_modules/adding_modules.html", user_type="admin"
+            )
         return Module().add_module()

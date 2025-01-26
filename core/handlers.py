@@ -57,7 +57,8 @@ def employers_login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if "employer_logged_in" in session:
-            return f(*args, **kwargs)
+            employer = session.get("employer")
+            return f(employer, *args, **kwargs)
         return redirect("/employers/login")
 
     return wrap
@@ -104,7 +105,10 @@ def configure_routes(app, cache):
         Returns:
             str: Rendered HTML template for the home page.
         """
-        return render_template("/user/home.html")
+        return render_template(
+            "/user/home.html",
+            user_type="admin" if "logged_in" in session else "employer",
+        )
 
     @app.route("/privacy_policy")
     def privacy_policy():

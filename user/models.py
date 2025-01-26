@@ -21,8 +21,8 @@ class User:
         user dictionary, setting session variables, and returning a JSON response."""
         del user["password"]
         session["logged_in"] = True
-        session["user"] = user
-        return jsonify(user), 200
+        session["user"] = {"_id": user["_id"], "name": user["name"]}
+        return jsonify(session["user"]), 200
 
     def register(self):
         """Registers a new user by creating a user dictionary with a unique ID,

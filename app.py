@@ -7,7 +7,7 @@ from datetime import timedelta
 import os
 import sys
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, render_template
 from flask_caching import Cache
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
@@ -22,6 +22,12 @@ app.config["CACHE_DEFAULT_TIMEOUT"] = 300
 app.permanent_session_lifetime = timedelta(minutes=30)
 cache = Cache(app)
 handlers.configure_routes(app, cache)
+
+
+@app.route("/")
+def home():
+    return render_template("home.html", show_header=True)
+
 
 if __name__ == "__main__":
     app.run()
