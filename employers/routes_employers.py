@@ -50,7 +50,7 @@ def add_employer_routes(app):
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
-    def employers_rank_students():
+    def employers_rank_students(employer):
         if database.is_past_opportunities_ranking_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",
