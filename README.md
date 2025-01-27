@@ -12,8 +12,8 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 -   **Flask**: A lightweight WSGI web application framework in Python.
 -   **Pymongo**: An MongoDB toolkit and Object-Relational Mapping (ORM) library for Python.
--   **Gale-Shapley Algorithm**: Also known as the stable marriage algorithm, used for matching students to opportunities. --NOT IMPLEMENTED YET
--   **Email Integration**: To send confirmation emails to employers. --NOT IMPLEMENTED YET
+-   **Gale-Shapley Algorithm**: Also known as the stable marriage algorithm, used for matching students to opportunities.
+-   **Email Integration**: To send confirmation emails to employers and students.
 
 ## Setup Instructions
 
