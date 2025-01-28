@@ -145,10 +145,14 @@ def add_student_routes(app):
         """Rank preferences."""
         if "student" not in session:
             return redirect("/students/login")
+        
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
-
+        
+        if "student" in session:
+            user_type = "student"
+                    
         if database.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
@@ -163,6 +167,8 @@ def add_student_routes(app):
             opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
             count=len(opportunities),
+            user_type=user_type,
+            student=session["student"]
         )
 
     @app.route("/students/update_success")
