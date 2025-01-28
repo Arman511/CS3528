@@ -11,30 +11,63 @@
     gap: 1.5rem;
 }
 
-.wide-card {
-    width: 100%;
-}
-
-.table-wrapper {
-    overflow-x: auto; /* Ensure the table fits on smaller screens */
-}
-
-/* Card Styling */
 .card {
     background-color: #fff;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    padding: 40px;
+    padding: 20px;
     width: 100%;
-    max-width: 900px;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    max-width: 1200px;
+    /* Restrict overly wide cards */
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.wide-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    /* Allow horizontal scrolling on small screens */
+    margin: 0 auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    /* Automatically adjust column widths */
+    min-width: 800px;
+    /* Minimum size to prevent squeezing */
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: left;
+    word-wrap: break-word;
+    /* Wrap content in narrow cells */
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f4f4f4;
 }
 
 /* Ensure card dynamically resizes based on content */
 .card.dynamic-height {
-    height: auto; /* Allow the height to adjust based on the content */
-    max-height: none; /* Remove any constraints on max height */
-    overflow: visible; /* Prevent scrollbar from appearing */
+    height: auto;
+    /* Allow the height to adjust based on the content */
+    max-height: none;
+    /* Remove any constraints on max height */
+    overflow: visible;
+    /* Prevent scrollbar from appearing */
 }
 
 /* Card Hover Effect */
@@ -66,7 +99,8 @@
 }
 
 /* Input and Select Field Styling */
-.field, select {
+.field,
+select {
     padding: 12px;
     margin: 10px 0;
     border: 1px solid #ccc;
@@ -78,7 +112,8 @@
 }
 
 /* Input Focus Effect */
-.field:focus, select:focus {
+.field:focus,
+select:focus {
     border-color: #4e8e8e;
     outline: none;
     box-shadow: 0 0 8px rgba(78, 142, 142, 0.6);
@@ -135,6 +170,22 @@ a:hover {
     text-decoration: underline;
 }
 
+html, body {
+    height: 100%;
+    margin: 0; 
+    display: flex;
+    flex-direction: column; 
+}
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+}
+
+.content {
+    flex: 1;
+}
+
 /* Footer Styling */
 footer {
     background-color: #22699a;
@@ -188,7 +239,8 @@ footer a:hover {
 }
 
 .input-group input {
-    padding-right: 40px; /* Adjust for icon padding */
+    padding-right: 40px;
+    /* Adjust for icon padding */
 }
 
 .input-group .eye-icon {

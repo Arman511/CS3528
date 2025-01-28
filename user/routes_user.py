@@ -50,6 +50,7 @@ def add_user_routes(app, cache):
             student_ranking_deadline=database.get_student_ranking_deadline(),
             opportunities_ranking_deadline=database.get_opportunities_ranking_deadline(),
             user_type="admin",
+            user = session["user"].get("name")
         )
 
     @app.route("/user/problem", methods=["GET"])
@@ -115,9 +116,9 @@ def add_user_routes(app, cache):
                         )["email"],
                     }
                 )
-
+                
         return render_template(
-            "user/problems.html", problems=problems, user_type="admin"
+            "user/problems.html", problems=problems, user_type="admin", user = session["user"].get("name")
         )
 
     @app.route("/user/send_match_email", methods=["POST"])
@@ -137,7 +138,9 @@ def add_user_routes(app, cache):
                 data=(
                     "The final deadline must have passed to do matching, "
                     f"wait till {database.get_opportunities_ranking_deadline()}"
-                ),
+                ), 
+                user_type="admin",
+                user = session["user"].get("name")
             )
 
         students = list(database.students_collection.find())
@@ -206,4 +209,5 @@ def add_user_routes(app, cache):
             },
             last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             user_type="admin",
+            user = session["user"].get("name")
         )

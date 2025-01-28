@@ -168,7 +168,6 @@ def add_student_routes(app):
             employers_col=Employers().get_employer_by_id,
             count=len(opportunities),
             user_type=user_type,
-            student=session["student"]
         )
 
     @app.route("/students/update_success")

@@ -24,9 +24,9 @@
                             {% if user_type == "admin" %}
                             Hello, {{ session['user']['name'] }}
                             {% elif user_type == "employer" %}
-                            Hello, {{ employer.company_name }}
+                            Hello, {{ session['employer']['company_name'] }}
                             {% elif user_type == "student" %}
-                            Hello, {{ student.first_name }}
+                            Hello, {{ session['student']['first_name'] }}
                             {% else %}
                             Didnt work
                             {% endif %}

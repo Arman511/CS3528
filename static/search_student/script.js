@@ -43,21 +43,20 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 // Clear existing rows
                 studentTable.innerHTML = "";
-
                 // Display the students in the table
                 students.forEach((student) => {
                     const row = document.createElement("tr");
 
                     // Create editable fields for updating student info
                     row.innerHTML = `
-                        <td><input type="text" class="editable" value="${student.first_name}" data-field="first_name" data-old-value="${student.first_name}"></td>
-                        <td><input type="text" class="editable" value="${student.last_name}" data-field="last_name" data-old-value="${student.last_name}"></td>
-                        <td><input type="email" class="editable" value="${student.email}" data-field="email" data-old-value="${student.email}"></td>
-                        <td><input type="text" class="editable" value="${student.student_id}" data-field="student_id" data-old-value="${student.student_id}" readonly></td>
-                        <td><input type="text" class="editable" value="${student.course}" data-field="course" data-old-value="${student.course}"></td>
+                        <td><input type="text" value="${student.first_name}" data-field="first_name" data-old-value="${student.first_name}" readonly></td>
+                        <td><input type="text" value="${student.last_name}" data-field="last_name" data-old-value="${student.last_name}" readonly></td>
+                        <td><input type="email" value="${student.email}" data-field="email" data-old-value="${student.email}" readonly></td>
+                        <td><input type="text" value="${student.student_id}" data-field="student_id" data-old-value="${student.student_id}" readonly></td>
+                        <td><input type="text" value="${student.course}" data-field="course" data-old-value="${student.course}" readonly></td>
                         <td>
-                            <button class="update-button" data-id="${student.student_id}">Update</button>
-                            <button class="delete-button" data-id="${student.student_id}">Delete</button>
+                            <button class="btn btn-info btn-sm update-button" data-id="${student.student_id}">Update</button>
+                            <button class="btn btn-info btn-sm delete-button" data-id="${student.student_id}">Delete</button>
                         </td>
                     `;
 

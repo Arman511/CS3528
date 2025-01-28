@@ -1,7 +1,5 @@
 {% extends "base.html" %}
 {% block content %}
-    <h2>Hello {{ employer.company_name }}</h2>
-    <!-- Sign Out button only on this page -->
-    <!-- Hamburger Menu -->
     {% include "/employers/navbar.html" %}
+    <h2>Hello {{ employer.company_name }}</h2>
 {% endblock content %}

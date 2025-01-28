@@ -84,4 +84,5 @@ def add_employer_routes(app):
             get_course_name=Course().get_course_name_by_id,
             get_module_name=Module().get_module_name_by_id,
             get_skill_name=Skill().get_skill_name_by_id,
+            user_type="employer"
         )
