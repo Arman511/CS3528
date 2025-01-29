@@ -24,12 +24,11 @@ def add_opportunities_routes(app):
         employer = session.get("employer")
 
         # Determine user_type based on session data
+        user_type = None
         if user:
             user_type = "admin"
         elif employer:
             user_type = "employer"
-        else:
-            user_type = None
 
         print(f"[DEBUG] User type: {user_type}")
         if user_type is None:
@@ -37,27 +36,44 @@ def add_opportunities_routes(app):
 
         if request.method == "POST":
             data = request.get_json()  # Get the JSON data from the request
-            
+
+            title = data.get("title")
             if user_type == "admin":
-                title = data.get("title")
                 company_name = data.get("company")
                 print("Admin - Method POST")
                 return Opportunity().search_opportunities(title, company_name)
-            elif user_type == "employer":
-                title = data.get("title")
+            else:
                 print("Employer - Method POST")
-                return Opportunity().search_opportunities(title, employer["company_name"])
+                return Opportunity().search_opportunities(
+                    title, employer["company_name"]
+                )
 
         # For GET requests
         if user_type == "admin":
             print("Admin - Method GET")
-            opportunities = Opportunity().search_opportunities(title="", company_name="")
-            employers_map = { employer["_id"]: employer for employer in list(Employers().get_employers())}
-            return render_template("opportunities/search.html", opportunities=opportunities, employers_map=employers_map, user_type=user_type)
+            opportunities = Opportunity().search_opportunities(
+                title="", company_name=""
+            )
+            employers_map = {
+                employer["_id"]: employer
+                for employer in list(Employers().get_employers())
+            }
+            return render_template(
+                "opportunities/search.html",
+                opportunities=opportunities,
+                employers_map=employers_map,
+                user_type=user_type,
+            )
         elif user_type == "employer":
             print("Employer - Method GET")
-            opportunities = Opportunity().search_opportunities(title="", company_name=employer["company_name"])
-            return render_template("opportunities/search.html", opportunities=opportunities, user_type=user_type)
+            opportunities = Opportunity().search_opportunities(
+                title="", company_name=employer["company_name"]
+            )
+            return render_template(
+                "opportunities/search.html",
+                opportunities=opportunities,
+                user_type=user_type,
+            )
 
     @app.route(
         "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
