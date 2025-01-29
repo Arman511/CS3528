@@ -64,6 +64,9 @@ def add_employer_routes(app):
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
             return jsonify({"error": "Need opportunity ID."}), 400
+        opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
+        if session["employer"]["_id"] != opportunity["employer_id"]:
+            return jsonify({"error": "Employer does not own this opportunity."}), 400
         if not database.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",

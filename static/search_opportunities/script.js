@@ -55,8 +55,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td>${opportunity.spots_available}</td>
                 <td>${opportunity.duration}</td>
                 <td>
-                    <a href="/opportunities/employer_add_update_opportunity?opportunity_id=${opportunity._id}" class="btn btn-info btn-sm">Update</a>
+                    <a href="/employers/rank_students?opportunity_id=${opportunity._id}" class="btn btn-primary btn-sm mb-2">Rank</a>
+                    <a href="/opportunities/employer_add_update_opportunity?opportunity_id=${opportunity._id}" class="btn btn-info btn-sm mb-2">Update</a>
                     <a href="/opportunities/employer_delete_opportunity?opportunity_id=${opportunity._id}" class="btn btn-danger btn-sm">Delete</a>
+                    
                 </td>
             `;
 
