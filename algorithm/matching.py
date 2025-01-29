@@ -6,6 +6,7 @@ to placements based on their preferences. The algorithm is implemented in the
 
 from typing import List, Dict, Tuple
 
+
 class Matching:
     """Class to match students to placements based on their preferences."""
 
@@ -112,7 +113,7 @@ class Matching:
                         )  # Re-add student to the unmatched list
                 else:
                     # print(
-                        # f"{choice} has no current matches. {student} has not been ranked by {choice}."
+                    # f"{choice} has no current matches. {student} has not been ranked by {choice}."
                     # )
                     students.insert(0, student)
 

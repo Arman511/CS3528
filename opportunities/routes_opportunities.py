@@ -82,7 +82,7 @@ def add_opportunities_routes(app):
         )
 
     @app.route(
-    "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
+        "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
     )
     @handlers.admin_or_employers_required
     def employer_add_update_opportunity():
@@ -120,7 +120,6 @@ def add_opportunities_routes(app):
             user_type="admin" if "logged_in" in session else "employer",
             employer=employer,  # Add employer to the template context
         )
-
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
     @handlers.admin_or_employers_required

@@ -88,7 +88,6 @@ def add_student_routes(app):
         if "student" in session and "student_signed_in" in session:
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
-                
             )
         return render_template("student/student_login.html")
 
@@ -97,7 +96,6 @@ def add_student_routes(app):
         """Page for when the deadline has passed."""
         session.clear()
         return render_template("student/past_deadline.html")
-
 
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
@@ -132,27 +130,29 @@ def add_student_routes(app):
         # Render the template
         return render_template(
             "student/student_details.html",
-            student=session["student"] if user_type == "student" else Student().get_student_by_id(student_id),
+            student=(
+                session["student"]
+                if user_type == "student"
+                else Student().get_student_by_id(student_id)
+            ),
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
             modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
             user_type=user_type,  # Pass user type to the template
         )
+
     @app.route("/students/rank_preferences/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
     def rank_preferences(student_id):
         """Rank preferences."""
         if "student" not in session:
             return redirect("/students/login")
-        
+
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
-        
-        if "student" in session:
-            user_type = "student"
-                    
+
         if database.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
@@ -167,7 +167,7 @@ def add_student_routes(app):
             opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
             count=len(opportunities),
-            user_type=user_type,
+            user_type="student",
         )
 
     @app.route("/students/update_success")
