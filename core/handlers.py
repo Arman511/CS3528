@@ -107,10 +107,10 @@ def configure_routes(app, cache):
         """
         return render_template(
             "/user/home.html",
-            user_type="admin" if "logged_in" in session else "employer",
         )
 
     @app.route("/api/session", methods=["GET"])
+    @admin_or_employers_required
     def get_session():
         user = session.get("user")
         employer = session.get("employer")
