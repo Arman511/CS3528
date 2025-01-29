@@ -193,6 +193,7 @@ html, body {
     flex-direction: column; 
 }
 .page-wrapper {
+    background-color: #fff;
     display: flex;
     flex-direction: column;
     min-height: 100%;

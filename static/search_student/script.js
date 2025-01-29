@@ -49,17 +49,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
                     // Create editable fields for updating student info
                     row.innerHTML = `
-                        <td><input type="text" value="${student.first_name}" data-field="first_name" data-old-value="${student.first_name}" readonly></td>
-                        <td><input type="text" value="${student.last_name}" data-field="last_name" data-old-value="${student.last_name}" readonly></td>
-                        <td><input type="email" value="${student.email}" data-field="email" data-old-value="${student.email}" readonly></td>
-                        <td><input type="text" value="${student.student_id}" data-field="student_id" data-old-value="${student.student_id}" readonly></td>
-                        <td><input type="text" value="${student.course}" data-field="course" data-old-value="${student.course}" readonly></td>
+                        <td><span data-field="first_name">${student.first_name}</span></td>
+                        <td><span data-field="last_name">${student.last_name}</span></td>
+                        <td><span data-field="email">${student.email}</span></td>
+                        <td><span data-field="student_id">${student.student_id}</span></td>
+                        <td><span data-field="course">${student.course}</span></td>
                         <td>
                             <button class="btn btn-info btn-sm update-button" data-id="${student.student_id}">Update</button>
                             <button class="btn btn-info btn-sm delete-button" data-id="${student.student_id}">Delete</button>
                         </td>
                     `;
-
+                    
                     // Add event listeners for the buttons
                     const updateButton = row.querySelector(".update-button");
                     const deleteButton = row.querySelector(".delete-button");
