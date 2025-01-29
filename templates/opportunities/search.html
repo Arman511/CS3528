@@ -65,16 +65,16 @@
                                 <td>
                                     {% if user_type == "employer" %}
                                         <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-info btn-sm">Rank</a>
+                                           class="btn btn-info btn-sm mb-2">Rank</a>
                                         <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-info btn-sm">Update</a>
+                                           class="btn btn-info btn-sm mb-2">Update</a>
                                         <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-danger btn-sm">Delete</a>
+                                           class="btn btn-danger btn-sm mb-2">Delete</a>
                                     {% elif user_type == "admin" %}
                                         <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-info btn-sm">Update</a>
+                                           class="btn btn-info btn-sm mb-2">Update</a>
                                         <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-danger btn-sm">Delete</a>
+                                           class="btn btn-danger btn-sm mb-2">Delete</a>
                                     {% endif %}
                                 </td>
                             </tr>

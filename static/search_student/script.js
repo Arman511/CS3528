@@ -25,7 +25,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Filter out empty fields to send only filled ones
         const filteredFormObject = Object.fromEntries(
-            Object.entries(formObject).filter(([_, value]) => value && value.length > 0)
+            Object.entries(formObject).filter(
+                ([_, value]) => value && value.length > 0
+            )
         );
 
         try {
@@ -55,11 +57,11 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td><span data-field="student_id">${student.student_id}</span></td>
                         <td><span data-field="course">${student.course}</span></td>
                         <td>
-                            <button class="btn btn-info btn-sm update-button" data-id="${student.student_id}">Update</button>
+                            <button class="btn btn-info btn-sm update-button mb-2" data-id="${student.student_id}">Update</button>
                             <button class="btn btn-info btn-sm delete-button" data-id="${student.student_id}">Delete</button>
                         </td>
                     `;
-                    
+
                     // Add event listeners for the buttons
                     const updateButton = row.querySelector(".update-button");
                     const deleteButton = row.querySelector(".delete-button");
@@ -69,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
                         const updatedData = {};
 
                         // Collect updated values from editable fields
-                        row.querySelectorAll(".editable").forEach(input => {
+                        row.querySelectorAll(".editable").forEach((input) => {
                             const newValue = input.value;
                             const oldValue = input.dataset.oldValue;
 
@@ -90,32 +92,41 @@ document.addEventListener("DOMContentLoaded", () => {
                         updatedData.student_id = student.student_id;
 
                         try {
-                            const updateResponse = await fetch(`/students/update_student/${student.student_id}`, {
-                                method: "PUT",  // Use PUT for updating the student
-                                headers: {
-                                    "Content-Type": "application/json",
-                                },
-                                body: JSON.stringify(updatedData),  // Send the updated data as JSON
-                            });
+                            const updateResponse = await fetch(
+                                `/students/update_student/${student.student_id}`,
+                                {
+                                    method: "PUT", // Use PUT for updating the student
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(updatedData), // Send the updated data as JSON
+                                }
+                            );
 
                             if (updateResponse.ok) {
                                 const result = await updateResponse.json();
-                                console.log("Update response:", result);  // Log the server response
-                                alert(result.message);  // Display success message
+                                console.log("Update response:", result); // Log the server response
+                                alert(result.message); // Display success message
 
                                 // Optionally, make fields readonly after saving
-                                row.querySelectorAll(".editable").forEach(input => {
-                                    input.setAttribute("readonly", "true");
-                                });
-                                updateButton.textContent = "Updated";  // Change button text to "Updated"
+                                row.querySelectorAll(".editable").forEach(
+                                    (input) => {
+                                        input.setAttribute("readonly", "true");
+                                    }
+                                );
+                                updateButton.textContent = "Updated"; // Change button text to "Updated"
                             } else {
                                 const error = await updateResponse.json();
-                                console.log("Update error response:", error);  // Log the error response
-                                alert(error.message || "Failed to update student.");
+                                console.log("Update error response:", error); // Log the error response
+                                alert(
+                                    error.message || "Failed to update student."
+                                );
                             }
                         } catch (updateError) {
                             console.error("Update error:", updateError);
-                            alert("An error occurred while updating the student. Please try again.");
+                            alert(
+                                "An error occurred while updating the student. Please try again."
+                            );
                         }
                     });
 
@@ -124,7 +135,9 @@ document.addEventListener("DOMContentLoaded", () => {
                         const studentId = deleteButton.getAttribute("data-id");
 
                         // Show a confirmation dialog
-                        const userConfirmed = confirm(`Are you sure you want to delete the student with ID: ${studentId}?`);
+                        const userConfirmed = confirm(
+                            `Are you sure you want to delete the student with ID: ${studentId}?`
+                        );
 
                         if (!userConfirmed) {
                             // If the user selects "No", cancel the operation
@@ -133,31 +146,42 @@ document.addEventListener("DOMContentLoaded", () => {
                         }
 
                         try {
-                            const deleteResponse = await fetch(`/students/delete_student/${studentId}`, {
-                                method: "DELETE",
-                            });
+                            const deleteResponse = await fetch(
+                                `/students/delete_student/${studentId}`,
+                                {
+                                    method: "DELETE",
+                                }
+                            );
 
                             if (deleteResponse.ok) {
                                 row.remove();
-                                alert(`Student with ID: ${studentId} deleted successfully.`);
+                                alert(
+                                    `Student with ID: ${studentId} deleted successfully.`
+                                );
                             } else {
                                 const error = await deleteResponse.json();
-                                const errorElement = document.querySelector(".error");
+                                const errorElement =
+                                    document.querySelector(".error");
                                 if (errorElement) {
-                                    errorElement.classList.remove("error--hidden");
-                                    errorElement.textContent = error.message || "Failed to delete student.";
+                                    errorElement.classList.remove(
+                                        "error--hidden"
+                                    );
+                                    errorElement.textContent =
+                                        error.message ||
+                                        "Failed to delete student.";
                                 }
                             }
                         } catch (deleteError) {
                             console.error("Delete error:", deleteError);
-                            const errorElement = document.querySelector(".error");
+                            const errorElement =
+                                document.querySelector(".error");
                             if (errorElement) {
                                 errorElement.classList.remove("error--hidden");
-                                errorElement.textContent = "An error occurred while deleting the student. Please try again.";
+                                errorElement.textContent =
+                                    "An error occurred while deleting the student. Please try again.";
                             }
                         }
                     });
-
 
                     // Append the row to the student table
                     studentTable.appendChild(row);
@@ -167,14 +191,16 @@ document.addEventListener("DOMContentLoaded", () => {
                 const errorElement = document.querySelector(".error");
                 if (errorElement) {
                     errorElement.classList.remove("error--hidden");
-                    errorElement.textContent = error.message || "Failed to fetch students.";
+                    errorElement.textContent =
+                        error.message || "Failed to fetch students.";
                 }
             }
         } catch (fetchError) {
             const errorElement = document.querySelector(".error");
             if (errorElement) {
                 errorElement.classList.remove("error--hidden");
-                errorElement.textContent = "An error occurred while searching. Please try again.";
+                errorElement.textContent =
+                    "An error occurred while searching. Please try again.";
             }
         }
     });
