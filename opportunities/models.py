@@ -76,7 +76,7 @@ class Opportunity:
             query = {}
             if title:
                 query["title"] = {"$regex": title, "$options": "i"}
-            if company_name and session.get("user") is not None:
+            if company_name:
                 company = database.employers_collection.find_one(
                     {"company_name": company_name}
                 )
