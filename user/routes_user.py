@@ -217,7 +217,7 @@ def add_user_routes(app, cache):
 
     @app.route("/user/home")
     @handlers.login_required
-    def index():
+    def user_home():
         """The home route which needs the user to be logged in and renders the 'home.html' template.
 
         Returns:
