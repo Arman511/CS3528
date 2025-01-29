@@ -2,24 +2,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchForm = document.getElementById("searchForm");
     const opportunityTable = document.getElementById("opportunity-table");
     const errorElement = document.querySelector(".error");
-    let searchUrl;
-    // Fetch the session data to determine the user type
-    fetch("/api/session")
-    .then((response) => response.json())
-    .then((data) => {
-        const userType = data.user_type;
-        console.log("User Type:", userType);
-
-        // Use userType for your logic
-        searchUrl =
-            userType === "admin"
-                ? "/admin/opportunities/search"
-                : "/employer/opportunities/search";
-
-        console.log("Search URL:", searchUrl);
-    })
-    .catch((error) => console.error("Error fetching session data:", error));
-
 
     searchForm.addEventListener("submit", function (event) {
         event.preventDefault();
@@ -32,7 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Send the form data as JSON to the dynamic URL
-        fetch(searchUrl, {
+        fetch("/opportunities/search", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

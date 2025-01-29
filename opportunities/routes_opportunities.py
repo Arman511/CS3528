@@ -12,77 +12,55 @@ from .models import Opportunity
 def add_opportunities_routes(app):
     """Add routes for opportunities"""
 
-    @app.route("/admin/opportunities/search", methods=["GET", "POST"])
+    @app.route("/opportunities/search", methods=["GET", "POST"])
     @handlers.admin_or_employers_required
-    def search_opportunities_admin():
+    def search_opportunities():
+        """
+        Unified route for searching opportunities by admins and employers.
+        Determines user type from session.
+        """
+        # Fetch user session details
+        user = session.get("user")
+        employer = session.get("employer")
+
+        # Determine user_type based on session data
+        if user:
+            user_type = "admin"
+        elif employer:
+            user_type = "employer"
+        else:
+            user_type = None
+
+        print(f"[DEBUG] User type: {user_type}")
+        if user_type is None:
+            return {"error": "Unauthorized access."}, 403
+
         if request.method == "POST":
             data = request.get_json()  # Get the JSON data from the request
-            title = data.get("title")
-            company_name = data.get("company")
-            print("Admin - Method POST")
-            return Opportunity().search_opportunities(title, company_name)
+            
+            if user_type == "admin":
+                title = data.get("title")
+                company_name = data.get("company")
+                print("Admin - Method POST")
+                return Opportunity().search_opportunities(title, company_name)
+            elif user_type == "employer":
+                title = data.get("title")
+                print("Employer - Method POST")
+                return Opportunity().search_opportunities(title, employer["company_name"])
 
         # For GET requests
-        opportunities = Opportunity().search_opportunities(title="", company_name="")
-        employers_map = {
-            employer["_id"]: employer for employer in list(Employers().get_employers())
-        }
-        return render_template(
-            "opportunities/search.html",
-            opportunities=opportunities,
-            employers_map=employers_map,
-            user_type="admin",
-        )
-
-    @app.route("/employer/opportunities/search", methods=["GET", "POST"])
-    @handlers.employers_login_required
-    def search_opportunities_employers(employer):
-        """
-        Search opportunities for an employer by title and/or company name.
-        """
-        # Extract the company name from the `employer` object
-        company_name = employer.get(
-            "company_name", "Unknown Company"
-        )  # Default to "Unknown Company" if key is missing
-
-        print(f"[DEBUG] Employer company_name: {company_name}")
-
-        if request.method == "POST":
-            data = request.get_json()  # Get the JSON data from the request
-            title = data.get("title")  # Extract title from the request payload
-
-            print(f"[DEBUG] POST request, employer_filter: {company_name}")
-
-            if not title:
-                return {"error": "No title provided for filtering."}, 400
-
-            print(
-                f"[DEBUG] POST request with title: {title} for company {company_name}"
-            )
-
-            # Use the unified search_opportunities function
-            opportunities = Opportunity().search_opportunities(
-                title=title, company_name=company_name
-            )
-            print(f"[DEBUG] Found {len(opportunities)} opportunities after filtering.")
-
-            return opportunities
-
-        # For GET requests, show all opportunities for the company
-        print(f"[DEBUG] GET request for all opportunities for company {company_name}.")
-        opportunities = Opportunity().search_opportunities(
-            title="", company_name=company_name
-        )
-
-        return render_template(
-            "opportunities/search.html",
-            opportunities=opportunities,
-            user_type="employer",
-            employer=employer,
-        )
+        if user_type == "admin":
+            print("Admin - Method GET")
+            opportunities = Opportunity().search_opportunities(title="", company_name="")
+            employers_map = { employer["_id"]: employer for employer in list(Employers().get_employers())}
+            return render_template("opportunities/search.html", opportunities=opportunities, employers_map=employers_map, user_type=user_type)
+        elif user_type == "employer":
+            print("Employer - Method GET")
+            opportunities = Opportunity().search_opportunities(title="", company_name=employer["company_name"])
+            return render_template("opportunities/search.html", opportunities=opportunities, user_type=user_type)
 
     @app.route(
-    "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
+        "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
     )
     @handlers.admin_or_employers_required
     def employer_add_update_opportunity():
@@ -120,7 +98,6 @@ def add_opportunities_routes(app):
             user_type="admin" if "logged_in" in session else "employer",
             employer=employer,  # Add employer to the template context
         )
-
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
     @handlers.admin_or_employers_required
