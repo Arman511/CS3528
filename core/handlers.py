@@ -4,7 +4,7 @@ to enforce user access levels.
 """
 
 from functools import wraps
-from flask import render_template, session, redirect
+from flask import jsonify, render_template, session, redirect
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -109,6 +109,20 @@ def configure_routes(app, cache):
             "/user/home.html",
             user_type="admin" if "logged_in" in session else "employer",
         )
+        
+    @app.route("/api/session", methods=["GET"])
+    def get_session():
+        user = session.get("user")
+        employer = session.get("employer")
+        
+        # Determine user_type based on session data
+        if user:
+            user_type = user.get("name").lower()
+        elif employer:
+            user_type = employer.get("company_name")
+        else:
+            user_type = None
+        return jsonify({"user_type": user_type})
 
     @app.route("/privacy_policy")
     def privacy_policy():

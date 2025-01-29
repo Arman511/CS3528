@@ -1,7 +1,7 @@
 """Routes for opportunities"""
 
 import uuid
-from flask import flash, jsonify, redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for
 from core import database, handlers
 from course_modules.models import Module
 from courses.models import Course
@@ -11,23 +11,9 @@ from .models import Opportunity
 
 def add_opportunities_routes(app):
     """Add routes for opportunities"""
-    @app.route("/api/session", methods=["GET"])
-    def get_session():
-        user = session.get("user")
-        employer = session.get("employer")
-        
-        # Determine user_type based on session data
-        if user:
-            user_type = user.get("name").lower()
-        elif employer:
-            user_type = employer.get("company_name")
-        else:
-            user_type = None
-        return jsonify({"user_type": user_type})
-
 
     @app.route("/admin/opportunities/search", methods=["GET", "POST"])
-    @handlers.admin_or_employers_required
+    @handlers.login_required
     def search_opportunities_admin():
         if request.method == "POST":
             data = request.get_json()  # Get the JSON data from the request
