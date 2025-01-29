@@ -29,8 +29,7 @@ def login_required(f):
     def wrap(*args, **kwargs):
         if "logged_in" in session:
             return f(*args, **kwargs)
-
-        if "employer_logged_in" in session:
+        elif "employer_logged_in" in session:
             return redirect("/employers/home")
         return redirect("/students/login")
 
@@ -46,10 +45,9 @@ def student_login_required(f):
     def wrap(*args, **kwargs):
         if "student_logged_in" in session:
             return f(*args, **kwargs)
-
-        if "employer_logged_in" in session:
+        elif "employer_logged_in" in session:
             return redirect("/employers/home")
-        if "logged_in" in session:
+        elif "logged_in" in session:
             return redirect("/")
         return redirect("/students/login")
 
@@ -66,8 +64,7 @@ def employers_login_required(f):
         if "employer_logged_in" in session:
             employer = session.get("employer")
             return f(employer, *args, **kwargs)
-
-        if "logged_in" in session:
+        elif "logged_in" in session:
             return redirect("/")
 
         return redirect("/employers/login")
