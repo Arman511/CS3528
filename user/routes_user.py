@@ -214,3 +214,13 @@ def add_user_routes(app, cache):
             user_type="admin",
             user=session["user"].get("name"),
         )
+
+    @app.route("/user/home")
+    @handlers.login_required
+    def index():
+        """The home route which needs the user to be logged in and renders the 'home.html' template.
+
+        Returns:
+            str: Rendered HTML template for the home page.
+        """
+        return render_template("/user/home.html", user_type="admin")
