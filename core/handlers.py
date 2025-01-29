@@ -109,12 +109,12 @@ def configure_routes(app, cache):
             "/user/home.html",
             user_type="admin" if "logged_in" in session else "employer",
         )
-        
+
     @app.route("/api/session", methods=["GET"])
     def get_session():
         user = session.get("user")
         employer = session.get("employer")
-        
+
         # Determine user_type based on session data
         if user:
             user_type = user.get("name").lower()

@@ -1,7 +1,7 @@
 """Routes for opportunities"""
 
 import uuid
-from flask import flash, jsonify, redirect, render_template, request, session, url_for
+from flask import flash, redirect, render_template, request, session, url_for
 from core import database, handlers
 from course_modules.models import Module
 from courses.models import Course

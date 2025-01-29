@@ -1,27 +1,31 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "user/navbar.html" %}
-    <div class="container mt-5">
-        <h1 class="text-center">Problems</h1>
-        <div class="table-wrapper">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Problem</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
-                <tbody id="problem-table">
-                    {% for problem in problems %}
-                        <tr>
-                            <td>{{ problem.description }}</td>
-                            <td>
-                                <a href="mailto:{{ problem.email }}">{{ problem.email }}</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="card-wrapper">
+        <div class="card">
+            <div class="container mt-5">
+                <h1 class="text-center">Problems</h1>
+                <div class="table-wrapper">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody id="problem-table">
+                            {% for problem in problems %}
+                                <tr>
+                                    <td>{{ problem.description }}</td>
+                                    <td>
+                                        <a href="mailto:{{ problem.email }}">{{ problem.email }}</a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
 {% endblock content %}
