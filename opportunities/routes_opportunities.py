@@ -11,20 +11,6 @@ from .models import Opportunity
 
 def add_opportunities_routes(app):
     """Add routes for opportunities"""
-    @app.route("/api/session", methods=["GET"])
-    def get_session():
-        user = session.get("user")
-        employer = session.get("employer")
-        
-        # Determine user_type based on session data
-        if user:
-            user_type = user.get("name").lower()
-        elif employer:
-            user_type = employer.get("company_name")
-        else:
-            user_type = None
-        return jsonify({"user_type": user_type})
-
 
     @app.route("/admin/opportunities/search", methods=["GET", "POST"])
     @handlers.admin_or_employers_required
