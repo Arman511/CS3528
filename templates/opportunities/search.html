@@ -5,7 +5,7 @@
 {% elif user_type == "admin" %}
     {% include "user/navbar.html" %}
 {% endif %}
-    <div class="card-wrapper">
+    <div class="card-wrapper card-dynamic-width">
         <!-- First Card: Search Form -->
         <div class="card search-card">
             <h1 class="center">Search Opportunities</h1>
@@ -30,7 +30,7 @@
         </div>
 
         <!-- Second Card: Table -->
-        <div class="card wide-card no-scroll">
+        <div class="card card-dynamic-width">
             <h2 class="center">Opportunities</h2>
             <div class="table-wrapper">
                 <table class="table">
