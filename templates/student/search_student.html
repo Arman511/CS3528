@@ -1,30 +1,32 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
-    <div class="card-wrapper">
-        <div class="card">
+    <div class="card-wrapper card-dynamic-width">
+        <!-- First Card: Search Form -->
+        <div class="card search-card">
             <h1 class="center">Search Students</h1>
             <form id="searchForm">
                 <div class="form-group">
                     <div>
                         <label for="first_name">First Name:</label>
-                        <input type="text" id="first_name" name="first_name" class="form-control" />
+                        <input type="text" id="first_name" name="first_name" class="field" />
                     </div>
                     <div>
                         <label for="last_name">Last Name:</label>
-                        <input type="text" id="last_name" name="last_name" class="form-control" />
+                        <input type="text" id="last_name" name="last_name" class="field" />
                     </div>
                     <div>
                         <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" class="form-control" />
+                        <input type="email" id="email" name="email" class="field" />
                     </div>
                     <div>
                         <label for="student_id">Student Number:</label>
-                        <input type="text" id="student_id" name="student_id" class="form-control" />
+                        <input type="text" id="student_id" name="student_id" class="field" />
                     </div>
                     <div>
                         <label for="course">Course:</label>
-                        <select id="course" name="course" class="form-control">
+                        <select id="course" name="course" class="field">
+                            <option value="">Select Course</option>
                             {% for course in courses %}
                                 <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
                             {% endfor %}
@@ -32,7 +34,8 @@
                     </div>
                     <div>
                         <label for="skills">Skills:</label>
-                        <select id="skills" name="skills" class="form-control" multiple>
+                        <select id="skills" name="skills" class="field">
+                            <option value="">Select Skills</option>
                             {% for skill in skills %}<option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>{% endfor %}
                         </select>
                     </div>
@@ -42,6 +45,9 @@
                     <input type="submit" value="Search" class="btn" />
                 </div>
             </form>
+        </div>
+        <!-- Second Card: Table -->
+        <div class="card card-dynamic-width">
             <div class="table-wrapper">
                 <table class="table">
                     <thead>
@@ -58,19 +64,7 @@
                     </tbody>
                 </table>
             </div>
-            <script src="/static/search_student/script.js"></script>
-            <script>
-                $(document).ready(function () {
-                    $('#skills').selectize({
-                        plugins: ["remove_button"],
-                        sortField: 'text'
-                    });
-                    $('#course').selectize({
-                        plugins: ["remove_button"],
-                        sortField: 'text'
-                    });
-                });
-            </script>
         </div>
     </div>
+    <script src="/static/search_student/script.js"></script>
 {% endblock content %}

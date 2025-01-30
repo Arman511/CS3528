@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     <div class="card-wrapper">
-        <div class="card">
+        <div class="card login-card">
             <h1 class="center">Employer Log In</h1>
             <form class="login_form" name="login_form">
                 <input type="email" name="email" class="field" placeholder="Email" required />
@@ -26,6 +26,7 @@
                 <br>
                 <br>
                 <button onclick="submitOtp()" class="btn">Submit</button>
+                <br>
                 <button onclick="cancelOtp()" class="btn">Cancel</button>
             </div>
         </div>

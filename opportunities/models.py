@@ -5,6 +5,7 @@ Opportunity model.
 from datetime import datetime
 from flask import jsonify, request, session
 from core import database
+from employers.models import Employers
 
 cache = {"data": [], "last_updated": datetime.now()}
 
@@ -66,34 +67,98 @@ class Opportunity:
 
         return jsonify({"error": "Opportunity not added"}), 400
 
-    def search_opportunities(self):
-        """Searching opportunities."""
-        query = {}
-        title = request.args.get("title")
-        company_name = request.args.get("company")
+    def search_opportunities(self, title, company_name):
+        """Search opportunities by title and/or company."""
+        opportunities = []
 
-        if company_name:
-            company = database.employers_collection.find_one(
-                {"name": {"$regex": company_name, "$options": "i"}}
+        try:
+            # Build the query dynamically based on the provided parameters
+            query = {}
+            if title:
+                query["title"] = {"$regex": title, "$options": "i"}
+            if company_name:
+                company = database.employers_collection.find_one(
+                    {"company_name": company_name}
+                )
+                if company:
+                    query["employer_id"] = company["_id"]
+                else:
+                    print(f"[DEBUG] No employer found for company name: {company_name}")
+                    return []
+
+            print(f"[DEBUG] Querying opportunities with filter: {query}")
+            opportunities = list(database.opportunities_collection.find(query))
+
+            # Add the company name to each opportunity if available
+            for opportunity in opportunities:
+                employer = Employers().get_employer_by_id(opportunity["employer_id"])
+                opportunity["company_name"] = (
+                    employer["company_name"] if employer else "Unknown Company"
+                )
+
+            print(
+                f"[DEBUG] Retrieved {len(opportunities)} opportunities after filtering."
             )
-            query["employer_id"] = company["employer_id"]
+            return opportunities
 
-        if title:
-            query["title"] = {"$regex": title, "$options": "i"}
+        except Exception as e:
+            print(f"[ERROR] Failed to search opportunities: {e}")
+            return []
 
-        if "employer" in session:
-            query["employer_id"] = session["employer"]["employer_id"]
+    def get_opportunities_by_title(self, title):
+        """Fetch opportunities by title."""
+        try:
+            if not title:
+                print("[DEBUG] No title provided.")
+                return []
 
-        opportunities = list(database.opportunities_collection.find(query))
-        if "user" in session:
-            employers_map = {
-                company["_id"]: company["name"]
-                for company in database.employers_collection.find()
-            }
+            query = {"title": {"$regex": title, "$options": "i"}}
+            print(f"[DEBUG] Query for title: {query}")
 
-            for opp in opportunities:
-                opp["company_name"] = employers_map.get(opp["employer_id"], "")
+            opportunities = list(database.opportunities_collection.find(query))
+            print(f"[DEBUG] Opportunities found: {len(opportunities)}")
+            return opportunities
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch opportunities by title: {e}")
+            return []
 
+    def get_opportunities_by_company(self, company_name):
+        """Fetch opportunities by company."""
+        try:
+            if not company_name:
+                print("[DEBUG] No company name provided.")
+                return []
+
+            # Find the employer by exact company name
+            company = database.employers_collection.find_one(
+                {"company_name": company_name}
+            )
+
+            if not company:
+                print(f"[DEBUG] No company found for name: {company_name}")
+                return []
+
+            # Use the employer's _id to search for opportunities
+            employer_id = company["_id"]
+            print(f"[DEBUG] Employer ID found: {employer_id}")
+
+            # Query the opportunities collection with employer_id
+            query = {"employer_id": employer_id}
+            print(f"[DEBUG] Query for opportunities: {query}")
+
+            opportunities = list(database.opportunities_collection.find(query))
+            print(f"[DEBUG] Opportunities found: {len(opportunities)}")
+
+            return opportunities
+        except Exception as e:
+            print(f"[ERROR] Failed to fetch opportunities by company: {e}")
+            return []
+
+    def get_opportunity_by_company_id(self, company_id):
+        """Get opportunity by company ID."""
+        opportunities = list(
+            database.opportunities_collection.find({"employer_id": company_id})
+        )
         return opportunities
 
     def get_opportunity_by_id(self, _id=None):
@@ -135,17 +200,17 @@ class Opportunity:
 
         return cache["data"]
 
-    def get_opportunities_by_company(self, user_type=None):
-        """Getting all opportunities by company."""
-        if user_type == "admin":
-            return self.get_opportunities()
+    # def get_opportunities_by_company(self, user_type=None):
+    #     """Getting all opportunities by company."""
+    #     if user_type == "admin":
+    #         return self.get_opportunities()
 
-        valid_opportunities = []
-        for opp in self.get_opportunities():
-            if opp["employer_id"] == user_type:
-                valid_opportunities.append(opp)
+    #     valid_opportunities = []
+    #     for opp in self.get_opportunities():
+    #         if opp["employer_id"] == user_type:
+    #             valid_opportunities.append(opp)
 
-        return valid_opportunities
+    #     return valid_opportunities
 
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that match duration."""

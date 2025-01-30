@@ -19,13 +19,13 @@ def add_employer_routes(app):
         if request.method == "POST":
             return Employers().employer_login()
 
-        return render_template("employers/employer_login.html")
+        return render_template("employers/employer_login.html", user_type="employer")
 
     @app.route("/employers/home", methods=["GET"])
     @handlers.employers_login_required
-    def employer_home():
+    def employer_home(employer):
         return render_template(
-            "employers/employer_home.html", employer=session["employer"]
+            "employers/employer_home.html", employer=employer, user_type="employer"
         )
 
     @app.route("/employers/otp", methods=["POST"])
@@ -46,7 +46,7 @@ def add_employer_routes(app):
     def add_employer():
         if request.method == "POST":
             return Employers().register_employer()
-        return render_template("employers/add_employer.html")
+        return render_template("employers/add_employer.html", user_type="admin")
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
@@ -64,6 +64,9 @@ def add_employer_routes(app):
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
             return jsonify({"error": "Need opportunity ID."}), 400
+        opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
+        if session["employer"]["_id"] != opportunity["employer_id"]:
+            return jsonify({"error": "Employer does not own this opportunity."}), 400
         if not database.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",
@@ -84,4 +87,5 @@ def add_employer_routes(app):
             get_course_name=Course().get_course_name_by_id,
             get_module_name=Module().get_module_name_by_id,
             get_skill_name=Skill().get_skill_name_by_id,
+            user_type="employer",
         )

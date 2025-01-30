@@ -1,75 +1,81 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
-    <div class="container mt-5">
-        <div class="alert alert-info mt-5 text-center">
-            <p data-last-updated="{{ last_updated }}" id="time-message" class="mb-0">
-                Last updated: {{ last_updated }}, updates every 5 minutes
-            </p>
-            <span id="time-until-update" class="font-weight-bold"></span>
+    <div class="card-wrapper">
+        <div class="card">
+            <div class="container">
+                <div class="alert alert-info text-center">
+                    <p data-last-updated="{{ last_updated }}" id="time-message" class="mb-0">
+                        Last updated: {{ last_updated }}, updates every 5 minutes
+                    </p>
+                    <span id="time-until-update" class="font-weight-bold"></span>
+                </div>
+                <h1 class="text-center">Matching</h1>
+                <button type="button" class="btn btn-primary" id="send-all-emails">Send all Emails</button>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Opportunity</th>
+                                <th>Company Name</th>
+                                <th>Student Name</th>
+                                <th>Send Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for match in matches %}
+                                {% for student in match.students %}
+                                    <tr>
+                                        <td>{{ opportunities_map[match.opportunity].title }}</td>
+                                        <td>{{ employers_map[opportunities_map[match.opportunity].employer_id].company_name }}</td>
+                                        <td>{{ students_map[student].first_name }} {{ students_map[student].last_name }}</td>
+                                        <td>
+                                            <button type="button"
+                                                    class="btn btn-sm btn-primary send-email"
+                                                    data-student="{{ student }}"
+                                                    data-student-email="{{ students_map[student].email }}"
+                                                    data-employer="{{ employers_map[opportunities_map[match.opportunity].employer_id].email }}"
+                                                    data-opportunity="{{ match.opportunity }}">Send Email</button>
+                                            <p id="response-{{ student }}" class="plain-center"></p>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <br>
+            <div class="container mt-5">
+                <h1 class="text-center">Unmatched</h1>
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Student ID</th>
+                                <th>Email</th>
+                                <th>Reason</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in not_matched %}
+                                <tr>
+                                    <td>{{ student.name }}</td>
+                                    <td>{{ student.student_id }}</td>
+                                    <td>{{ student.email }}</td>
+                                    <td>{{ student.reason }}</td>
+                                    <td>
+                                        <button class="delete-button btn btn-danger" data-target="{{ student._id }}">Delete</button>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <script src="/static/matching/script.js"></script>
         </div>
-        <h1 class="text-center">Matching</h1>
-        <button type="button" class="btn btn-primary" id="send-all-emails">Send all Emails</button>
-        <table class="table table-striped table-responsive">
-            <thead>
-                <tr>
-                    <th>Opportunity</th>
-                    <th>Company Name</th>
-                    <th>Person Name</th>
-                    <th>Send Email</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for match in matches %}
-                    {% for student in match.students %}
-                        <tr>
-                            <td>{{ opportunities_map[match.opportunity].title }}</td>
-                            <td>{{ employers_map[opportunities_map[match.opportunity].employer_id].company_name }}</td>
-                            <td>{{ students_map[student].first_name }} {{ students_map[student].last_name }}</td>
-                            <td>
-                                <button type="button"
-                                        class="btn btn-sm btn-primary send-email"
-                                        data-student="{{ student }}"
-                                        data-student-email="{{ students_map[student].email }}"
-                                        data-employer="{{ employers_map[opportunities_map[match.opportunity].employer_id].email }}"
-                                        data-opportunity="{{ match.opportunity }}">Send Email</button>
-                                <p id="response-{{ student }}" class="plain-center"></p>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </tbody>
-        </table>
     </div>
-    <br>
-    <div class="container mt-5">
-        <h1 class="text-center">Unmatched</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Name</th>
-                        <th>Student ID</th>
-                        <th>Email</th>
-                        <th>Reason</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for student in not_matched %}
-                        <tr>
-                            <td>{{ student.name }}</td>
-                            <td>{{ student.student_id }}</td>
-                            <td>{{ student.email }}</td>
-                            <td>{{ student.reason }}</td>
-                            <td>
-                                <button class="delete-button btn btn-danger" data-target="{{ student._id }}">Delete</button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script src="/static/matching/script.js"></script>
 {% endblock content %}

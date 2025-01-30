@@ -345,7 +345,7 @@ def test_complex_student_employer_preferences_v3():
         "Student_3": ["company_5", "company_6"],
         "Student_4": ["company_2", "company_7", "company_5"],
         "Student_5": ["company_3", "company_4", "company_8"],
-        "Student_6": ["company_1", "company_8"],
+        "Student_6": ["company_1", "company_8", "company_3"],
         "Student_7": ["company_5", "company_6", "company_9"],
         "Student_8": ["company_2", "company_3"],
         "Student_9": ["company_7", "company_4"],
@@ -376,11 +376,11 @@ def test_complex_student_employer_preferences_v3():
         },
         "company_3": {
             "positions": 2,
-            "Student_5": 1,
+            "Student_10": 1,
             "Student_2": 2,
             "Student_6": 3,
             "Student_8": 4,
-            "Student_10": 5,
+            "Student_5": 5,
             "Student_1": 6,
             "Student_3": 7,
             "Student_4": 8,
@@ -458,14 +458,13 @@ def test_complex_student_employer_preferences_v3():
             "company_1": ["Student_1", "Student_2"],
             "company_5": ["Student_3"],
             "company_2": ["Student_4"],
-            "company_3": ["Student_5", "Student_8"],
-            "company_8": ["Student_6"],
+            "company_3": ["Student_8", "Student_6"],
             "company_6": ["Student_7"],
+            "company_4": ["Student_5"],
             "company_7": ["Student_9"],
             "company_9": ["Student_10"],
         },
     )
-
     assert result == expected
 
 

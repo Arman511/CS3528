@@ -4,7 +4,7 @@ to enforce user access levels.
 """
 
 from functools import wraps
-from flask import render_template, session, redirect
+from flask import jsonify, render_template, session, redirect
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -29,7 +29,8 @@ def login_required(f):
     def wrap(*args, **kwargs):
         if "logged_in" in session:
             return f(*args, **kwargs)
-
+        elif "employer_logged_in" in session:
+            return redirect("/employers/home")
         return redirect("/students/login")
 
     return wrap
@@ -44,6 +45,10 @@ def student_login_required(f):
     def wrap(*args, **kwargs):
         if "student_logged_in" in session:
             return f(*args, **kwargs)
+        elif "employer_logged_in" in session:
+            return redirect("/employers/home")
+        elif "logged_in" in session:
+            return redirect("/")
         return redirect("/students/login")
 
     return wrap
@@ -57,7 +62,11 @@ def employers_login_required(f):
     @wraps(f)
     def wrap(*args, **kwargs):
         if "employer_logged_in" in session:
-            return f(*args, **kwargs)
+            employer = session.get("employer")
+            return f(employer, *args, **kwargs)
+        elif "logged_in" in session:
+            return redirect("/")
+
         return redirect("/employers/login")
 
     return wrap
@@ -104,7 +113,22 @@ def configure_routes(app, cache):
         Returns:
             str: Rendered HTML template for the home page.
         """
-        return render_template("/user/home.html")
+        return render_template("/user/home.html", user_type="admin")
+
+    @app.route("/api/session", methods=["GET"])
+    @admin_or_employers_required
+    def get_session():
+        user = session.get("user")
+        employer = session.get("employer")
+
+        # Determine user_type based on session data
+        if user:
+            user_type = user.get("name").lower()
+        elif employer:
+            user_type = employer.get("company_name")
+        else:
+            user_type = None
+        return jsonify({"user_type": user_type})
 
     @app.route("/privacy_policy")
     def privacy_policy():

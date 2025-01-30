@@ -28,7 +28,7 @@ def add_user_routes(app, cache):
             return User().login()
         if "logged_in" in session:
             return redirect("/")
-        return render_template("user/login.html")
+        return render_template("user/login.html", user_type="admin")
 
     # @app.route("/user/change_password", methods=["GET", "POST"])
     # def change_password():
@@ -49,6 +49,8 @@ def add_user_routes(app, cache):
             details_deadline=database.get_details_deadline(),
             student_ranking_deadline=database.get_student_ranking_deadline(),
             opportunities_ranking_deadline=database.get_opportunities_ranking_deadline(),
+            user_type="admin",
+            user=session["user"].get("name"),
         )
 
     @app.route("/user/problem", methods=["GET"])
@@ -115,7 +117,12 @@ def add_user_routes(app, cache):
                     }
                 )
 
-        return render_template("user/problems.html", problems=problems)
+        return render_template(
+            "user/problems.html",
+            problems=problems,
+            user_type="admin",
+            user=session["user"].get("name"),
+        )
 
     @app.route("/user/send_match_email", methods=["POST"])
     @handlers.login_required
@@ -135,6 +142,8 @@ def add_user_routes(app, cache):
                     "The final deadline must have passed to do matching, "
                     f"wait till {database.get_opportunities_ranking_deadline()}"
                 ),
+                user_type="admin",
+                user=session["user"].get("name"),
             )
 
         students = list(database.students_collection.find())
@@ -142,15 +151,22 @@ def add_user_routes(app, cache):
         students_preference = {}
         for student in students:
             if "preferences" in student:
-                students_preference[student["_id"]] = student["preferences"]
-                continue
-            temp = {}
-            temp["_id"] = student["_id"]
-            temp["student_id"] = student["student_id"]
-            temp["email"] = student["email"]
-            temp["name"] = f"{student['first_name']} {student['last_name']}"
-            temp["reason"] = "Student has not ranked their opportunities"
-            unmatched_students.append(temp)
+                filtered_preferences = [
+                    pref.strip() for pref in student["preferences"] if pref.strip()
+                ]
+                if filtered_preferences:
+                    students_preference[student["_id"]] = filtered_preferences
+                    continue
+            # Handle unmatched students
+            unmatched_students.append(
+                {
+                    "_id": student["_id"],
+                    "student_id": student["student_id"],
+                    "email": student["email"],
+                    "name": f"{student['first_name']} {student['last_name']}",
+                    "reason": "Student has not ranked their opportunities or has invalid preferences",
+                }
+            )
 
         opportunities = list(database.opportunities_collection.find())
         opportunities_preference = {}
@@ -195,4 +211,16 @@ def add_user_routes(app, cache):
                 opportunity["_id"]: opportunity for opportunity in opportunities
             },
             last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            user_type="admin",
+            user=session["user"].get("name"),
         )
+
+    @app.route("/user/home")
+    @handlers.login_required
+    def user_home():
+        """The home route which needs the user to be logged in and renders the 'home.html' template.
+
+        Returns:
+            str: Rendered HTML template for the home page.
+        """
+        return render_template("/user/home.html", user_type="admin")

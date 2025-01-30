@@ -5,177 +5,208 @@
     align-items: center;
     min-height: 100vh;
     padding: 20px;
-    background-color: rgb(241, 241, 241); /*background*/
-}
-
-/* Card styling */
-.card {
-    background-color: transparent; /*login box*/
-    border: none;
-    box-shadow: none;
-    padding: 40px;
+    background-color: #f1f1f1;
     width: 100%;
-    max-width: 400px;
+    flex-direction: column;
+    gap: 1.5rem;
 }
 
-/* Title styling */
+.card {
+    background-color: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 100%;
+    max-width: 1200px;
+    /* Restrict overly wide cards */
+    margin: 0 auto;
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+.login-card {
+    max-width: 600px;
+}
+
+.search-card {
+    max-width: 800px;
+}
+
+.wide-card {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+}
+
+
+.table-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    /* Allow horizontal scrolling on small screens */
+    margin: 0 auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: auto;
+    /* Automatically adjust column widths */
+    min-width: 800px;
+    /* Minimum size to prevent squeezing */
+}
+
+.table th,
+.table td {
+    padding: 10px;
+    text-align: left;
+    word-wrap: break-word;
+    /* Wrap content in narrow cells */
+    border: 1px solid #ddd;
+}
+
+.table th {
+    background-color: #f4f4f4;
+}
+
+/* Ensure card dynamically resizes based on content */
+.card.dynamic-height {
+    height: auto;
+    /* Allow the height to adjust based on the content */
+    max-height: none;
+    /* Remove any constraints on max height */
+    overflow: visible;
+    /* Prevent scrollbar from appearing */
+}
+
+.card-dynamic-width {
+    width: auto;
+    /* Allow the width to adjust based on the content */
+    max-width: none;
+    /* Remove any constraints on max width */
+    overflow: visible;
+}
+
+/* Card Hover Effect */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+
+/* Title Styling */
 .center {
     text-align: center;
     margin-bottom: 30px;
-    font-size: 24px;
-    font-weight: bold;
+    font-size: 28px;
+    font-weight: 600;
+    color: #333;
 }
 
-.plain-center {
-    text-align: center;
-}
-
-.login_form {
+/* Form Layout */
+.form-group {
     display: flex;
     flex-direction: column;
-    gap: 15px; /* Add spacing between elements */
+    gap: 20px;
 }
 
-/* Form layout */
-.register_form {
+.form-group .input-group {
     display: flex;
-    flex-direction: column;
-    gap: 15px; /* Add spacing between elements */
-}
-/* Form layout */
-.change_password {
-    display: flex;
-    flex-direction: column;
-    gap: 15px; /* Add spacing between elements */
+    justify-content: space-between;
+    gap: 10px;
 }
 
-/* Input field styling */
-.field {
+/* Input and Select Field Styling */
+.field,
+select {
     padding: 12px;
-    margin: 0;
+    margin: 10px 0;
     border: 1px solid #ccc;
     border-radius: 8px;
     font-size: 16px;
-    width: 100%; /* Ensure full width of the form */
+    width: 100%;
     box-sizing: border-box;
     transition: box-shadow 0.3s, border-color 0.3s;
 }
-.password-container {
-    position: relative;
-}
 
-.eye-icon {
-    position: absolute;
-    right: 10px; /* Adjust position */
-    top: 50%; /* Center vertically */
-    transform: translateY(-50%); /* Adjust for vertical alignment */
-    font-size: 20px; /* Adjust icon size */
-}
-
-/* Placeholder styling (optional for lighter color) */
-.field::placeholder {
-    color: rgb(153, 153, 153); /* Password/User text color*/
-    font-style: italic;
-}
-
-/* Input focus effect */
-.field:focus {
-    border-color: rgb(153, 153, 153);
+/* Input Focus Effect */
+.field:focus,
+select:focus {
+    border-color: #4e8e8e;
     outline: none;
-    box-shadow: 0 0 8px rgba(153, 153, 153);
-}
-/*Logout button styling*/
-.LogoutButton::before {
-    content: "Logout";
-    color: rgb(34, 69, 151);
-    padding: 12px; /* Adjust padding for better look */
-    margin-top: 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%; /* Make the button full width */
-    transition: background-color 0.3s ease, transform 0.2s;
-}
-/* Button styling */
-.btn {
-    background-color: rgb(34, 69, 151);
-    color: rgb(254, 254, 255);
-    padding: 12px; /* Adjust padding for better look */
-    margin-top: 20px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%; /* Full width */
-    transition: background-color 0.3s ease, transform 0.2s;
+    box-shadow: 0 0 8px rgba(78, 142, 142, 0.6);
 }
 
-.btn:hover {
-    background-color: rgb(20, 40, 89);
-    color: rgb(255, 255, 255);
-    transform: translateY(-2px); /* Slight lift effect */
+/* Skills and Course Dropdown Customization */
+select {
+    height: auto;
 }
 
-/* Error message styling */
+/* Error Message Styling */
 .error {
-    background-color: rgb(209, 17, 17);
-    color: rgb(255, 255, 255);
-    margin-top: 10px;
-    padding: 10px;
-    border-radius: 4px;
+    background-color: #d91111;
+    color: #fff;
+    padding: 12px;
+    margin-top: 15px;
+    border-radius: 6px;
     font-size: 16px;
+    text-align: center;
 }
 
 .error--hidden {
     display: none;
 }
+
+/* Button Styling */
+.btn {
+    background-color: #22699a;
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 100%;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn:hover {
+    background-color: #0056b3;
+}
+
+/* Link Styling */
 a {
-    color: rgb(34, 69, 151); /* "Register" and "Login" text */
+    color: #22699a;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
     transition: color 0.3s ease;
 }
 
 a:hover {
-    color: rgb(20, 40, 89);
+    color: #142859;
     text-decoration: underline;
 }
 
-/* Responsive for smaller screens */
-@media (max-width: 600px) {
-    .card {
-        width: 90%;
-        padding: 20px;
-    }
-
-    .center {
-        font-size: 22px;
-    }
-
-    .btn {
-        font-size: 14px;
-    }
+html, body {
+    height: 100%;
+    margin: 0; 
+    display: flex;
+    flex-direction: column; 
 }
-
-/* Footer styling */
-
-body {
+.page-wrapper {
+    background-color: #fff;
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
-    margin: 0;
+    min-height: 100%;
 }
 
-main {
-    flex: 1; /* This will make the main content grow and push the footer down */
+.content {
+    flex: 1;
 }
 
+/* Footer Styling */
 footer {
-    background-color: rgb(34, 69, 151);
-    color: rgb(255, 255, 255);
+    background-color: #22699a;
+    color: #fff;
     text-align: center;
     padding: 20px;
     width: 100%;
@@ -183,17 +214,17 @@ footer {
 }
 
 footer a {
-    color: rgb(255, 255, 255);
+    color: #fff;
     text-decoration: none;
-    font-weight: bold;
-    transition: color 0.3s ease;
+    font-weight: 600;
 }
 
 footer a:hover {
-    color: rgb(200, 200, 200);
+    color: #c8c8c8;
     text-decoration: underline;
 }
 
+/* Modal Styling */
 #otpModal {
     display: none;
     position: fixed;
@@ -207,8 +238,51 @@ footer a:hover {
 }
 
 .modal-content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    width: 100%;
+    max-width: 500px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     text-align: center;
+}
+
+/* Custom Input Group Styling (For form fields with icons) */
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+}
+
+.input-group input {
+    padding-right: 40px;
+    /* Adjust for icon padding */
+}
+
+.input-group .eye-icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 20px;
+    cursor: pointer;
+}
+
+/* Responsive Styling for Smaller Screens */
+@media (max-width: 768px) {
+    .card {
+        padding: 30px;
+        max-width: 100%;
+        margin: 0 10px;
+    }
+
+    .center {
+        font-size: 24px;
+    }
+
+    .btn {
+        font-size: 14px;
+        padding: 12px;
+    }
 }

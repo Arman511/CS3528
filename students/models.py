@@ -15,26 +15,25 @@ class Student:
 
     def search_students(self):
         """Searching students."""
-        first_name = request.form.get("first_name")
-        last_name = request.form.get("last_name")
-        email = request.form.get("email")
-        student_id = request.form.get("student_id")
-
+        data = request.get_json()
+        # Build the query with AND logic
         query = {}
-        if first_name:
-            query["first_name"] = first_name
-        if last_name:
-            query["last_name"] = last_name
-        if email:
-            query["email"] = email
-        if student_id:
-            query["student_id"] = student_id
-        if request.form.get("course"):
-            query["course"] = request.form.get("course")
-        if request.form.get("skills"):
-            query["skills"] = request.form.get("skills")
-        if request.form.get("modules"):
-            query["modules"] = request.form.get("modules")
+        if data.get("first_name"):
+            query["first_name"] = data["first_name"]
+        if data.get("last_name"):
+            query["last_name"] = data["last_name"]
+        if data.get("email"):
+            query["email"] = data["email"]
+        if data.get("student_id"):
+            query["student_id"] = data["student_id"]
+        if data.get("course"):
+            query["course"] = data["course"]
+        if data.get("skills"):
+            # Match students with at least one of the provided skills
+            query["skills"] = {"$in": data["skills"]}
+        if data.get("modules"):
+            # Match students with at least one of the provided modules
+            query["modules"] = {"$in": data["modules"]}
 
         students = list(database.students_collection.find(query))
 
@@ -93,26 +92,26 @@ class Student:
 
         return []
 
-    def update_student(self):
-        """Updating student."""
-        student = database.students_collection.find_one(
-            {"student_id": request.form.get("student_id")}
+    def update_student_by_id(self, student_id, student_data):
+        """Update student in the database by student_id."""
+        # Attempt to update the student directly with the provided data
+        result = database.students_collection.update_one(
+            {"student_id": str(student_id)},  # Match the student by ID
+            {"$set": student_data},  # Update the fields with the new values
         )
 
-        if student:
-            database.students_collection.update_one(
-                {"student_id": request.form.get("student_id")}, {"$set": request.form}
-            )
+        # Return True if the update was successful (i.e., a document was matched and modified)
+        if result.matched_count > 0:
             return jsonify({"message": "Student updated"}), 200
-
-        return jsonify({"error": "Student not found"}), 404
+        else:
+            return jsonify({"error": "Student not found"}), 404
 
     def delete_student_by_id(self, student_id):
         """Deleting student."""
-        student = database.students_collection.find_one({"student_id": student_id})
+        student = database.students_collection.find_one({"student_id": str(student_id)})
 
         if student:
-            database.students_collection.delete_one({"student_id": student_id})
+            database.students_collection.delete_one({"student_id": str(student_id)})
             return jsonify({"message": "Student deleted"}), 200
 
         return jsonify({"error": "Student not found"}), 404
@@ -286,46 +285,46 @@ class Student:
         ) as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def update_student_by_id(self, student_id, is_student=True):
-        """Updating student."""
-        student = database.students_collection.find_one({"student_id": str(student_id)})
+    # def update_student_by_id(self, student_id, is_student=True):
+    #     """Updating student."""
+    #     student = database.students_collection.find_one({"student_id": str(student_id)})
 
-        if student and not is_student:
-            database.students_collection.update_one(
-                {"student_id": student_id}, {"$set": request.form}
-            )
-            return jsonify({"message": "Student updated"}), 200
+    #     if student and not is_student:
+    #         database.students_collection.update_one(
+    #             {"student_id": student_id}, {"$set": request.form}
+    #         )
+    #         return jsonify({"message": "Student updated"}), 200
 
-        if "student" not in session:
-            return jsonify({"error": "You are not logged in"}), 401
-        if (
-            is_student
-            and str(student["student_id"]) != session["student"]["student_id"]
-        ):
-            return (
-                jsonify({"error": "You are not authorized to update this student"}),
-                403,
-            )
-        student["comments"] = request.form.get("comments")
-        student["skills"] = request.form.get("skills")
-        student["attempted_skills"] = request.form.get("attempted_skills")
-        student["has_car"] = request.form.get("has_car")
-        student["placement_duration"] = request.form.get("placement_duration")
-        student["modules"] = request.form.get("modules")
-        student["course"] = request.form.get("course")
+    #     if "student" not in session:
+    #         return jsonify({"error": "You are not logged in"}), 401
+    #     if (
+    #         is_student
+    #         and str(student["student_id"]) != session["student"]["student_id"]
+    #     ):
+    #         return (
+    #             jsonify({"error": "You are not authorized to update this student"}),
+    #             403,
+    #         )
+    #     student["comments"] = request.form.get("comments")
+    #     student["skills"] = request.form.get("skills")
+    #     student["attempted_skills"] = request.form.get("attempted_skills")
+    #     student["has_car"] = request.form.get("has_car")
+    #     student["placement_duration"] = request.form.get("placement_duration")
+    #     student["modules"] = request.form.get("modules")
+    #     student["course"] = request.form.get("course")
 
-        if student and is_student:
-            database.students_collection.update_one(
-                {"student_id": str(student_id)}, {"$set": student}
-            )
-            return jsonify({"message": "Student updated"}), 200
+    #     if student and is_student:
+    #         database.students_collection.update_one(
+    #             {"student_id": str(student_id)}, {"$set": student}
+    #         )
+    #         return jsonify({"message": "Student updated"}), 200
 
-        if not is_student:
-            database.students_collection.delete_one({"student_id": student_id})
-            database.students_collection.insert_one(request.form)
-            return jsonify({"message": "Student updated"}), 200
+    #     if not is_student:
+    #         database.students_collection.delete_one({"student_id": student_id})
+    #         database.students_collection.insert_one(request.form)
+    #         return jsonify({"message": "Student updated"}), 200
 
-        return jsonify({"error": "Student not found"}), 404
+    #     return jsonify({"error": "Student not found"}), 404
 
     def student_login(self):
         """Handle student login."""

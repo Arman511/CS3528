@@ -2,7 +2,7 @@
 Handles routes for the student module.
 """
 
-from flask import redirect, render_template, request, session
+from flask import jsonify, redirect, render_template, request, session
 from core import database, handlers
 from courses.models import Course
 from employers.models import Employers
@@ -36,7 +36,7 @@ def add_student_routes(app):
     @handlers.login_required
     def upload_page():
         """Route to upload students from a XLSX file."""
-        return render_template("/student/upload_student_data.html")
+        return render_template("/student/upload_student_data.html", user_type="admin")
 
     @app.route("/students/search")
     @handlers.login_required
@@ -46,6 +46,7 @@ def add_student_routes(app):
             "student/search_student.html",
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
+            user_type="admin",
         )
 
     @app.route("/students/search_students", methods=["POST"])
@@ -60,22 +61,23 @@ def add_student_routes(app):
         """Delete student."""
         return Student().delete_student_by_id(student_id)
 
-    @app.route("/students/update/<int:student_id>", methods=["GET", "POST"])
-    @handlers.login_required
+    @app.route("/students/update_student/<int:student_id>", methods=["PUT"])
     def update_student(student_id):
-        """Update student."""
-        if request.method == "POST":
-            return Student().update_student_by_id(student_id, False)
-        student = Student().get_student_by_id(student_id)
+        """Update student data by ID."""
+        updated_data = request.get_json()  # Get JSON data from the request body
 
-        return render_template(
-            "/student/update_student.html",
-            student=student,
-            skills=Skill().get_skills(),
-            courses=Course().get_courses(),
-            modules=Module().get_modules(),
-            attempted_skills=Skill().get_list_attempted_skills(),
-        )
+        if not updated_data:
+            return jsonify({"error": "No data provided"}), 400
+
+        student = Student().get_student_by_id(student_id)
+        if student:
+            update_result = Student().update_student_by_id(student_id, updated_data)
+            if update_result:
+                return jsonify({"message": "Student updated successfully"}), 200
+            else:
+                return jsonify({"message": "No changes detected"}), 200
+        else:
+            return jsonify({"error": "Student not found"}), 404
 
     @app.route("/students/login", methods=["GET", "POST"])
     def login_student():
@@ -98,27 +100,46 @@ def add_student_routes(app):
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
     @handlers.student_login_required
     def student_details(student_id):
-        """Getting student."""
-        if "student" not in session:
-            return redirect("/students/login")
-        if session["student"]["student_id"] != str(student_id):
-            session.clear()
-            return redirect("/students/login")
+        """Get or update student details."""
+        user_type = ""
 
-        if database.is_past_student_ranking_deadline():
-            return redirect("/students/passed_deadline")
+        # Determine user type
+        if "student" in session:
+            user_type = "student"
+            if session["student"]["student_id"] != str(student_id):
+                session.clear()
+                return redirect("/students/login")
+        elif "admin" in session:
+            user_type = "admin"
+        else:
+            return redirect("/students/login")  # Redirect if neither student nor admin
 
-        if database.is_past_details_deadline():
-            return redirect(f"/students/rank_preferences/{student_id}")
+        # Handle deadlines (applicable to students only)
+        if user_type == "student":
+            if database.is_past_student_ranking_deadline():
+                return redirect("/students/passed_deadline")
+            if database.is_past_details_deadline():
+                return redirect(f"/students/rank_preferences/{student_id}")
+
+        # Handle POST request for updating details
         if request.method == "POST":
-            return Student().update_student_by_id(student_id, True)
+            # Admins might update student details on behalf of students
+            is_admin = user_type == "admin"
+            return Student().update_student_by_id(student_id, is_admin)
+
+        # Render the template
         return render_template(
             "student/student_details.html",
-            student=session["student"],
+            student=(
+                session["student"]
+                if user_type == "student"
+                else Student().get_student_by_id(student_id)
+            ),
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
             modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
+            user_type=user_type,  # Pass user type to the template
         )
 
     @app.route("/students/rank_preferences/<int:student_id>", methods=["GET", "POST"])
@@ -127,6 +148,7 @@ def add_student_routes(app):
         """Rank preferences."""
         if "student" not in session:
             return redirect("/students/login")
+
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
@@ -145,6 +167,7 @@ def add_student_routes(app):
             opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
             count=len(opportunities),
+            user_type="student",
         )
 
     @app.route("/students/update_success")

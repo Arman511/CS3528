@@ -12,5 +12,5 @@ def add_course_routes(app):
     @handlers.login_required
     def add_course():
         if request.method == "GET":
-            return render_template("/courses/adding_course.html")
+            return render_template("/courses/adding_course.html", user_type="admin")
         return Course().add_course()
