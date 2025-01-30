@@ -1,0 +1,8 @@
+version: 2
+updates:
+  - package-ecosystem: "pip" 
+    directory: "/" 
+    schedule:
+      interval: "weekly" # Check for updates every week
+    commit-message:
+      prefix: "[Security]"
