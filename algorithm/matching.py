@@ -82,7 +82,8 @@ class Matching:
                     if student in self.placement_rank[choice]:
                         new_candidate_rank = self.placement_rank[choice][student]
                         # print(
-                        #     f"Comparing {student} (rank {new_candidate_rank}) with weakest match {weakest_match} (rank {weakest_match_rank})."
+                        #     f"Comparing {student} (rank {new_candidate_rank}) with
+                        # weakest match {weakest_match} (rank {weakest_match_rank})."
                         # )
 
                         # If new student is ranked higher (lower number), replace the weakest match
