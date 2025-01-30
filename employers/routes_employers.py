@@ -50,7 +50,7 @@ def add_employer_routes(app):
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
-    def employers_rank_students():
+    def employers_rank_students(_stuff):
         if database.is_past_opportunities_ranking_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",
@@ -60,6 +60,7 @@ def add_employer_routes(app):
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
+                user_type="employer",
             )
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
