@@ -56,5 +56,5 @@ tqdm==4.66.5
 types-passlib==1.7.7.20240819
 types-pytz==2024.2.0.20241003
 typing_extensions==4.12.2
-tzdata==2024.2
+tzdata==2025.1
 Werkzeug==3.0.6
