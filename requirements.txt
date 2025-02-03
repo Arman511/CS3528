@@ -12,7 +12,7 @@ cssbeautifier==1.15.1
 dill==0.3.9
 djlint==1.35.2
 dnspython==2.6.1
-EditorConfig==0.12.4
+EditorConfig==0.17.0
 et_xmlfile==2.0.0
 exceptiongroup==1.2.2
 execnet==2.1.1
