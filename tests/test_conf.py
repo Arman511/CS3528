@@ -29,7 +29,7 @@ def database():
     connection = MongoClient()
     if os.getenv("IS_GITHUB_ACTION") == "False":
         connection = MongoClient(os.getenv("MONGO_URI"))
-    database = connection[os.getenv("MONGO_DB_TEST", "client_test")]
+    database = connection[os.getenv("MONGO_DB_TEST", "cs3528_testing")]
 
     return database
 
