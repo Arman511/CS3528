@@ -20,7 +20,7 @@ DEADLINE_MANAGER = None
 load_dotenv()
 
 DATABASE = ""
-if os.getenv("IS_GITHUB_ACTIONS") == "True":
+if os.getenv("IS_GITHUB_ACTION") == "True":
     DATABASE = "cs3528_testing"
 if os.getenv("IS_TEST"):
     DATABASE = os.getenv("MONGO_DB_TEST", "")
