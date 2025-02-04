@@ -8,8 +8,6 @@ from flask import jsonify
 
 class DeadlineManager:
     def __init__(self):
-        from app import database_manager
-
         self.get_details_deadline()
         self.get_student_ranking_deadline()
         self.get_opportunities_ranking_deadline()

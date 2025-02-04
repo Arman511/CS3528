@@ -4,7 +4,7 @@ Handles routes for the student module.
 
 import os
 from dotenv import load_dotenv
-from flask import jsonify, redirect, render_template, request, session
+from flask import redirect, render_template, request, session
 from core import deadline_manager, handlers
 from courses.models import Course
 from employers.models import Employers

@@ -12,6 +12,7 @@ load_dotenv()
 
 os.environ["IS_TEST"] = "True"
 # pylint: disable=redefined-outer-name
+# flake8: noqa: F811
 
 
 @pytest.fixture()

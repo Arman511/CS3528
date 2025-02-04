@@ -1,6 +1,7 @@
 """Tests for the user routes."""
 
 # pylint: disable=redefined-outer-name
+# flake8: noqa: F811
 
 from ..test_conf import (  # pylint: disable=unused-import
     database,
