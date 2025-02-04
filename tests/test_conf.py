@@ -26,7 +26,9 @@ def client():
 @pytest.fixture()
 def database():
     """Fixture to create a test database."""
-    connection = MongoClient(os.getenv("MONGO_URI"))
+    connection = MongoClient()
+    if os.getenv("IS_GITHUB_ACTION") == "False":
+        connection = MongoClient(os.getenv("MONGO_URI"))
     database = connection[os.getenv("MONGO_DB_TEST", "client_test")]
 
     return database
