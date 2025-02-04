@@ -1,7 +1,7 @@
 """
-The matching algorithm is a stable marriage algorithm that matches students 
-to placements based on their preferences. The algorithm is implemented in the 
-`Matching` class. The `find_best_match` method finds the best match for students and placements. 
+The matching algorithm is a stable marriage algorithm that matches students
+to placements based on their preferences. The algorithm is implemented in the
+`Matching` class. The `find_best_match` method finds the best match for students and placements.
 """
 
 from typing import List, Dict, Tuple
