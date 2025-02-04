@@ -200,34 +200,6 @@ class Student:
 
         return jsonify({"error": "No students found"}), 404
 
-    def import_from_csv(self):
-        """Importing students from CSV file."""
-
-        if "file" not in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["csv"]):
-            return jsonify({"error": "Invalid file type"}), 400
-
-        try:
-            file = request.files["file"]
-            df = pd.read_csv(file)
-
-            students = df.to_dict(orient="records")
-            for student in students:
-                student["_id"] = uuid.uuid4().hex
-                database.students_collection.delete_one(
-                    {"student_id": student["student_id"]}
-                )
-                database.students_collection.insert_one(student)
-            return jsonify({"message": "Students imported"}), 200
-        except (
-            pd.errors.EmptyDataError,
-            pd.errors.ParserError,
-            FileNotFoundError,
-        ) as e:
-            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
-
     def import_from_xlsx(self):
         """Importing students from Excel file."""
 

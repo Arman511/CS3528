@@ -20,12 +20,6 @@ def add_student_routes(app):
         """Adding new student."""
         return Student().add_student()
 
-    @app.route("/students/upload_csv", methods=["POST"])
-    @handlers.login_required
-    def upload_csv():
-        """Route to upload students from a CSV file."""
-        return Student().import_from_csv()
-
     @app.route("/students/upload_xlsx", methods=["POST"])
     @handlers.login_required
     def upload_xlsx():
