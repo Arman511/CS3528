@@ -20,9 +20,8 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def connect(self, connection, database):
         load_dotenv()
-        if os.getenv("IS_GITHUB_ACTIONS") == "True":
-            self.connection = pymongo.MongoClient()
-        else:
+        self.connection = pymongo.MongoClient()
+        if os.getenv("IS_GITHUB_ACTION") == "False":
             self.connection = pymongo.MongoClient(connection)
 
         try:
@@ -37,7 +36,8 @@ class DatabaseMongoManager(DatabaseInterface):
         except ServerSelectionTimeoutError as e:
             print(f"Server selection timeout error: {e}")
             sys.exit(1)
-
+        if database == "":
+            database = "cs3528_testing"
         self.database = self.connection[database]
 
     def get_all(self, table):
