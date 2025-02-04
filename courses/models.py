@@ -1,7 +1,6 @@
 """
 Courses model."""
 
-import uuid
 from datetime import datetime, timedelta
 from flask import jsonify, request
 

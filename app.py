@@ -11,8 +11,8 @@ from flask import Flask
 from flask_caching import Cache
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from core.database_mongo_manager import DatabaseMongoManager  # pylint: disable=C0413
-from core import handlers  # pylint: disable=C0413
+from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
+from core import handlers  # noqa: E402
 
 global database_manager
 database_manager = None
@@ -55,7 +55,7 @@ app.permanent_session_lifetime = timedelta(minutes=30)
 cache = Cache(app)
 handlers.configure_routes(app, cache)
 
-from core.deadline_manager import DeadlineManager  # pylint: disable=C0413
+from core.deadline_manager import DeadlineManager  # noqa: E402
 
 deadline_manager = DeadlineManager()
 

@@ -2,8 +2,7 @@
 
 from datetime import datetime, timedelta
 import time
-import uuid
-from flask import redirect, request, jsonify, session
+from flask import redirect, jsonify, session
 from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}

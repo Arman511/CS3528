@@ -82,6 +82,7 @@ class Module:
         """Retrieves all modules."""
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
+        from app import database_manager
 
         # Check if cache is valid
         if (
