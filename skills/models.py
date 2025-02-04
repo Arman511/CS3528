@@ -5,7 +5,6 @@ Skills model.
 import uuid
 from datetime import datetime, timedelta
 from flask import jsonify, request
-from core import database
 
 # Cache to store skills and the last update time
 skills_cache = {"data": [], "last_updated": datetime.now()}
@@ -17,42 +16,41 @@ class Skill:
 
     def find_skill(self, skill_name="", skill_id=""):
         """Check if a skill exists in the database."""
+        from app import database_manager
+
         # Check if the skill is already in the cache
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
 
         # Check if cache is valid
         if not skills_cache["data"] or skills_cache["last_updated"] <= one_week_ago:
-            skills_cache["data"] = list(database.skills_collection.find())
+            skills_cache["data"] = database_manager.get_all("skills")
             skills_cache["last_updated"] = current_time
 
         # Check if the skill is in the cache
         for skill in skills_cache["data"]:
-            if skill["skill_name"] == skill_name:
+            if skill["skill_name"].lower() == skill_name.lower():
                 return skill
             if skill["_id"] == skill_id:
                 return skill
 
         return None
 
-    def add_skill(self):
+    def add_skill(self, skill):
         """Add Skill to database"""
-        if not request.form.get("skill_name") or not request.form.get(
-            "skill_description"
-        ):
-            return jsonify({"error": "One of the inputs is blank"}), 400
-
-        skill = {
-            "_id": uuid.uuid1().hex,
-            "skill_name": request.form.get("skill_name"),
-            "skill_description": request.form.get("skill_description"),
-        }
+        # skill = {
+        #     "_id": uuid.uuid1().hex,
+        #     "skill_name": request.form.get("skill_name"),
+        #     "skill_description": request.form.get("skill_description"),
+        # }
 
         # Check if skill already exists#
+        from app import database_manager
+
         if self.find_skill(skill["skill_name"], None) is not None:
             return jsonify({"error": "Skill already in database"}), 400
 
-        database.skills_collection.insert_one(skill)
+        database_manager.insert("skills", skill)
 
         if skill:
             # Update cache
@@ -64,13 +62,15 @@ class Skill:
 
     def delete_skill(self, skill_id):
         """Delete kill from database"""
+        from app import database_manager
+
         if not self.find_skill(None, skill_id):
             return jsonify({"error": "Skill not found"}), 404
 
-        database.skills_collection.delete_one({"_id": request.form.get("skill_id")})
+        database_manager.delete_by_id("skills", skill_id)
 
         # Update cache
-        skills = list(database.skills_collection.find())
+        skills = database_manager.get_all("skills")
         skills_cache["data"] = skills
         skills_cache["last_updated"] = datetime.now()
 
@@ -95,7 +95,9 @@ class Skill:
         return skill["skill_name"]
 
     def get_skills(self):
-        """Get full list of skills if chached get that instead"""
+        """Get full list of skills if cached get that instead"""
+        from app import database_manager
+
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
 
@@ -108,7 +110,7 @@ class Skill:
             return skills_cache["data"]
 
         # Fetch skills from the database
-        skills = list(database.skills_collection.find())
+        skills = database_manager.get_all("skills")
 
         if skills:
             # Update cache
@@ -118,16 +120,17 @@ class Skill:
 
         return []
 
-    def attempt_add_skill(self):
+    def attempt_add_skill(self, skill_name):
         """Add skill to attempted skills"""
-        skill_name = request.json.get("skill_name").lower()
-        found_skill = database.attempted_skills_collection.find_one(
-            {"skill_name": skill_name}
+        from app import database_manager
+
+        found_skill = database_manager.get_one_by_field(
+            "attempted_skills", "skill_name", skill_name
         )
 
         if found_skill:
-            database.attempted_skills_collection.update_one(
-                {"_id": found_skill["_id"]}, {"$inc": {"used": 1}}
+            database_manager.increment(
+                "attempted_skills", found_skill["_id"], "used", 1
             )
             return jsonify(found_skill), 200
 
@@ -137,12 +140,14 @@ class Skill:
             "used": 1,
         }
 
-        database.attempted_skills_collection.insert_one(new_skill)
+        database_manager.insert("attempted_skills", new_skill)
         return jsonify(new_skill), 200
 
     def get_list_attempted_skills(self):
         """Get list of attempted skills"""
-        attempted_skills = list(database.attempted_skills_collection.find())
+        from app import database_manager
+
+        attempted_skills = database_manager.get_all("attempted_skills")
 
         if not attempted_skills:
             return []

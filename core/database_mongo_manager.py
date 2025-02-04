@@ -1,39 +1,97 @@
+import os
+import sys
+from dotenv import load_dotenv
 import pymongo
 from .database_interface import DatabaseInterface
+from pymongo.errors import (
+    ConfigurationError,
+    OperationFailure,
+    ServerSelectionTimeoutError,
+)
+
 
 class DatabaseMongoManager(DatabaseInterface):
-
     def __init__(self, connection, database):
         super().__init__()
+        if connection == "":
+            return
 
-        self.connection = self.connect(connection)
+        self.connection = self.connect(connection, database)
 
-    def connect(self, connection=None, database=None):
-        self.connection = pymongo.MongoClient(connection)
-        self.database = self.connection["database"]
+    def connect(self, connection, database):
+        load_dotenv()
+        if os.getenv("IS_GITHUB_ACTIONS") == "True":
+            self.connection = pymongo.MongoClient()
+        else:
+            self.connection = pymongo.MongoClient(connection)
+
+        try:
+            self.connection.admin.command("ping")
+            print("Pinged your deployment. You successfully connected to MongoDB!")
+        except ConfigurationError as e:
+            print(f"Configuration error: {e}")
+            sys.exit(1)
+        except OperationFailure as e:
+            print(f"Operation failure: {e}")
+            sys.exit(1)
+        except ServerSelectionTimeoutError as e:
+            print(f"Server selection timeout error: {e}")
+            sys.exit(1)
+
+        self.database = self.connection[database]
 
     def get_all(self, table):
-        return self.database[table].find()
-    
+        return list(self.database[table].find())
+
     def get_one_by_id(self, table, id):
         return self.database[table].find_one({"_id": id})
-    
+
     def insert(self, table, data):
         return self.database[table].insert_one(data)
-    
-    def update(self, table, id, data):
+
+    def update_one_by_id(self, table, id, data):
         return self.database[table].update_one({"_id": id}, {"$set": data})
-    
+
+    def update_one_by_field(self, table, field, value, data):
+        return self.database[table].update_one({field: value}, {"$set": data})
+
     def increment(self, table, id, field, increment):
-        return self.database[table].update_one({"_id": id}, {"$inc": {field: increment}})
-    
-    def delete(self, table, id):
+        return self.database[table].update_one(
+            {"_id": id}, {"$inc": {field: increment}}
+        )
+
+    def delete_by_id(self, table, id):
         return self.database[table].delete_one({"_id": id})
-    
+
+    def delete_by_field(self, table, field, value):
+        return self.database[table].delete_one({field: value})
+
     def delete_all(self, table):
         return self.database[table].delete_many({})
-    
+
     def get_by_email(self, table, email):
         return self.database[table].find_one({"email": email})
-    
-    
+
+    def get_one_by_field(self, table, field, value):
+        return self.database[table].find_one({field: value})
+
+    def get_many_by_field(self, table, field, value):
+        return list(self.database[table].find({field: value}))
+
+    def is_table(self, table):
+        return table in self.table_list
+
+    def get_all_by_query(self, table, query):
+        return list(self.database[table].find(query))
+
+    def get_one_by_query(self, table, query):
+        return self.database[table].find_one(query)
+
+    def update_by_field(self, table, field, value, data):
+        return self.database[table].update_one({field: value}, {"$set": data})
+
+    def get_all_by_field(self, table, field, value):
+        return list(self.database[table].find({field: value}))
+
+    def create_index(self, table, field):
+        return self.database[table].create_index(field)

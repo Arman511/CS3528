@@ -1,4 +1,4 @@
-class DatabaseInterface():
+class DatabaseInterface:
     def __init__(self):
         self.connection = None
         self.database = None
@@ -28,7 +28,6 @@ class DatabaseInterface():
 
     def delete_all(self, table):
         raise NotImplementedError
-    
+
     def get_tables(self):
         return self.table_list
-

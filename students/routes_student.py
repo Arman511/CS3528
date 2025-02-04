@@ -2,8 +2,10 @@
 Handles routes for the student module.
 """
 
+import os
+from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
-from core import database, handlers
+from core import deadline_manager, handlers
 from courses.models import Course
 from employers.models import Employers
 from skills.models import Skill
@@ -24,7 +26,10 @@ def add_student_routes(app):
     @handlers.login_required
     def upload_xlsx():
         """Route to upload students from a XLSX file."""
-        return Student().import_from_xlsx()
+        load_dotenv()
+        base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
+        file = request.files["file"]
+        return Student().import_from_xlsx(base_email, file)
 
     @app.route("/students/upload", methods=["GET"])
     @handlers.login_required
@@ -47,31 +52,32 @@ def add_student_routes(app):
     @handlers.login_required
     def search_students():
         """Getting student."""
-        return Student().search_students()
+        data = request.get_json()
+        # Build the query with AND logic
+        query = {}
+        if data.get("first_name"):
+            query["first_name"] = data["first_name"]
+        if data.get("last_name"):
+            query["last_name"] = data["last_name"]
+        if data.get("email"):
+            query["email"] = data["email"]
+        if data.get("student_id"):
+            query["student_id"] = data["student_id"]
+        if data.get("course"):
+            query["course"] = data["course"]
+        if data.get("skills"):
+            # Match students with at least one of the provided skills
+            query["skills"] = {"$in": data["skills"]}
+        if data.get("modules"):
+            # Match students with at least one of the provided modules
+            query["modules"] = {"$in": data["modules"]}
+        return Student().search_students(query)
 
     @app.route("/students/delete_student/<int:student_id>", methods=["DELETE"])
     @handlers.login_required
     def delete_student(student_id):
         """Delete student."""
         return Student().delete_student_by_id(student_id)
-
-    @app.route("/students/update_student/<int:student_id>", methods=["PUT"])
-    def update_student(student_id):
-        """Update student data by ID."""
-        updated_data = request.get_json()  # Get JSON data from the request body
-
-        if not updated_data:
-            return jsonify({"error": "No data provided"}), 400
-
-        student = Student().get_student_by_id(student_id)
-        if student:
-            update_result = Student().update_student_by_id(student_id, updated_data)
-            if update_result:
-                return jsonify({"message": "Student updated successfully"}), 200
-            else:
-                return jsonify({"message": "No changes detected"}), 200
-        else:
-            return jsonify({"error": "Student not found"}), 404
 
     @app.route("/students/login", methods=["GET", "POST"])
     def login_student():
@@ -95,45 +101,63 @@ def add_student_routes(app):
     @handlers.student_login_required
     def student_details(student_id):
         """Get or update student details."""
-        user_type = ""
-
-        # Determine user type
-        if "student" in session:
-            user_type = "student"
-            if session["student"]["student_id"] != str(student_id):
-                session.clear()
-                return redirect("/students/login")
-        elif "admin" in session:
-            user_type = "admin"
-        else:
-            return redirect("/students/login")  # Redirect if neither student nor admin
+        if session["student"]["student_id"] != str(student_id):
+            session.clear()
+            return redirect("/students/login")
 
         # Handle deadlines (applicable to students only)
-        if user_type == "student":
-            if database.is_past_student_ranking_deadline():
-                return redirect("/students/passed_deadline")
-            if database.is_past_details_deadline():
-                return redirect(f"/students/rank_preferences/{student_id}")
+        if deadline_manager.is_past_student_ranking_deadline():
+            return redirect("/students/passed_deadline")
+        if deadline_manager.is_past_details_deadline():
+            return redirect(f"/students/rank_preferences/{student_id}")
 
         # Handle POST request for updating details
         if request.method == "POST":
-            # Admins might update student details on behalf of students
-            is_admin = user_type == "admin"
-            return Student().update_student_by_id(student_id, is_admin)
+            student = {}
+            student["comments"] = request.form.get("comments")
+            student["skills"] = request.form.get("skills")
+            student["attempted_skills"] = request.form.get("attempted_skills")
+            student["has_car"] = request.form.get("has_car")
+            student["placement_duration"] = request.form.get("placement_duration")
+            student["modules"] = request.form.get("modules")
+            student["course"] = request.form.get("course")
+            return Student().update_student_by_id(student_id, student)
 
         # Render the template
         return render_template(
             "student/student_details.html",
-            student=(
-                session["student"]
-                if user_type == "student"
-                else Student().get_student_by_id(student_id)
-            ),
+            student=session["student"],
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
             modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
-            user_type=user_type,  # Pass user type to the template
+            user_type="student",
+        )
+
+    @app.route("/students/update_student/<int:student_id>", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_student(student_id):
+        """Update student for admins."""
+        if request.method == "POST":
+            student = {}
+            student["comments"] = request.form.get("comments")
+            student["skills"] = request.form.get("skills")
+            student["attempted_skills"] = request.form.get("attempted_skills")
+            student["has_car"] = request.form.get("has_car")
+            student["placement_duration"] = request.form.get("placement_duration")
+            student["modules"] = request.form.get("modules")
+            student["course"] = request.form.get("course")
+            return Student().update_student_by_id(student_id, student)
+
+        student = Student().get_student_by_id(student_id)
+        return render_template(
+            "student/update_student.html",
+            student=student,
+            skills=Skill().get_skills(),
+            courses=Course().get_courses(),
+            modules=Module().get_modules(),
+            attempted_skills=Skill().get_list_attempted_skills(),
+            user_type="admin",
         )
 
     @app.route("/students/rank_preferences/<int:student_id>", methods=["GET", "POST"])
@@ -147,20 +171,20 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
 
-        if database.is_past_student_ranking_deadline():
+        if deadline_manager.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
 
-        if not database.is_past_details_deadline():
+        if not deadline_manager.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
-            return Student().rank_preferences(student_id)
+            preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+            return Student().rank_preferences(student_id, preferences)
         opportunities = Student().get_opportunities_by_student(student_id)
         return render_template(
             "student/student_rank_opportunities.html",
             opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
-            count=len(opportunities),
             user_type="student",
         )
 

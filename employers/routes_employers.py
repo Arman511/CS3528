@@ -1,9 +1,10 @@
 """Routes for employers module"""
 
 import os
+import uuid
 from flask import jsonify, request, render_template, session
 from itsdangerous import URLSafeSerializer
-from core import database, handlers
+from core import deadline_manager, handlers
 from course_modules.models import Module
 from courses.models import Course
 from opportunities.models import Opportunity
@@ -17,7 +18,8 @@ def add_employer_routes(app):
     @app.route("/employers/login", methods=["GET", "POST"])
     def employer_login():
         if request.method == "POST":
-            return Employers().employer_login()
+            email = request.form.get("email")
+            return Employers().employer_login(email)
 
         return render_template("employers/employer_login.html", user_type="employer")
 
@@ -45,18 +47,26 @@ def add_employer_routes(app):
     @handlers.login_required
     def add_employer():
         if request.method == "POST":
-            return Employers().register_employer()
+            employer = {
+                "_id": uuid.uuid1().hex,
+                "company_name": request.form.get("company_name"),
+                "email": request.form.get("email"),
+            }
+            return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
     def employers_rank_students(_stuff):
-        if database.is_past_opportunities_ranking_deadline() and "employer" in session:
+        if (
+            deadline_manager.is_past_opportunities_ranking_deadline()
+            and "employer" in session
+        ):
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     f"Ranking deadline has passed as of "
-                    f"{database.get_opportunities_ranking_deadline()}"
+                    f"{deadline_manager.get_opportunities_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
@@ -68,18 +78,20 @@ def add_employer_routes(app):
         opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
         if session["employer"]["_id"] != opportunity["employer_id"]:
             return jsonify({"error": "Employer does not own this opportunity."}), 400
-        if not database.is_past_student_ranking_deadline():
+        if not deadline_manager.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     "Student ranking deadline must have passed before you can start, "
-                    f"wait till {database.get_student_ranking_deadline()}"
+                    f"wait till {deadline_manager.get_student_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
             )
         if request.method == "POST":
-            return Opportunity().rank_preferences(opportunity_id)
+            ranks = request.form.get("ranks")
+            preferences = [a[5:] for a in ranks.split(",")]
+            return Opportunity().rank_preferences(opportunity_id, preferences)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(
             "opportunities/employer_rank_students.html",

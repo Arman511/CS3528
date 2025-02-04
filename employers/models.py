@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 import time
 import uuid
 from flask import redirect, request, jsonify, session
-from core import database, email_handler
+from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}
 
@@ -17,19 +17,20 @@ class Employers:
         session["employer_logged_in"] = True
         return redirect("/employers/home")
 
-    def register_employer(self):
+    def register_employer(self, employer):
         """Adding new employer."""
+        from app import database_manager
 
-        employer = {
-            "_id": uuid.uuid1().hex,
-            "company_name": request.form.get("company_name"),
-            "email": request.form.get("email"),
-        }
+        # employer = {
+        #     "_id": uuid.uuid1().hex,
+        #     "company_name": request.form.get("company_name"),
+        #     "email": request.form.get("email"),
+        # }
 
-        if database.employers_collection.find_one({"email": request.form.get("email")}):
+        if database_manager.get_by_email("employers", employer["email"]):
             return jsonify({"error": "Employer already in database"}), 400
 
-        database.employers_collection.insert_one(employer)
+        database_manager.insert("employers", employer)
         if employer:
             return jsonify(employer), 200
 
@@ -37,18 +38,20 @@ class Employers:
 
     def get_company_name(self, _id):
         """Get company name"""
-        employer = database.employers_collection.find_one({"_id": _id})
+        from app import database_manager
+
+        employer = database_manager.get_by_id("employers", _id)
         if not employer:
             return ""
 
         return employer["company_name"]
 
-    def employer_login(self):
+    def employer_login(self, email):
         """Logs in the employer."""
         session.clear()
-        employer = database.employers_collection.find_one(
-            {"email": request.form.get("email")}
-        )
+        from app import database_manager
+
+        employer = database_manager.get_by_email("employers", email)
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
@@ -59,12 +62,14 @@ class Employers:
 
     def get_employers(self):
         """Gets all employers."""
+        from app import database_manager
+
         if employers_cache["data"] and datetime.now() - employers_cache[
             "last_updated"
         ] < timedelta(minutes=5):
             return employers_cache["data"]
 
-        employers = list(database.employers_collection.find())
+        employers = database_manager.get_all("employers")
         employers_cache["data"] = employers
         employers_cache["last_updated"] = datetime.now()
         return employers
@@ -79,24 +84,25 @@ class Employers:
 
         return None
 
-    def rank_preferences(self, opportunity_id):
+    def rank_preferences(self, opportunity_id, preferences):
         """Sets a students preferences."""
-        opportunity = database.opportunities_collection.find_one(
-            {"_id": opportunity_id}
-        )
+        from app import database_manager
+
+        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
-        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
-        database.students_collection.update_one(
-            {"_id": opportunity_id}, {"$set": {"preferences": preferences}}
+        database_manager.update_one_by_id(
+            "opportunities", opportunity_id, {"preferences": preferences}
         )
         return jsonify({"message": "Preferences updated"}), 200
 
     def get_company_email_by_id(self, _id):
         """Get company email by id"""
-        employer = database.employers_collection.find_one({"_id": _id})
+        from app import database_manager
+
+        employer = database_manager.get_by_id("employers", _id)
         if not employer:
             return ""
 

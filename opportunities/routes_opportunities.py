@@ -2,7 +2,7 @@
 
 import uuid
 from flask import flash, redirect, render_template, request, session, url_for
-from core import database, handlers
+from core import deadline_manager, handlers
 from course_modules.models import Module
 from courses.models import Course
 from employers.models import Employers
@@ -81,12 +81,12 @@ def add_opportunities_routes(app):
     @handlers.admin_or_employers_required
     def employer_add_update_opportunity():
         # Check if the details deadline has passed and the employer is in the session
-        if database.is_past_details_deadline() and "employer" in session:
+        if deadline_manager.is_past_details_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     "Adding/Updating details deadline has passed as of "
-                    f"{database.get_details_deadline()}"
+                    f"{deadline_manager.get_details_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],  # Pass employer to the template
@@ -94,7 +94,24 @@ def add_opportunities_routes(app):
             )
 
         if request.method == "POST":
-            return Opportunity().add_update_opportunity()
+            opportunity = {
+                "_id": request.form.get("_id"),
+                "title": request.form.get("title"),
+                "description": request.form.get("description"),
+                "url": request.form.get("url"),
+                "employer_id": None,
+                "location": request.form.get("location"),
+                "modules_required": request.form.get("modules_required"),
+                "courses_required": request.form.get("courses_required"),
+                "spots_available": request.form.get("spots_available"),
+                "duration": request.form.get("duration"),
+            }
+            if handlers.is_admin():
+                opportunity["employer_id"] = request.form.get("employer_id")
+                return Opportunity().add_update_opportunity(opportunity, True)
+
+            opportunity["employer_id"] = session["employer"]["_id"]
+            return Opportunity().add_update_opportunity(opportunity, False)
 
         # Get the opportunity by ID if it exists
         opportunity_id = request.args.get("opportunity_id")
@@ -125,4 +142,4 @@ def add_opportunities_routes(app):
 
         Opportunity().delete_opportunity_by_id(opportunity_id)
         flash("Opportunity deleted successfully", "success")
-        return redirect(url_for("search_opportunities_admin"))
+        return redirect(url_for("search_opportunities"))

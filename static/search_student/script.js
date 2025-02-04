@@ -57,78 +57,15 @@ document.addEventListener("DOMContentLoaded", () => {
                         <td><span data-field="student_id">${student.student_id}</span></td>
                         <td><span data-field="course">${student.course}</span></td>
                         <td>
-                            <button class="btn btn-info btn-sm update-button mb-2" data-id="${student.student_id}">Update</button>
+                            <a href="/students/update_student/${student.student_id}">
+                                <button class="btn btn-info btn-sm update-button mb-2" data-id="${student.student_id}">Update</button>
+                            </a>
                             <button class="btn btn-info btn-sm delete-button" data-id="${student.student_id}">Delete</button>
                         </td>
                     `;
 
-                    // Add event listeners for the buttons
-                    const updateButton = row.querySelector(".update-button");
+                    // Add event listeners for the button
                     const deleteButton = row.querySelector(".delete-button");
-
-                    // Handle updating the student data
-                    updateButton.addEventListener("click", async () => {
-                        const updatedData = {};
-
-                        // Collect updated values from editable fields
-                        row.querySelectorAll(".editable").forEach((input) => {
-                            const newValue = input.value;
-                            const oldValue = input.dataset.oldValue;
-
-                            // Only update fields where the value has changed
-                            if (newValue !== oldValue) {
-                                updatedData[input.dataset.field] = newValue;
-                            }
-                        });
-
-                        console.log("Updated student data:", updatedData); // Log the data being saved
-
-                        if (Object.keys(updatedData).length === 0) {
-                            alert("No changes made.");
-                            return;
-                        }
-
-                        // Include student ID in the updated data
-                        updatedData.student_id = student.student_id;
-
-                        try {
-                            const updateResponse = await fetch(
-                                `/students/update_student/${student.student_id}`,
-                                {
-                                    method: "PUT", // Use PUT for updating the student
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(updatedData), // Send the updated data as JSON
-                                }
-                            );
-
-                            if (updateResponse.ok) {
-                                const result = await updateResponse.json();
-                                console.log("Update response:", result); // Log the server response
-                                alert(result.message); // Display success message
-
-                                // Optionally, make fields readonly after saving
-                                row.querySelectorAll(".editable").forEach(
-                                    (input) => {
-                                        input.setAttribute("readonly", "true");
-                                    }
-                                );
-                                updateButton.textContent = "Updated"; // Change button text to "Updated"
-                            } else {
-                                const error = await updateResponse.json();
-                                console.log("Update error response:", error); // Log the error response
-                                alert(
-                                    error.message || "Failed to update student."
-                                );
-                            }
-                        } catch (updateError) {
-                            console.error("Update error:", updateError);
-                            alert(
-                                "An error occurred while updating the student. Please try again."
-                            );
-                        }
-                    });
 
                     // Handle deleting the student
                     deleteButton.addEventListener("click", async () => {
@@ -170,6 +107,7 @@ document.addEventListener("DOMContentLoaded", () => {
                                         error.message ||
                                         "Failed to delete student.";
                                 }
+                                alert("Failed to delete student.");
                             }
                         } catch (deleteError) {
                             console.error("Delete error:", deleteError);
@@ -180,6 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
                                 errorElement.textContent =
                                     "An error occurred while deleting the student. Please try again.";
                             }
+                            alert(
+                                "An error occurred while deleting the student."
+                            );
                         }
                     });
 

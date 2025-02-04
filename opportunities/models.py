@@ -4,7 +4,6 @@ Opportunity model.
 
 from datetime import datetime
 from flask import jsonify, request, session
-from core import database
 from employers.models import Employers
 
 cache = {"data": [], "last_updated": datetime.now()}
@@ -13,53 +12,25 @@ cache = {"data": [], "last_updated": datetime.now()}
 class Opportunity:
     """Opportunity class."""
 
-    def add_update_opportunity(self, is_admin=False):
+    def add_update_opportunity(
+        self,
+        opportunity,
+        is_admin=False,
+    ):
+        from app import database_manager
+
         """Adding new opportunity."""
-        if is_admin:
-            opportunity = {
-                "_id": request.form.get("_id"),
-                "title": request.form.get("title"),
-                "description": request.form.get("description"),
-                "url": request.form.get("url"),
-                "employer_id": request.form.get("employer_id"),
-                "location": request.form.get("location"),
-                "modules_required": request.form.get("modules_required"),
-                "courses_required": request.form.get("courses_required"),
-                "spots_available": request.form.get("spots_available"),
-                "duration": request.form.get("duration"),
-            }
-            database.opportunities_collection.delete_one(
-                {"_id": request.form.get("_id")}
-            )
-            database.opportunities_collection.insert_one(opportunity)
-
-            cache["data"] = list(database.opportunities_collection.find())
-            cache["last_updated"] = datetime.now()
-            return jsonify(opportunity), 200
-
-        opportunity = {
-            "_id": request.form.get("_id"),
-            "title": request.form.get("title"),
-            "description": request.form.get("description"),
-            "url": request.form.get("url"),
-            "employer_id": session["employer"]["_id"],
-            "location": request.form.get("location"),
-            "modules_required": request.form.get("modules_required"),
-            "courses_required": request.form.get("courses_required"),
-            "spots_available": request.form.get("spots_available"),
-            "duration": request.form.get("duration"),
-        }
-        find_opportunity = database.opportunities_collection.find_one(
-            {"_id": request.form.get("_id")}
+        find_opportunity = database_manager.get_by_id(
+            "opportunities", opportunity["_id"]
         )
-        if find_opportunity:
+        if find_opportunity and not is_admin:
             if find_opportunity["employer_id"] != session["employer"]["_id"]:
                 return jsonify({"error": "Unauthorized Access."}), 401
-        database.opportunities_collection.delete_one({"_id": request.form.get("_id")})
+        database_manager.delete_by_id("opportunities", opportunity["_id"])
 
-        database.opportunities_collection.insert_one(opportunity)
+        database_manager.insert("opportunities", opportunity)
 
-        cache["data"] = list(database.opportunities_collection.find())
+        cache["data"] = list(database_manager.get_all("opportunities"))
         cache["last_updated"] = datetime.now()
 
         if opportunity:
@@ -70,6 +41,7 @@ class Opportunity:
     def search_opportunities(self, title, company_name):
         """Search opportunities by title and/or company."""
         opportunities = []
+        from app import database_manager
 
         try:
             # Build the query dynamically based on the provided parameters
@@ -77,8 +49,8 @@ class Opportunity:
             if title:
                 query["title"] = {"$regex": title, "$options": "i"}
             if company_name:
-                company = database.employers_collection.find_one(
-                    {"company_name": company_name}
+                company = database_manager.get_one_by_field(
+                    "employers", "company_name", company_name
                 )
                 if company:
                     query["employer_id"] = company["_id"]
@@ -87,7 +59,7 @@ class Opportunity:
                     return []
 
             print(f"[DEBUG] Querying opportunities with filter: {query}")
-            opportunities = list(database.opportunities_collection.find(query))
+            opportunities = database_manager.get_all_by_query("opportunities", query)
 
             # Add the company name to each opportunity if available
             for opportunity in opportunities:
@@ -107,6 +79,8 @@ class Opportunity:
 
     def get_opportunities_by_title(self, title):
         """Fetch opportunities by title."""
+        from app import database_manager
+
         try:
             if not title:
                 print("[DEBUG] No title provided.")
@@ -115,7 +89,7 @@ class Opportunity:
             query = {"title": {"$regex": title, "$options": "i"}}
             print(f"[DEBUG] Query for title: {query}")
 
-            opportunities = list(database.opportunities_collection.find(query))
+            opportunities = database_manager.get_all_by_query("opportunities", query)
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:
@@ -124,14 +98,16 @@ class Opportunity:
 
     def get_opportunities_by_company(self, company_name):
         """Fetch opportunities by company."""
+        from app import database_manager
+
         try:
             if not company_name:
                 print("[DEBUG] No company name provided.")
                 return []
 
             # Find the employer by exact company name
-            company = database.employers_collection.find_one(
-                {"company_name": company_name}
+            company = database_manager.get_one_by_field(
+                "employers", "company_name", company_name
             )
 
             if not company:
@@ -146,7 +122,7 @@ class Opportunity:
             query = {"employer_id": employer_id}
             print(f"[DEBUG] Query for opportunities: {query}")
 
-            opportunities = list(database.opportunities_collection.find(query))
+            opportunities = database_manager.get_all_by_query("opportunities", query)
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
 
             return opportunities
@@ -156,13 +132,17 @@ class Opportunity:
 
     def get_opportunity_by_company_id(self, company_id):
         """Get opportunity by company ID."""
-        opportunities = list(
-            database.opportunities_collection.find({"employer_id": company_id})
+        from app import database_manager
+
+        opportunities = database_manager.get_all_by_field(
+            "opportunities", "employer_id", company_id
         )
         return opportunities
 
     def get_opportunity_by_id(self, _id=None):
         """Getting opportunity."""
+        from app import database_manager
+
         if not _id:
             _id = request.form.get("_id")
 
@@ -172,10 +152,10 @@ class Opportunity:
                     return opportunity
             return None
 
-        cache["data"] = list(database.opportunities_collection.find())
+        cache["data"] = database_manager.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
-        opportunity = database.opportunities_collection.find_one({"_id": _id})
+        opportunity = database_manager.get_by_id("opportunities", _id)
 
         if opportunity:
             return opportunity
@@ -191,61 +171,36 @@ class Opportunity:
 
     def get_opportunities(self):
         """Getting all opportunities."""
+        from app import database_manager
 
         if cache["data"] and cache["last_updated"] > datetime.now():
             return jsonify(cache["data"]), 200
 
-        cache["data"] = list(database.opportunities_collection.find())
+        cache["data"] = database_manager.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
         return cache["data"]
 
-    # def get_opportunities_by_company(self, user_type=None):
-    #     """Getting all opportunities by company."""
-    #     if user_type == "admin":
-    #         return self.get_opportunities()
-
-    #     valid_opportunities = []
-    #     for opp in self.get_opportunities():
-    #         if opp["employer_id"] == user_type:
-    #             valid_opportunities.append(opp)
-
-    #     return valid_opportunities
-
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that match duration."""
+        from app import database_manager
+
         duration_list = [d.strip().replace('"', "") for d in duration[1:-1].split(",")]
-        data = list(
-            database.opportunities_collection.find({"duration": {"$in": duration_list}})
+        data = database_manager.get_all_by_query(
+            "opportunities", {"duration": {"$in": duration_list}}
         )
+
         return jsonify(data), 200
-
-    def update_opportunity(self):
-        """Updating opportunity."""
-        opportunity = database.opportunities_collection.find_one(
-            {"_id": request.form.get("_id")}
-        )
-
-        if opportunity:
-            database.opportunities_collection.update_one(
-                {"_id": request.form.get("_id")}, {"$set": request.form}
-            )
-
-            cache["data"] = list(database.opportunities_collection.find())
-            cache["last_updated"] = datetime.now()
-            return jsonify({"message": "Opportunity updated"}), 200
-
-        return jsonify({"error": "Opportunity not found"}), 404
 
     def delete_opportunity_by_id(self, opportunity_id):
         """Deleting opportunity."""
-        opportunity = database.opportunities_collection.find_one(
-            {"_id": opportunity_id}
-        )
+        from app import database_manager
+
+        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
 
         if opportunity:
-            database.opportunities_collection.delete_one({"_id": opportunity_id})
-            cache["data"] = list(database.opportunities_collection.find())
+            database_manager.delete_by_id("opportunities", opportunity_id)
+            cache["data"] = list(database_manager.get_all("opportunities"))
             cache["last_updated"] = datetime.now()
             return jsonify({"message": "Opportunity deleted"}), 200
 
@@ -253,15 +208,12 @@ class Opportunity:
 
     def delete_opportunities(self):
         """Deleting all opportunities."""
-        opportunities = list(database.opportunities_collection.find())
+        from app import database_manager
 
-        if opportunities:
-            database.opportunities_collection.delete_many({})
-            cache["data"] = []
-            cache["last_updated"] = datetime.now()
-            return jsonify({"message": "All opportunities deleted"}), 200
-
-        return jsonify({"error": "No opportunities found"}), 404
+        database_manager.delete_all("opportunities")
+        cache["data"] = []
+        cache["last_updated"] = datetime.now()
+        return jsonify({"message": "All opportunities deleted"}), 200
 
     def get_valid_students(self, opportunity_id):
         """Get valid students for an opportunity."""
@@ -287,15 +239,15 @@ class Opportunity:
 
     def rank_preferences(self, opportunity_id):
         """Sets a opportunity preferences."""
-        opportunity = database.opportunities_collection.find_one(
-            {"_id": opportunity_id}
-        )
+        from app import database_manager
+
+        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
         preferences = [a[5:] for a in request.form.get("ranks").split(",")]
-        database.opportunities_collection.update_one(
-            {"_id": opportunity_id}, {"$set": {"preferences": preferences}}
+        database_manager.update_one_by_field(
+            "opportunities", "_id", opportunity_id, {"preferences": preferences}
         )
         return jsonify({"message": "Preferences updated"}), 200

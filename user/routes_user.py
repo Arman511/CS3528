@@ -3,12 +3,15 @@ Handles routes for the user module.
 """
 
 from datetime import datetime
-from flask import redirect, render_template, session, request
+import uuid
+from flask import jsonify, redirect, render_template, session, request
 from algorithm.matching import Matching
-from core import database, handlers
+from core import handlers
 from employers.models import Employers
+from opportunities.models import Opportunity
 from students.models import Student
 from .models import User
+from passlib.hash import pbkdf2_sha256
 
 
 def add_user_routes(app, cache):
@@ -18,14 +21,28 @@ def add_user_routes(app, cache):
     def register():
         """Give page to register a new user."""
         if request.method == "POST":
-            return User().register()
+            password = request.form.get("password")
+            confirm_password = request.form.get("confirm_password")
+            if password != confirm_password:
+                return jsonify({"error": "Passwords don't match"}), 400
+            user = {
+                "_id": uuid.uuid1().hex,
+                "name": request.form.get("name"),
+                "email": request.form.get("email"),
+                "password": pbkdf2_sha256.hash(password),  # Hash only the password
+            }
+            return User().register(user)
         return render_template("user/register.html")
 
     @app.route("/user/login", methods=["GET", "POST"])
     def login():
         """Gives login form to user."""
         if request.method == "POST":
-            return User().login()
+            attempt_user = {
+                "email": request.form.get("email"),
+                "password": request.form.get("password"),
+            }
+            return User().login(attempt_user)
         if "logged_in" in session:
             return redirect("/")
         return render_template("user/login.html", user_type="admin")
@@ -44,11 +61,13 @@ def add_user_routes(app, cache):
         if request.method == "POST":
             return User().change_deadline()
 
+        from app import deadline_manager
+
         return render_template(
             "user/deadline.html",
-            details_deadline=database.get_details_deadline(),
-            student_ranking_deadline=database.get_student_ranking_deadline(),
-            opportunities_ranking_deadline=database.get_opportunities_ranking_deadline(),
+            details_deadline=deadline_manager.get_details_deadline(),
+            student_ranking_deadline=deadline_manager.get_student_ranking_deadline(),
+            opportunities_ranking_deadline=deadline_manager.get_opportunities_ranking_deadline(),
             user_type="admin",
             user=session["user"].get("name"),
         )
@@ -57,12 +76,15 @@ def add_user_routes(app, cache):
     @handlers.login_required
     def problems():
         problems = []
+        from app import deadline_manager
 
         students = Student().get_students()
-        passed_details_deadline = database.is_past_details_deadline()
-        passed_student_ranking_deadline = database.is_past_student_ranking_deadline()
+        passed_details_deadline = deadline_manager.is_past_details_deadline()
+        passed_student_ranking_deadline = (
+            deadline_manager.is_past_student_ranking_deadline()
+        )
         passed_opportunities_ranking_deadline = (
-            database.is_past_opportunities_ranking_deadline()
+            deadline_manager.is_past_opportunities_ranking_deadline()
         )
 
         for student in students:
@@ -96,7 +118,7 @@ def add_user_routes(app, cache):
                     }
                 )
 
-        opportunities = database.opportunities_collection.find()
+        opportunities = Opportunity().get_opportunities()
 
         for opportunity in opportunities:
             if "preferences" not in opportunity:
@@ -128,25 +150,33 @@ def add_user_routes(app, cache):
     @handlers.login_required
     def send_match_email():
         """Send match email."""
-        return User().send_match_email()
+        student_uuid = request.form.get("student")
+        opportunity_uuid = request.form.get("opportunity")
+        student_email = (request.form.get("student_email"),)
+        employer_email = (request.form.get("employer_email"),)
+        return User().send_match_email(
+            student_uuid, opportunity_uuid, student_email, employer_email
+        )
 
     @app.route("/user/matching", methods=["GET"])
     @handlers.login_required
     @cache.cached(timeout=300)
     def matching():
-        if not database.is_past_opportunities_ranking_deadline():
+        from app import deadline_manager
+
+        if not deadline_manager.is_past_opportunities_ranking_deadline():
             return render_template(
                 "user/past_deadline.html",
                 referrer=request.referrer,
                 data=(
                     "The final deadline must have passed to do matching, "
-                    f"wait till {database.get_opportunities_ranking_deadline()}"
+                    f"wait till {deadline_manager.get_opportunities_ranking_deadline()}"
                 ),
                 user_type="admin",
                 user=session["user"].get("name"),
             )
 
-        students = list(database.students_collection.find())
+        students = Student().get_students()
         unmatched_students = []
         students_preference = {}
         for student in students:
@@ -168,7 +198,7 @@ def add_user_routes(app, cache):
                 }
             )
 
-        opportunities = list(database.opportunities_collection.find())
+        opportunities = Opportunity().get_opportunities()
         opportunities_preference = {}
         for opportunity in opportunities:
             if "preferences" in opportunity:
@@ -204,8 +234,7 @@ def add_user_routes(app, cache):
             matches=matches_list,
             students_map={student["_id"]: student for student in students},
             employers_map={
-                employer["_id"]: employer
-                for employer in list(database.employers_collection.find())
+                employer["_id"]: employer for employer in Employers().get_employers()
             },
             opportunities_map={
                 opportunity["_id"]: opportunity for opportunity in opportunities
