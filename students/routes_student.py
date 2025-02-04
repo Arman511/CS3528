@@ -5,7 +5,7 @@ Handles routes for the student module.
 import os
 from dotenv import load_dotenv
 from flask import redirect, render_template, request, session
-from core import deadline_manager, handlers
+from core import handlers
 from courses.models import Course
 from employers.models import Employers
 from skills.models import Skill
@@ -101,14 +101,15 @@ def add_student_routes(app):
     @handlers.student_login_required
     def student_details(student_id):
         """Get or update student details."""
+        from app import DEADLINE_MANAGER
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
 
         # Handle deadlines (applicable to students only)
-        if deadline_manager.is_past_student_ranking_deadline():
+        if DEADLINE_MANAGER.is_past_student_ranking_deadline():
             return redirect("/students/passed_deadline")
-        if deadline_manager.is_past_details_deadline():
+        if DEADLINE_MANAGER.is_past_details_deadline():
             return redirect(f"/students/rank_preferences/{student_id}")
 
         # Handle POST request for updating details
@@ -164,6 +165,7 @@ def add_student_routes(app):
     @handlers.student_login_required
     def rank_preferences(student_id):
         """Rank preferences."""
+        from app import DEADLINE_MANAGER
         if "student" not in session:
             return redirect("/students/login")
 
@@ -171,11 +173,11 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
 
-        if deadline_manager.is_past_student_ranking_deadline():
+        if DEADLINE_MANAGER.is_past_student_ranking_deadline():
             session.clear()
             render_template("student/past_deadline.html")
 
-        if not deadline_manager.is_past_details_deadline():
+        if not DEADLINE_MANAGER.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
             preferences = [a[5:] for a in request.form.get("ranks").split(",")]

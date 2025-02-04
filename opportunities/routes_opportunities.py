@@ -2,7 +2,7 @@
 
 import uuid
 from flask import flash, redirect, render_template, request, session, url_for
-from core import deadline_manager, handlers
+from core import handlers
 from course_modules.models import Module
 from courses.models import Course
 from employers.models import Employers
