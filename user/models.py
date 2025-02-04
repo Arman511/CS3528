@@ -27,13 +27,13 @@ class User:
         """Registers a new user by creating a user dictionary with a unique ID,
         name, email, and password, and returns a JSON response indicating failure."""
         session.clear()
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        if database_manager.get_by_email("users", user["email"]):
+        if DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
-        database_manager.insert("users", user)
+        DATABASE_MANAGER.insert("users", user)
 
         # Start session or return success response
         if user:
@@ -44,10 +44,10 @@ class User:
     def login(self, attempt_user):
         """Validates user credentials and returns a JSON response indicating
         invalid login credentials."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         session.clear()
-        user = database_manager.get_by_email("users", attempt_user["email"])
+        user = DATABASE_MANAGER.get_by_email("users", attempt_user["email"])
 
         if user and pbkdf2_sha256.verify(attempt_user["password"], user["password"]):
             return self.start_session(user)
@@ -76,7 +76,7 @@ class User:
 
     def change_deadline(self):
         """Change deadlines for details, student ranking, and opportunities ranking."""
-        from app import deadline_manager
+        from app import DEADLINE_MANAGER
 
         details_deadline = request.form.get("details_deadline")
         student_ranking_deadline = request.form.get("student_ranking_deadline")
@@ -84,7 +84,7 @@ class User:
             "opportunities_ranking_deadline"
         )
 
-        response = deadline_manager.update_deadlines(
+        response = DEADLINE_MANAGER.update_deadlines(
             details_deadline, student_ranking_deadline, opportunities_ranking_deadline
         )
 

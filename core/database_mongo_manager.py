@@ -16,7 +16,7 @@ class DatabaseMongoManager(DatabaseInterface):
         if connection == "":
             return
 
-        self.connection = self.connect(connection, database)
+        self.connect(connection, database)
 
     def connect(self, connection, database):
         load_dotenv()
@@ -43,25 +43,25 @@ class DatabaseMongoManager(DatabaseInterface):
     def get_all(self, table):
         return list(self.database[table].find())
 
-    def get_one_by_id(self, table, id):
-        return self.database[table].find_one({"_id": id})
+    def get_one_by_id(self, table, id_val):
+        return self.database[table].find_one({"_id": id_val})
 
     def insert(self, table, data):
         return self.database[table].insert_one(data)
 
-    def update_one_by_id(self, table, id, data):
-        return self.database[table].update_one({"_id": id}, {"$set": data})
+    def update_one_by_id(self, table, id_val, data):
+        return self.database[table].update_one({"_id": id_val}, {"$set": data})
 
     def update_one_by_field(self, table, field, value, data):
         return self.database[table].update_one({field: value}, {"$set": data})
 
-    def increment(self, table, id, field, increment):
+    def increment(self, table, id_val, field, increment):
         return self.database[table].update_one(
-            {"_id": id}, {"$inc": {field: increment}}
+            {"_id": id_val}, {"$inc": {field: increment}}
         )
 
-    def delete_by_id(self, table, id):
-        return self.database[table].delete_one({"_id": id})
+    def delete_by_id(self, table, id_val):
+        return self.database[table].delete_one({"_id": id_val})
 
     def delete_by_field(self, table, field, value):
         return self.database[table].delete_one({field: value})

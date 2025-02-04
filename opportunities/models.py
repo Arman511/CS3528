@@ -17,20 +17,20 @@ class Opportunity:
         opportunity,
         is_admin=False,
     ):
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         """Adding new opportunity."""
-        find_opportunity = database_manager.get_by_id(
+        find_opportunity = DATABASE_MANAGER.get_by_id(
             "opportunities", opportunity["_id"]
         )
         if find_opportunity and not is_admin:
             if find_opportunity["employer_id"] != session["employer"]["_id"]:
                 return jsonify({"error": "Unauthorized Access."}), 401
-        database_manager.delete_by_id("opportunities", opportunity["_id"])
+        DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
 
-        database_manager.insert("opportunities", opportunity)
+        DATABASE_MANAGER.insert("opportunities", opportunity)
 
-        cache["data"] = list(database_manager.get_all("opportunities"))
+        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
         cache["last_updated"] = datetime.now()
 
         if opportunity:
@@ -41,7 +41,7 @@ class Opportunity:
     def search_opportunities(self, title, company_name):
         """Search opportunities by title and/or company."""
         opportunities = []
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         try:
             # Build the query dynamically based on the provided parameters
@@ -49,7 +49,7 @@ class Opportunity:
             if title:
                 query["title"] = {"$regex": title, "$options": "i"}
             if company_name:
-                company = database_manager.get_one_by_field(
+                company = DATABASE_MANAGER.get_one_by_field(
                     "employers", "company_name", company_name
                 )
                 if company:
@@ -59,7 +59,7 @@ class Opportunity:
                     return []
 
             print(f"[DEBUG] Querying opportunities with filter: {query}")
-            opportunities = database_manager.get_all_by_query("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
 
             # Add the company name to each opportunity if available
             for opportunity in opportunities:
@@ -79,7 +79,7 @@ class Opportunity:
 
     def get_opportunities_by_title(self, title):
         """Fetch opportunities by title."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         try:
             if not title:
@@ -89,7 +89,7 @@ class Opportunity:
             query = {"title": {"$regex": title, "$options": "i"}}
             print(f"[DEBUG] Query for title: {query}")
 
-            opportunities = database_manager.get_all_by_query("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:
@@ -98,7 +98,7 @@ class Opportunity:
 
     def get_opportunities_by_company(self, company_name):
         """Fetch opportunities by company."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         try:
             if not company_name:
@@ -106,7 +106,7 @@ class Opportunity:
                 return []
 
             # Find the employer by exact company name
-            company = database_manager.get_one_by_field(
+            company = DATABASE_MANAGER.get_one_by_field(
                 "employers", "company_name", company_name
             )
 
@@ -122,7 +122,7 @@ class Opportunity:
             query = {"employer_id": employer_id}
             print(f"[DEBUG] Query for opportunities: {query}")
 
-            opportunities = database_manager.get_all_by_query("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
 
             return opportunities
@@ -132,16 +132,16 @@ class Opportunity:
 
     def get_opportunity_by_company_id(self, company_id):
         """Get opportunity by company ID."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        opportunities = database_manager.get_all_by_field(
+        opportunities = DATABASE_MANAGER.get_all_by_field(
             "opportunities", "employer_id", company_id
         )
         return opportunities
 
     def get_opportunity_by_id(self, _id=None):
         """Getting opportunity."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if not _id:
             _id = request.form.get("_id")
@@ -152,10 +152,10 @@ class Opportunity:
                     return opportunity
             return None
 
-        cache["data"] = database_manager.get_all("opportunities")
+        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
-        opportunity = database_manager.get_by_id("opportunities", _id)
+        opportunity = DATABASE_MANAGER.get_by_id("opportunities", _id)
 
         if opportunity:
             return opportunity
@@ -171,22 +171,22 @@ class Opportunity:
 
     def get_opportunities(self):
         """Getting all opportunities."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if cache["data"] and cache["last_updated"] > datetime.now():
             return jsonify(cache["data"]), 200
 
-        cache["data"] = database_manager.get_all("opportunities")
+        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
         return cache["data"]
 
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that match duration."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         duration_list = [d.strip().replace('"', "") for d in duration[1:-1].split(",")]
-        data = database_manager.get_all_by_query(
+        data = DATABASE_MANAGER.get_all_by_query(
             "opportunities", {"duration": {"$in": duration_list}}
         )
 
@@ -194,13 +194,13 @@ class Opportunity:
 
     def delete_opportunity_by_id(self, opportunity_id):
         """Deleting opportunity."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
 
         if opportunity:
-            database_manager.delete_by_id("opportunities", opportunity_id)
-            cache["data"] = list(database_manager.get_all("opportunities"))
+            DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
+            cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
             cache["last_updated"] = datetime.now()
             return jsonify({"message": "Opportunity deleted"}), 200
 
@@ -208,9 +208,9 @@ class Opportunity:
 
     def delete_opportunities(self):
         """Deleting all opportunities."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        database_manager.delete_all("opportunities")
+        DATABASE_MANAGER.delete_all("opportunities")
         cache["data"] = []
         cache["last_updated"] = datetime.now()
         return jsonify({"message": "All opportunities deleted"}), 200
@@ -239,15 +239,15 @@ class Opportunity:
 
     def rank_preferences(self, opportunity_id):
         """Sets a opportunity preferences."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
         preferences = [a[5:] for a in request.form.get("ranks").split(",")]
-        database_manager.update_one_by_field(
+        DATABASE_MANAGER.update_one_by_field(
             "opportunities", "_id", opportunity_id, {"preferences": preferences}
         )
         return jsonify({"message": "Preferences updated"}), 200

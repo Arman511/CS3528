@@ -19,18 +19,18 @@ class Course:
         #     "course_name": request.form.get("course_name"),
         #     "course_description": request.form.get("course_description"),
         # }
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        if database_manager.get_one_by_field(
+        if DATABASE_MANAGER.get_one_by_field(
             "courses", "course_id", course["course_id"]
         ):
             return jsonify({"error": "Course already in database"}), 400
 
-        database_manager.insert("courses", course)
+        DATABASE_MANAGER.insert("courses", course)
 
         if course:
             # Update cache
-            courses = database_manager.get_all("courses")
+            courses = DATABASE_MANAGER.get_all("courses")
             courses_cache["data"] = courses
             courses_cache["last_updated"] = datetime.now()
             return jsonify(course), 200
@@ -39,16 +39,16 @@ class Course:
 
     def delete_course(self, course_id):
         """Deletes a course from the database."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        course = database_manager.get_one_by_field("courses", "course_id", course_id)
+        course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
 
         if not course:
             return jsonify({"error": "Course not found"}), 404
 
-        database_manager.delete_by_id("courses", course["_id"])
+        DATABASE_MANAGER.delete_by_id("courses", course["_id"])
         # Update cache
-        courses = database_manager.get_all("courses")
+        courses = DATABASE_MANAGER.get_all("courses")
         courses_cache["data"] = courses
         courses_cache["last_updated"] = datetime.now()
 
@@ -56,11 +56,11 @@ class Course:
 
     def get_course_by_id(self, course_id=None):
         """Retrieves a course by its ID."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if not course_id:
             course_id = request.form.get("course_id")
-        course = database_manager.get_one_by_field("courses", "course_id", course_id)
+        course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
 
         if course:
             return course
@@ -76,7 +76,7 @@ class Course:
 
     def get_courses(self):
         """Retrieves all courses."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
@@ -90,7 +90,7 @@ class Course:
             return courses_cache["data"]
 
         # Fetch courses from the database
-        courses = database_manager.get_all("courses")
+        courses = DATABASE_MANAGER.get_all("courses")
 
         if courses:
             # Update cache

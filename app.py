@@ -14,22 +14,20 @@ sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
 from core import handlers  # noqa: E402
 
-global database_manager
-database_manager = None
-global deadline_manager
-deadline_manager = None
+DATABASE_MANAGER = None
+DEADLINE_MANAGER = None
 
 load_dotenv()
 
-database = ""
+DATABASE = ""
 if os.getenv("IS_GITHUB_ACTIONS") == "True":
-    database = "cs3528_testing"
+    DATABASE = "cs3528_testing"
 if os.getenv("IS_TEST"):
-    database = os.getenv("MONGO_DB_TEST", "")
+    DATABASE = os.getenv("MONGO_DB_TEST", "")
 else:
-    database = os.getenv("MONGO_DB_PROD", "")
+    DATABASE = os.getenv("MONGO_DB_PROD", "")
 
-database_manager = DatabaseMongoManager(os.getenv("MONGO_URI"), database)
+DATABASE_MANAGER = DatabaseMongoManager(os.getenv("MONGO_URI"), DATABASE)
 
 tables = [
     "users",
@@ -44,7 +42,7 @@ tables = [
 ]
 
 for table in tables:
-    database_manager.add_table(table)
+    DATABASE_MANAGER.add_table(table)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
@@ -57,7 +55,7 @@ handlers.configure_routes(app, cache)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 
-deadline_manager = DeadlineManager()
+DEADLINE_MANAGER = DeadlineManager()
 
 if __name__ == "__main__":
     app.run(debug=True)

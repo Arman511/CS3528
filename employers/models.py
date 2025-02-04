@@ -18,7 +18,7 @@ class Employers:
 
     def register_employer(self, employer):
         """Adding new employer."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         # employer = {
         #     "_id": uuid.uuid1().hex,
@@ -26,10 +26,10 @@ class Employers:
         #     "email": request.form.get("email"),
         # }
 
-        if database_manager.get_by_email("employers", employer["email"]):
+        if DATABASE_MANAGER.get_by_email("employers", employer["email"]):
             return jsonify({"error": "Employer already in database"}), 400
 
-        database_manager.insert("employers", employer)
+        DATABASE_MANAGER.insert("employers", employer)
         if employer:
             return jsonify(employer), 200
 
@@ -37,9 +37,9 @@ class Employers:
 
     def get_company_name(self, _id):
         """Get company name"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        employer = database_manager.get_by_id("employers", _id)
+        employer = DATABASE_MANAGER.get_by_id("employers", _id)
         if not employer:
             return ""
 
@@ -48,9 +48,9 @@ class Employers:
     def employer_login(self, email):
         """Logs in the employer."""
         session.clear()
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        employer = database_manager.get_by_email("employers", email)
+        employer = DATABASE_MANAGER.get_by_email("employers", email)
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
@@ -61,14 +61,14 @@ class Employers:
 
     def get_employers(self):
         """Gets all employers."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if employers_cache["data"] and datetime.now() - employers_cache[
             "last_updated"
         ] < timedelta(minutes=5):
             return employers_cache["data"]
 
-        employers = database_manager.get_all("employers")
+        employers = DATABASE_MANAGER.get_all("employers")
         employers_cache["data"] = employers
         employers_cache["last_updated"] = datetime.now()
         return employers
@@ -85,23 +85,23 @@ class Employers:
 
     def rank_preferences(self, opportunity_id, preferences):
         """Sets a students preferences."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        opportunity = database_manager.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
-        database_manager.update_one_by_id(
+        DATABASE_MANAGER.update_one_by_id(
             "opportunities", opportunity_id, {"preferences": preferences}
         )
         return jsonify({"message": "Preferences updated"}), 200
 
     def get_company_email_by_id(self, _id):
         """Get company email by id"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        employer = database_manager.get_by_id("employers", _id)
+        employer = DATABASE_MANAGER.get_by_id("employers", _id)
         if not employer:
             return ""
 

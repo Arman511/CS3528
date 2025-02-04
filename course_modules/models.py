@@ -14,7 +14,7 @@ class Module:
 
     def add_module(self, module):
         """Adds a module to the database."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         # module = {
         #     "_id": uuid.uuid1().hex,
@@ -23,16 +23,16 @@ class Module:
         #     "module_description": request.form.get("module_description"),
         # }
 
-        if database_manager.get_one_by_field(
+        if DATABASE_MANAGER.get_one_by_field(
             "modules", "module_id", module["module_id"]
         ):
             return jsonify({"error": "module already in database"}), 400
 
-        database_manager.insert("modules", module)
+        DATABASE_MANAGER.insert("modules", module)
 
         if module:
             # Update cache
-            modules = database_manager.get_all("modules")
+            modules = DATABASE_MANAGER.get_all("modules")
             modules_cache["data"] = modules
             modules_cache["last_updated"] = datetime.now()
             return jsonify(module), 200
@@ -41,17 +41,17 @@ class Module:
 
     def delete_module(self, module_id):
         """Deletes a module from the database."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        module = database_manager.get_one_by_field("modules", "module_id", module_id)
+        module = DATABASE_MANAGER.get_one_by_field("modules", "module_id", module_id)
 
         if not module:
             return jsonify({"error": "module not found"}), 404
 
-        database_manager.delete("modules", module["_id"])
+        DATABASE_MANAGER.delete("modules", module["_id"])
 
         # Update cache
-        modules = database_manager.get_all("modules")
+        modules = DATABASE_MANAGER.get_all("modules")
         modules_cache["data"] = modules
         modules_cache["last_updated"] = datetime.now()
 
@@ -59,11 +59,11 @@ class Module:
 
     def get_module_by_id(self, module_id=None):
         """Retrieves a module by its ID."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if module_id is None:
             module_id = request.form.get("module_id")
-        module = database_manager.get_one_by_field("modules", "module_id", module_id)
+        module = DATABASE_MANAGER.get_one_by_field("modules", "module_id", module_id)
 
         if module:
             return module
@@ -81,7 +81,7 @@ class Module:
         """Retrieves all modules."""
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         # Check if cache is valid
         if (
@@ -92,7 +92,7 @@ class Module:
             return modules_cache["data"]
 
         # Fetch modules from the database
-        modules = database_manager.get_all("modules")
+        modules = DATABASE_MANAGER.get_all("modules")
 
         if modules:
             # Update cache

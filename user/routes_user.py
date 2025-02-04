@@ -61,13 +61,13 @@ def add_user_routes(app, cache):
         if request.method == "POST":
             return User().change_deadline()
 
-        from app import deadline_manager
+        from app import DEADLINE_MANAGER
 
         return render_template(
             "user/deadline.html",
-            details_deadline=deadline_manager.get_details_deadline(),
-            student_ranking_deadline=deadline_manager.get_student_ranking_deadline(),
-            opportunities_ranking_deadline=deadline_manager.get_opportunities_ranking_deadline(),
+            details_deadline=DEADLINE_MANAGER.get_details_deadline(),
+            student_ranking_deadline=DEADLINE_MANAGER.get_student_ranking_deadline(),
+            opportunities_ranking_deadline=DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
             user_type="admin",
             user=session["user"].get("name"),
         )
@@ -76,15 +76,15 @@ def add_user_routes(app, cache):
     @handlers.login_required
     def problems():
         problems = []
-        from app import deadline_manager
+        from app import DEADLINE_MANAGER
 
         students = Student().get_students()
-        passed_details_deadline = deadline_manager.is_past_details_deadline()
+        passed_details_deadline = DEADLINE_MANAGER.is_past_details_deadline()
         passed_student_ranking_deadline = (
-            deadline_manager.is_past_student_ranking_deadline()
+            DEADLINE_MANAGER.is_past_student_ranking_deadline()
         )
         passed_opportunities_ranking_deadline = (
-            deadline_manager.is_past_opportunities_ranking_deadline()
+            DEADLINE_MANAGER.is_past_opportunities_ranking_deadline()
         )
 
         for student in students:
@@ -162,15 +162,15 @@ def add_user_routes(app, cache):
     @handlers.login_required
     @cache.cached(timeout=300)
     def matching():
-        from app import deadline_manager
+        from app import DEADLINE_MANAGER
 
-        if not deadline_manager.is_past_opportunities_ranking_deadline():
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
             return render_template(
                 "user/past_deadline.html",
                 referrer=request.referrer,
                 data=(
                     "The final deadline must have passed to do matching, "
-                    f"wait till {deadline_manager.get_opportunities_ranking_deadline()}"
+                    f"wait till {DEADLINE_MANAGER.get_opportunities_ranking_deadline()}"
                 ),
                 user_type="admin",
                 user=session["user"].get("name"),

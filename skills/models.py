@@ -16,7 +16,7 @@ class Skill:
 
     def find_skill(self, skill_name="", skill_id=""):
         """Check if a skill exists in the database."""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         # Check if the skill is already in the cache
         current_time = datetime.now()
@@ -24,7 +24,7 @@ class Skill:
 
         # Check if cache is valid
         if not skills_cache["data"] or skills_cache["last_updated"] <= one_week_ago:
-            skills_cache["data"] = database_manager.get_all("skills")
+            skills_cache["data"] = DATABASE_MANAGER.get_all("skills")
             skills_cache["last_updated"] = current_time
 
         # Check if the skill is in the cache
@@ -45,12 +45,12 @@ class Skill:
         # }
 
         # Check if skill already exists#
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if self.find_skill(skill["skill_name"], None) is not None:
             return jsonify({"error": "Skill already in database"}), 400
 
-        database_manager.insert("skills", skill)
+        DATABASE_MANAGER.insert("skills", skill)
 
         if skill:
             # Update cache
@@ -62,15 +62,15 @@ class Skill:
 
     def delete_skill(self, skill_id):
         """Delete kill from database"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         if not self.find_skill(None, skill_id):
             return jsonify({"error": "Skill not found"}), 404
 
-        database_manager.delete_by_id("skills", skill_id)
+        DATABASE_MANAGER.delete_by_id("skills", skill_id)
 
         # Update cache
-        skills = database_manager.get_all("skills")
+        skills = DATABASE_MANAGER.get_all("skills")
         skills_cache["data"] = skills
         skills_cache["last_updated"] = datetime.now()
 
@@ -96,7 +96,7 @@ class Skill:
 
     def get_skills(self):
         """Get full list of skills if cached get that instead"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
         current_time = datetime.now()
         one_week_ago = current_time - timedelta(weeks=1)
@@ -110,7 +110,7 @@ class Skill:
             return skills_cache["data"]
 
         # Fetch skills from the database
-        skills = database_manager.get_all("skills")
+        skills = DATABASE_MANAGER.get_all("skills")
 
         if skills:
             # Update cache
@@ -122,14 +122,14 @@ class Skill:
 
     def attempt_add_skill(self, skill_name):
         """Add skill to attempted skills"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        found_skill = database_manager.get_one_by_field(
+        found_skill = DATABASE_MANAGER.get_one_by_field(
             "attempted_skills", "skill_name", skill_name
         )
 
         if found_skill:
-            database_manager.increment(
+            DATABASE_MANAGER.increment(
                 "attempted_skills", found_skill["_id"], "used", 1
             )
             return jsonify(found_skill), 200
@@ -140,14 +140,14 @@ class Skill:
             "used": 1,
         }
 
-        database_manager.insert("attempted_skills", new_skill)
+        DATABASE_MANAGER.insert("attempted_skills", new_skill)
         return jsonify(new_skill), 200
 
     def get_list_attempted_skills(self):
         """Get list of attempted skills"""
-        from app import database_manager
+        from app import DATABASE_MANAGER
 
-        attempted_skills = database_manager.get_all("attempted_skills")
+        attempted_skills = DATABASE_MANAGER.get_all("attempted_skills")
 
         if not attempted_skills:
             return []
