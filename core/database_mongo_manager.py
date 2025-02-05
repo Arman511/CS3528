@@ -75,6 +75,11 @@ class DatabaseMongoManager(DatabaseInterface):
     def get_one_by_field(self, table, field, value):
         return self.database[table].find_one({field: value})
 
+    def get_one_by_field_strict(self, table, field, value):
+        return self.database[table].find_one(
+            {field: {"$regex": f"^{value}$", "$options": "i"}}
+        )
+
     def get_many_by_field(self, table, field, value):
         return list(self.database[table].find({field: value}))
 

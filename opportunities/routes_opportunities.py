@@ -27,7 +27,7 @@ def add_opportunities_routes(app):
         user_type = None
         if user:
             user_type = "admin"
-        elif employer:
+        else:
             user_type = "employer"
 
         print(f"[DEBUG] User type: {user_type}")

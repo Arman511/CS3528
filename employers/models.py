@@ -26,8 +26,18 @@ class Employers:
         #     "email": request.form.get("email"),
         # }
 
-        if DATABASE_MANAGER.get_by_email("employers", employer["email"]):
-            return jsonify({"error": "Employer already in database"}), 400
+        if DATABASE_MANAGER.get_one_by_field_strict(
+            "employers", "email", employer["email"]
+        ):
+            return jsonify({"error": "Email already in use"}), 400
+
+        existing_employer = DATABASE_MANAGER.get_one_by_field_strict(
+            "employers",
+            "company_name",
+            employer["company_name"],
+        )
+        if existing_employer:
+            return jsonify({"error": "Company name already exists"}), 400
 
         DATABASE_MANAGER.insert("employers", employer)
         if employer:

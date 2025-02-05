@@ -48,7 +48,9 @@ class Opportunity:
             opportunities = []
             if title and company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
-                    "employers", "company_name", company_name
+                    "employers",
+                    "company_name",
+                    {"$regex": company_name, "$options": "i"},
                 )
                 opportunities = DATABASE_MANAGER.get_all_by_two_fields(
                     "opportunities",
@@ -63,10 +65,12 @@ class Opportunity:
                 )
             elif company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
-                    "employers", "company_name", company_name
+                    "employers",
+                    "company_name",
+                    {"$regex": company_name, "$options": "i"},
                 )
                 opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", {"employer_id": company["_id"]}
+                    "opportunities", "employer_id", company["_id"]
                 )
             else:
                 opportunities = DATABASE_MANAGER.get_all("opportunities")
