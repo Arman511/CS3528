@@ -66,6 +66,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
             "email": "dummy@dummy.com",
             "password": "dummy",
         },
+        content_type="application/x-www-form-urlencoded",
     )
 
     yield client
