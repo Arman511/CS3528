@@ -54,23 +54,24 @@ def add_student_routes(app):
         """Getting student."""
         data = request.get_json()
         # Build the query with AND logic
-        query = {}
+        query = []
+        # 0 is match, 1 is in list
         if data.get("first_name"):
-            query["first_name"] = data["first_name"]
+            query.append(("first_name", data["first_name"], 0))
         if data.get("last_name"):
-            query["last_name"] = data["last_name"]
+            query.append(("last_name", data["last_name"], 0))
         if data.get("email"):
-            query["email"] = data["email"]
+            query.append(("email", data["email"], 0))
         if data.get("student_id"):
-            query["student_id"] = data["student_id"]
+            query.append(("student_id", data["student_id"], 0))
         if data.get("course"):
-            query["course"] = data["course"]
+            query.append(("course", data["course"]), 0)
         if data.get("skills"):
+            query.append(("skills", data["skills"], 1))
             # Match students with at least one of the provided skills
-            query["skills"] = {"$in": data["skills"]}
         if data.get("modules"):
+            query.append(("modules", data["modules"], 1))
             # Match students with at least one of the provided modules
-            query["modules"] = {"$in": data["modules"]}
         return Student().search_students(query)
 
     @app.route("/students/delete_student/<int:student_id>", methods=["DELETE"])

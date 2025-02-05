@@ -81,11 +81,11 @@ class DatabaseMongoManager(DatabaseInterface):
     def is_table(self, table):
         return table in self.table_list
 
-    def get_all_by_query(self, table, query):
-        return list(self.database[table].find(query))
+    def get_all_by_two_fields(self, table, field1, value1, field2, value2):
+        return list(self.database[table].find({field1: value1, field2: value2}))
 
-    def get_one_by_query(self, table, query):
-        return self.database[table].find_one(query)
+    def get_all_by_in_list(self, table, field, values_list):
+        return list(self.database[table].find({field: {"$in": values_list}}))
 
     def update_by_field(self, table, field, value, data):
         return self.database[table].update_one({field: value}, {"$set": data})
@@ -95,3 +95,15 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def create_index(self, table, field):
         return self.database[table].create_index(field)
+
+    def get_all_by_list_query(self, table, query):
+        mongo_query = {}
+        for field, value, match_type in query:
+            if match_type == 0:
+                mongo_query[field] = value
+            elif match_type == 1:
+                mongo_query[field] = {"$in": value}
+        return list(self.database[table].find(mongo_query))
+
+    def get_all_by_text_search(self, table, search_text):
+        return list(self.database[table].find({"$text": {"$search": search_text}}))

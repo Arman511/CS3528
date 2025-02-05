@@ -45,21 +45,31 @@ class Opportunity:
 
         try:
             # Build the query dynamically based on the provided parameters
-            query = {}
-            if title:
-                query["title"] = {"$regex": title, "$options": "i"}
-            if company_name:
+            opportunities = []
+            if title and company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
                     "employers", "company_name", company_name
                 )
-                if company:
-                    query["employer_id"] = company["_id"]
-                else:
-                    print(f"[DEBUG] No employer found for company name: {company_name}")
-                    return []
-
-            print(f"[DEBUG] Querying opportunities with filter: {query}")
-            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
+                opportunities = DATABASE_MANAGER.get_all_by_two_fields(
+                    "opportunities",
+                    "title",
+                    {"$regex": title, "$options": "i"},
+                    "employer_id",
+                    company["_id"],
+                )
+            elif title:
+                opportunities = DATABASE_MANAGER.get_all_by_field(
+                    "opportunities", {"title": {"$regex": title, "$options": "i"}}
+                )
+            elif company_name:
+                company = DATABASE_MANAGER.get_one_by_field(
+                    "employers", "company_name", company_name
+                )
+                opportunities = DATABASE_MANAGER.get_all_by_field(
+                    "opportunities", {"employer_id": company["_id"]}
+                )
+            else:
+                opportunities = DATABASE_MANAGER.get_all("opportunities")
 
             # Add the company name to each opportunity if available
             for opportunity in opportunities:
@@ -89,7 +99,7 @@ class Opportunity:
             query = {"title": {"$regex": title, "$options": "i"}}
             print(f"[DEBUG] Query for title: {query}")
 
-            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_field("opportunities", query)
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:
@@ -119,10 +129,10 @@ class Opportunity:
             print(f"[DEBUG] Employer ID found: {employer_id}")
 
             # Query the opportunities collection with employer_id
-            query = {"employer_id": employer_id}
-            print(f"[DEBUG] Query for opportunities: {query}")
 
-            opportunities = DATABASE_MANAGER.get_all_by_query("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_field(
+                "opportunities", "employer_id", employer_id
+            )
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
 
             return opportunities
@@ -186,8 +196,8 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         duration_list = [d.strip().replace('"', "") for d in duration[1:-1].split(",")]
-        data = DATABASE_MANAGER.get_all_by_query(
-            "opportunities", {"duration": {"$in": duration_list}}
+        data = DATABASE_MANAGER.get_all_by_in_list(
+            "opportunities", "duration", duration_list
         )
 
         return jsonify(data), 200

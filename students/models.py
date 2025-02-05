@@ -17,7 +17,7 @@ class Student:
         """Searching students."""
         from app import DATABASE_MANAGER
 
-        students = DATABASE_MANAGER.get_all_by_query("students", query)
+        students = DATABASE_MANAGER.get_all_by_list_query("students", query)
 
         if students:
             return jsonify(students), 200
@@ -166,12 +166,8 @@ class Student:
         """Getting students."""
         from app import DATABASE_MANAGER
 
-        students = DATABASE_MANAGER.get_all_by_query(
-            "students",
-            {
-                "course": course,
-                "skills": skills,
-            },
+        students = DATABASE_MANAGER.get_all_by_two_fields(
+            "students", "course", course, "skills", skills
         )
 
         if students:
@@ -188,9 +184,8 @@ class Student:
             "students", [("first_name", TEXT), ("last_name", TEXT)]
         )
 
-        students = DATABASE_MANAGER.get_all_by_query(
-            "students",
-            {"$text": {"$search": (f"{first_name} {last_name}")}},
+        students = DATABASE_MANAGER.get_all_by_text_search(
+            "students", (f"{first_name} {last_name}")
         )
 
         if students:
