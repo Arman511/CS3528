@@ -57,4 +57,4 @@ from core.deadline_manager import DeadlineManager  # noqa: E402
 DEADLINE_MANAGER = DeadlineManager()
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
