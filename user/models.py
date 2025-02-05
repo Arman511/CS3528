@@ -74,15 +74,11 @@ class User:
 
     #     return jsonify({"message": "Password updated successfully"}), 200
 
-    def change_deadline(self):
+    def change_deadline(
+        self, details_deadline, student_ranking_deadline, opportunities_ranking_deadline
+    ):
         """Change deadlines for details, student ranking, and opportunities ranking."""
         from app import DEADLINE_MANAGER
-
-        details_deadline = request.form.get("details_deadline")
-        student_ranking_deadline = request.form.get("student_ranking_deadline")
-        opportunities_ranking_deadline = request.form.get(
-            "opportunities_ranking_deadline"
-        )
 
         response = DEADLINE_MANAGER.update_deadlines(
             details_deadline, student_ranking_deadline, opportunities_ranking_deadline
