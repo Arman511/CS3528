@@ -86,12 +86,12 @@ class Employers:
     def delete_employer_by_id(self, _id):
         """Deletes an employer."""
         from app import DATABASE_MANAGER
-        
+
         employer = DATABASE_MANAGER.get_one_by_id("employers", _id)
 
         if employer:
             DATABASE_MANAGER.delete_by_id("employers", _id)
-            employers_cache["data"] = list(DATABASE_MANAGER.get_all("employers"))
+            employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
             employers_cache["last_updated"] = datetime.now()
             return jsonify({"message": "Employer deleted"}), 200
 
@@ -100,6 +100,7 @@ class Employers:
     def update_employer(self):
         """Updates an employer in the database."""
         from app import DATABASE_MANAGER
+
         employer_id = request.form.get("employer_id")
 
         employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
@@ -110,15 +111,15 @@ class Employers:
             "company_name": request.form.get("company_name"),
             "email": request.form.get("email"),
         }
-        
+
         DATABASE_MANAGER.update_one_by_id("employers", employer_id, update_data)
 
         # Update cache
-        employers_cache["data"] = list(DATABASE_MANAGER.get_all("employers"))
+        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
         employers_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Employer updated successfully"}), 200
-    
+
     def rank_preferences(self, opportunity_id, preferences):
         """Sets a students preferences."""
         from app import DATABASE_MANAGER

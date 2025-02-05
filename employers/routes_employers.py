@@ -54,7 +54,7 @@ def add_employer_routes(app):
             }
             return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
-    
+
     @app.route("/employers/search_employers", methods=["GET", "POST"])
     @handlers.login_required
     def search_employers():
@@ -83,18 +83,20 @@ def add_employer_routes(app):
     @handlers.login_required
     def update_employer():
         from app import DATABASE_MANAGER
+
         employer_id = request.args.get("employer_id")  # Get employer_id from URL query
         if request.method == "POST":
             return Employers().update_employer()
 
-        employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id) 
+        employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
         if not employer:
             flash("Employer not found", "error")
             return redirect(url_for("search_employers"))
 
-        return render_template("employers/update_employer.html", user_type="admin", employer=employer)
+        return render_template(
+            "employers/update_employer.html", user_type="admin", employer=employer
+        )
 
-    
     @app.route("/employers/delete_employer", methods=["POST"])
     @handlers.login_required
     def delete_employer():
@@ -104,7 +106,9 @@ def add_employer_routes(app):
         if not employer_id:
             return jsonify({"error": "Employer ID is required"}), 400
 
-        response = Employers().delete_employer_by_id(employer_id)  # Call delete function
+        response = Employers().delete_employer_by_id(
+            employer_id
+        )  # Call delete function
 
         return response  # `delete_employer_by_id` already returns a JSON response
 
@@ -112,6 +116,7 @@ def add_employer_routes(app):
     @handlers.employers_login_required
     def employers_rank_students(_stuff):
         from app import DEADLINE_MANAGER
+
         if (
             DEADLINE_MANAGER.is_past_opportunities_ranking_deadline()
             and "employer" in session
