@@ -4,7 +4,7 @@ import os
 import uuid
 from flask import jsonify, request, render_template, session
 from itsdangerous import URLSafeSerializer
-from core import deadline_manager, handlers
+from core import handlers
 from course_modules.models import Module
 from courses.models import Course
 from opportunities.models import Opportunity
@@ -58,15 +58,16 @@ def add_employer_routes(app):
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
     def employers_rank_students(_stuff):
+        from app import DEADLINE_MANAGER
         if (
-            deadline_manager.is_past_opportunities_ranking_deadline()
+            DEADLINE_MANAGER.is_past_opportunities_ranking_deadline()
             and "employer" in session
         ):
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     f"Ranking deadline has passed as of "
-                    f"{deadline_manager.get_opportunities_ranking_deadline()}"
+                    f"{DEADLINE_MANAGER.get_opportunities_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
@@ -78,12 +79,12 @@ def add_employer_routes(app):
         opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
         if session["employer"]["_id"] != opportunity["employer_id"]:
             return jsonify({"error": "Employer does not own this opportunity."}), 400
-        if not deadline_manager.is_past_student_ranking_deadline():
+        if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     "Student ranking deadline must have passed before you can start, "
-                    f"wait till {deadline_manager.get_student_ranking_deadline()}"
+                    f"wait till {DEADLINE_MANAGER.get_student_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
