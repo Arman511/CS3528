@@ -13,8 +13,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (response.ok) {
                 alert("Employer added successfully");
                 errorParagraph.classList.add("error--hidden");
+                window.location.href = "/employers/search_employers";
             } else {
-                errorParagraph.textContent = "Error adding employer";
+                const errorData = await response.json();
+                errorParagraph.textContent =
+                    errorData.error || "Error adding employer";
                 errorParagraph.classList.remove("error--hidden");
             }
         } catch (error) {

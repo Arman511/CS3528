@@ -1,9 +1,10 @@
 """Routes for employers module"""
 
 import os
-from flask import jsonify, request, render_template, session
+import uuid
+from flask import flash, jsonify, redirect, request, render_template, session, url_for
 from itsdangerous import URLSafeSerializer
-from core import database, handlers
+from core import handlers
 from course_modules.models import Module
 from courses.models import Course
 from opportunities.models import Opportunity
@@ -17,7 +18,8 @@ def add_employer_routes(app):
     @app.route("/employers/login", methods=["GET", "POST"])
     def employer_login():
         if request.method == "POST":
-            return Employers().employer_login()
+            email = request.form.get("email")
+            return Employers().employer_login(email)
 
         return render_template("employers/employer_login.html", user_type="employer")
 
@@ -45,18 +47,85 @@ def add_employer_routes(app):
     @handlers.login_required
     def add_employer():
         if request.method == "POST":
-            return Employers().register_employer()
+            employer = {
+                "_id": uuid.uuid1().hex,
+                "company_name": request.form.get("company_name"),
+                "email": request.form.get("email"),
+            }
+            return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
+
+    @app.route("/employers/search_employers", methods=["GET", "POST"])
+    @handlers.login_required
+    def search_employers():
+        if request.method == "POST":
+            data = request.get_json()
+            title = data.get("title", "").strip().lower()
+            email = data.get("email", "").strip().lower()
+
+            # Get all employers
+            employers = Employers().get_employers()
+
+            # Filter employers based on search criteria
+            filtered_employers = [
+                employer
+                for employer in employers
+                if (title in employer["company_name"].lower() if title else True)
+                and (email in employer["email"].lower() if email else True)
+            ]
+
+            return jsonify(filtered_employers)
+
+        # Render search page for GET requests
+        return render_template("employers/search_employers.html", user_type="admin")
+
+    @app.route("/employers/update_employer", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_employer():
+        from app import DATABASE_MANAGER
+
+        employer_id = request.args.get("employer_id")  # Get employer_id from URL query
+        if request.method == "POST":
+            return Employers().update_employer()
+
+        employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
+        if not employer:
+            flash("Employer not found", "error")
+            return redirect(url_for("search_employers"))
+
+        return render_template(
+            "employers/update_employer.html", user_type="admin", employer=employer
+        )
+
+    @app.route("/employers/delete_employer", methods=["POST"])
+    @handlers.login_required
+    def delete_employer():
+        data = request.get_json()  # Get JSON data from the request
+        employer_id = data.get("employer_id")  # Extract employer_id from JSON
+
+        if not employer_id:
+            return jsonify({"error": "Employer ID is required"}), 400
+
+        response = Employers().delete_employer_by_id(
+            employer_id
+        )  # Call delete function
+
+        return response  # `delete_employer_by_id` already returns a JSON response
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
     def employers_rank_students(_stuff):
-        if database.is_past_opportunities_ranking_deadline() and "employer" in session:
+        from app import DEADLINE_MANAGER
+
+        if (
+            DEADLINE_MANAGER.is_past_opportunities_ranking_deadline()
+            and "employer" in session
+        ):
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     f"Ranking deadline has passed as of "
-                    f"{database.get_opportunities_ranking_deadline()}"
+                    f"{DEADLINE_MANAGER.get_opportunities_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
@@ -68,18 +137,20 @@ def add_employer_routes(app):
         opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
         if session["employer"]["_id"] != opportunity["employer_id"]:
             return jsonify({"error": "Employer does not own this opportunity."}), 400
-        if not database.is_past_student_ranking_deadline():
+        if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             return render_template(
                 "employers/past_deadline.html",
                 data=(
                     "Student ranking deadline must have passed before you can start, "
-                    f"wait till {database.get_student_ranking_deadline()}"
+                    f"wait till {DEADLINE_MANAGER.get_student_ranking_deadline()}"
                 ),
                 referrer=request.referrer,
                 employer=session["employer"],
             )
         if request.method == "POST":
-            return Opportunity().rank_preferences(opportunity_id)
+            ranks = request.form.get("ranks")
+            preferences = [a[5:] for a in ranks.split(",")]
+            return Opportunity().rank_preferences(opportunity_id, preferences)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(
             "opportunities/employer_rank_students.html",

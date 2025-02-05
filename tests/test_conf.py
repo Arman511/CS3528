@@ -1,14 +1,70 @@
-"""Tests configuration and routes."""
+"""Test configuration."""
 
+import os
 import uuid
+from pymongo import MongoClient
+import pytest
 from passlib.hash import pbkdf2_sha256
-from ..core import database
-from ..app import app
+
+from dotenv import load_dotenv
+
+load_dotenv()
+
+os.environ["IS_TEST"] = "True"
+# pylint: disable=redefined-outer-name
+# flake8: noqa: F811
 
 
-def test_create_app():
-    """Test create_app."""
-    client = app.test_client()
+@pytest.fixture()
+def client():
+    """Fixture to create a test client."""
+    from ..app import app  # pylint: disable=import-outside-toplevel
+
+    return app.test_client()
+
+
+@pytest.fixture()
+def database():
+    """Fixture to create a test database."""
+    connection = MongoClient()
+    if os.getenv("IS_GITHUB_ACTION") == "False":
+        connection = MongoClient(os.getenv("MONGO_URI"))
+    database = connection[os.getenv("MONGO_DB_TEST", "cs3528_testing")]
+
+    return database
+
+
+@pytest.fixture()
+def user_logged_in_client(client, database):
+    """Fixture to login a user."""
+    user_collection = database["users"]
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+
+    user_collection.insert_one(user)
+
+    url = "/user/login"
+    client.post(
+        url,
+        data={
+            "email": "dummy@dummy.com",
+            "password": "dummy",
+        },
+    )
+
+    yield client
+
+    # Cleanup code
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+
+def test_base(client):
+    """Test base route."""
     url = "/"
 
     response = client.get(url)
@@ -22,285 +78,51 @@ def test_create_app():
     assert response.get_data() == expected
 
 
-def test_get_login_page():
-    """Test get login page."""
-    client = app.test_client()
-
+def test_user_login_page(client):
+    """Test user login page."""
     url = "/user/login"
 
     response = client.get(url)
     assert response.status_code == 200
 
 
-def test_login():
-    """Test login."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+def test_student_login_page(client):
+    """Test student login page."""
+    url = "/students/login"
 
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
+    response = client.get(url)
     assert response.status_code == 200
 
-    database.users_collection.delete_one({"_id": user["_id"]})
+
+def test_employers_login_page(client):
+    """Test employers login page."""
+    url = "/employers/login"
+
+    response = client.get(url)
+    assert response.status_code == 200
 
 
-def test_get_home_page():
-    """Test get home page."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
+def test_login(user_logged_in_client):
+    """Test login."""
 
     url = "/"
-    response = client.get(url)
+    response = user_logged_in_client.get(url)
+
     assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
 
 
-def test_get_add_student():
-    """Test get add student."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
+def test_signout(user_logged_in_client):
+    """Test signout."""
+    url = "/signout"
+    response = user_logged_in_client.get(url)
 
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
+    response = user_logged_in_client.get("/")
+    assert response.status_code == 302
+    expected = (
+        b"<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n"
+        b"<h1>Redirecting...</h1>\n<p>You should be redirected automatically "
+        b'to the target URL: <a href="/students/login">/students/login</a>. '
+        b"If not, click the link.\n"
     )
-
-    url = "/students/upload"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_add_employer():
-    """Test get add employer."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/employers/add_employer"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_change_deadline():
-    """Test get change deadline."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/user/deadline"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_search_student():
-    """Test get search student."""
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/students/search"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_adding_skills():
-    """Test get adding skills."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/skills/add_skill"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_courses():
-    """Test get courses."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/course_modules/add_module"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_get_modules():
-    """Test get modules."""
-    database.users_collection.delete_many({"email": "dummy@dummy.com"})
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    url = "/course_modules/add_module"
-    response = client.get(url)
-    assert response.status_code == 200
-    database.users_collection.delete_one({"_id": user["_id"]})
-
-
-def test_log_out():
-    """Test log out."""
-    user = {
-        "_id": uuid.uuid4().hex,
-        "name": "dummy",
-        "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
-    }
-    database.users_collection.insert_one(user)
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "dummy@dummy.com",
-            "password": "dummy",
-        },
-    )
-
-    client.get("/user/signout")
-    url = "/user/login"
-
-    client = app.test_client()
-    response = client.post(
-        "/user/login",
-        data={
-            "email": "",
-            "password": "",
-        },
-    )
-
-    response = client.get(url)
-    assert response.status_code == 200
-    # Could you not redirect to home page >:(
-
-    database.users_collection.delete_one({"_id": user["_id"]})
+    assert response.status_code == 302
+    assert response.get_data() == expected

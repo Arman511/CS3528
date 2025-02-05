@@ -11,9 +11,38 @@ from flask import Flask
 from flask_caching import Cache
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-from core import handlers  # pylint: disable=C0413
+from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
+from core import handlers  # noqa: E402
+
+DATABASE_MANAGER = None
+DEADLINE_MANAGER = None
 
 load_dotenv()
+
+DATABASE = "cs3528_testing"
+
+if os.getenv("IS_TEST"):
+    DATABASE = os.getenv("MONGO_DB_TEST", "")
+else:
+    DATABASE = os.getenv("MONGO_DB_PROD", "")
+
+DATABASE_MANAGER = DatabaseMongoManager(os.getenv("MONGO_URI"), DATABASE)
+
+tables = [
+    "users",
+    "students",
+    "opportunities",
+    "courses",
+    "skills",
+    "attempted_skills",
+    "modules",
+    "employers",
+    "deadline",
+]
+
+for table in tables:
+    DATABASE_MANAGER.add_table(table)
+
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
@@ -22,6 +51,10 @@ app.config["CACHE_DEFAULT_TIMEOUT"] = 300
 app.permanent_session_lifetime = timedelta(minutes=30)
 cache = Cache(app)
 handlers.configure_routes(app, cache)
+
+from core.deadline_manager import DeadlineManager  # noqa: E402
+
+DEADLINE_MANAGER = DeadlineManager()
 
 if __name__ == "__main__":
     app.run()

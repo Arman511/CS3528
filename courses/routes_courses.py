@@ -1,5 +1,6 @@
 """Handles the routes for the course module."""
 
+import uuid
 from flask import render_template, request
 from core import handlers
 from .models import Course
@@ -13,4 +14,11 @@ def add_course_routes(app):
     def add_course():
         if request.method == "GET":
             return render_template("/courses/adding_course.html", user_type="admin")
-        return Course().add_course()
+
+        course = {
+            "_id": uuid.uuid1().hex,
+            "course_id": request.form.get("course_id"),
+            "course_name": request.form.get("course_name"),
+            "course_description": request.form.get("course_description"),
+        }
+        return Course().add_course(course)

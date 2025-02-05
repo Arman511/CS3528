@@ -1,5 +1,6 @@
 """Handles the routes for the Module module."""
 
+import uuid
 from flask import render_template, request
 from core import handlers
 from .models import Module
@@ -15,4 +16,11 @@ def add_module_routes(app):
             return render_template(
                 "course_modules/adding_modules.html", user_type="admin"
             )
-        return Module().add_module()
+
+        module = {
+            "_id": uuid.uuid1().hex,
+            "module_id": request.form.get("module_id"),
+            "module_name": request.form.get("module_name"),
+            "module_description": request.form.get("module_description"),
+        }
+        return Module().add_module(module)

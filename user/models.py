@@ -3,10 +3,9 @@ User model.
 """
 
 from email.mime.text import MIMEText
-import uuid
 from flask import jsonify, request, session
 from passlib.hash import pbkdf2_sha256
-from core import database, email_handler
+from core import email_handler
 from employers.models import Employers
 from opportunities.models import Opportunity
 from students.models import Student
@@ -24,28 +23,17 @@ class User:
         session["user"] = {"_id": user["_id"], "name": user["name"]}
         return jsonify(session["user"]), 200
 
-    def register(self):
+    def register(self, user):
         """Registers a new user by creating a user dictionary with a unique ID,
         name, email, and password, and returns a JSON response indicating failure."""
-        password = request.form.get("password")
-        confirm_password = request.form.get("confirm_password")
+        session.clear()
+        from app import DATABASE_MANAGER
 
-        # Check if passwords match (if needed here for extra validation)
-        if password != confirm_password:
-            return jsonify({"error": "Passwords don't match"}), 400
-
-        user = {
-            "_id": uuid.uuid1().hex,
-            "name": request.form.get("name"),
-            "email": request.form.get("email"),
-            "password": pbkdf2_sha256.hash(password),  # Hash only the password
-        }
-
-        if database.users_collection.find_one({"email": request.form.get("email")}):
+        if DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
-        database.users_collection.insert_one(user)
+        DATABASE_MANAGER.insert("users", user)
 
         # Start session or return success response
         if user:
@@ -53,15 +41,15 @@ class User:
 
         return jsonify({"error": "Signup failed"}), 400
 
-    def login(self):
+    def login(self, attempt_user):
         """Validates user credentials and returns a JSON response indicating
         invalid login credentials."""
-        session.clear()
-        user = database.users_collection.find_one({"email": request.form.get("email")})
+        from app import DATABASE_MANAGER
 
-        if user and pbkdf2_sha256.verify(
-            request.form.get("password"), user["password"]
-        ):
+        session.clear()
+        user = DATABASE_MANAGER.get_by_email("users", attempt_user["email"])
+
+        if user and pbkdf2_sha256.verify(attempt_user["password"], user["password"]):
             return self.start_session(user)
 
         return jsonify({"error": "Invalid login credentials"}), 401
@@ -88,13 +76,15 @@ class User:
 
     def change_deadline(self):
         """Change deadlines for details, student ranking, and opportunities ranking."""
+        from app import DEADLINE_MANAGER
+
         details_deadline = request.form.get("details_deadline")
         student_ranking_deadline = request.form.get("student_ranking_deadline")
         opportunities_ranking_deadline = request.form.get(
             "opportunities_ranking_deadline"
         )
 
-        response = database.update_deadlines(
+        response = DEADLINE_MANAGER.update_deadlines(
             details_deadline, student_ranking_deadline, opportunities_ranking_deadline
         )
 
@@ -102,25 +92,24 @@ class User:
             return response
         return jsonify({"message": "All deadlines updated successfully"}), 200
 
-    def send_match_email(self):
+    def send_match_email(
+        self, student_uuid, opportunity_uuid, student_email, employer_email
+    ):
         """Match students with opportunities."""
 
-        student = Student().get_student_by_uuid(request.form.get("student"))
-        opportunity = Opportunity().get_opportunity_by_id(
-            request.form.get("opportunity")
-        )
+        student = Student().get_student_by_uuid(student_uuid)
+        opportunity = Opportunity().get_opportunity_by_id(opportunity_uuid)
         employer_name = Employers().get_company_name(opportunity["employer_id"])
         recipients = [
-            request.form.get("student_email"),
-            request.form.get("employer_email"),
+            student_email,
+            employer_email,
         ]
 
         body = (
             f"<p>Dear {student['first_name']},</p>"
             f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for "
             f"the opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
-            f"<a href='mailto:{request.form.get('employer_email')}'>"
-            f"{request.form.get('employer_email')}</a> "
+            f"<a href='mailto:{employer_email}'>{employer_email}</a> "
             f"to discuss further details.</p>"
             "<p>Best,<br>Skillpoint</p>"
         )

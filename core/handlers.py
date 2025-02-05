@@ -36,6 +36,10 @@ def login_required(f):
     return wrap
 
 
+def is_admin():
+    return session.get("logged_in") is not None
+
+
 def student_login_required(f):
     """
     This decorator ensures that a student is logged in before accessing certain routes.

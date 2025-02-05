@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper card-dynamic-width">
+        <!-- First Card: Search Form -->
+        <div class="card search-card">
+            <h1 class="center">Search Employers</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <div>
+                        <label for="cname">Company Name:</label>
+                        <input type="text" id="title" name="title" class="field" />
+                    </div>
+                    <div>
+                        <label for="email">Email:</label>
+                        <input type="text" id="email" name="email" class="field" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <p class="error error--hidden"></p>
+                    <input type="submit" value="Search" class="btn" />
+                </div>
+            </form>
+        </div>
+        <!-- Second Card: Employers Table -->
+        <div class="card card-dynamic-width">
+            <h2 class="center">Employers</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Company ID</th>
+                            <th>Company Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employer-table">
+                        {% for employer in employers %}
+                            <tr>
+                                <td>{{ employer._id }}</td>
+                                <td>{{ employer.company_name }}</td>
+                                <td>{{ employer.email }}</td>
+                                <td>
+                                    <a href="{{ url_for("update_employer") }}?employer_id={{ employer._id }}"
+                                       class="btn btn-info btn-sm mb-2">Update</a>
+                                    <button class="btn btn-danger btn-sm delete-employer"
+                                            data-id="{{ employer._id }}">Delete</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/static/search_employers/script.js"></script>
+{% endblock content %}
