@@ -154,14 +154,15 @@ def test_problem_page(user_logged_in_client):
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
 
+
 def test_search_opportunity_page(user_logged_in_client):
     """Test search opportunity page."""
     url = "/opportunities/search"
 
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
-    
-    
+
+
 def test_register_page(client):
     """Test register page."""
     url = "/user/register"
@@ -239,7 +240,8 @@ def test_email_already_in_use(client, database):
 
     assert response.status_code == 400
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
-    
+
+
 def test_deadline_change(user_logged_in_client, database):
     """Test deadline change."""
     url = "/user/deadline"
@@ -251,7 +253,7 @@ def test_deadline_change(user_logged_in_client, database):
     database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
     database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
     database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
-    
+
     response = user_logged_in_client.post(
         url,
         data={
@@ -267,8 +269,7 @@ def test_deadline_change(user_logged_in_client, database):
     assert database.get_one_by_field("deadline", "type", 0)["deadline"] == "2022-10-11"
     assert database.get_one_by_field("deadline", "type", 1)["deadline"] == "2022-10-14"
     assert database.get_one_by_field("deadline", "type", 2)["deadline"] == "2022-10-18"
-    
+
     database.delete_all("deadline")
     for deadline in deadlines:
         database.insert("deadline", deadline)
-        
