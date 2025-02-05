@@ -117,3 +117,84 @@ def test_add_course_page(user_logged_in_client):
 
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
+
+
+def test_register_page(client):
+    """Test register page."""
+    url = "/user/register"
+
+    response = client.get(url)
+    assert response.status_code == 200
+
+def test_register_user(client, database):
+    """Test register user."""
+    url = "/user/register"
+    user_collection = database["users"]
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+    response = client.post(
+        url,
+        data={
+            "name": "dummy",
+            "email": "dummy@dummy.com",
+            "password": "dummy",
+            "confirm_password": "dummy",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    assert user_collection.find_one({"email": "dummy@dummy.com"}) is not None
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+def test_register_user_password_mismatch(client, database):
+    """Test register user."""
+    url = "/user/register"
+    user_collection = database["users"]
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+    response = client.post(
+        url,
+        data={
+            "name": "dummy",
+            "email": "dummy@dummy.com",
+            "password": "dummy",
+            "confirm_password": "jsdkcjnjkd",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 400
+    assert user_collection.find_one({"email": "dummy@dummy.com"}) is None
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+    
+def test_email_already_in_use(client, database):
+    """Test register user."""
+    url = "/user/register"
+    user_collection = database["users"]
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+    
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+
+    user_collection.insert_one(user)
+    
+    response = client.post(
+        url,
+        data={
+            "name": "dummy2",
+            "email": "dummy@dummy.com",
+            "password": "dummy2",
+            "confirm_password": "dummy2",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    
+    assert response.status_code == 400
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+    
+                                 
