@@ -9,10 +9,10 @@ from pymongo import MongoClient
 from passlib.hash import pbkdf2_sha256
 import pytest
 from dotenv import load_dotenv
+
 os.environ["IS_TEST"] = "True"
 
 load_dotenv()
-
 
 
 @pytest.fixture()

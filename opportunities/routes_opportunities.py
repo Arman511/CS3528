@@ -82,6 +82,7 @@ def add_opportunities_routes(app):
     def employer_add_update_opportunity():
         # Check if the details deadline has passed and the employer is in the session
         from app import DEADLINE_MANAGER
+
         if DEADLINE_MANAGER.is_past_details_deadline() and "employer" in session:
             return render_template(
                 "employers/past_deadline.html",

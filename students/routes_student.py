@@ -102,6 +102,7 @@ def add_student_routes(app):
     def student_details(student_id):
         """Get or update student details."""
         from app import DEADLINE_MANAGER
+
         if session["student"]["student_id"] != str(student_id):
             session.clear()
             return redirect("/students/login")
@@ -166,6 +167,7 @@ def add_student_routes(app):
     def rank_preferences(student_id):
         """Rank preferences."""
         from app import DEADLINE_MANAGER
+
         if "student" not in session:
             return redirect("/students/login")
 
