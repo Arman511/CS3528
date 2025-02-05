@@ -42,7 +42,7 @@
                         {% for course in courses %}
                             <option value="{{ course.course_id }}"
                                     {% if course.course_id == student.course_id %}selected{% endif %}>
-                                {{ +course.course_id + ": " + course.course_name }}
+                                {{ course.course_id + ": " + course.course_name }}
                             </option>
                         {% endfor %}
                     </select>
@@ -50,10 +50,13 @@
                 <div class="form-group">
                     <label for="skills">Skills:</label>
                     <select id="skills" name="skills" class="form-control" multiple required>
-                        {% for skill in skills %}
-                            <option value="{{ skill.skill_name }}"
-                                    {% if skill in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
-                        {% endfor %}
+                       {% for skill in skills %}
+                        <option value="{{ skill._id }}"
+                                title="{{ skill.skill_description }}"
+                                {% if skill._id|string in student.skills %}selected{% endif %}>
+                            {{ skill.skill_name }}
+                        </option>
+                    {% endfor %}
                     </select>
                 </div>
                 <div class="form-group">
@@ -90,7 +93,7 @@
                     <label for="modules">Modules:</label>
                     <select id="modules" name="modules" class="form-control" multiple required>
                         {% for module in modules %}
-                            <option value="{{ module.module_id }}"
+                            <option value="{{ module.module_id }}" 
                                     {% if module.module_id in student.module %}selected{% endif %}>
                                 {{ module.module_id + ": " + module.module_name }}
                             </option>
