@@ -3,7 +3,8 @@ User model.
 """
 
 from email.mime.text import MIMEText
-from flask import jsonify, request, session
+import uuid
+from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
 from employers.models import Employers
