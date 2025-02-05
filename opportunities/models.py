@@ -169,7 +169,7 @@ class Opportunity:
         cache["data"] = DATABASE_MANAGER.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
-        opportunity = DATABASE_MANAGER.get_by_id("opportunities", _id)
+        opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", _id)
 
         if opportunity:
             return opportunity
