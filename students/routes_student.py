@@ -118,11 +118,19 @@ def add_student_routes(app):
         if request.method == "POST":
             student = {}
             student["comments"] = request.form.get("comments")
-            student["skills"] = request.form.get("skills")[1:-1].replace('"', '').split(',')
-            student["attempted_skills"] = request.form.get("attempted_skills")[1:-1].replace('"', '').split(',')
+            student["skills"] = (
+                request.form.get("skills")[1:-1].replace('"', "").split(",")
+            )
+            student["attempted_skills"] = (
+                request.form.get("attempted_skills")[1:-1].replace('"', "").split(",")
+            )
             student["has_car"] = request.form.get("has_car")
-            student["placement_duration"] = request.form.get("placement_duration")[1:-1].replace('"', '').split(',')
-            student["modules"] = request.form.get("modules")[1:-1].replace('"', '').split(',')
+            student["placement_duration"] = (
+                request.form.get("placement_duration")[1:-1].replace('"', "").split(",")
+            )
+            student["modules"] = (
+                request.form.get("modules")[1:-1].replace('"', "").split(",")
+            )
             student["course"] = request.form.get("course")
             return Student().update_student_by_id(student_id, student)
 
@@ -144,11 +152,19 @@ def add_student_routes(app):
         if request.method == "POST":
             student = {}
             student["comments"] = request.form.get("comments")
-            student["skills"] = request.form.get("skills")[1:-1].replace('"', '').split(',')
-            student["attempted_skills"] = request.form.get("attempted_skills")[1:-1].replace('"', '').split(',')
+            student["skills"] = (
+                request.form.get("skills")[1:-1].replace('"', "").split(",")
+            )
+            student["attempted_skills"] = (
+                request.form.get("attempted_skills")[1:-1].replace('"', "").split(",")
+            )
             student["has_car"] = request.form.get("has_car")
-            student["placement_duration"] = request.form.get("placement_duration")[1:-1].replace('"', '').split(',')
-            student["modules"] = request.form.get("modules")[1:-1].replace('"', '').split(',')
+            student["placement_duration"] = (
+                request.form.get("placement_duration")[1:-1].replace('"', "").split(",")
+            )
+            student["modules"] = (
+                request.form.get("modules")[1:-1].replace('"', "").split(",")
+            )
             student["course"] = request.form.get("course")
             return Student().update_student_by_id(student_id, student)
 

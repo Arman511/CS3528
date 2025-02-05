@@ -298,9 +298,7 @@ class Student:
         opportunities = Opportunity().get_opportunities()
 
         student = find_student
-        student["modules"] = set(
-            student["modules"]
-        )
+        student["modules"] = set(student["modules"])
 
         valid_opportunities = []
         for opportunity in opportunities:
