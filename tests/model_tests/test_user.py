@@ -133,8 +133,10 @@ def test_register_failure(app):
             assert response[1] == 400
             assert json_data["error"] == "Missing email or password"
 
+
 def test_login_success(app, database):
     from user.models import User
+
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "126",
@@ -167,6 +169,7 @@ def test_login_success(app, database):
 
 def test_login_invalid_credentials(app, database):
     from user.models import User
+
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "127",
@@ -195,6 +198,7 @@ def test_login_invalid_credentials(app, database):
 
 def test_login_user_not_found(app, database):
     from user.models import User
+
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
     attempt_user = {
@@ -208,3 +212,117 @@ def test_login_user_not_found(app, database):
             json_data = response[0].get_json()
             assert response[1] == 401
             assert json_data["error"] == "Invalid login credentials"
+
+
+def test_update_deadlines_success(app, database):
+    from user.models import User
+
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
+    with app.app_context():
+        with app.test_request_context():
+            response = User().change_deadline("2023-12-31", "2024-01-15", "2024-01-31")
+            json_data = response[0].get_json()
+            assert response[1] == 200
+            assert json_data["message"] == "All deadlines updated successfully"
+            assert (
+                database.get_one_by_field("deadline", "type", 0)["deadline"]
+                == "2023-12-31"
+            )
+            assert (
+                database.get_one_by_field("deadline", "type", 1)["deadline"]
+                == "2024-01-15"
+            )
+            assert (
+                database.get_one_by_field("deadline", "type", 2)["deadline"]
+                == "2024-01-31"
+            )
+
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
+
+
+def test_update_deadlines_invalid_format(app, database):
+    from user.models import User
+
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
+    with app.app_context():
+        with app.test_request_context():
+            response = User().change_deadline(
+                "invalid-date", "2024-01-15", "2024-01-31"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert json_data["error"] == "Invalid deadline format. Use YYYY-MM-DD."
+
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
+
+
+def test_update_deadlines_details_later_than_student_ranking(app, database):
+    from user.models import User
+
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
+    with app.app_context():
+        with app.test_request_context():
+            response = User().change_deadline("2024-01-16", "2024-01-15", "2024-01-31")
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert (
+                json_data["error"]
+                == "Details deadline cannot be later than Student Ranking deadline."
+            )
+
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
+
+
+def test_update_deadlines_student_ranking_later_than_opportunities_ranking(
+    app, database
+):
+    from user.models import User
+
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
+    with app.app_context():
+        with app.test_request_context():
+            response = User().change_deadline("2024-01-15", "2024-01-31", "2024-01-30")
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert (
+                json_data["error"]
+                == "Student Ranking deadline cannot be later than Opportunities Ranking deadline."
+            )
+
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
