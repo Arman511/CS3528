@@ -239,3 +239,36 @@ def test_email_already_in_use(client, database):
 
     assert response.status_code == 400
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
+    
+def test_deadline_change(user_logged_in_client, database):
+    """Test deadline change."""
+    url = "/user/deadline"
+
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+    
+    response = user_logged_in_client.post(
+        url,
+        data={
+            "details_deadline": "2022-10-11",
+            "student_ranking_deadline": "2022-10-14",
+            "opportunities_ranking_deadline": "2022-10-18",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    assert response.json["message"] == "All deadlines updated successfully"
+    assert database.get_one_by_field("deadline", "type", 0)["deadline"] == "2022-10-11"
+    assert database.get_one_by_field("deadline", "type", 1)["deadline"] == "2022-10-14"
+    assert database.get_one_by_field("deadline", "type", 2)["deadline"] == "2022-10-18"
+    
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
+        
