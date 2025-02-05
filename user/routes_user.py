@@ -28,7 +28,7 @@ def add_user_routes(app, cache):
             user = {
                 "_id": uuid.uuid1().hex,
                 "name": request.form.get("name"),
-                "email": request.form.get("email"),
+                "email": request.form.get("email").lower(),
                 "password": pbkdf2_sha256.hash(password),  # Hash only the password
             }
             return User().register(user)
@@ -39,7 +39,7 @@ def add_user_routes(app, cache):
         """Gives login form to user."""
         if request.method == "POST":
             attempt_user = {
-                "email": request.form.get("email"),
+                "email": request.form.get("email").lower(),
                 "password": request.form.get("password"),
             }
             return User().login(attempt_user)

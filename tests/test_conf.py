@@ -14,6 +14,8 @@ os.environ["IS_TEST"] = "True"
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
 
+from core.database_mongo_manager import DatabaseMongoManager
+
 
 @pytest.fixture()
 def client():
@@ -26,19 +28,23 @@ def client():
 @pytest.fixture()
 def database():
     """Fixture to create a test database."""
-    connection = MongoClient()
-    if os.getenv("IS_GITHUB_ACTION") == "False":
-        connection = MongoClient(os.getenv("MONGO_URI"))
-    database = connection[os.getenv("MONGO_DB_TEST", "cs3528_testing")]
 
-    return database
+    DATABASE = DatabaseMongoManager(
+        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+    )
+
+    yield DATABASE
+
+    # Cleanup code
+    DATABASE.connection.close()
 
 
 @pytest.fixture()
 def user_logged_in_client(client, database):
     """Fixture to login a user."""
-    user_collection = database["users"]
-    user_collection.delete_many({"email": "dummy@dummy.com"})
+    database.add_table("users")
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
+
     user = {
         "_id": uuid.uuid4().hex,
         "name": "dummy",
@@ -46,7 +52,7 @@ def user_logged_in_client(client, database):
         "password": pbkdf2_sha256.hash("dummy"),
     }
 
-    user_collection.insert_one(user)
+    database.insert("users", user)
 
     url = "/user/login"
     client.post(
@@ -55,12 +61,13 @@ def user_logged_in_client(client, database):
             "email": "dummy@dummy.com",
             "password": "dummy",
         },
+        content_type="application/x-www-form-urlencoded",
     )
 
     yield client
 
     # Cleanup code
-    user_collection.delete_many({"email": "dummy@dummy.com"})
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
 def test_base(client):
