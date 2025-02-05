@@ -47,7 +47,7 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def delete_by_field(self, table, field, value):
+    def delete_one_by_field(self, table, field, value):
         pass
 
     @abstractmethod
@@ -96,3 +96,7 @@ class DatabaseInterface(ABC):
 
     def get_tables(self):
         return self.table_list
+
+    @abstractmethod
+    def delete_all_by_field(self, table, field, value):
+        pass

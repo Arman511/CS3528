@@ -63,8 +63,11 @@ class DatabaseMongoManager(DatabaseInterface):
     def delete_by_id(self, table, id_val):
         return self.database[table].delete_one({"_id": id_val})
 
-    def delete_by_field(self, table, field, value):
+    def delete_one_by_field(self, table, field, value):
         return self.database[table].delete_one({field: value})
+
+    def delete_all_by_field(self, table, field, value):
+        return self.database[table].delete_many({field: value})
 
     def delete_all(self, table):
         return self.database[table].delete_many({})
@@ -112,3 +115,6 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def get_all_by_text_search(self, table, search_text):
         return list(self.database[table].find({"$text": {"$search": search_text}}))
+
+    def close_connection(self):
+        self.connection.close()
