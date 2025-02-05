@@ -120,6 +120,37 @@ def test_add_course_page(user_logged_in_client):
     assert response.status_code == 200
 
 
+def test_search_employer_page(user_logged_in_client):
+    """Test search employer page."""
+    url = "/employers/search_employers"
+
+    response = user_logged_in_client.get(url)
+    assert response.status_code == 200
+
+
+def test_matching_page(user_logged_in_client):
+    """Test matching page."""
+    url = "/user/matching"
+
+    response = user_logged_in_client.get(url)
+    assert response.status_code == 200
+
+
+def test_problem_page(user_logged_in_client):
+    """Test problem page."""
+    url = "/user/problem"
+
+    response = user_logged_in_client.get(url)
+    assert response.status_code == 200
+
+def test_search_opportunity_page(user_logged_in_client):
+    """Test search opportunity page."""
+    url = "/opportunities/search"
+
+    response = user_logged_in_client.get(url)
+    assert response.status_code == 200
+    
+    
 def test_register_page(client):
     """Test register page."""
     url = "/user/register"
@@ -202,13 +233,6 @@ def test_email_already_in_use(client, database):
     user_collection.delete_many({"email": "dummy@dummy.com"})
 
 
-def test_login_page(client):
-    """Test login page."""
-    url = "/user/login"
-
-    response = client.get(url)
-    assert response.status_code == 200
-
 def test_login_user(client, database):
     """Test login user."""
     url = "/user/login"
@@ -236,7 +260,9 @@ def test_login_user(client, database):
     client.get("/signout")
     user_collection.delete_many({"email": "dummy@dummy.com"})
 
+
 def test_login_user_invalid_password(client, database):
     """Test login user."""
     from app import DATABASE_MANAGER
+
     DatabaseManager = DATABASE_MANAGER()
