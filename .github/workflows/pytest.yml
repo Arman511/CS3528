@@ -1,10 +1,11 @@
-name: Run tests
+name: CI and Coverage
 
 on:
     push:
         branches: ["main"]
     pull_request:
-        branches: ["main"]
+        branches: ["main", "master"]
+
 permissions:
     contents: read
 
@@ -43,11 +44,17 @@ jobs:
             - name: Install dependencies
               run: |
                   python -m pip install --upgrade pip
-                  pip install flake8 pytest
+                  pip install flake8 pytest coverage
                   if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
 
-            - name: Run tests
+            - name: Run tests with coverage
               env:
                   SECRET_KEY: "psZsPEYjcq9@?(!6w=dK" # Fake secret key
               run: |
-                  pytest
+                  coverage run -m pytest
+                  coverage xml -o coverage.xml
+
+            - name: Upload Coverage Report
+              uses: orgoro/coverage@v3.2
+              with:
+                  coverageFile: coverage.xml
