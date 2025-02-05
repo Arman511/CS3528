@@ -70,7 +70,7 @@ class DatabaseMongoManager(DatabaseInterface):
         return self.database[table].delete_many({})
 
     def get_by_email(self, table, email):
-        return self.database[table].find_one({"email": email})
+        return self.database[table].find_one({"email": {"$regex": f"^{email}$", "$options": "i"}})
 
     def get_one_by_field(self, table, field, value):
         return self.database[table].find_one({field: value})
