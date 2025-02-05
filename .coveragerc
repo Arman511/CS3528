@@ -1,0 +1,7 @@
+[run]
+source = .
+
+[report]
+omit =
+    */site-packages/*
+    */dist-packages/*
