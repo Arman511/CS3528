@@ -31,6 +31,8 @@ class Employers:
 
         DATABASE_MANAGER.insert("employers", employer)
         if employer:
+            employers_cache["data"].append(employer)
+            employers_cache["last_updated"] = datetime.now()
             return jsonify(employer), 200
 
         return jsonify({"error": "Employer not added"}), 400
