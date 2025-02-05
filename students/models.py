@@ -206,6 +206,7 @@ class Student:
             df = pd.read_excel(file)
 
             students = df.to_dict(orient="records")
+            data = []
             for student in students:
                 temp_student = {}
                 temp_student["_id"] = uuid.uuid4().hex
@@ -240,6 +241,8 @@ class Student:
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
                 )
+                data.append(temp_student)
+            for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)
 
             return jsonify({"message": f"{len(students)} students imported"}), 200
@@ -296,16 +299,14 @@ class Student:
 
         student = find_student
         student["modules"] = set(
-            d.strip().replace('"', "")
-            for d in student["modules"][1:-1].split(",")
-            if d.strip().replace('"', "") != ""
+            student["modules"]
         )
 
         valid_opportunities = []
         for opportunity in opportunities:
             modules_required = set(
-                module.strip().replace('"', "")
-                for module in opportunity["modules_required"][1:-1].split(",")
+                module
+                for module in opportunity["modules_required"]
                 if module.strip().replace('"', "") != ""
             )
 

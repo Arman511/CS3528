@@ -20,7 +20,7 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         """Adding new opportunity."""
-        find_opportunity = DATABASE_MANAGER.get_by_id(
+        find_opportunity = DATABASE_MANAGER.get_one_by_id(
             "opportunities", opportunity["_id"]
         )
         if find_opportunity and not is_admin:
@@ -238,16 +238,6 @@ class Opportunity:
         valid_students = []
         for student in students:
             if "preferences" in student and opportunity_id in student["preferences"]:
-                student["modules"] = [
-                    d.strip().replace('"', "")
-                    for d in student["modules"][1:-1].split(",")
-                    if d.strip().replace('"', "") != ""
-                ]
-                student["skills"] = [
-                    d.strip().replace('"', "")
-                    for d in student["skills"][1:-1].split(",")
-                    if d.strip().replace('"', "") != ""
-                ]
                 valid_students.append(student)
         return valid_students
 
