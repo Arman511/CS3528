@@ -237,7 +237,7 @@ class Student:
                         ),
                         400,
                     )
-                DATABASE_MANAGER.delete_by_field(
+                DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
                 )
                 DATABASE_MANAGER.insert("students", temp_student)
