@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h2 class="center">Update Employer</h2>
+            <form id="updateForm">
+                <div class="form-group">
+                    <label for="employer_id">Employer ID:</label>
+                    <input name="employer_id"
+                           id="employer_id"
+                           class="form-control"
+                           type="text"
+                           value="{{ employer._id }}"
+                           readonly />
+                </div>
+                <div class="form-group">
+                    <label for="company_name">Company Name:</label>
+                    <input type="text"
+                           id="company_name"
+                           name="company_name"
+                           class="form-control"
+                           value="{{ employer.company_name }}" />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email"
+                           id="email"
+                           name="email"
+                           class="form-control"
+                           value="{{ employer.email }}" />
+                </div>
+                <br>
+                <div class="form-group">
+                    <p class="error error--hidden"></p>
+                    <button type="submit" class="btn btn-primary">Update Employer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <script src="/static/update_employer/script.js"></script>
+{% endblock content %}
