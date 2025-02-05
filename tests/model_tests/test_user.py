@@ -172,7 +172,7 @@ def test_login_invalid_credentials(app, database):
         "_id": "127",
         "name": "Invalid User",
         "email": "dummy@dummy.com",
-        "password": "password",
+        "password": pbkdf2_sha256.hash("password"),
     }
 
     # Insert the user into the database
@@ -193,18 +193,18 @@ def test_login_invalid_credentials(app, database):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-# def test_login_user_not_found(app, database):
-#     from user.models import User
-#     database.delete_all_by_field("users", "email", "dummy@dummy.com")
+def test_login_user_not_found(app, database):
+    from user.models import User
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
-#     attempt_user = {
-#         "email": "dummy@dummy.com",
-#         "password": "password",
-#     }
+    attempt_user = {
+        "email": "dummy@dummy.com",
+        "password": "password",
+    }
 
-#     with app.app_context():
-#         with app.test_request_context():
-#             response = User().login(attempt_user)
-#             json_data = response[0].get_json()
-#             assert response[1] == 401
-#             assert json_data["error"] == "Invalid login credentials"
+    with app.app_context():
+        with app.test_request_context():
+            response = User().login(attempt_user)
+            json_data = response[0].get_json()
+            assert response[1] == 401
+            assert json_data["error"] == "Invalid login credentials"
