@@ -55,6 +55,7 @@ def user_logged_in_client(client, database):
             "email": "dummy@dummy.com",
             "password": "dummy",
         },
+        content_type="application/x-www-form-urlencoded",
     )
 
     yield client
@@ -126,6 +127,7 @@ def test_register_page(client):
     response = client.get(url)
     assert response.status_code == 200
 
+
 def test_register_user(client, database):
     """Test register user."""
     url = "/user/register"
@@ -147,6 +149,7 @@ def test_register_user(client, database):
     assert user_collection.find_one({"email": "dummy@dummy.com"}) is not None
     user_collection.delete_many({"email": "dummy@dummy.com"})
 
+
 def test_register_user_password_mismatch(client, database):
     """Test register user."""
     url = "/user/register"
@@ -167,13 +170,14 @@ def test_register_user_password_mismatch(client, database):
     assert response.status_code == 400
     assert user_collection.find_one({"email": "dummy@dummy.com"}) is None
     user_collection.delete_many({"email": "dummy@dummy.com"})
-    
+
+
 def test_email_already_in_use(client, database):
     """Test register user."""
     url = "/user/register"
     user_collection = database["users"]
     user_collection.delete_many({"email": "dummy@dummy.com"})
-    
+
     user = {
         "_id": uuid.uuid4().hex,
         "name": "dummy",
@@ -182,7 +186,7 @@ def test_email_already_in_use(client, database):
     }
 
     user_collection.insert_one(user)
-    
+
     response = client.post(
         url,
         data={
@@ -193,8 +197,46 @@ def test_email_already_in_use(client, database):
         },
         content_type="application/x-www-form-urlencoded",
     )
-    
+
     assert response.status_code == 400
     user_collection.delete_many({"email": "dummy@dummy.com"})
-    
-                                 
+
+
+def test_login_page(client):
+    """Test login page."""
+    url = "/user/login"
+
+    response = client.get(url)
+    assert response.status_code == 200
+
+def test_login_user(client, database):
+    """Test login user."""
+    url = "/user/login"
+    user_collection = database["users"]
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+    user = {
+        "_id": uuid.uuid4().hex,
+        "name": "dummy",
+        "email": "dummy@dummy.com",
+        "password": pbkdf2_sha256.hash("dummy"),
+    }
+
+    user_collection.insert_one(user)
+
+    response = client.post(
+        url,
+        data={"email": "dummy@dummy.com", "password": "dummy"},
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    response = client.get("/")
+    assert response.status_code == 200
+    client.get("/signout")
+    user_collection.delete_many({"email": "dummy@dummy.com"})
+
+def test_login_user_invalid_password(client, database):
+    """Test login user."""
+    from app import DATABASE_MANAGER
+    DatabaseManager = DATABASE_MANAGER()

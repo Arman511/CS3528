@@ -55,6 +55,7 @@ def user_logged_in_client(client, database):
             "email": "dummy@dummy.com",
             "password": "dummy",
         },
+        content_type="application/x-www-form-urlencoded",
     )
 
     yield client
