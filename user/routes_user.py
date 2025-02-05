@@ -59,7 +59,16 @@ def add_user_routes(app, cache):
     def deadline():
         """Change deadline."""
         if request.method == "POST":
-            return User().change_deadline()
+            details_deadline = request.form.get("details_deadline")
+            student_ranking_deadline = request.form.get("student_ranking_deadline")
+            opportunities_ranking_deadline = request.form.get(
+                "opportunities_ranking_deadline"
+            )
+            return User().change_deadline(
+                details_deadline=details_deadline,
+                student_ranking_deadline=student_ranking_deadline,
+                opportunities_ranking_deadline=opportunities_ranking_deadline,
+            )
 
         from app import DEADLINE_MANAGER
 
