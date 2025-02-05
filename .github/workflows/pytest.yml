@@ -35,6 +35,7 @@ jobs:
               env:
                   CI: true
                   IS_GITHUB_ACTION: "True"
+                  IS_TEST: "True"
 
             - name: Set up Python 3.10
               uses: actions/setup-python@v3
@@ -58,3 +59,4 @@ jobs:
               uses: orgoro/coverage@v3.2
               with:
                   coverageFile: coverage.xml
+                  githubToken: ${{ secrets.GITHUB_TOKEN }}
