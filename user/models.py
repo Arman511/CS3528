@@ -3,7 +3,8 @@ User model.
 """
 
 from email.mime.text import MIMEText
-from flask import jsonify, request, session
+import uuid
+from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
 from employers.models import Employers
@@ -29,11 +30,18 @@ class User:
         session.clear()
         from app import DATABASE_MANAGER
 
-        if DATABASE_MANAGER.get_by_email("users", user["email"]):
+        if "email" not in user or "password" not in user:
+            return jsonify({"error": "Missing email or password"}), 400
+        elif "name" not in user:
+            return jsonify({"error": "Missing name"}), 400
+        elif DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
         DATABASE_MANAGER.insert("users", user)
+
+        if "_id" not in user:
+            user["_id"] = uuid.uuid1().hex
 
         # Start session or return success response
         if user:
