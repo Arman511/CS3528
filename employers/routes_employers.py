@@ -2,7 +2,7 @@
 
 import os
 import uuid
-from flask import jsonify, request, render_template, session
+from flask import flash, jsonify, redirect, request, render_template, session, url_for
 from itsdangerous import URLSafeSerializer
 from core import handlers
 from course_modules.models import Module
@@ -54,6 +54,59 @@ def add_employer_routes(app):
             }
             return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
+    
+    @app.route("/employers/search_employers", methods=["GET", "POST"])
+    @handlers.login_required
+    def search_employers():
+        if request.method == "POST":
+            data = request.get_json()
+            title = data.get("title", "").strip().lower()
+            email = data.get("email", "").strip().lower()
+
+            # Get all employers
+            employers = Employers().get_employers()
+
+            # Filter employers based on search criteria
+            filtered_employers = [
+                employer
+                for employer in employers
+                if (title in employer["company_name"].lower() if title else True)
+                and (email in employer["email"].lower() if email else True)
+            ]
+
+            return jsonify(filtered_employers)
+
+        # Render search page for GET requests
+        return render_template("employers/search_employers.html", user_type="admin")
+
+    @app.route("/employers/update_employer", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_employer():
+        from app import DATABASE_MANAGER
+        employer_id = request.args.get("employer_id")  # Get employer_id from URL query
+        if request.method == "POST":
+            return Employers().update_employer()
+
+        employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id) 
+        if not employer:
+            flash("Employer not found", "error")
+            return redirect(url_for("search_employers"))
+
+        return render_template("employers/update_employer.html", user_type="admin", employer=employer)
+
+    
+    @app.route("/employers/delete_employer", methods=["POST"])
+    @handlers.login_required
+    def delete_employer():
+        data = request.get_json()  # Get JSON data from the request
+        employer_id = data.get("employer_id")  # Extract employer_id from JSON
+
+        if not employer_id:
+            return jsonify({"error": "Employer ID is required"}), 400
+
+        response = Employers().delete_employer_by_id(employer_id)  # Call delete function
+
+        return response  # `delete_employer_by_id` already returns a JSON response
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required

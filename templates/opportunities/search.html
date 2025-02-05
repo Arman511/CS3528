@@ -63,8 +63,10 @@
                                 <td>{{ opportunity.spots_available }}</td>
                                 <td>{{ opportunity.duration }}</td>
                                 <td>
-                                    <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Rank</a>
+                                    {% if user_type == "employer" %}
+                                        <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
+                                           class="btn btn-info btn-sm mb-2">Rank</a>
+                                    {% endif %}
                                     <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
                                        class="btn btn-info btn-sm mb-2">Update</a>
                                     <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
