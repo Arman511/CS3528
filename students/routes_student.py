@@ -105,9 +105,8 @@ def add_student_routes(app):
         if request.method == "POST":
             student = {}
             student["comments"] = request.form.get("comments")
-            student["skills"] = (
-                request.form.get("skills")[1:-1].replace('"', "").split(",")
-            )
+            skills = request.form.get("skills")[1:-1].replace('"', "").split(",")
+            student["skills"] = skills[:10] if len(skills) > 10 else skills
             if student["skills"] == [""]:
                 student["skills"] = []
             student["attempted_skills"] = (
