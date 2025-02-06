@@ -96,7 +96,14 @@ def add_opportunities_routes(app):
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
-
+            else:
+                if (
+                    Opportunity().get_opportunity_by_id(opportunity["_id"])[
+                        "employer_id"
+                    ]
+                    != session["employer"]["_id"]
+                ):
+                    return {"error": "Unauthorized Access."}, 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 

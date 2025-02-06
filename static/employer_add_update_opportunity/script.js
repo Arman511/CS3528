@@ -35,6 +35,8 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("duration", placement_duration);
         formData.append("modules_required", JSON.stringify(selectedModules));
         formData.append("spots_available", spots_available);
+        formData.append("employer_id", document.querySelector(".employer_id").getAttribute("employer_id"));
+
         try {
             const response = await fetch(
                 "/opportunities/employer_add_update_opportunity",
