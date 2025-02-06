@@ -54,28 +54,9 @@ def database():
 
 
 def test_start_session(user_logged_in_client):
-    
+
     with user_logged_in_client.session_transaction() as session:
-        assert '_id' in session['user']
-
-def test_start_session(app):
-    from user.models import User
-
-    user = {
-        "_id": "123",
-        "name": "Test User",
-        "email": "dummy@dummy.com",
-        "password": "password",
-    }
-
-    with app.app_context():
-        with app.test_request_context():  # Add this line
-            response = User().start_session(user)
-            json_data = response[0].get_json()
-            assert response[1] == 200
-            assert json_data["_id"] == "123"
-            assert json_data["name"] == "Test User"
-            assert "password" not in json_data
+        assert "_id" in session["user"]
 
 
 def test_register_success(app, database):

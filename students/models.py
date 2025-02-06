@@ -42,7 +42,7 @@ class Student:
             return jsonify({"error": "Student already in database"}), 400
 
         if overwrite:
-            DATABASE_MANAGER.delete_by_id("students", student["_id"])
+            DATABASE_MANAGER.delete_one_by_field("students", "student_id", student["student_id"])
 
         DATABASE_MANAGER.insert("students", student)
 
