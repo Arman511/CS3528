@@ -84,7 +84,9 @@ def add_student_routes(app):
     def login_student():
         """Logins a student"""
         if request.method == "POST":
-            return Student().student_login()
+            student_id = request.form.get("student_id")
+            password = request.form.get("password")
+            return Student().student_login(student_id, password)
 
         if "student" in session and "student_signed_in" in session:
             return redirect(
@@ -121,16 +123,24 @@ def add_student_routes(app):
             student["skills"] = (
                 request.form.get("skills")[1:-1].replace('"', "").split(",")
             )
+            if student["skills"] == [""]:
+                student["skills"] = []
             student["attempted_skills"] = (
                 request.form.get("attempted_skills")[1:-1].replace('"', "").split(",")
             )
+            if student["attempted_skills"] == [""]:
+                student["attempted_skills"] = []
             student["has_car"] = request.form.get("has_car")
             student["placement_duration"] = (
                 request.form.get("placement_duration")[1:-1].replace('"', "").split(",")
             )
+            if student["placement_duration"] == [""]:
+                student["placement_duration"] = []
             student["modules"] = (
                 request.form.get("modules")[1:-1].replace('"', "").split(",")
             )
+            if student["modules"] == [""]:
+                student["modules"] = []
             student["course"] = request.form.get("course")
             return Student().update_student_by_id(student_id, student)
 
@@ -145,28 +155,42 @@ def add_student_routes(app):
             user_type="student",
         )
 
-    @app.route("/students/update_student/<int:student_id>", methods=["GET", "POST"])
+    @app.route("/students/update_student/", methods=["GET", "POST"])
     @handlers.login_required
     def update_student(student_id):
         """Update student for admins."""
         if request.method == "POST":
             student = {}
+            uuid = request.args.get("uuid")
+            student["student_id"] = request.form.get("student_id")
+            student["first_name"] = request.form.get("first_name")
+            student["last_name"] = request.form.get("last_name")
+            student["email"] = request.form.get("email")
+            student["course"] = request.form.get("course")
             student["comments"] = request.form.get("comments")
             student["skills"] = (
                 request.form.get("skills")[1:-1].replace('"', "").split(",")
             )
+            if student["skills"] == [""]:
+                student["skills"] = []
             student["attempted_skills"] = (
                 request.form.get("attempted_skills")[1:-1].replace('"', "").split(",")
             )
+            if student["attempted_skills"] == [""]:
+                student["attempted_skills"] = []
             student["has_car"] = request.form.get("has_car")
             student["placement_duration"] = (
                 request.form.get("placement_duration")[1:-1].replace('"', "").split(",")
             )
+            if student["placement_duration"] == [""]:
+                student["placement_duration"] = []
             student["modules"] = (
                 request.form.get("modules")[1:-1].replace('"', "").split(",")
             )
+            if student["modules"] == [""]:
+                student["modules"] = []
             student["course"] = request.form.get("course")
-            return Student().update_student_by_id(student_id, student)
+            return Student().update_student_by_uuid(uuid, student)
 
         student = Student().get_student_by_id(student_id)
         return render_template(

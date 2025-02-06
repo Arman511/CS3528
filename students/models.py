@@ -101,6 +101,19 @@ class Student:
         else:
             return jsonify({"error": "Student not found"}), 404
 
+    def update_student_by_uuid(self, uuid, student_data):
+        """Update student in the database by student_id."""
+        # Attempt to update the student directly with the provided data
+        from app import DATABASE_MANAGER
+
+        result = DATABASE_MANAGER.update_one_by_id("students", uuid, student_data)
+
+        # Return True if the update was successful (i.e., a document was matched and modified)
+        if result.matched_count > 0:
+            return jsonify({"message": "Student updated"}), 200
+        else:
+            return jsonify({"error": "Student not found"}), 404
+
     def delete_student_by_id(self, student_id):
         """Deleting student."""
         from app import DATABASE_MANAGER
@@ -253,12 +266,9 @@ class Student:
         ) as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def student_login(self):
+    def student_login(self, student_id, password):
         """Handle student login."""
         from app import DATABASE_MANAGER
-
-        student_id = request.form.get("student_id")
-        password = request.form.get("password")
 
         # Find the student by id which is their password
         student = DATABASE_MANAGER.get_one_by_id("students", password)

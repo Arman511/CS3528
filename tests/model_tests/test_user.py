@@ -1,9 +1,11 @@
 """Tests for the User model."""
+
 import os
 import sys
 
 from dotenv import load_dotenv
 import pytest
+
 # flake8: noqa: F811
 
 # Add the root directory to the Python path
@@ -15,12 +17,14 @@ os.environ["IS_TEST"] = "True"
 
 load_dotenv()
 
+
 @pytest.fixture()
 def app():
     """Fixture to create a test client."""
     from ...app import app  # pylint: disable=import-outside-toplevel
 
     return app
+
 
 @pytest.fixture()
 def client():
@@ -32,6 +36,7 @@ def client():
 
 def test_start_session(app):
     from user.models import User
+
     user = {
         "_id": "123",
         "name": "Test User",
