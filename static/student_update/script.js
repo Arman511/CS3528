@@ -3,9 +3,9 @@ document.addEventListener("DOMContentLoaded", () => {
     let updateForm = document.querySelector(".update_form");
     let errorElement = document.querySelector(".error");
     let successElement = document.querySelector(".success");
+    let uuid = document.getElementById("uuid").value;
     updateForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-
         let student_id = document.getElementById("student_id").value;
         let student_email = document.getElementById("email").value;
         let selectedCourse = document.getElementById("course").value;
@@ -66,13 +66,10 @@ document.addEventListener("DOMContentLoaded", () => {
         );
         formData.append("comments", comments);
         try {
-            const response = await fetch(
-                `/students/details/${formData.get("student_id")}`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
+            const response = await fetch(`/students/details?uuid=${uuid}`, {
+                method: "POST",
+                body: formData,
+            });
 
             if (response.ok) {
                 window.location.href = "/students/update_success";

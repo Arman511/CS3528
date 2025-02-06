@@ -9,6 +9,7 @@ from passlib.hash import pbkdf2_sha256
 
 from flask import session
 
+
 # flake8: noqa: F811
 
 # Add the root directory to the Python path
