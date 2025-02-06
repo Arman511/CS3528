@@ -49,7 +49,7 @@ jobs:
           coverage run -m pytest
           coverage html
 
-      - name: Deploy coverage report to GitHub Pages
+      - name: Deploy coverage report
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
@@ -64,5 +64,5 @@ jobs:
           git add .
           git commit -m "Update coverage report"
           
-          # Push the coverage report to GitHub Pages
-          git push -f origin coverage_report:gh-pages
+          # Push the coverage report to Pages
+          git push -f origin coverage_report
