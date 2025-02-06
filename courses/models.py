@@ -98,4 +98,21 @@ class Course:
             courses_cache["last_updated"] = current_time
             return courses
 
+
         return []
+    
+    def search_courses(self):
+        """Searching students."""
+        data = request.get_json()
+        # Build the query with AND logic
+        query = {}
+        if data.get("course_id"):
+            query["course_id"] = data["course_id"]
+        if data.get("course_name"):
+            query["course_name"] = data["course_name"]
+        courses = list(database.courses_collection.find(query))
+
+        if courses:
+            return jsonify(courses), 200
+
+        return jsonify({"error": "No courses found"}), 404
