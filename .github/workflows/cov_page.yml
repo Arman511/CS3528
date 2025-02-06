@@ -54,14 +54,11 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          cp .gitignore /tmp/.gitignore
-          git checkout --orphan coverage_report
-          mv /tmp/.gitignore .gitignore
-          
           git checkout --orphan coverage_report
           git rm -rf .
           
           mv htmlcov/* .
+          git merge main .gitignore
           
           # Add the files to Git and commit
           git add .
