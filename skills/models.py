@@ -123,7 +123,7 @@ class Skill:
     def get_skills_map(self):
         """Get skills map"""
         skills = self.get_skills()
-        return {skill["skill_name"]: skill for skill in skills}
+        return {skill["_id"]: skill for skill in skills}
 
     def attempt_add_skill(self, skill_name):
         """Add skill to attempted skills"""
