@@ -3,19 +3,22 @@ document.addEventListener("DOMContentLoaded", () => {
     const studentTable = document.getElementById("student-table");
     const deleteButtons = document.querySelectorAll(".delete-button");
     const students = [];
-    for (row of studentTable.rows) {
+
+    for (const row of studentTable.rows) {
         students.push({
             first_name: row.cells[0].innerText.toLowerCase(),
             last_name: row.cells[1].innerText.toLowerCase(),
             email: row.cells[2].innerText.toLowerCase(),
             student_id: row.cells[3].innerText,
             course_id: row.cells[4].innerText,
-            skills: row.cells[5].innerText
-                .split("\n")
-                .filter((skill) => skill.trim() !== ""),
-            modules: row.cells[6].innerText
-                .split("\n")
-                .filter((module) => module.trim() !== ""),
+            skills: row.cells[5].dataset.skills
+                .toLowerCase()
+                .split(", ")
+                .filter(Boolean),
+            modules: row.cells[6].dataset.modules
+                .toLowerCase()
+                .split(", ")
+                .filter(Boolean),
         });
     }
 
@@ -28,8 +31,12 @@ document.addEventListener("DOMContentLoaded", () => {
             email: formData.get("email").toLowerCase(),
             student_id: formData.get("student_id").toLowerCase(),
             course_id: formData.get("course"),
-            skills: formData.getAll("skills"),
-            modules: formData.getAll("modules"),
+            skills: formData
+                .getAll("skills")
+                .map((skill) => skill.toLowerCase()),
+            modules: formData
+                .getAll("modules")
+                .map((module) => module.toLowerCase()),
         };
 
         for (const row of studentTable.rows) {
@@ -38,48 +45,54 @@ document.addEventListener("DOMContentLoaded", () => {
 
             if (
                 filters.first_name &&
-                !student.first_name.toLowerCase().includes(filters.first_name)
-            ) {
+                !student.first_name.includes(filters.first_name)
+            )
                 shouldShow = false;
-            }
             if (
                 filters.last_name &&
-                !student.last_name.toLowerCase().includes(filters.last_name)
-            ) {
+                !student.last_name.includes(filters.last_name)
+            )
                 shouldShow = false;
-            }
-            if (
-                filters.email &&
-                !student.email.toLowerCase().includes(filters.email)
-            ) {
+            if (filters.email && !student.email.includes(filters.email))
                 shouldShow = false;
-            }
             if (
                 filters.student_id &&
-                !student.student_id.toLowerCase().includes(filters.student_id)
-            ) {
+                !student.student_id.includes(filters.student_id)
+            )
                 shouldShow = false;
-            }
-            if (filters.course_id && student.course_id !== filters.course_id) {
+            if (filters.course_id && student.course_id !== filters.course_id)
                 shouldShow = false;
-            }
             if (
                 filters.skills.length &&
                 !filters.skills.every((skill) => student.skills.includes(skill))
-            ) {
+            )
                 shouldShow = false;
-            }
             if (
                 filters.modules.length &&
                 !filters.modules.every((module) =>
                     student.modules.includes(module)
                 )
-            ) {
+            )
                 shouldShow = false;
-            }
 
             row.style.display = shouldShow ? "" : "none";
         }
+    });
+
+    document.querySelectorAll(".toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", (event) => {
+            event.preventDefault();
+            const targetId = btn.getAttribute("data-bs-target");
+            const targetElement = document.querySelector(targetId);
+
+            targetElement.addEventListener("shown.bs.collapse", () => {
+                btn.textContent = "Show Less";
+            });
+
+            targetElement.addEventListener("hidden.bs.collapse", () => {
+                btn.textContent = "Show More";
+            });
+        });
     });
 
     for (const deleteButton of deleteButtons) {
@@ -88,9 +101,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (confirm("Are you sure you want to delete this student?")) {
                 const response = await fetch(
                     `/students/delete_student/${studentId}`,
-                    {
-                        method: "DELETE",
-                    }
+                    { method: "DELETE" }
                 );
                 if (response.ok) {
                     window.location.reload();

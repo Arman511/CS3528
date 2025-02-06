@@ -79,17 +79,46 @@
                                 <td>{{ student.email }}</td>
                                 <td>{{ student.student_id }}</td>
                                 <td>{{ student.course }}</td>
-                                <td>
-                                    {% for skill in student.skills %}
-                                        {{ skills_map[skill].skill_name }}
-                                        <br />
-                                    {% endfor %}
+                                <td data-skills="{% for skill in student.skills %}{{ skills_map[skill].skill_name }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for skill in student.skills[:2] %}
+                                            {# Show only first 2 #}
+                                            {{ skills_map[skill].skill_name }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if student.skills|length > 2 %}
+                                            <div class="collapse" id="skills-{{ student.student_id }}">
+                                                {% for skill in student.skills[2:] %}
+                                                    {{ skills_map[skill].skill_name }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#skills-{{ student.student_id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
                                 </td>
-                                <td>
-                                    {% for module in student.modules %}
-                                        {{ module }}
-                                        <br />
-                                    {% endfor %}
+                                <td data-modules="{% for module in student.modules %}{{ module }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for module in student.modules[:2] %}
+                                            {{ module }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if student.modules|length > 2 %}
+                                            <div class="collapse" id="modules-{{ student.student_id }}">
+                                                {% for module in student.modules[2:] %}
+                                                    {{ module }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#modules-{{ student.student_id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
                                 </td>
                                 <td>
                                     <a href="{{ url_for('update_student', uuid=student._id) }}">
