@@ -54,14 +54,14 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
-          git checkout main -- .gitignore
           
           git checkout --orphan coverage_report
           git rm -rf .
           
           mv htmlcov/* .
           
-          git add .
+          git add *
+          git reset '*.pyc'
           git commit -m "Update coverage report"
           
           # Push the coverage report to Pages
