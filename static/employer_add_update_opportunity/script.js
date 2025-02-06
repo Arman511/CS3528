@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (response.ok) {
                 alert("Opportunity added/updated.");
                 errorParagraph.classList.add("error--hidden");
-                window.location.reload();
+                window.location.href = "/opportunities/search";
             } else {
                 errorParagraph.textContent =
                     "Error adding/updating opportunity.";
