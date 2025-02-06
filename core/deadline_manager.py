@@ -106,15 +106,6 @@ class DeadlineManager:
                 ),
                 400,
             )
-        if details_deadline > opportunities_ranking_deadline:
-            return (
-                jsonify(
-                    {
-                        "error": "Details deadline cannot be later than Opportunities Ranking deadline."
-                    }
-                ),
-                400,
-            )
 
         DATABASE_MANAGER.update_one_by_field(
             "deadline", "type", 0, {"deadline": details_deadline}
