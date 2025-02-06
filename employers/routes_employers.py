@@ -149,7 +149,7 @@ def add_employer_routes(app):
             )
         if request.method == "POST":
             ranks = request.form.get("ranks")
-            preferences = [a[5:] for a in ranks.split(",")]
+            preferences = [a[5:].strip() for a in ranks.split(",")]
             return Opportunity().rank_preferences(opportunity_id, preferences)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(

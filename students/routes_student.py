@@ -4,7 +4,7 @@ Handles routes for the student module.
 
 import os
 from dotenv import load_dotenv
-from flask import redirect, render_template, request, session
+from flask import jsonify, redirect, render_template, request, session
 from core import handlers
 from courses.models import Course
 from employers.models import Employers
@@ -28,7 +28,13 @@ def add_student_routes(app):
         """Route to upload students from a XLSX file."""
         load_dotenv()
         base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
+        if "file" not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
+            return jsonify({"error": "Invalid file type"}), 400
         file = request.files["file"]
+
         return Student().import_from_xlsx(base_email, file)
 
     @app.route("/students/upload", methods=["GET"])
@@ -203,7 +209,7 @@ def add_student_routes(app):
         if not DEADLINE_MANAGER.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
-            preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+            preferences = [a[5:].strip() for a in request.form.get("ranks").split(",")]
             return Student().rank_preferences(student_id, preferences)
         opportunities = Student().get_opportunities_by_student(student_id)
         return render_template(
