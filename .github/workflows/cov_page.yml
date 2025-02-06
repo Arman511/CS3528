@@ -54,15 +54,15 @@ jobs:
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           
+          git checkout main -- .gitignore
+          
           git checkout --orphan coverage_report
           git rm -rf .
           
           mv htmlcov/* .
-          git merge main .gitignore
           
-          # Add the files to Git and commit
           git add .
           git commit -m "Update coverage report"
           
           # Push the coverage report to GitHub Pages
-          git push -f origin coverage_report
+          git push -f origin coverage_report:gh-pages
