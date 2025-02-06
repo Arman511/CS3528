@@ -99,3 +99,8 @@ class Course:
             return courses
 
         return []
+
+    def get_courses_map(self):
+        """Get courses map"""
+        courses = self.get_courses()
+        return {course["course_id"]: course for course in courses}

@@ -101,3 +101,8 @@ class Module:
             return modules
 
         return []
+
+    def get_modules_map(self):
+        """Get modules map"""
+        modules = self.get_modules()
+        return {module["module_id"]: module for module in modules}

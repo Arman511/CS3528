@@ -120,6 +120,14 @@ class Skill:
 
         return []
 
+    def get_skills_map(self):
+        """Get skills map"""
+        skills = self.get_skills()
+        skills_map = {}
+        for skill in skills:
+            skills_map[skill["_id"]] = skill
+        return skills_map
+
     def attempt_add_skill(self, skill_name):
         """Add skill to attempted skills"""
         from app import DATABASE_MANAGER

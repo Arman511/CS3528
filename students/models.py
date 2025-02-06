@@ -42,7 +42,9 @@ class Student:
             return jsonify({"error": "Student already in database"}), 400
 
         if overwrite:
-            DATABASE_MANAGER.delete_one_by_field("students", "student_id", student["student_id"])
+            DATABASE_MANAGER.delete_one_by_field(
+                "students", "student_id", student["student_id"]
+            )
 
         DATABASE_MANAGER.insert("students", student)
 
@@ -85,6 +87,17 @@ class Student:
             return students
 
         return []
+
+    def get_students_map(self):
+        """Getting all students."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        if students:
+            return {student["_id"]: student for student in students}
+
+        return {}
 
     def update_student_by_id(self, student_id, student_data):
         """Update student in the database by student_id."""
