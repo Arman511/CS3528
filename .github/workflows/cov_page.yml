@@ -23,6 +23,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: "8.0"
+          mongodb-replica-set: test-rs
+        env:
+          CI: true
+          IS_GITHUB_ACTION: "True"
+          IS_TEST: "True"
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -31,8 +41,11 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
+      
 
       - name: Run tests with coverage
+        env:
+          SECRET_KEY: "psZsPEYjcq9@?(!6w=dK"
         run: |
           coverage run -m pytest
           coverage html
