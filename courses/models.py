@@ -54,7 +54,7 @@ class Course:
 
         return jsonify(course), 200
 
-    def get_course_by_id(self, course_id=None):
+    def get_course_by_id(self, course_id):
         """Retrieves a course by its ID."""
         from app import DATABASE_MANAGER
 

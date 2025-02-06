@@ -57,7 +57,7 @@ class Module:
 
         return jsonify(module), 200
 
-    def get_module_by_id(self, module_id=None):
+    def get_module_by_id(self, module_id):
         """Retrieves a module by its ID."""
         from app import DATABASE_MANAGER
 
