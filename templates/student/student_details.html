@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block content %}
-{% include "navgbar.html" %}
+    {% include "navgbar.html" %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Update your Details</h2>
@@ -94,7 +94,7 @@
                 <select id="modules" name="modules" class="form-control" multiple required>
                     {% for module in modules %}
                         <option value="{{ module.module_id }}"
-                                {% if module.module_id in student.module %}selected{% endif %}>
+                                {% if module.module_id in student.modules %}selected{% endif %}>
                             {{ module.module_id + ": " + module.module_name }}
                         </option>
                     {% endfor %}
