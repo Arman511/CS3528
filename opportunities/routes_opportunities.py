@@ -27,7 +27,7 @@ def add_opportunities_routes(app):
         user_type = None
         if user:
             user_type = "admin"
-        elif employer:
+        else:
             user_type = "employer"
 
         print(f"[DEBUG] User type: {user_type}")
@@ -103,8 +103,12 @@ def add_opportunities_routes(app):
                 "url": request.form.get("url"),
                 "employer_id": None,
                 "location": request.form.get("location"),
-                "modules_required": request.form.get("modules_required"),
-                "courses_required": request.form.get("courses_required"),
+                "modules_required": request.form.get("modules_required")[1:-1]
+                .replace('"', "")
+                .split(","),
+                "courses_required": request.form.get("courses_required")[1:-1]
+                .replace('"', "")
+                .split(","),
                 "spots_available": request.form.get("spots_available"),
                 "duration": request.form.get("duration"),
             }

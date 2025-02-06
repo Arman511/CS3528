@@ -20,7 +20,7 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         """Adding new opportunity."""
-        find_opportunity = DATABASE_MANAGER.get_by_id(
+        find_opportunity = DATABASE_MANAGER.get_one_by_id(
             "opportunities", opportunity["_id"]
         )
         if find_opportunity and not is_admin:
@@ -48,7 +48,9 @@ class Opportunity:
             opportunities = []
             if title and company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
-                    "employers", "company_name", company_name
+                    "employers",
+                    "company_name",
+                    {"$regex": company_name, "$options": "i"},
                 )
                 opportunities = DATABASE_MANAGER.get_all_by_two_fields(
                     "opportunities",
@@ -63,10 +65,12 @@ class Opportunity:
                 )
             elif company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
-                    "employers", "company_name", company_name
+                    "employers",
+                    "company_name",
+                    {"$regex": company_name, "$options": "i"},
                 )
                 opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", {"employer_id": company["_id"]}
+                    "opportunities", "employer_id", company["_id"]
                 )
             else:
                 opportunities = DATABASE_MANAGER.get_all("opportunities")
@@ -165,7 +169,7 @@ class Opportunity:
         cache["data"] = DATABASE_MANAGER.get_all("opportunities")
         cache["last_updated"] = datetime.now()
 
-        opportunity = DATABASE_MANAGER.get_by_id("opportunities", _id)
+        opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", _id)
 
         if opportunity:
             return opportunity
@@ -234,16 +238,6 @@ class Opportunity:
         valid_students = []
         for student in students:
             if "preferences" in student and opportunity_id in student["preferences"]:
-                student["modules"] = [
-                    d.strip().replace('"', "")
-                    for d in student["modules"][1:-1].split(",")
-                    if d.strip().replace('"', "") != ""
-                ]
-                student["skills"] = [
-                    d.strip().replace('"', "")
-                    for d in student["skills"][1:-1].split(",")
-                    if d.strip().replace('"', "") != ""
-                ]
                 valid_students.append(student)
         return valid_students
 

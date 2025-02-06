@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <td>${employer.company_name}</td>
                             <td>${employer.email}</td>
                             <td>
-                                <a href="/employers/update_employer?employer_id=${employer._id}" class="btn btn-info btn-sm">Update</a>
+                                <a href="/employers/update_employer?employer_id=${employer._id}" class="btn btn-info btn-sm mb-2">Update</a>
                                 <button class="btn btn-danger btn-sm delete-employer" data-id="${employer._id}">Delete</button>
                             </td>
                         </tr>
@@ -46,7 +46,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 attachDeleteEventListeners();
             })
             .catch((error) => {
-                errorElement.textContent = "An error occurred. Please try again.";
+                errorElement.textContent =
+                    "An error occurred. Please try again.";
                 errorElement.classList.remove("error--hidden");
             });
     }

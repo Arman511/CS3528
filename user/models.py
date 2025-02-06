@@ -3,7 +3,7 @@ User model.
 """
 
 from email.mime.text import MIMEText
-from flask import jsonify, request, session
+from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
 from employers.models import Employers
@@ -74,15 +74,11 @@ class User:
 
     #     return jsonify({"message": "Password updated successfully"}), 200
 
-    def change_deadline(self):
+    def change_deadline(
+        self, details_deadline, student_ranking_deadline, opportunities_ranking_deadline
+    ):
         """Change deadlines for details, student ranking, and opportunities ranking."""
         from app import DEADLINE_MANAGER
-
-        details_deadline = request.form.get("details_deadline")
-        student_ranking_deadline = request.form.get("student_ranking_deadline")
-        opportunities_ranking_deadline = request.form.get(
-            "opportunities_ranking_deadline"
-        )
 
         response = DEADLINE_MANAGER.update_deadlines(
             details_deadline, student_ranking_deadline, opportunities_ranking_deadline
