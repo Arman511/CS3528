@@ -64,16 +64,4 @@ def test_start_session(user_logged_in_client):
     response = user_logged_in_client.get("/user/models")
     with user_logged_in_client.session_transaction() as session:
         assert '_id' in session['user']
-    
-def test_register():
-    pass
-
-def test_login():
-    pass
-
-def test_change_deadline():
-    pass
-
-def test_send_match_email():
-    pass
 
