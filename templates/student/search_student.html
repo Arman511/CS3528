@@ -25,7 +25,7 @@
                     </div>
                     <div>
                         <label for="course">Course:</label>
-                        <select id="course" name="course" class="field">
+                        <select id="course" name="course" class="field" select="course">
                             <option value="">Select Course</option>
                             {% for course in courses %}
                                 <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
@@ -34,14 +34,14 @@
                     </div>
                     <div>
                         <label for="skills">Skills:</label>
-                        <select id="skills" name="skills" class="field" multiple>
+                        <select id="skills" name="skills" class="field" title="skills" multiple>
                             <option value="">Select Skills</option>
                             {% for skill in skills %}<option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>{% endfor %}
                         </select>
                     </div>
                     <div>
                         <label for="modules">Modules:</label>
-                        <select id="modules" name="modules" class="field" multiple>
+                        <select id="modules" name="modules" class="field" title="modules" multiple>
                             <option value="">Select Modules</option>
                             {% for module in modules %}
                                 <option value="{{ module.module_id }}">{{ module.module_id }}: {{ module.module_name }}</option>
@@ -141,14 +141,17 @@
         $('#skills').selectize({
             plugins: ["remove_button"],
             maxItems: 10,
-            sortField: 'text'
+            sortField: 'text',
+            dropdownParent: 'body'
         });
         $('#modules').selectize({
             plugins: ["remove_button"],
-            sortField: 'text'
+            sortField: 'text',
+            dropdownParent: 'body'
         });
         $('#course').selectize({
-            sortField: 'text'
+            sortField: 'text',
+            dropdownParent: 'body'
         });
     });
     </script>
