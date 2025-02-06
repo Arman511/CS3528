@@ -86,7 +86,13 @@ def add_employer_routes(app):
 
         employer_id = request.args.get("employer_id")  # Get employer_id from URL query
         if request.method == "POST":
-            return Employers().update_employer()
+            employer_id = request.form.get("employer_id")
+
+            update_data = {
+                "company_name": request.form.get("company_name"),
+                "email": request.form.get("email"),
+            }
+            return Employers().update_employer(employer_id, update_data)
 
         employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
         if not employer:

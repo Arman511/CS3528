@@ -2,7 +2,7 @@
 Courses model."""
 
 from datetime import datetime, timedelta
-from flask import jsonify, request
+from flask import jsonify
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -58,8 +58,6 @@ class Course:
         """Retrieves a course by its ID."""
         from app import DATABASE_MANAGER
 
-        if not course_id:
-            course_id = request.form.get("course_id")
         course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
 
         if course:

@@ -4,7 +4,7 @@ Skills model.
 
 import uuid
 from datetime import datetime, timedelta
-from flask import jsonify, request
+from flask import jsonify
 
 # Cache to store skills and the last update time
 skills_cache = {"data": [], "last_updated": datetime.now()}
@@ -76,10 +76,8 @@ class Skill:
 
         return jsonify({"message": "Deleted"}), 200
 
-    def get_skill_by_id(self, skill_id=None):
+    def get_skill_by_id(self, skill_id):
         """Get skill by ID tag"""
-        if skill_id is None:
-            skill_id = request.form.get("skill_id")
         skill = self.find_skill(None, skill_id)
 
         if skill:
