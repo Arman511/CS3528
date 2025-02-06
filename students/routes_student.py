@@ -134,9 +134,9 @@ def add_student_routes(app):
             user_type="student",
         )
 
-    @app.route("/students/update_student/", methods=["GET", "POST"])
+    @app.route("/students/update_student", methods=["GET", "POST"])
     @handlers.login_required
-    def update_student(student_id):
+    def update_student():
         """Update student for admins."""
         if request.method == "POST":
             student = {}
@@ -171,7 +171,8 @@ def add_student_routes(app):
             student["course"] = request.form.get("course")
             return Student().update_student_by_uuid(uuid, student)
 
-        student = Student().get_student_by_id(student_id)
+        uuid = request.args.get("uuid")
+        student = Student().get_student_by_uuid(uuid)
         return render_template(
             "student/update_student.html",
             student=student,

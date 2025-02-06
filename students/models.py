@@ -70,7 +70,7 @@ class Student:
         """Getting student."""
         from app import DATABASE_MANAGER
 
-        student = DATABASE_MANAGER.get_by_id("students", _id)
+        student = DATABASE_MANAGER.get_one_by_id("students", _id)
 
         if student:
             return student

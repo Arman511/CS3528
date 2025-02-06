@@ -139,11 +139,12 @@
     <script>
     $(document).ready(function () {
         $('#skills').selectize({
+            plugins: ["remove_button"],
             maxItems: 10,
             sortField: 'text'
         });
         $('#modules').selectize({
-            maxItems: 10,
+            plugins: ["remove_button"],
             sortField: 'text'
         });
     });
