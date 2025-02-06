@@ -41,8 +41,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -r requirements.txt
-      
-
+          
       - name: Run tests with coverage
         env:
           SECRET_KEY: "psZsPEYjcq9@?(!6w=dK"
@@ -54,9 +53,19 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          cp .gitignore /tmp/.gitignore
+          git checkout --orphan coverage_report
+          mv /tmp/.gitignore .gitignore
+          
           git checkout --orphan coverage_report
           git rm -rf .
+          
           mv htmlcov/* .
+          
+          # Add the files to Git and commit
           git add .
           git commit -m "Update coverage report"
+          
+          # Push the coverage report to GitHub Pages
           git push -f origin coverage_report
