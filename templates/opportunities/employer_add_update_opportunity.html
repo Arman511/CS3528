@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-{% if user_type == "employer" %}
-    {% include "employers/navbar.html" %}
-{% elif user_type == "admin" %}
-    {% include "user/navbar.html" %}
-{% endif %}
+    {% if user_type == "employer" %}
+        {% include "employers/navbar.html" %}
+    {% elif user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% endif %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Add/Update placement</h2>
@@ -95,13 +95,16 @@
                     $('#modules').selectize({
                         plugins: ["remove_button"],
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#course').selectize({
                         plugins: [ "remove_button"],
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#placement_duration').selectize({
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                 });
             </script>

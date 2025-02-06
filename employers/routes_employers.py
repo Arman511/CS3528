@@ -86,7 +86,13 @@ def add_employer_routes(app):
 
         employer_id = request.args.get("employer_id")  # Get employer_id from URL query
         if request.method == "POST":
-            return Employers().update_employer()
+            employer_id = request.form.get("employer_id")
+
+            update_data = {
+                "company_name": request.form.get("company_name"),
+                "email": request.form.get("email"),
+            }
+            return Employers().update_employer(employer_id, update_data)
 
         employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
         if not employer:
@@ -149,7 +155,7 @@ def add_employer_routes(app):
             )
         if request.method == "POST":
             ranks = request.form.get("ranks")
-            preferences = [a[5:] for a in ranks.split(",")]
+            preferences = [a[5:].strip() for a in ranks.split(",")]
             return Opportunity().rank_preferences(opportunity_id, preferences)
         valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(

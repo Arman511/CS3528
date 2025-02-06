@@ -57,4 +57,8 @@ from core.deadline_manager import DeadlineManager  # noqa: E402
 DEADLINE_MANAGER = DeadlineManager()
 
 if __name__ == "__main__":
-    app.run()
+    try:
+        app.run()
+    except KeyboardInterrupt:
+        DATABASE_MANAGER.close_connection()
+        print("Shutting down the server...")

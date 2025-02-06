@@ -3,7 +3,7 @@ Opportunity model.
 """
 
 from datetime import datetime
-from flask import jsonify, request, session
+from flask import jsonify, session
 from employers.models import Employers
 
 cache = {"data": [], "last_updated": datetime.now()}
@@ -153,12 +153,9 @@ class Opportunity:
         )
         return opportunities
 
-    def get_opportunity_by_id(self, _id=None):
+    def get_opportunity_by_id(self, _id):
         """Getting opportunity."""
         from app import DATABASE_MANAGER
-
-        if not _id:
-            _id = request.form.get("_id")
 
         if cache["data"] and cache["last_updated"] > datetime.now():
             for opportunity in cache["data"]:
@@ -241,7 +238,7 @@ class Opportunity:
                 valid_students.append(student)
         return valid_students
 
-    def rank_preferences(self, opportunity_id):
+    def rank_preferences(self, opportunity_id, preferences):
         """Sets a opportunity preferences."""
         from app import DATABASE_MANAGER
 
@@ -250,7 +247,6 @@ class Opportunity:
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
-        preferences = [a[5:] for a in request.form.get("ranks").split(",")]
         DATABASE_MANAGER.update_one_by_field(
             "opportunities", "_id", opportunity_id, {"preferences": preferences}
         )

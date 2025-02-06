@@ -2,7 +2,7 @@
 
 from datetime import datetime, timedelta
 import time
-from flask import redirect, jsonify, request, session
+from flask import redirect, jsonify, session
 from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}
@@ -109,20 +109,13 @@ class Employers:
 
         return jsonify({"error": "Employer not found"}), 404
 
-    def update_employer(self):
+    def update_employer(self, employer_id, update_data):
         """Updates an employer in the database."""
         from app import DATABASE_MANAGER
-
-        employer_id = request.form.get("employer_id")
 
         employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
         if not employer:
             return jsonify({"error": "Employer not found"}), 404
-
-        update_data = {
-            "company_name": request.form.get("company_name"),
-            "email": request.form.get("email"),
-        }
 
         DATABASE_MANAGER.update_one_by_id("employers", employer_id, update_data)
 
