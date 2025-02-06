@@ -59,6 +59,8 @@ jobs:
           git rm -rf .
           
           mv htmlcov/* .
+
+            echo "[Coverage Report](https://arman511.github.io/CS3528/)" > README.md
           
           git add *
           git reset '*.pyc'
