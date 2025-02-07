@@ -59,10 +59,6 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def get_many_by_field(self, table, field, value):
-        pass
-
-    @abstractmethod
     def is_table(self, table):
         pass
 

@@ -14,7 +14,7 @@ class DatabaseMongoManager(DatabaseInterface):
     def __init__(self, connection, database):
         super().__init__()
         if connection == "":
-            return
+            raise ValueError("Connection string cannot be empty")
 
         self.connect(connection, database)
 
@@ -83,9 +83,6 @@ class DatabaseMongoManager(DatabaseInterface):
             {field: {"$regex": f"^{value}$", "$options": "i"}}
         )
 
-    def get_many_by_field(self, table, field, value):
-        return list(self.database[table].find({field: value}))
-
     def is_table(self, table):
         return table in self.table_list
 
@@ -118,3 +115,6 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def close_connection(self):
         self.connection.close()
+
+    def delete_collection(self, table):
+        return self.database[table].drop()

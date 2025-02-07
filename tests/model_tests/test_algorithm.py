@@ -1,6 +1,15 @@
 """Tests for the matching algorithm."""
 
-from ..algorithm.matching import Matching
+import os
+import sys
+
+# flake8: noqa: F811
+
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+
+from algorithm.matching import Matching
 
 
 def test_basic_matching_without_conflicts():

@@ -16,7 +16,7 @@ from employers import routes_employers
 
 def allowed_file(filename, types):
     """Check if file type is allowed."""
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in types
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in set(types)
 
 
 # Decorators
@@ -97,9 +97,9 @@ def get_user_type():
 
     # Determine user_type based on session data
     if user:
-        user_type = user.get("name").lower()
+        user_type = "admin"
     elif employer:
-        user_type = employer.get("company_name")
+        user_type = "employer"
     elif student:
         user_type = "student"
     else:

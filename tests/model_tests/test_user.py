@@ -2,11 +2,9 @@
 
 import os
 import sys
-
 from dotenv import load_dotenv
 import pytest
 from passlib.hash import pbkdf2_sha256
-
 from flask import session
 
 
@@ -28,6 +26,7 @@ def app():
     """Fixture to create a test client."""
     from ...app import app  # pylint: disable=import-outside-toplevel
 
+    app.config["TESTING"] = True
     return app
 
 
@@ -48,6 +47,15 @@ def database():
     )
 
     yield DATABASE
+
+    tables = [
+        "users",
+        "students",
+        "employers",
+    ]
+
+    for table in tables:
+        DATABASE.delete_all_by_field(table, "email", "dummy@dummy.com")
 
     # Cleanup code
     DATABASE.connection.close()
