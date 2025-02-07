@@ -69,7 +69,7 @@ def add_skills_routes(app):
             return render_template("/skills/update_attempt_skill.html", skill=skill)
         else:
             skill_id = request.form.get("skill_id")
-            skill_name = request.form.get("skill_name")
+            skill_name = request.form.get("skill_name").lower()
             skill_description = request.form.get("skill_description")
             if not skill_name or not skill_description:
                 return jsonify({"error": "One of the inputs is blank"}), 400
