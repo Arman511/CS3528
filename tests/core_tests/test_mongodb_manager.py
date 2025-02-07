@@ -163,14 +163,15 @@ def test_text_search_on_non_indexed_field(database):
     database.delete_by_id("test_collection", "text_test")
 
 
-def test_get_many_by_field(database):
+def test_get_all_by_field(database):
     test_data1 = {"_id": "test8", "category": "A", "name": "Entry 1"}
     test_data2 = {"_id": "test9", "category": "B", "name": "Entry 2"}
     test_data3 = {"_id": "test10", "category": "A", "name": "Entry 3"}
     database.insert("test_collection", test_data1)
     database.insert("test_collection", test_data2)
+    database.insert("test_collection", test_data3)
 
-    results = database.get_many_by_field("test_collection", "category", "A")
+    results = database.get_all_by_field("test_collection", "category", "A")
     assert len(results) == 2
     assert results[0]["category"] == "A"
     assert results[0]["name"] == "Entry 1"
@@ -226,3 +227,65 @@ def test_update_by_field(database):
     assert updated["name"] == "New Name"
 
     database.delete_by_id("test_collection", "test15")
+
+
+def test_create_index(database):
+    result = database.create_index("test_collection", "name")
+    assert isinstance(result, str)
+
+
+def test_get_all_by_list_query(database):
+    test_data1 = {"_id": "test18", "categories": ["A", "B", "C"], "status": "active"}
+    test_data2 = {"_id": "test19", "categories": ["A", "B", "C"], "status": "inactive"}
+    test_data3 = {"_id": "test20", "categories": ["D", "E", "F"], "status": "active"}
+    test_data4 = {"_id": "test21", "categories": ["A", "B", "C"], "status": "active"}
+    database.insert("test_collection", test_data1)
+    database.insert("test_collection", test_data2)
+    database.insert("test_collection", test_data3)
+    database.insert("test_collection", test_data4)
+
+    query = [("categories", ["A"], 1), ("status", "active", 0)]
+    results = database.get_all_by_list_query("test_collection", query)
+    assert len(results) == 2
+    assert results[0]["categories"] == ["A", "B", "C"]
+    assert results[0]["status"] == "active"
+    assert results[0]["_id"] == "test18"
+
+    database.delete_by_id("test_collection", "test18")
+    database.delete_by_id("test_collection", "test19")
+    database.delete_by_id("test_collection", "test20")
+    database.delete_by_id("test_collection", "test21")
+
+
+def test_delete_one_by_field(database):
+    test_data = {"_id": "test20", "category": "A", "name": "Entry to delete"}
+    database.insert("test_collection", test_data)
+
+    database.delete_one_by_field("test_collection", "category", "A")
+    deleted = database.get_one_by_id("test_collection", "test20")
+    assert deleted is None
+
+
+def test_get_all_by_in_list(database):
+    test_data1 = {"_id": "test21", "category": "A", "name": "Entry 1"}
+    test_data2 = {"_id": "test22", "category": "B", "name": "Entry 2"}
+    test_data3 = {"_id": "test23", "category": "C", "name": "Entry 3"}
+    test_data4 = {"_id": "test24", "category": "A", "name": "Entry 4"}
+
+    database.insert("test_collection", test_data1)
+    database.insert("test_collection", test_data2)
+    database.insert("test_collection", test_data3)
+    database.insert("test_collection", test_data4)
+
+    # Fetch entries with category "A" or "C"
+    results = database.get_all_by_in_list("test_collection", "category", ["A", "C"])
+
+    assert len(results) == 3
+    assert any(item["_id"] == "test21" for item in results)
+    assert any(item["_id"] == "test23" for item in results)
+    assert any(item["_id"] == "test24" for item in results)
+
+    database.delete_by_id("test_collection", "test21")
+    database.delete_by_id("test_collection", "test22")
+    database.delete_by_id("test_collection", "test23")
+    database.delete_by_id("test_collection", "test24")

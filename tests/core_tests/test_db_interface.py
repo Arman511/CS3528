@@ -50,9 +50,6 @@ class MockDatabaseInterface(DatabaseInterface, ABC):
     def get_one_by_field(self, table, field, value):
         return None
 
-    def get_many_by_field(self, table, field, value):
-        return []
-
     def is_table(self, table):
         return table in self.table_list
 
