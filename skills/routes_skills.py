@@ -34,3 +34,49 @@ def add_skills_routes(app):
             "skill_description": request.form.get("skill_description"),
         }
         return Skill().add_skill(skill)
+
+    @app.route("/skills/attempt_search", methods=["GET"])
+    @handlers.login_required
+    def search_attempt_skills():
+        """Approval page for attempted Skills"""
+        attempted_skills = Skill().get_list_attempted_skills()
+
+        return render_template(
+            "/skills/skill_approval.html", attempted_skills=attempted_skills
+        )
+
+    @app.route("/skills/approve_skill", methods=["POST"])
+    @handlers.login_required
+    def approve_skill():
+        uuid = request.args.get("attempt_skill_id")
+        description = request.json.get("description")
+
+        try:
+            return Skill().approve_skill(uuid, description)
+        except Exception as e:
+            return jsonify(e), 500
+
+    @app.route("/skills/reject_skill", methods=["POST"])
+    @handlers.login_required
+    def reject_skill():
+        uuid = request.args.get("attempt_skill_id")
+
+        try:
+            return Skill().reject_skill(uuid)
+        except Exception as e:
+            return jsonify(e), 500
+
+    @app.route("/skills/update_attempted_skill", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_attempted_skill():
+        if request.method == "GET":
+            skill_id = request.args.get("attempt_skill_id")
+            skill = Skill().get_skill(skill_id)
+            return render_template("/skills/update_attempt_skill.html", skill=skill)
+        else:
+            skill_id = request.form.get("skill_id")
+            skill_name = request.form.get("skill_name")
+            skill_description = request.form.get("skill_description")
+            if not skill_name or not skill_description:
+                return jsonify({"error": "One of the inputs is blank"}), 400
+            return Skill().update_attempt_skill(skill_id, skill_name, skill_description)

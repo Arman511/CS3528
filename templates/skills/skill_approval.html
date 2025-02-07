@@ -12,6 +12,12 @@
                         <input type="text" id="name" name="name" class="field" />
                     </div>
                 </div>
+                <div class="form-group">
+                    <div>
+                        <label for="description">Description:</label>
+                        <input type="text" id="description" name="description" class="field" />
+                    </div>
+                </div>
                 <div>
                     <label for="usage_min">Usage (Min):</label>
                     <input type="number" id="usage_min" name="usage_min" class="field" />
@@ -38,19 +44,21 @@
                         </tr>
                     </thead>
                     <tbody id="attempted-skills-table">
-                        {% for skill in attempted_skill %}
+                        {% for skill in attempted_skills %}
                             <tr>
                                 <td>{{ skill.skill_name|capfirst }}</td>
+                                <td>{{ skill.skill_description }}</td>
                                 <td>{{ skill.used }}</td>
                                 <td>
-                                    {% if user_type == "employer" %}
-                                        <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-info btn-sm mb-2">Rank</a>
-                                    {% endif %}
-                                    <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Update</a>
-                                    <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
-                                       class="btn btn-danger btn-sm">Delete</a>
+                                    <button type="button"
+                                            class="btn btn-info btn-sm mb-2 approve-btn"
+                                            data-id="{{ skill._id }}">Approve</button>
+                                    <button type="button"
+                                            class="btn btn-info btn-sm mb-2 update-btn"
+                                            data-id="{{ skill._id }}">Update</button>
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm mb-2 reject-btn"
+                                            data-id="{{ skill._id }}">Reject</button>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -59,5 +67,5 @@
             </div>
         </div>
     </div>
-    <script src="/static/search_opportunities/script.js"></script>
+    <script src="/static/search_attempted_skills/script.js"></script>
 {% endblock content %}
