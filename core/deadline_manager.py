@@ -17,8 +17,11 @@ class DeadlineManager:
         from app import DATABASE_MANAGER
 
         find_deadline = DATABASE_MANAGER.get_one_by_field("deadline", "type", 0)
+        deadline = None
         if not find_deadline:
-            deadline = datetime.datetime.now().strftime("%Y-%m-%d")
+            deadline = datetime.datetime.now().strftime(
+                "%Y-%m-%d"
+            ) + datetime.timedelta(weeks=1)
             DATABASE_MANAGER.insert("deadline", {"type": 0, "deadline": deadline})
         else:
             deadline = find_deadline["deadline"]
@@ -34,6 +37,7 @@ class DeadlineManager:
         from app import DATABASE_MANAGER
 
         find_deadline = DATABASE_MANAGER.get_one_by_field("deadline", "type", 1)
+        deadline = None
         if not find_deadline:
             deadline = (
                 datetime.datetime.strptime(self.get_details_deadline(), "%Y-%m-%d")
@@ -54,6 +58,7 @@ class DeadlineManager:
         from app import DATABASE_MANAGER
 
         find_deadline = DATABASE_MANAGER.get_one_by_field("deadline", "type", 2)
+        deadline = None
         if not find_deadline:
             deadline = (
                 datetime.datetime.strptime(
