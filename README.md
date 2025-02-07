@@ -90,6 +90,8 @@ https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
 ## Coverage
 
+To see coverage go here: [Coverage Report](https://arman511.github.io/CS3528/)
+
 To run the tests and generate a coverage report in the terminal:
 
 ```
