@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function () {
     for (const updateButton of updateButtons) {
         updateButton.addEventListener("click", async () => {
             const skillId = updateButton.getAttribute("data-id");
-            window.location.href = `/skills/update_skill?attempt_skill_id=${skillId}`;
+            window.location.href = `/skills/update_attempted_skill?attempt_skill_id=${skillId}`;
         });
     }
 

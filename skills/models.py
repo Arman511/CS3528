@@ -157,6 +157,17 @@ class Skill:
 
         return attempted_skills
 
+    def get_attempted_skill(self, skill_id):
+        """Get attempted skill"""
+        from app import DATABASE_MANAGER
+
+        skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
+
+        if not skill:
+            return None
+
+        return skill
+
     def approve_skill(self, skill_id, description):
         """Approve skill"""
         from app import DATABASE_MANAGER

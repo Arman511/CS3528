@@ -1,7 +1,7 @@
 """Handles the routes for the skills module."""
 
 import uuid
-from flask import jsonify, render_template, request
+from flask import jsonify, redirect, render_template, request
 from core import handlers
 from .models import Skill
 
@@ -65,7 +65,9 @@ def add_skills_routes(app):
     def update_attempted_skill():
         if request.method == "GET":
             skill_id = request.args.get("attempt_skill_id")
-            skill = Skill().get_skill(skill_id)
+            skill = Skill().get_attempted_skill(skill_id)
+            if skill is None:
+                return redirect("/404")
             return render_template("/skills/update_attempt_skill.html", skill=skill)
         else:
             skill_id = request.form.get("skill_id")
