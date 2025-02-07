@@ -155,3 +155,25 @@ def test_add_student_duplicate_override(app, database):
             )
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
+
+def test_get_student_by_id(app, database):
+    """Test getting a student by id."""
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+    
+    assert Student().get_student_by_id("123") == student1
+   
+        
+    
+    
