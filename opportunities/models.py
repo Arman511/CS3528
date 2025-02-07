@@ -4,6 +4,7 @@ Opportunity model.
 
 from datetime import datetime
 from flask import jsonify, session
+from core import handlers
 from employers.models import Employers
 
 cache = {"data": [], "last_updated": datetime.now()}
@@ -207,7 +208,13 @@ class Opportunity:
         """Deleting opportunity."""
         from app import DATABASE_MANAGER
 
-        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", opportunity_id)
+
+        if (
+            handlers.user_type() == "employer"
+            and opportunity["employer_id"] != session["employer"]["_id"]
+        ):
+            return jsonify({"error": "Unauthorized Access."}), 401
 
         if opportunity:
             DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
@@ -242,7 +249,7 @@ class Opportunity:
         """Sets a opportunity preferences."""
         from app import DATABASE_MANAGER
 
-        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404

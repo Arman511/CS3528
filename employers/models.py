@@ -51,7 +51,7 @@ class Employers:
         """Get company name"""
         from app import DATABASE_MANAGER
 
-        employer = DATABASE_MANAGER.get_by_id("employers", _id)
+        employer = DATABASE_MANAGER.get_one_by_id("employers", _id)
         if not employer:
             return ""
 
@@ -129,7 +129,7 @@ class Employers:
         """Sets a students preferences."""
         from app import DATABASE_MANAGER
 
-        opportunity = DATABASE_MANAGER.get_by_id("opportunities", opportunity_id)
+        opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", opportunity_id)
 
         if not opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
@@ -143,7 +143,7 @@ class Employers:
         """Get company email by id"""
         from app import DATABASE_MANAGER
 
-        employer = DATABASE_MANAGER.get_by_id("employers", _id)
+        employer = DATABASE_MANAGER.get_one_by_id("employers", _id)
         if not employer:
             return ""
 
