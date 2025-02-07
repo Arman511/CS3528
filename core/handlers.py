@@ -90,6 +90,23 @@ def admin_or_employers_required(f):
     return wrap
 
 
+def get_user_type():
+    user = session.get("user")
+    employer = session.get("employer")
+    student = session.get("student")
+
+    # Determine user_type based on session data
+    if user:
+        user_type = user.get("name").lower()
+    elif employer:
+        user_type = employer.get("company_name")
+    elif student:
+        user_type = "student"
+    else:
+        user_type = None
+    return user_type
+
+
 def configure_routes(app, cache):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
@@ -157,3 +174,30 @@ def configure_routes(app, cache):
         """Clears the current session and redirects to the home page."""
         session.clear()
         return redirect("/")
+
+    @app.route("/favicon.ico")
+    def favicon():
+        """The favicon route which renders the 'favicon.ico' template.
+
+        Returns:
+            str: Rendered favicon.ico template.
+        """
+        return app.send_static_file("favicon.ico")
+
+    @app.route("/404")
+    def error_404():
+        """The 404 route which renders the '404.html' template.
+
+        Returns:
+            str: Rendered 404.html template.
+        """
+        return render_template("404.html", user_type=get_user_type())
+
+    @app.route("/500")
+    def error_500():
+        """The 500 route which renders the '500.html' template.
+
+        Returns:
+            str: Rendered 500.html template.
+        """
+        return render_template("500.html", user_type=get_user_type())
