@@ -83,9 +83,6 @@ class DatabaseMongoManager(DatabaseInterface):
             {field: {"$regex": f"^{value}$", "$options": "i"}}
         )
 
-    def get_many_by_field(self, table, field, value):
-        return list(self.database[table].find({field: value}))
-
     def is_table(self, table):
         return table in self.table_list
 
