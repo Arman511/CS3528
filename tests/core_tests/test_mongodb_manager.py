@@ -161,3 +161,68 @@ def test_text_search_on_non_indexed_field(database):
         database.get_all_by_text_search("test_collection", "MongoDB")
 
     database.delete_by_id("test_collection", "text_test")
+
+
+def test_get_many_by_field(database):
+    test_data1 = {"_id": "test8", "category": "A", "name": "Entry 1"}
+    test_data2 = {"_id": "test9", "category": "B", "name": "Entry 2"}
+    test_data3 = {"_id": "test10", "category": "A", "name": "Entry 3"}
+    database.insert("test_collection", test_data1)
+    database.insert("test_collection", test_data2)
+
+    results = database.get_many_by_field("test_collection", "category", "A")
+    assert len(results) == 2
+    assert results[0]["category"] == "A"
+    assert results[0]["name"] == "Entry 1"
+    assert results[1]["category"] == "A"
+    assert results[1]["name"] == "Entry 3"
+
+    database.delete_by_id("test_collection", "test8")
+    database.delete_by_id("test_collection", "test9")
+    database.delete_by_id("test_collection", "test10")
+
+
+def test_is_table(database):
+    assert database.is_table("test_collection") is False
+    database.add_table("test_collection")
+    assert database.is_table("test_collection") is True
+    assert database.is_table("non_existent_collection") is False
+
+
+def test_get_all_by_two_fields(database):
+    test_data1 = {"_id": "test10", "category": "A", "status": "active"}
+    test_data2 = {"_id": "test11", "category": "A", "status": "inactive"}
+    test_data3 = {"_id": "test12", "category": "B", "status": "active"}
+    test_data4 = {"_id": "test13", "category": "B", "status": "inactive"}
+    test_data5 = {"_id": "test14", "category": "A", "status": "active"}
+    database.insert("test_collection", test_data1)
+    database.insert("test_collection", test_data2)
+    database.insert("test_collection", test_data3)
+    database.insert("test_collection", test_data4)
+    database.insert("test_collection", test_data5)
+
+    results = database.get_all_by_two_fields(
+        "test_collection", "category", "A", "status", "active"
+    )
+    assert len(results) == 2
+    assert results[0]["status"] == "active"
+    assert results[1]["status"] == "active"
+    assert results[0]["_id"] == "test10"
+    assert results[1]["_id"] == "test14"
+
+    database.delete_by_id("test_collection", "test10")
+    database.delete_by_id("test_collection", "test11")
+    database.delete_by_id("test_collection", "test12")
+    database.delete_by_id("test_collection", "test13")
+    database.delete_by_id("test_collection", "test14")
+
+
+def test_update_by_field(database):
+    test_data = {"_id": "test15", "category": "A", "name": "Old Name"}
+    database.insert("test_collection", test_data)
+    database.update_by_field("test_collection", "category", "A", {"name": "New Name"})
+
+    updated = database.get_one_by_id("test_collection", "test15")
+    assert updated["name"] == "New Name"
+
+    database.delete_by_id("test_collection", "test15")
