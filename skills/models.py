@@ -200,6 +200,13 @@ class Skill:
 
         DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
 
+        # Update students
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if skill_id in student.get("attempted_skills", []):
+                student["attempted_skills"].remove(skill_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
         return jsonify({"message": "Rejected"}), 200
 
     def update_attempt_skill(self, skill_id, skill_name, skill_description):
