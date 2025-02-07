@@ -118,3 +118,6 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def close_connection(self):
         self.connection.close()
+
+    def delete_collection(self, table):
+        return self.database[table].drop()
