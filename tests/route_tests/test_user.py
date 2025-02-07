@@ -27,6 +27,7 @@ def client():
     """Fixture to create a test client."""
     from ...app import app  # pylint: disable=import-outside-toplevel
 
+    app.config["TESTING"] = True
     return app.test_client()
 
 

@@ -42,6 +42,7 @@ def deadline_manager(database):
 def app():
     from app import app
 
+    app.config["TESTING"] = True
     return app
 
 
