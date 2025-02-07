@@ -47,6 +47,15 @@ def database():
 
     yield DATABASE
 
+    tables = [
+        "users",
+        "students",
+        "employers",
+    ]
+
+    for table in tables:
+        DATABASE.delete_all_by_field(table, "email", "dummy@dummy.com")
+
     # Cleanup code
     DATABASE.connection.close()
 

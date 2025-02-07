@@ -4,7 +4,7 @@ import os
 import sys
 from dotenv import load_dotenv
 import pytest
-from pymongo.errors import DuplicateKeyError, ConfigurationError
+from pymongo.errors import DuplicateKeyError
 
 
 # flake8: noqa: F811
