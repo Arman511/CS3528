@@ -52,10 +52,8 @@
                             {{ skill.skill_name }}
                         </option>
                     {% endfor %}
-                    {% for attempt in attempted_skills %}
-                        {% if attempt._id in student.attempted_skills %}
-                            <option value="{{ attempt._id }}" selected>{{ attempt.skill_name }} (Attempted)</option>
-                        {% endif %}
+                    {% for skill in student.attempted_skills %}
+                        <option value="{{ skill }}" selected>{{ attempted_skill_map[skill].skill_name|title }} (Attempted)</option>
                     {% endfor %}
                 </select>
                 <label for="new_skill">Add New Skill:</label>
