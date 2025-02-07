@@ -42,7 +42,9 @@ def add_skills_routes(app):
         attempted_skills = Skill().get_list_attempted_skills()
 
         return render_template(
-            "/skills/skill_approval.html", attempted_skills=attempted_skills
+            "/skills/skill_approval.html",
+            attempted_skills=attempted_skills,
+            user_type="admin",
         )
 
     @app.route("/skills/approve_skill", methods=["POST"])
@@ -75,4 +77,6 @@ def add_skills_routes(app):
             skill_description = request.form.get("skill_description")
             if not skill_name or not skill_description:
                 return jsonify({"error": "One of the inputs is blank"}), 400
-            return Skill().update_attempt_skill(skill_id, skill_name, skill_description)
+            return Skill().update_attempt_skill(
+                skill_id, skill_name, skill_description, user_type="admin"
+            )
