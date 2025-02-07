@@ -39,6 +39,7 @@
                     <thead>
                         <tr>
                             <th>Skill</th>
+                            <th>Description</th>
                             <th>Usage Count</th>
                             <th>Actions</th>
                         </tr>
@@ -46,7 +47,7 @@
                     <tbody id="attempted-skills-table">
                         {% for skill in attempted_skills %}
                             <tr>
-                                <td>{{ skill.skill_name|capfirst }}</td>
+                                <td>{{ skill.skill_name|title }}</td>
                                 <td>{{ skill.skill_description }}</td>
                                 <td>{{ skill.used }}</td>
                                 <td>

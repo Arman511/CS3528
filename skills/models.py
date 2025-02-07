@@ -170,6 +170,7 @@ class Skill:
         if description == "":
             return jsonify({"error": "Description is empty"}), 400
         skill["skill_description"] = description
+        skill["skill_name"] = skill["skill_name"].capitalize()
         DATABASE_MANAGER.insert("skills", skill)
         DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
 

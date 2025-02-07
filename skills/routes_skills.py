@@ -35,7 +35,7 @@ def add_skills_routes(app):
         }
         return Skill().add_skill(skill)
 
-    @app.route("/skills/attempt_search", methods=["GET"])
+    @app.route("/skills/attempted_skill_search", methods=["GET"])
     @handlers.login_required
     def search_attempt_skills():
         """Approval page for attempted Skills"""
@@ -51,20 +51,14 @@ def add_skills_routes(app):
         uuid = request.args.get("attempt_skill_id")
         description = request.json.get("description")
 
-        try:
-            return Skill().approve_skill(uuid, description)
-        except Exception as e:
-            return jsonify(e), 500
+        return Skill().approve_skill(uuid, description)
 
     @app.route("/skills/reject_skill", methods=["POST"])
     @handlers.login_required
     def reject_skill():
         uuid = request.args.get("attempt_skill_id")
 
-        try:
-            return Skill().reject_skill(uuid)
-        except Exception as e:
-            return jsonify(e), 500
+        return Skill().reject_skill(uuid)
 
     @app.route("/skills/update_attempted_skill", methods=["GET", "POST"])
     @handlers.login_required

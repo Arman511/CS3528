@@ -14,14 +14,17 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    searchForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const formData = new FormData(searchForm);
+    const nameInput = document.getElementById("name");
+    const descriptionInput = document.getElementById("description");
+    const usageMinInput = document.getElementById("usage_min");
+    const usageMaxInput = document.getElementById("usage_max");
+
+    const filterSkills = () => {
         const filters = {
-            name: formData.get("name").toLowerCase(),
-            description: formData.get("description").toLowerCase(),
-            usage_min: parseInt(formData.get("usage_min"), 10),
-            usage_max: parseInt(formData.get("usage_max"), 10),
+            name: nameInput.value.toLowerCase(),
+            description: descriptionInput.value.toLowerCase(),
+            usage_min: parseInt(usageMinInput.value, 10),
+            usage_max: parseInt(usageMaxInput.value, 10),
         };
 
         for (const row of skillsTable.rows) {
@@ -39,7 +42,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
             row.style.display = shouldShow ? "" : "none";
         }
-    });
+    };
+
+    nameInput.addEventListener("input", filterSkills);
+    descriptionInput.addEventListener("input", filterSkills);
+    usageMinInput.addEventListener("input", filterSkills);
+    usageMaxInput.addEventListener("input", filterSkills);
 
     for (const approveButton of approveButtons) {
         approveButton.addEventListener("click", async () => {
