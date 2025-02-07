@@ -16,7 +16,7 @@ from employers import routes_employers
 
 def allowed_file(filename, types):
     """Check if file type is allowed."""
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in types
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in set(types)
 
 
 # Decorators
