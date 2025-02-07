@@ -1,5 +1,5 @@
 # GitHub Actions workflow for building Jekyll, running tests, and deploying coverage report
-name: Deploy Jekyll & Coverage Report
+name: Coverage Report
 
 on:
   push:
