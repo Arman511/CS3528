@@ -4,7 +4,12 @@ import os
 import sys
 from dotenv import load_dotenv
 import pytest
-from pymongo.errors import DuplicateKeyError
+from pymongo.errors import (
+    ConfigurationError,
+    OperationFailure,
+    ServerSelectionTimeoutError,
+    DuplicateKeyError,
+)
 
 
 # flake8: noqa: F811
@@ -289,3 +294,69 @@ def test_get_all_by_in_list(database):
     database.delete_by_id("test_collection", "test22")
     database.delete_by_id("test_collection", "test23")
     database.delete_by_id("test_collection", "test24")
+
+
+def test_empty_connection_string():
+    """Test that an empty connection string raises a ValueError."""
+    with pytest.raises(ValueError, match="Connection string cannot be empty"):
+        DatabaseMongoManager("", "cs3528_testing")
+
+
+def test_invalid_connection_string(monkeypatch):
+    """Test that an invalid connection string raises ConfigurationError."""
+
+    def mock_mongo_client(*args, **kwargs):
+        raise ConfigurationError("Invalid MongoDB connection string")
+
+    monkeypatch.setattr("pymongo.MongoClient", mock_mongo_client)
+
+    with pytest.raises(ConfigurationError, match="Invalid MongoDB connection string"):
+        DatabaseMongoManager("invalid_connection_string", "cs3528_testing")
+
+
+def test_operation_failure(monkeypatch):
+    """Test that an operation failure raises SystemExit."""
+
+    class MockClient:
+        class MockAdmin:
+            def command(self, cmd):
+                raise OperationFailure("Authentication failed")
+
+        def __init__(self, *args, **kwargs):
+            self.admin = self.MockAdmin()
+
+    monkeypatch.setattr(
+        "pymongo.MongoClient", MockClient
+    )  # Correctly patch inside pymongo
+
+    with pytest.raises(SystemExit) as excinfo:
+        DatabaseMongoManager("invalid_connection_string", "cs3528_testing")
+
+    assert excinfo.value.code == 1
+
+
+def test_server_selection_timeout(monkeypatch):
+    """Test that a server selection timeout raises SystemExit."""
+
+    class MockClient:
+        class MockAdmin:
+            def command(self, cmd):
+                raise ServerSelectionTimeoutError("Server selection timed out")
+
+        def __init__(self, *args, **kwargs):
+            self.admin = self.MockAdmin()
+
+    monkeypatch.setattr(
+        "pymongo.MongoClient", MockClient
+    )  # Correctly mock inside pymongo
+
+    with pytest.raises(SystemExit) as excinfo:
+        DatabaseMongoManager("invalid_connection_string", "cs3528_testing")
+
+    assert excinfo.value.code == 1
+
+
+def test_default_database_if_empty():
+    """Test that an empty database name defaults to 'cs3528_testing'."""
+    db_manager = DatabaseMongoManager(os.getenv("MONGO_URI"), "")
+    assert db_manager.database.name == "cs3528_testing"

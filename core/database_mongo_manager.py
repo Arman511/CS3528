@@ -14,7 +14,7 @@ class DatabaseMongoManager(DatabaseInterface):
     def __init__(self, connection, database):
         super().__init__()
         if connection == "":
-            return
+            raise ValueError("Connection string cannot be empty")
 
         self.connect(connection, database)
 
