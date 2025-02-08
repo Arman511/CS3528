@@ -173,7 +173,16 @@ def test_get_student_by_id(app, database):
     database.insert("students", student1)
     
     assert Student().get_student_by_id("123") == student1
-   
+
+# def test_get_student_by_id_not_found(app, database):
         
+def test_get_all_students(app, database):
     
+    from students.models import Student
+
+    count = len(database.get_all("students"))
+
+    actual = len(Student().get_students())
+     
+    assert count == actual
     
