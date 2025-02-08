@@ -106,4 +106,4 @@ coverage run -m pytest && coverage html
 
 ## Website
 
-https://cs-3528-alpha.vercel.app/
+[Deployment](https://cs-3528.vercel.app/)
