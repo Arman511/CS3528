@@ -4,7 +4,7 @@
     <div class="card-wrapper">
         <div class="card">
             <h1 class="center">Update Course</h1>
-            <form class="skill_adding_form" name="skill_adding_form">
+            <form class="update-course-form" name="update-course-form">
                 <p id="_id" data-id="{{ course._id }}" hidden></p>
                 <label for="course_id">Course ID</label>
                 <input type="text"
@@ -31,9 +31,9 @@
                        value="{{ course.course_description }}"
                        required />
                 <p class="error error--hidden"></p>
-                <input type="submit" value="Update Skill" class="btn" />
+                <input type="submit" value="Update Course" class="btn" />
             </form>
         </div>
-        <script src="/static/update_skill/script.js"></script>
+        <script src="/static/update_course/script.js"></script>
     </div>
 {% endblock content %}

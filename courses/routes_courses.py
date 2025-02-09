@@ -37,3 +37,20 @@ def add_course_routes(app):
         return render_template(
             "/courses/search.html", courses=courses, user_type="admin"
         )
+
+    @app.route("/courses/update", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_course():
+        id_val = request.args.get("uuid")
+        if request.method == "GET":
+            course = Course().get_course_by_uuid(id_val)
+            return render_template(
+                "/courses/update_course.html", course=course, user_type="admin"
+            )
+
+        course = {
+            "course_id": request.form.get("course_id"),
+            "course_name": request.form.get("course_name"),
+            "course_description": request.form.get("course_description"),
+        }
+        return Course().update_course(id_val, course)

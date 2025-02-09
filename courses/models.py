@@ -65,6 +65,16 @@ class Course:
 
         return None
 
+    def get_course_by_uuid(self, uuid):
+        """Get course by uuid"""
+        from app import DATABASE_MANAGER
+
+        course = DATABASE_MANAGER.get_one_by_id("courses", uuid)
+        if course:
+            return course
+
+        return None
+
     def get_course_name_by_id(self, course_id):
         """Get course name by id"""
         course = self.get_course_by_id(course_id)
@@ -102,3 +112,17 @@ class Course:
         """Get courses map"""
         courses = self.get_courses()
         return {course["course_id"]: course for course in courses}
+
+    def update_course(self, uuid, course):
+        """Update course"""
+        from app import DATABASE_MANAGER
+
+        course = DATABASE_MANAGER.update_one_by_id("courses", uuid, course)
+
+        if not course:
+            return jsonify({"error": "Course not updated"}), 400
+
+        courses = DATABASE_MANAGER.get_all("courses")
+        courses_cache["data"] = courses
+        courses_cache["last_updated"] = datetime.now()
+        return jsonify({"message": "Course was updated"}), 200

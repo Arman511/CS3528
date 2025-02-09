@@ -3,17 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
     const courseTableBody = document.getElementById("course-table");
     const deleteButtons = document.querySelectorAll(".delete-btn");
 
-    for (row in courseTableBody.rows) {
+    for (const row of courseTableBody.rows) {
         courses.push({
-            course_id: courseTableBody.rows[row].cells[0].textContent.toLowerCase(),
-            course_name: courseTableBody.rows[row].cells[1].textContent.toLowerCase(),
-            course_description: courseTableBody.rows[row].cells[2].textContent.toLowerCase(),
+            course_id: row.cells[0].textContent.toLowerCase(),
+            course_name: row.cells[1].textContent.toLowerCase(),
+            course_description: row.cells[2].textContent.toLowerCase(),
         });
     }
 
-    const courseIdInput = document.getElementById("course_id");
-    const courseNameInput = document.getElementById("course_name");
-    const courseDescriptionInput = document.getElementById("course_description");
+    const courseIdInput = document.getElementById("search-course-id");
+    const courseNameInput = document.getElementById("search-course-name");
+    const courseDescriptionInput = document.getElementById("search-course-description");
 
     const filterCourses = () => {
         const filters = {
