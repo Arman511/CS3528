@@ -357,7 +357,7 @@ def test_get_student_by_email(app, database):
     
     with app.app_context():
         response = Student().get_student_by_email("dummy@dummy.com")
-        assert response == 200
+        assert response[1] == 200
        
     
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
@@ -369,31 +369,17 @@ def test_get_student_by_email_not_found(app, database):
     
     with app.app_context():
         response = Student().get_student_by_email("dummy@dummy.com")
-        assert response == 200
-
-def test_get_students_by_course(app, database):
-
-    pass
-
-
-def test_get_students_by_skills(app, database):
-
-    pass
-
-
-def test_get_students_by_course_and_skills(app, database):
-
-    pass
-
-
-def test_get_students_by_name(app, database):
-
-    pass
-
+        json_response = response[0].get_json()
+        assert response[1] == 404
+        assert json_response["error"] == "Student not found"
 
 def test_import_from_xlsx(app, database):
 
-    pass
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    
 
 
 def test_student_login(app, database):
