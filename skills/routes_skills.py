@@ -39,13 +39,13 @@ def add_skills_routes(app):
     @handlers.login_required
     def list_skills():
         return render_template(
-            "/skills/list.html", user_type="admin", skills=Skill().get_skills()
+            "/skills/search.html", user_type="admin", skills=Skill().get_skills()
         )
 
-    @app.route("/skills/delete", methods=["POST"])
+    @app.route("/skills/delete", methods=["DELETE"])
     @handlers.login_required
     def delete_skill():
-        skill_id = request.form.get("skill_id")
+        skill_id = request.args.get("skill_id")
         if not skill_id:
             return jsonify({"error": "Missing skill ID"}, 400)
         return Skill().delete_skill(skill_id)
@@ -53,20 +53,15 @@ def add_skills_routes(app):
     @app.route("/skills/update", methods=["POST", "GET"])
     @handlers.login_required
     def update_skill():
-        skill_id = request.form.get("skill_id")
-        skill_name = request.form.get("skill_name")
-        skill_description = request.form.get("skill_description")
+        if request.method == "POST":
+            skill_id = request.form.get("skill_id")
+            skill_name = request.form.get("skill_name")
+            skill_description = request.form.get("skill_description")
 
-        if not skill_id or not skill_name or not skill_description:
-            return jsonify({"error": "Missing fields"}), 400
+            if not skill_id or not skill_name or not skill_description:
+                return jsonify({"error": "Missing fields"}), 400
 
-        updated_skill = {
-            "_id": skill_id,
-            "skill_name": skill_name,
-            "skill_description": skill_description,
-        }
-
-        return Skill().update_skill(updated_skill)
+            return Skill().update_skill(skill_id, skill_name, skill_description)
 
     @app.route("/skills/attempted_skill_search", methods=["GET"])
     @handlers.login_required

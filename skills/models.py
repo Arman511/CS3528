@@ -233,3 +233,26 @@ class Skill:
         DATABASE_MANAGER.update_one_by_id("attempted_skills", skill_id, skill)
 
         return jsonify({"message": "Updated"}), 200
+
+    def update_skill(self, skill_id, skill_name, skill_description):
+        """Updates a skill"""
+
+        from app import DATABASE_MANAGER
+
+        if not self.find_skill(None, skill_id):
+            return jsonify({"error": "Skill not found"}), 404
+
+        skill = {
+            "_id": skill_id,
+            "skill_name": skill_name,
+            "skill_description": skill_description,
+        }
+
+        DATABASE_MANAGER.update_one_by_id("skills", skill_id, skill)
+
+        # Update cache
+        skills = DATABASE_MANAGER.get_all("skills")
+        skills_cache["data"] = skills
+        skills_cache["last_updated"] = datetime.now()
+
+        return jsonify({"message": "Updated"}), 200

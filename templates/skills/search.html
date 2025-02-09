@@ -7,8 +7,8 @@
             <form id="searchForm">
                 <div class="form-group">
                     <label for="search-skill">Search Skills:</label>
-                    <input type="text" id="search-skill" name="search" class="field" />
-                    <button type="submit" class="btn">Search</button>
+                    <input type="text" id="search-skill-name" name="search" class="field" />
+                    <input type="text" id="search-skill-description" name="search" class="field" />
                 </div>
             </form>
         </div>
@@ -29,7 +29,7 @@
                                 <td>{{ skill.skill_name }}</td>
                                 <td>{{ skill.skill_description }}</td>
                                 <td>
-                                    <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
+                                    <a href="{{ url_for('update_skill', skill_id=skill._id) }}"
                                        class="btn btn-info btn-sm mb-2">Update</a>
                                     <a data-id="{{ skill._id }}" class="btn btn-danger btn-sm">Delete</a>
                                 </td>
