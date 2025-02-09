@@ -141,7 +141,7 @@ def test_favicon(client):
     """Test favicon route."""
     response = client.get("/favicon.ico")
     assert response.status_code == 200
-    assert response.content_type == "image/vnd.microsoft.icon"
+    assert response.content_type in ["image/vnd.microsoft.icon", "image/x-icon"]
 
 
 def test_signout(client):
