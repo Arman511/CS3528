@@ -25,7 +25,7 @@
                     </div>
                     <div>
                         <label for="course">Course:</label>
-                        <select id="course" name="course" class="field">
+                        <select id="course" name="course" class="field" select="course">
                             <option value="">Select Course</option>
                             {% for course in courses %}
                                 <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
@@ -34,9 +34,18 @@
                     </div>
                     <div>
                         <label for="skills">Skills:</label>
-                        <select id="skills" name="skills" class="field">
+                        <select id="skills" name="skills" class="field" title="skills" multiple>
                             <option value="">Select Skills</option>
                             {% for skill in skills %}<option value="{{ skill.skill_name }}">{{ skill.skill_name }}</option>{% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="modules">Modules:</label>
+                        <select id="modules" name="modules" class="field" title="modules" multiple>
+                            <option value="">Select Modules</option>
+                            {% for module in modules %}
+                                <option value="{{ module.module_id }}">{{ module.module_id }}: {{ module.module_name }}</option>
+                            {% endfor %}
                         </select>
                     </div>
                 </div>
@@ -57,14 +66,93 @@
                             <th>Email</th>
                             <th>Student Number</th>
                             <th>Course</th>
+                            <th>Skills</th>
+                            <th>Modules</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="student-table">
+                        {% for student in students %}
+                            <tr>
+                                <td>{{ student.first_name }}</td>
+                                <td>{{ student.last_name }}</td>
+                                <td>{{ student.email }}</td>
+                                <td>{{ student.student_id }}</td>
+                                <td>{{ student.course }}</td>
+                                <td data-skills="{% for skill in student.skills %}{{ skills_map[skill].skill_name }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for skill in student.skills[:2] %}
+                                            {# Show only first 2 #}
+                                            {{ skills_map[skill].skill_name }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if student.skills|length > 2 %}
+                                            <div class="collapse" id="skills-{{ student.student_id }}">
+                                                {% for skill in student.skills[2:] %}
+                                                    {{ skills_map[skill].skill_name }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#skills-{{ student.student_id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td data-modules="{% for module in student.modules %}{{ module }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for module in student.modules[:2] %}
+                                            {{ module }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if student.modules|length > 2 %}
+                                            <div class="collapse" id="modules-{{ student.student_id }}">
+                                                {% for module in student.modules[2:] %}
+                                                    {{ module }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#modules-{{ student.student_id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td>
+                                    <a href="{{ url_for('update_student', uuid=student._id) }}">
+                                        <button class="btn btn-info btn-sm update-button mb-2"
+                                                data-id="{{ student.student_id }}">Update</button>
+                                    </a>
+                                    <button class="btn btn-info btn-sm delete-button"
+                                            data-id="{{ student.student_id }}">Delete</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
     <script src="/static/search_student/script.js"></script>
+    <script>
+    $(document).ready(function () {
+        $('#skills').selectize({
+            plugins: ["remove_button"],
+            maxItems: 10,
+            sortField: 'text',
+            dropdownParent: 'body'
+        });
+        $('#modules').selectize({
+            plugins: ["remove_button"],
+            sortField: 'text',
+            dropdownParent: 'body'
+        });
+        $('#course').selectize({
+            sortField: 'text',
+            dropdownParent: 'body'
+        });
+    });
+    </script>
 {% endblock content %}

@@ -3,7 +3,7 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
-from flask import jsonify, request
+from flask import jsonify
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -57,12 +57,10 @@ class Module:
 
         return jsonify(module), 200
 
-    def get_module_by_id(self, module_id=None):
+    def get_module_by_id(self, module_id):
         """Retrieves a module by its ID."""
         from app import DATABASE_MANAGER
 
-        if module_id is None:
-            module_id = request.form.get("module_id")
         module = DATABASE_MANAGER.get_one_by_field("modules", "module_id", module_id)
 
         if module:
@@ -101,3 +99,8 @@ class Module:
             return modules
 
         return []
+
+    def get_modules_map(self):
+        """Get modules map"""
+        modules = self.get_modules()
+        return {module["module_id"]: module for module in modules}

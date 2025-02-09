@@ -104,7 +104,7 @@
                     <select id="modules" name="modules" class="form-control" multiple required>
                         {% for module in modules %}
                             <option value="{{ module.module_id }}"
-                                    {% if module.module_id in student.module %}selected{% endif %}>
+                                    {% if module.module_id in student.modules %}selected{% endif %}>
                                 {{ module.module_id + ": " + module.module_name }}
                             </option>
                         {% endfor %}
@@ -122,20 +122,25 @@
             <script>
                 $(document).ready(function () {
                     $('#skills').selectize({
+                        plugins: ["remove_button"],
                         maxItems: 10,
-                        sortField: 'text'
+                        sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#modules').selectize({
                         plugins: ["remove_button"],
-                        sortField: 'text'
+                        sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#course').selectize({
                         plugins: ["remove_button"],
-                        sortField: 'text'
+                        sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#placement_duration').selectize({
                         plugins: ["remove_button"],
-                        sortField: 'text'
+                        sortField: 'text',
+                        dropdownParent: 'body'
                     });
                 });
             </script>

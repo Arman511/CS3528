@@ -4,7 +4,7 @@ Skills model.
 
 import uuid
 from datetime import datetime, timedelta
-from flask import jsonify, request
+from flask import jsonify
 
 # Cache to store skills and the last update time
 skills_cache = {"data": [], "last_updated": datetime.now()}
@@ -75,10 +75,8 @@ class Skill:
 
         return jsonify({"message": "Deleted"}), 200
 
-    def get_skill_by_id(self, skill_id=None):
+    def get_skill_by_id(self, skill_id):
         """Get skill by ID tag"""
-        if skill_id is None:
-            skill_id = request.form.get("skill_id")
         skill = self.find_skill(None, skill_id)
 
         if skill:
@@ -119,6 +117,11 @@ class Skill:
 
         return []
 
+    def get_skills_map(self):
+        """Get skills map"""
+        skills = self.get_skills()
+        return {skill["_id"]: skill for skill in skills}
+
     def attempt_add_skill(self, skill_name):
         """Add skill to attempted skills"""
         from app import DATABASE_MANAGER
@@ -153,15 +156,80 @@ class Skill:
 
         return attempted_skills
 
-    def search_skills(self, query):
+    def get_attempted_skill(self, skill_id):
+        """Get attempted skill"""
         from app import DATABASE_MANAGER
 
-        query = query.strip().lower()
-        skills = DATABASE_MANAGER.search("skills", query)
-        if not skills:
-            all_skills = DATABASE_MANAGER.get_all("skills")
-            skills = [
-                skill for skill in all_skills if query in skill["skill_name"].lower()
-            ]
+        skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
 
-        return skills
+        if not skill:
+            return None
+
+        return skill
+
+    def approve_skill(self, skill_id, description):
+        """Approve skill"""
+        from app import DATABASE_MANAGER
+
+        skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
+
+        if not skill:
+            return jsonify({"error": "Skill not found"}), 404
+
+        del skill["used"]
+        if description == "":
+            return jsonify({"error": "Description is empty"}), 400
+        skill["skill_description"] = description
+        skill["skill_name"] = skill["skill_name"].capitalize()
+        DATABASE_MANAGER.insert("skills", skill)
+        DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
+
+        # Update cache
+        skills = DATABASE_MANAGER.get_all("skills")
+        skills_cache["data"] = skills
+        skills_cache["last_updated"] = datetime.now()
+
+        # Update students
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if skill_id in student.get("attempted_skills", []):
+                student["skills"].append(skill_id)
+                student["attempted_skills"].remove(skill_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        return jsonify({"message": "Approved"}), 200
+
+    def reject_skill(self, skill_id):
+        """Reject skill"""
+        from app import DATABASE_MANAGER
+
+        skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
+
+        if not skill:
+            return jsonify({"error": "Skill not found"}), 404
+
+        DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
+
+        # Update students
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if skill_id in student.get("attempted_skills", []):
+                student["attempted_skills"].remove(skill_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        return jsonify({"message": "Rejected"}), 200
+
+    def update_attempt_skill(self, skill_id, skill_name, skill_description):
+        """Update attempted skill"""
+        from app import DATABASE_MANAGER
+
+        skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
+
+        if not skill:
+            return jsonify({"error": "Skill not found"}), 404
+
+        skill["skill_name"] = skill_name
+        skill["skill_description"] = skill_description
+        DATABASE_MANAGER.update_one_by_id("attempted_skills", skill_id, skill)
+
+        return jsonify({"message": "Updated"}), 200

@@ -5,3 +5,6 @@ source = .
 omit =
     */site-packages/*
     */dist-packages/*
+    */templates/*
+    */static/*
+    *.html

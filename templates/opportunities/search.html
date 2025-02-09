@@ -23,8 +23,55 @@
                     {% endif %}
                 </div>
                 <div class="form-group">
+                    <div>
+                        <label for="description">Description:</label>
+                        <input type="text" id="description" name="description" class="field" />
+                    </div>
+                    <div>
+                        <label for="location">Location:</label>
+                        <input type="text" id="location" name="location" class="field" />
+                    </div>
+                    <div>
+                        <label for="course">Course:</label>
+                        <select id="course" name="course" class="field" select="course">
+                            <option value="">Select Course</option>
+                            {% for course in courses %}
+                                <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="modules">Modules:</label>
+                        <select id="modules" name="modules" class="field" title="modules" multiple>
+                            <option value="">Select Modules</option>
+                            {% for module in modules %}
+                                <option value="{{ module.module_id }}">{{ module.module_id }}: {{ module.module_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="spots_min">Spots (Min):</label>
+                        <input type="number" id="spots_min" name="spots_min" class="field" />
+                    </div>
+                    <div>
+                        <label for="spots_max">Spots (Max):</label>
+                        <input type="number" id="spots_max" name="spots_max" class="field" />
+                    </div>
+                    <div>
+                        <label for="placement_duration">Placement Duration:</label>
+                        <select id="placement_duration" name="placement_duration">
+                            <option value="">Select Duration</option>
+                            <option value="1_day">1 Day</option>
+                            <option value="1_week">1 Week</option>
+                            <option value="1_month">1 Month</option>
+                            <option value="3_months">3 Months</option>
+                            <option value="6_months">6 Months</option>
+                            <option value="12_months">12 Months</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
                     <p class="error error--hidden"></p>
-                    <input type="submit" value="Search" class="btn" />
                 </div>
             </form>
         </div>
@@ -41,8 +88,8 @@
                             <!-- Display Company Name for Both Admin and Employer -->
                             <th>URL</th>
                             <th>Location</th>
-                            <th>Modules Required</th>
                             <th>Courses Required</th>
+                            <th>Modules Required</th>
                             <th>Spots Available</th>
                             <th>Duration</th>
                             <th>Actions</th>
@@ -58,10 +105,48 @@
                                     <a href="{{ opportunity.url }}">{{ opportunity.url }}</a>
                                 </td>
                                 <td>{{ opportunity.location }}</td>
-                                <td>{{ opportunity.modules_required }}</td>
-                                <td>{{ opportunity.courses_required }}</td>
+                                <td data-courses="{% for course in opportunity.courses_required %}{{ course }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for course in opportunity.courses_required[:2] %}
+                                            {{ course }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if opportunity.courses_required|length > 2 %}
+                                            <div class="collapse" id="courses-{{ opportunity._id }}">
+                                                {% for course in opportunity.courses_required[2:] %}
+                                                    {{ course }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#courses-{{ opportunity._id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                                <td data-modules="{% for module in opportunity.modules_required %}{{ module }}, {% endfor %}">
+                                    <div class="collapsible-content">
+                                        {% for module in opportunity.modules_required[:2] %}
+                                            {{ module }}
+                                            <br />
+                                        {% endfor %}
+                                        {% if opportunity.modules_required|length > 2 %}
+                                            <div class="collapse" id="modules-{{ opportunity._id }}">
+                                                {% for module in opportunity.modules_required[2:] %}
+                                                    {{ module }}
+                                                    <br />
+                                                {% endfor %}
+                                            </div>
+                                            <a href="#"
+                                               class="toggle-btn text-primary small"
+                                               data-bs-toggle="collapse"
+                                               data-bs-target="#modules-{{ opportunity.id }}">Show More</a>
+                                        {% endif %}
+                                    </div>
+                                </td>
                                 <td>{{ opportunity.spots_available }}</td>
-                                <td>{{ opportunity.duration }}</td>
+                                <td>{{ opportunity.duration.replace('_', ' ').title() }}</td>
                                 <td>
                                     {% if user_type == "employer" %}
                                         <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"

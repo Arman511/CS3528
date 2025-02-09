@@ -3,10 +3,8 @@ This module defines the User class which handles user authentication and session
 """
 
 import uuid
-from flask import jsonify, request, session
-from pymongo import TEXT
+from flask import jsonify, session
 import pandas as pd
-from core import handlers
 from opportunities.models import Opportunity
 
 
@@ -42,7 +40,9 @@ class Student:
             return jsonify({"error": "Student already in database"}), 400
 
         if overwrite:
-            DATABASE_MANAGER.delete_by_id("students", student["_id"])
+            DATABASE_MANAGER.delete_one_by_field(
+                "students", "student_id", student["student_id"]
+            )
 
         DATABASE_MANAGER.insert("students", student)
 
@@ -68,7 +68,7 @@ class Student:
         """Getting student."""
         from app import DATABASE_MANAGER
 
-        student = DATABASE_MANAGER.get_by_id("students", _id)
+        student = DATABASE_MANAGER.get_one_by_id("students", _id)
 
         if student:
             return student
@@ -85,6 +85,17 @@ class Student:
             return students
 
         return []
+
+    def get_students_map(self):
+        """Getting all students."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        if students:
+            return {student["_id"]: student for student in students}
+
+        return {}
 
     def update_student_by_id(self, student_id, student_data):
         """Update student in the database by student_id."""
@@ -149,75 +160,12 @@ class Student:
 
         return jsonify({"error": "Student not found"}), 404
 
-    def get_students_by_course(self, course):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_field(
-            "students", "course", request.form.get("course")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_skills(self, skills):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_field(
-            "students", "skills", request.form.get("skills")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_course_and_skills(self, course, skills):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_two_fields(
-            "students", "course", course, "skills", skills
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_name(self, first_name, last_name):
-        """Getting students by name."""
-        from app import DATABASE_MANAGER
-
-        # Ensure text index is created on the collection
-        DATABASE_MANAGER.create_index(
-            "students", [("first_name", TEXT), ("last_name", TEXT)]
-        )
-
-        students = DATABASE_MANAGER.get_all_by_text_search(
-            "students", (f"{first_name} {last_name}")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
     def import_from_xlsx(self, base_email, file):
         """Importing students from Excel file."""
         from app import DATABASE_MANAGER
 
-        if "file" not in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
-            return jsonify({"error": "Invalid file type"}), 400
         try:
             df = pd.read_excel(file)
-
             students = df.to_dict(orient="records")
             data = []
             for student in students:

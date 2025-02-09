@@ -4,7 +4,7 @@ Handles routes for the student module.
 
 import os
 from dotenv import load_dotenv
-from flask import redirect, render_template, request, session
+from flask import jsonify, redirect, render_template, request, session
 from core import handlers
 from courses.models import Course
 from employers.models import Employers
@@ -28,7 +28,13 @@ def add_student_routes(app):
         """Route to upload students from a XLSX file."""
         load_dotenv()
         base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
+        if "file" not in request.files:
+            return jsonify({"error": "No file part"}), 400
+
+        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
+            return jsonify({"error": "Invalid file type"}), 400
         file = request.files["file"]
+
         return Student().import_from_xlsx(base_email, file)
 
     @app.route("/students/upload", methods=["GET"])
@@ -43,36 +49,15 @@ def add_student_routes(app):
         """Getting student."""
         return render_template(
             "student/search_student.html",
+            skills_map=Skill().get_skills_map(),
             skills=Skill().get_skills(),
+            courses_map=Course().get_courses_map(),
             courses=Course().get_courses(),
+            modules_map=Module().get_modules_map(),
+            modules=Module().get_modules(),
+            students=Student().get_students(),
             user_type="admin",
         )
-
-    @app.route("/students/search_students", methods=["POST"])
-    @handlers.login_required
-    def search_students():
-        """Getting student."""
-        data = request.get_json()
-        # Build the query with AND logic
-        query = []
-        # 0 is match, 1 is in list
-        if data.get("first_name"):
-            query.append(("first_name", data["first_name"], 0))
-        if data.get("last_name"):
-            query.append(("last_name", data["last_name"], 0))
-        if data.get("email"):
-            query.append(("email", data["email"], 0))
-        if data.get("student_id"):
-            query.append(("student_id", data["student_id"], 0))
-        if data.get("course"):
-            query.append(("course", data["course"]), 0)
-        if data.get("skills"):
-            query.append(("skills", data["skills"], 1))
-            # Match students with at least one of the provided skills
-        if data.get("modules"):
-            query.append(("modules", data["modules"], 1))
-            # Match students with at least one of the provided modules
-        return Student().search_students(query)
 
     @app.route("/students/delete_student/<int:student_id>", methods=["DELETE"])
     @handlers.login_required
@@ -120,9 +105,8 @@ def add_student_routes(app):
         if request.method == "POST":
             student = {}
             student["comments"] = request.form.get("comments")
-            student["skills"] = (
-                request.form.get("skills")[1:-1].replace('"', "").split(",")
-            )
+            skills = request.form.get("skills")[1:-1].replace('"', "").split(",")
+            student["skills"] = skills[:10] if len(skills) > 10 else skills
             if student["skills"] == [""]:
                 student["skills"] = []
             student["attempted_skills"] = (
@@ -151,13 +135,15 @@ def add_student_routes(app):
             skills=Skill().get_skills(),
             courses=Course().get_courses(),
             modules=Module().get_modules(),
-            attempted_skills=Skill().get_list_attempted_skills(),
+            attempted_skill_map={
+                skill["_id"]: skill for skill in Skill().get_list_attempted_skills()
+            },
             user_type="student",
         )
 
-    @app.route("/students/update_student/", methods=["GET", "POST"])
+    @app.route("/students/update_student", methods=["GET", "POST"])
     @handlers.login_required
-    def update_student(student_id):
+    def update_student():
         """Update student for admins."""
         if request.method == "POST":
             student = {}
@@ -192,7 +178,8 @@ def add_student_routes(app):
             student["course"] = request.form.get("course")
             return Student().update_student_by_uuid(uuid, student)
 
-        student = Student().get_student_by_id(student_id)
+        uuid = request.args.get("uuid")
+        student = Student().get_student_by_uuid(uuid)
         return render_template(
             "student/update_student.html",
             student=student,
@@ -223,7 +210,7 @@ def add_student_routes(app):
         if not DEADLINE_MANAGER.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
         if request.method == "POST":
-            preferences = [a[5:] for a in request.form.get("ranks").split(",")]
+            preferences = [a[5:].strip() for a in request.form.get("ranks").split(",")]
             return Student().rank_preferences(student_id, preferences)
         opportunities = Student().get_opportunities_by_student(student_id)
         return render_template(
