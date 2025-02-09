@@ -266,13 +266,78 @@ def test_update_student_by_id_not_found(app, database):
 
 def test_delete_student_by_id(app, database):
 
-    pass
+    from students.models import Student
 
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+    
+    with app.app_context():
+        response = Student().delete_student_by_id("123")
+        json_response = response[0].get_json()
+        assert response[1] == 200
+        assert json_response["message"] == "Student deleted"
+    
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "_id", "123")
+
+def test_delete_student_by_id_not_found(app, database):
+
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    with app.app_context():
+        response = Student().delete_student_by_id("123")
+        json_response = response[0].get_json()
+        assert response[1] == 404
+        assert json_response["error"] == "Student not found"
+        
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "_id", "123")    
 
 def test_delete_students(app, database):
 
-    pass
+    from students.models import Student
 
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+    
+    student2 = {
+        "_id": "124",
+        "first_name": "dummy2",
+        "last_name": "dummy2",
+        "email": "dummy2@dummy.com",
+        "student_id": "124",
+    }
+    
+    database.insert("students", student2)
+    
+    with app.app_context():
+        response = Student().delete_students()
+        json_response = response[0].get_json()
+        assert response[1] == 200
+        assert json_response["message"] == "All students deleted"
+        
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "_id", "123")
 
 def test_get_student_by_email(app, database):
 
