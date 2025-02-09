@@ -2,9 +2,12 @@
 
 ## Contents
 
-1. [Project Overview](#project-overview)
-2. [Setup Instructions](#setup-instructions)
-3. [How to Run](#how-to-run)
+- [Project Overview](#project-overview)
+- [Website](#website)
+- [Setup Instructions](#setup-instructions)
+- [How to Run](#how-to-run)
+- [Deadlines](#deadlines)
+- [Coverage](#coverage)
 
 ## Project Overview
 
@@ -14,6 +17,11 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 -   **Pymongo**: An MongoDB toolkit and Object-Relational Mapping (ORM) library for Python.
 -   **Gale-Shapley Algorithm**: Also known as the stable marriage algorithm, used for matching students to opportunities.
 -   **Email Integration**: To send confirmation emails to employers and students.
+
+## Website
+
+[Deployment](https://cs-3528.vercel.app/)
+[Coverage Report](https://arman511.github.io/CS3528/)
 
 ## Setup Instructions
 
@@ -77,20 +85,19 @@ https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
 ## Employer Login
 
--   To sign in as an employer, the employers email address should be in the database which can only be added by the admin team. once completed, the employer fill in their email address and receive an OTP (check spam folder).
+To sign in as an employer, the employers email address should be in the database which can only be added by the admin team. once completed, the employer fill in their email address and receive an OTP (check spam folder).
 
 ## Deadlines
 
--   There are 3 deadlines which are managed by the admin team which throughout their duration restrict the data that can be inputted and user views available
-    1. The students fill in their profile information
-    2. Employers upload the placements offered
-    3. The students and employers rank one another
+There are 3 deadlines which are managed by the admin team which throughout their duration restrict the data that can be inputted and user views available
+
+1. The students fill in their profile information
+2. Employers upload the placements offered
+3. The students and employers rank one another
 
 ## Coverage
 
 ## Coverage
-
-To see coverage go here: [Coverage Report](https://arman511.github.io/CS3528/)
 
 To run the tests and generate a coverage report in the terminal:
 
@@ -104,6 +111,3 @@ To run the tests and generate an HTML coverage report:
 coverage run -m pytest && coverage html
 ```
 
-## Website
-
-[Deployment](https://cs-3528.vercel.app/)

@@ -37,6 +37,7 @@ jobs:
                   CI: true
                   IS_GITHUB_ACTION: "True"
                   IS_TEST: "True"
+                  MONGO_DB_TEST: "cs3528_test"
 
             - name: Set up Python 3.10
               uses: actions/setup-python@v3
@@ -52,6 +53,9 @@ jobs:
             - name: Run tests with coverage
               env:
                   SECRET_KEY: "psZsPEYjcq9@?(!6w=dK" # Fake secret key
+                  IS_TEST: "True"
+                  MONGO_DB_TEST: "cs3528_test"
+                  IS_GITHUB_ACTION: "True"
               run: |
                   coverage run -m pytest
                   coverage xml -o coverage.xml
