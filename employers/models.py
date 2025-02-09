@@ -98,16 +98,21 @@ class Employers:
     def delete_employer_by_id(self, _id):
         """Deletes an employer."""
         from app import DATABASE_MANAGER
+        from opportunities.models import Opportunity
 
         employer = DATABASE_MANAGER.get_one_by_id("employers", _id)
+        if not employer:
+            return jsonify({"error": "Employer not found"}), 404
+        DATABASE_MANAGER.delete_by_id("employers", _id)
+        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
+        employers_cache["last_updated"] = datetime.now()
 
-        if employer:
-            DATABASE_MANAGER.delete_by_id("employers", _id)
-            employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-            employers_cache["last_updated"] = datetime.now()
-            return jsonify({"message": "Employer deleted"}), 200
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        for opportunity in opportunities:
+            if opportunity["employer_id"] == _id:
+                Opportunity().delete_opportunity_by_id(opportunity["_id"])
 
-        return jsonify({"error": "Employer not found"}), 404
+        return jsonify({"message": "Employer deleted"}), 200
 
     def update_employer(self, employer_id, update_data):
         """Updates an employer in the database."""
