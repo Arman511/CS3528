@@ -11,14 +11,17 @@ courses_cache = {"data": None, "last_updated": None}
 class Course:
     """Course data model"""
 
+    def reset_cache(self):
+        """Resets the courses cache."""
+        from app import DATABASE_MANAGER
+
+        courses = DATABASE_MANAGER.get_all("courses")
+        courses_cache["data"] = courses
+        courses_cache["last_updated"] = datetime.now()
+        return courses
+
     def add_course(self, course):
         """Adds a course to the database."""
-        # course = {
-        #     "_id": uuid.uuid1().hex,
-        #     "course_id": request.form.get("course_id"),
-        #     "course_name": request.form.get("course_name"),
-        #     "course_description": request.form.get("course_description"),
-        # }
         from app import DATABASE_MANAGER
 
         if DATABASE_MANAGER.get_one_by_field(
@@ -30,9 +33,7 @@ class Course:
 
         if course:
             # Update cache
-            courses = DATABASE_MANAGER.get_all("courses")
-            courses_cache["data"] = courses
-            courses_cache["last_updated"] = datetime.now()
+            self.reset_cache()
             return jsonify(course), 200
 
         return jsonify({"error": "Course not added"}), 400
@@ -48,9 +49,7 @@ class Course:
 
         DATABASE_MANAGER.delete_by_id("courses", course["_id"])
         # Update cache
-        courses = DATABASE_MANAGER.get_all("courses")
-        courses_cache["data"] = courses
-        courses_cache["last_updated"] = datetime.now()
+        self.reset_cache()
 
         return jsonify(course), 200
 
@@ -102,8 +101,7 @@ class Course:
 
         if courses:
             # Update cache
-            courses_cache["data"] = courses
-            courses_cache["last_updated"] = current_time
+            self.reset_cache()
             return courses
 
         return []
@@ -113,22 +111,19 @@ class Course:
         courses = self.get_courses()
         return {course["course_id"]: course for course in courses}
 
-    def update_course(self, uuid, course):
+    def update_course(self, uuid, updated_course):
         """Update course"""
         from app import DATABASE_MANAGER
 
         original = DATABASE_MANAGER.get_one_by_id("courses", uuid)
-        course = DATABASE_MANAGER.update_one_by_id("courses", uuid, course)
-
-        if not course:
-            return jsonify({"error": "Course not updated"}), 400
+        if not original:
+            return jsonify({"error": "Course not found"}), 404
+        DATABASE_MANAGER.update_one_by_id("courses", uuid, updated_course)
 
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
             if "course" in student and original["course_id"] == student["course"]:
-                student["course"] = course["course_id"]
-                DATABASE_MANAGER.update_one_by_id("student", student["_id"], student)
-        courses = DATABASE_MANAGER.get_all("courses")
-        courses_cache["data"] = courses
-        courses_cache["last_updated"] = datetime.now()
+                student["course"] = updated_course["course_id"]
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+        self.reset_cache()
         return jsonify({"message": "Course was updated"}), 200

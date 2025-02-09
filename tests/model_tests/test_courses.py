@@ -186,4 +186,84 @@ def test_update_course(database, course_model, sample_course, app):
             course = course_model.get_course_by_uuid(sample_course["_id"])
             assert course["course_name"] == "Intro to CS"
             assert course["course_description"] == "Updated description."
+
+
+def test_reset_cache(database, course_model, sample_course, app):
+    """Test resetting the courses cache."""
     database.delete_all_by_field("courses", "course_id", "CS101")
+    with app.app_context():
+        with app.test_request_context():
+            course_model.add_course(sample_course)
+            result = course_model.reset_cache()
+            assert len(result) > 0
+    database.delete_all_by_field("courses", "course_id", "CS101")
+
+
+def test_get_course_by_invalid_id(database, course_model, app):
+    """Test getting a course by invalid ID."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    with app.app_context():
+        with app.test_request_context():
+            course = course_model.get_course_by_id("INVALID_ID")
+            assert course is None
+    database.delete_all_by_field("courses", "course_id", "CS101")
+
+
+def test_get_course_by_invalid_uuid(database, course_model, app):
+    """Test getting a course by invalid UUID."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    with app.app_context():
+        with app.test_request_context():
+            course = course_model.get_course_by_uuid("INVALID_UUID")
+            assert course is None
+    database.delete_all_by_field("courses", "course_id", "CS101")
+
+
+def test_get_course_name_by_invalid_id(database, course_model, app):
+    """Test getting a course name by invalid ID."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    with app.app_context():
+        with app.test_request_context():
+            course_name = course_model.get_course_name_by_id("INVALID_ID")
+            assert course_name is None
+    database.delete_all_by_field("courses", "course_id", "CS101")
+
+
+def test_update_course_not_updated(database, course_model, sample_course, app):
+    """Test updating a course that does not exist."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    with app.app_context():
+        with app.test_request_context():
+            response = course_model.update_course("nonexistent_uuid", sample_course)
+            assert response[1] == 404
+            assert response[0].json["error"] == "Course not found"
+    database.delete_all_by_field("courses", "course_id", "CS101")
+
+
+def test_update_course_students(database, course_model, sample_course, app):
+    """Test updating a course and ensuring students are updated."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    database.delete_all_by_field("students", "email", "student@dummy.com")
+    with app.app_context():
+        with app.test_request_context():
+            course_model.add_course(sample_course)
+            student = {
+                "_id": uuid.uuid4().hex,
+                "email": "student@dummy.com",
+                "course": "CS101",
+            }
+            database.insert("students", student)
+            updated_course = {
+                "course_id": "CS102",
+                "course_name": "Intro to CS",
+                "course_description": "Updated description.",
+            }
+            response = course_model.update_course(sample_course["_id"], updated_course)
+            assert response[1] == 200
+            updated_student = database.get_one_by_field(
+                "students", "email", "student@dummy.com"
+            )
+            assert updated_student["course"] == "CS102"
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    database.delete_all_by_field("courses", "course_id", "CS102")
+    database.delete_all_by_field("students", "email", "student@dummy.com")
