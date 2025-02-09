@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper card-dynamic-width">
+        <div class="card search-card">
+            <h1 class="center">Manage Skills</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="search-skill">Search Skills:</label>
+                    <input type="text" id="search-skill" name="search" class="field"/>
+                    <button type="submit" class="btn">Search</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card card-dynamic-width">
+            <h2 class="center">Skills</h2>
+            <div class="table">
+                <table class="table">
+                <thead>
+                    <tr>
+                        <th>Skill Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="skill-table">
+                    {% for skill in skills %}
+                        <tr id="skill-{{ skill._id }}">
+                            <td>{{ skill.skill_name }}</td>
+                            <td>{{ skill.skill_description }}</td>
+                            <td>
+                                <button class="btn btn-info btn-sm edit-skill"
+                                        onclick="editSkill('{{ skill._id }}', '{{ skill.skill_name }}', '{{ skill.skill_description }}')">Edit</button>
+                                <button class="btn btn-danger btn-sm delete-skill"
+                                        onclick="deleteSkill('{{ skill._id }}')">Delete</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <script src="/static/search_skills/script.js"></script>
+{% endblock content %}

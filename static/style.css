@@ -285,4 +285,10 @@ footer a:hover {
         font-size: 14px;
         padding: 12px;
     }
+    
+    .highlight {
+        background-color: yellow;
+        transition: background-color 0.5s ease-in-out;
+    }
+    
 }
