@@ -125,7 +125,7 @@ def add_student_routes(app):
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course")
+            student["course"] = request.form.get("course").upper()
             return Student().update_student_by_id(student_id, student)
 
         # Render the template
@@ -175,7 +175,7 @@ def add_student_routes(app):
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course")
+            student["course"] = request.form.get("course").upper()
             return Student().update_student_by_uuid(uuid, student)
 
         uuid = request.args.get("uuid")
