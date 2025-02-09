@@ -341,8 +341,35 @@ def test_delete_students(app, database):
 
 def test_get_student_by_email(app, database):
 
-    pass
+    from students.models import Student
 
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+
+    database.insert("students", student1)
+    
+    with app.app_context():
+        response = Student().get_student_by_email("dummy@dummy.com")
+        assert response == 200
+       
+    
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "_id", "123")
+    
+    
+def test_get_student_by_email_not_found(app, database):
+    from students.models import Student
+    
+    with app.app_context():
+        response = Student().get_student_by_email("dummy@dummy.com")
+        assert response == 200
 
 def test_get_students_by_course(app, database):
 
