@@ -60,7 +60,6 @@ def test_add_student_success(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
     result = database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    print(f"Deleted {result.deleted_count} documents with email dummy@dummy.com")
 
     student = {
         "_id": "123",
@@ -122,6 +121,7 @@ def test_add_student_duplicate(app, database):
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
+    database.delete_all_by_field("students", "_id", "124")
 
 
 def test_add_student_duplicate_override(app, database):
