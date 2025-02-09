@@ -223,7 +223,7 @@ class Student:
 
         body = (
             f"<p>Dear {name},</p>"
-            f"<p>Your account has been created. Your login password is: <strong>{password}</strong>.</p>"
+            f"<p>Your login password is: <strong>{password}</strong>.</p>"
             "<p>Please keep this information secure and do not share it with anyone.</p>"
             "<p>Best,<br>Skillpoint</p>"
         )

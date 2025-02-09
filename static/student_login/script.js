@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let student_id = prompt("Enter your student ID");
 
         if (student_id) {
-            fetch(`/students/forgot-password/${student_id})`, {
+            fetch(`/students/forgot_password/${student_id}`, {
                 method: "POST",
             })
                 .then(async (response) => {
