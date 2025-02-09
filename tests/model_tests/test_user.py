@@ -160,7 +160,7 @@ def test_login_success(app, database):
 
     attempt_user = {
         "email": "dummy@dummy.com",
-        "password": "password",
+        "password": "dummy",
     }
 
     with app.app_context():
