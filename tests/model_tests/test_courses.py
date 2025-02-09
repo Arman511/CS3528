@@ -98,7 +98,7 @@ def test_delete_course(database, course_model, sample_course, app):
         with app.test_request_context():
             course_model.add_course(sample_course)
             course_id = sample_course["_id"]
-            response = course_model.delete_course(course_id)
+            response = course_model.delete_course_by_uuid(course_id)
             assert response[1] == 200
             assert database.get_one_by_id("courses", course_id) is None
     database.delete_all_by_field("courses", "course_id", "CS101")
@@ -108,7 +108,7 @@ def test_delete_nonexistent_course(course_model, app):
     """Test deleting a nonexistent course."""
     with app.app_context():
         with app.test_request_context():
-            response = course_model.delete_course("nonexistent_id")
+            response = course_model.delete_course_by_uuid("nonexistent_id")
             assert response[1] == 404
             assert response[0].json["error"] == "Course not found"
 

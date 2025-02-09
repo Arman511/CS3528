@@ -27,7 +27,7 @@ def add_course_routes(app):
     @handlers.login_required
     def delete_course():
         uuid = request.args.get("uuid")
-        return Course().delete_course(uuid)
+        return Course().delete_course_by_uuid(uuid)
 
     @app.route("/courses/search", methods=["GET"])
     @handlers.login_required
