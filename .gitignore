@@ -33,3 +33,4 @@ venv.bak/
 not_full_courses.json
 .vercel
 .coverage
+htmlcov/
