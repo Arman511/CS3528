@@ -56,9 +56,8 @@ class Skill:
             # Update cache
             skills_cache["data"].append(skill)
             skills_cache["last_updated"] = datetime.now()
-            return jsonify(skill), 200
-
-        return jsonify({"error": "Skill not added"}), 400
+            
+        return jsonify(skill), 200
 
     def delete_skill(self, skill_id):
         """Delete kill from database"""
@@ -78,6 +77,7 @@ class Skill:
 
     def get_skill_by_id(self, skill_id=None):
         """Get skill by ID tag"""
+        from flask import request
         if skill_id is None:
             skill_id = request.form.get("skill_id")
         skill = self.find_skill(None, skill_id)
@@ -153,3 +153,13 @@ class Skill:
             return []
 
         return attempted_skills
+    
+    def search_skills(self, query):
+        from app import DATABASE_MANAGER
+        query = query.strip().lower()
+        skills = DATABASE_MANAGER.search("skills", query)
+        if not skills:
+            all_skills = DATABASE_MANAGER.get_all("skills")
+            skills = [skill for skill in all_skills if query in skill["skill_name"].lower()]
+
+        return skills
