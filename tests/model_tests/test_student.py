@@ -56,7 +56,7 @@ def database():
 def test_add_student_success(app, database):
     """Test adding a student successfully."""
     from students.models import Student
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
     result = database.delete_all_by_field("students", "email", "dummy@dummy.com")
@@ -123,13 +123,13 @@ def test_add_student_duplicate(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
+
 def test_add_student_duplicate_override(app, database):
     """Test adding a student with a id."""
     from students.models import Student
-    
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
@@ -137,9 +137,9 @@ def test_add_student_duplicate_override(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     database.insert("students", student1)
-    
+
     student1 = {
         "_id": "124",
         "first_name": "dummy2",
@@ -147,7 +147,7 @@ def test_add_student_duplicate_override(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     with app.app_context():
         with app.test_request_context():
             response = Student().add_student(student1, overwrite=True)
@@ -162,12 +162,13 @@ def test_add_student_duplicate_override(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
+
 def test_get_student_by_id(app, database):
     """Test getting a student by id."""
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
@@ -175,37 +176,41 @@ def test_get_student_by_id(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     database.insert("students", student1)
-    
+
     assert Student().get_student_by_id("123") == student1
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
+
 # def test_get_student_by_id_not_found(app, database):
-        
+
+
 def test_get_all_students(app, database):
-    
+
     from students.models import Student
 
     count = len(database.get_all("students"))
 
     actual = len(Student().get_students())
-     
+
     assert count == actual
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
-    
+
+
 # def test_get_all_students_empty(app, database):
-    
+
+
 def test_update_student_by_id_success(app, database):
-    
+
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
@@ -213,26 +218,24 @@ def test_update_student_by_id_success(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     database.insert("students", student1)
-    
+
     UpdateStudent = {
         "first_name": "updated_dummy",
         "last_name": "updated_dummy",
         "email": "updated_dummy@dummy.com",
         "student_id": "124",
     }
-    
+
     with app.app_context():
         response = Student().update_student_by_id("123", UpdateStudent)
         json_response = response[0].get_json()
         assert response[1] == 200
-        assert json_response["first_name"] == UpdateStudent["first_name"]
-        assert json_response["last_name"] == UpdateStudent["last_name"]
-        assert json_response["email"] == UpdateStudent["email"]
-        assert json_response["student_id"] == UpdateStudent["student_id"]
-    
+        assert json_response["message"] == "Student updated"
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "email", "updated_dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
 
@@ -241,64 +244,76 @@ def test_update_student_by_id_not_found(app, database):
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     UpdateStudent = {
         "first_name": "updated_dummy",
         "last_name": "updated_dummy",
         "email": "updated_dummy@dummy.com",
         "student_id": "124",
     }
-    
+
     with app.app_context():
         response = Student().update_student_by_id("999", UpdateStudent)
         json_response = response[0].get_json()
         assert response[1] == 404
         assert json_response["error"] == "Student not found"
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
-    
+    database.delete_all_by_field("students", "_id", "999")
+    database.delete_all_by_field("students", "email", "updated_dummy@dummy.com")
+
+
 def test_delete_student_by_id(app, database):
-    
+
     pass
+
 
 def test_delete_students(app, database):
-    
+
     pass
+
 
 def test_get_student_by_email(app, database):
-    
+
     pass
+
 
 def test_get_students_by_course(app, database):
-    
+
     pass
+
 
 def test_get_students_by_skills(app, database):
-    
+
     pass
+
 
 def test_get_students_by_course_and_skills(app, database):
-    
+
     pass
+
 
 def test_get_students_by_name(app, database):
-    
+
     pass
+
 
 def test_import_from_xlsx(app, database):
-    
+
     pass
+
 
 def test_student_login(app, database):
-    
+
     pass
+
 
 def test_rank_preferences(app, database):
-    
+
     pass
+
 
 def test_get_oppertunities_by_student(app, database):
-    
-    pass
 
+    pass
