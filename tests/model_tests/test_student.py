@@ -338,6 +338,7 @@ def test_delete_students(app, database):
         json_response = response[0].get_json()
         assert response[1] == 200
         assert json_response["message"] == "All students deleted"
+        assert len(database.get_all("students")) ==0
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
@@ -348,7 +349,7 @@ def test_delete_students(app, database):
 
 
 def test_get_student_by_email(app, database):
-
+    """Test getting a student by email."""
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
@@ -414,17 +415,17 @@ def test_student_login(app, database):
         "last_name": "dummy1",
         "email": "dummy@dummy.com",
         "student_id": "123",
-        "password": pbkdf2_sha256.hash("password"),
     }
 
     database.insert("students", student1)
 
     with app.app_context():
-        response = Student().student_login(student1["student_id"], password)
-        json_response = response[0].get_json()
+        with app.test_request_context():
+            response = Student().student_login(student1["student_id"], student1["_id"])
+            json_response = response[0].get_json()
 
-        assert response[1] == 200
-        assert json_response["message"] == "Login successful"
+            assert response[1] == 200
+            assert json_response["message"] == "Login successful"
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
