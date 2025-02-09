@@ -44,7 +44,7 @@ def database():
     """Fixture to create a test database."""
 
     DATABASE = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_test")
+        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
     yield DATABASE
@@ -152,7 +152,7 @@ def test_login_success(app, database):
         "_id": "126",
         "name": "Login User",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("password"),
+        "password": pbkdf2_sha256.hash("dummy"),
     }
 
     # Insert the user into the database
