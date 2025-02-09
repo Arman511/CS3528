@@ -226,3 +226,14 @@ def add_student_routes(app):
         """Routing to deal with success"""
         session.clear()
         return render_template("student/update_successful_page.html")
+
+    @app.route("/students/forgot_password/<int:student_id>", methods=["POST"])
+    def forgot_password(student_id):
+        """Forgot password."""
+        student = Student().get_student_by_id(student_id)
+        if not student:
+            return jsonify({"message": "Email sent"}), 200
+
+        return Student().send_student_password_email(
+            student["first_name"], student["email"], student["_id"]
+        )
