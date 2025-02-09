@@ -338,7 +338,7 @@ def test_delete_students(app, database):
         json_response = response[0].get_json()
         assert response[1] == 200
         assert json_response["message"] == "All students deleted"
-        assert len(database.get_all("students")) ==0
+        assert len(database.get_all("students")) == 0
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
@@ -382,25 +382,22 @@ def test_get_student_by_email_not_found(app, database):
         assert json_response["error"] == "Student not found"
 
 
-def test_import_from_xlsx(app, database):
-
+def test_import_from_xlsx_valid(app, database):
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
-    mock_df = {
-        "_id": ["123", "124"],
-        "first_name": ["dummy1", "dummy2"],
-        "last_name": ["dummy1", "dummy2"],
-        "email": ["dummy@dummy.com", "dummy2@dummy.com"],
-        "student_id": ["123", "124"],
-    }
+    with app.app_context():
+        with open("tests/data/valid_students.xlsx", "rb") as f:
+            response = Student().import_from_xlsx("dummy.com", f)
+            json_response = response[0].get_json()
+            assert response[1] == 200
+            assert json_response["message"] == "27 students imported"
 
-    mock_read_excel.return_value = mock_df
+        students = database.get_all_by_field("students", "email", "dummy@dummy.com")
+        assert len(students) == 27
 
-    # with app.app_context():
-
-    pass
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
 
 def test_student_login(app, database):
