@@ -96,11 +96,7 @@ def add_employer_routes(app):
         if not employer_id:
             return jsonify({"error": "Employer ID is required"}), 400
 
-        response = Employers().delete_employer_by_id(
-            employer_id
-        )  # Call delete function
-
-        return response  # `delete_employer_by_id` already returns a JSON response
+        return Employers().delete_employer_by_id(employer_id)
 
     @app.route("/employers/rank_students", methods=["GET", "POST"])
     @handlers.employers_login_required
