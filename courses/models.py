@@ -117,11 +117,17 @@ class Course:
         """Update course"""
         from app import DATABASE_MANAGER
 
+        original = DATABASE_MANAGER.get_one_by_id("courses", uuid)
         course = DATABASE_MANAGER.update_one_by_id("courses", uuid, course)
 
         if not course:
             return jsonify({"error": "Course not updated"}), 400
 
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "course" in student and original["course_id"] == student["course"]:
+                student["course"] = course["course_id"]
+                DATABASE_MANAGER.update_one_by_id("student", student["_id"], student)
         courses = DATABASE_MANAGER.get_all("courses")
         courses_cache["data"] = courses
         courses_cache["last_updated"] = datetime.now()

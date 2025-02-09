@@ -49,7 +49,7 @@ def add_course_routes(app):
             )
 
         course = {
-            "course_id": request.form.get("course_id"),
+            "course_id": request.form.get("course_id").upper(),
             "course_name": request.form.get("course_name"),
             "course_description": request.form.get("course_description"),
         }
