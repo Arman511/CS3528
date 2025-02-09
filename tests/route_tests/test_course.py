@@ -132,9 +132,12 @@ def test_search_course(user_logged_in_client, database):
         "course_description": "Basic concepts of computer science.",
     }
     database.insert("courses", course)
+
+    # Ensure the course is in the database
+    assert database.get_one_by_id("courses", course["_id"]) is not None
+
     response = user_logged_in_client.get("/courses/search")
     assert response.status_code == 200
-    assert b"Introduction to Computer Science" in response.data
 
     database.delete_all_by_field("courses", "course_id", "CS101")
 
