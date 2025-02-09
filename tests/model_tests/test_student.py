@@ -379,14 +379,44 @@ def test_import_from_xlsx(app, database):
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     
+    mock_df = ({"_id": ["123", "124"], "first_name": ["dummy1", "dummy2"], "last_name": ["dummy1", "dummy2"], "email": ["dummy@dummy.com","dummy2@dummy.com"], "student_id": ["123", "124"]})
     
-
-
-def test_student_login(app, database):
+    mock_read_excel.return_value = mock_df
+    
+    #with app.app_context():
+        
 
     pass
 
 
+def test_student_login(app, database):
+
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email","dummy@dummy.com")
+
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+        "password": pbkdf2_sha256.hash("password")
+    }
+
+    database.insert("students", student1)
+    
+    with app.app_context():
+        response = Student().student_login(student1["student_id"],password")
+        json_response = response[0].get_json()  
+        
+        
+        assert response[1] == 200
+        assert json_response["message"] == "Login successful"
+        
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "_id", "123")
+            
 def test_rank_preferences(app, database):
 
     pass
