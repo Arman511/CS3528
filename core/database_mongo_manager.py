@@ -118,7 +118,3 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def close_connection(self):
         self.connection.close()
-
-    def search(self, table, query):
-        """Search for skills by name using MongoDB regex matching."""
-        return list(self.database[table].find({"skill_name": {"$regex": query, "$options": "i"}}))
