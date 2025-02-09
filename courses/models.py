@@ -37,11 +37,11 @@ class Course:
 
         return jsonify({"error": "Course not added"}), 400
 
-    def delete_course(self, course_id):
+    def delete_course(self, id_val):
         """Deletes a course from the database."""
         from app import DATABASE_MANAGER
 
-        course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
+        course = DATABASE_MANAGER.get_one_by_id("courses", id_val)
 
         if not course:
             return jsonify({"error": "Course not found"}), 404
