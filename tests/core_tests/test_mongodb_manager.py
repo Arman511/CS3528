@@ -29,7 +29,7 @@ load_dotenv()
 def database():
     """Fixture to create a test database."""
     DATABASE = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_test")
     )
     yield DATABASE
     DATABASE.delete_all("test_collection")  # Cleanup after tests
