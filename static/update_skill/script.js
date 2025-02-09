@@ -15,18 +15,14 @@ document.addEventListener("DOMContentLoaded", function () {
             errorElement.classList.remove("error--hidden");
             return;
         }
+        let form = new FormData();
+        form.append("skill_id", skillId);
+        form.append("skill_name", skillName);
+        form.append("skill_description", skillDescription);
 
-        fetch("/skills/update_attempted_skill", {
+        fetch("/skills/update", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": getCookie("csrftoken")
-            },
-            body: JSON.stringify({
-                skill_id: skillId,
-                skill_name: skillName,
-                skill_description: skillDescription
-            })
+            body: form
         })
             .then(response => response.json())
             .then(data => {
@@ -34,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorElement.textContent = data.error;
                     errorElement.classList.remove("error--hidden");
                 } else {
-                    window.location.href = "/skills";
+                    window.location.href = "/skills/search";
                 }
             })
             .catch(error => {
@@ -43,19 +39,4 @@ document.addEventListener("DOMContentLoaded", function () {
                 errorElement.classList.remove("error--hidden");
             });
     });
-
-    function getCookie(name) {
-        let cookieValue = null;
-        if (document.cookie && document.cookie !== "") {
-            const cookies = document.cookie.split(";");
-            for (let i = 0; i < cookies.length; i++) {
-                const cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + "=")) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
 });

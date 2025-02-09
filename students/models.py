@@ -150,10 +150,7 @@ class Student:
         """Getting student."""
         from app import DATABASE_MANAGER
 
-        student = DATABASE_MANAGER.get_one_by_field(
-            "students",
-            "email",
-        )
+        student = DATABASE_MANAGER.get_one_by_field("students", "email", email)
 
         if student:
             return jsonify(student), 200

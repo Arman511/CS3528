@@ -5,6 +5,7 @@ import sys
 from dotenv import load_dotenv
 import pytest
 from passlib.hash import pbkdf2_sha256
+
 from flask import session
 
 
@@ -151,7 +152,7 @@ def test_login_success(app, database):
         "_id": "126",
         "name": "Login User",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("password"),
+        "password": pbkdf2_sha256.hash("dummy"),
     }
 
     # Insert the user into the database
@@ -159,7 +160,7 @@ def test_login_success(app, database):
 
     attempt_user = {
         "email": "dummy@dummy.com",
-        "password": "password",
+        "password": "dummy",
     }
 
     with app.app_context():

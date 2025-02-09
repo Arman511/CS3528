@@ -29,9 +29,9 @@ class Skill:
 
         # Check if the skill is in the cache
         for skill in skills_cache["data"]:
-            if skill["skill_name"].lower() == skill_name.lower():
+            if skill_name and skill["skill_name"].lower() == skill_name.lower():
                 return skill
-            if skill["_id"] == skill_id:
+            if skill_id and skill["_id"] == skill_id:
                 return skill
 
         return None
@@ -56,9 +56,8 @@ class Skill:
             # Update cache
             skills_cache["data"].append(skill)
             skills_cache["last_updated"] = datetime.now()
-            return jsonify(skill), 200
 
-        return jsonify({"error": "Skill not added"}), 400
+        return jsonify(skill), 200
 
     def delete_skill(self, skill_id):
         """Delete kill from database"""
@@ -73,6 +72,13 @@ class Skill:
         skills = DATABASE_MANAGER.get_all("skills")
         skills_cache["data"] = skills
         skills_cache["last_updated"] = datetime.now()
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            if skill_id in student.get("skills", []):
+                student["skills"].remove(skill_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         return jsonify({"message": "Deleted"}), 200
 
@@ -232,5 +238,28 @@ class Skill:
         skill["skill_name"] = skill_name
         skill["skill_description"] = skill_description
         DATABASE_MANAGER.update_one_by_id("attempted_skills", skill_id, skill)
+
+        return jsonify({"message": "Updated"}), 200
+
+    def update_skill(self, skill_id, skill_name, skill_description):
+        """Updates a skill"""
+
+        from app import DATABASE_MANAGER
+
+        if not self.find_skill(None, skill_id):
+            return jsonify({"error": "Skill not found"}), 404
+
+        skill = {
+            "_id": skill_id,
+            "skill_name": skill_name,
+            "skill_description": skill_description,
+        }
+
+        DATABASE_MANAGER.update_one_by_id("skills", skill_id, skill)
+
+        # Update cache
+        skills = DATABASE_MANAGER.get_all("skills")
+        skills_cache["data"] = skills
+        skills_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Updated"}), 200
