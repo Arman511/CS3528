@@ -55,29 +55,13 @@ def add_employer_routes(app):
             return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
 
-    @app.route("/employers/search_employers", methods=["GET", "POST"])
+    @app.route("/employers/search_employers", methods=["GET"])
     @handlers.login_required
     def search_employers():
-        if request.method == "POST":
-            data = request.get_json()
-            title = data.get("title", "").strip().lower()
-            email = data.get("email", "").strip().lower()
-
-            # Get all employers
-            employers = Employers().get_employers()
-
-            # Filter employers based on search criteria
-            filtered_employers = [
-                employer
-                for employer in employers
-                if (title in employer["company_name"].lower() if title else True)
-                and (email in employer["email"].lower() if email else True)
-            ]
-
-            return jsonify(filtered_employers)
-
-        # Render search page for GET requests
-        return render_template("employers/search_employers.html", user_type="admin")
+        employers = Employers().get_employers()
+        return render_template(
+            "employers/search_employers.html", user_type="admin", employers=employers
+        )
 
     @app.route("/employers/update_employer", methods=["GET", "POST"])
     @handlers.login_required

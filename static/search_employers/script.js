@@ -1,104 +1,71 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const searchForm = document.getElementById("searchForm");
     const employerTableBody = document.getElementById("employer-table");
     const errorElement = document.querySelector(".error");
+    const titleInput = document.getElementById("title");
+    const emailInput = document.getElementById("email");
+    const deleteButtons = document.querySelectorAll(".delete-employer");
+    const employers = [];
 
-    // Function to fetch employers
-    function fetchEmployers(title = "", email = "") {
-        fetch("/employers/search_employers", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, email }),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch employers");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (data.length === 0) {
-                    errorElement.textContent = "No employers found.";
-                    errorElement.classList.remove("error--hidden");
-                    employerTableBody.innerHTML = "";
-                    return;
-                }
-
-                errorElement.classList.add("error--hidden");
-
-                // Populate the table
-                employerTableBody.innerHTML = data
-                    .map(
-                        (employer) => `
-                        <tr>
-                            <td>${employer._id}</td>
-                            <td>${employer.company_name}</td>
-                            <td>${employer.email}</td>
-                            <td>
-                                <a href="/employers/update_employer?employer_id=${employer._id}" class="btn btn-info btn-sm mb-2">Update</a>
-                                <button class="btn btn-danger btn-sm delete-employer" data-id="${employer._id}">Delete</button>
-                            </td>
-                        </tr>
-                    `
-                    )
-                    .join("");
-
-                attachDeleteEventListeners();
-            })
-            .catch((error) => {
-                errorElement.textContent =
-                    "An error occurred. Please try again.";
-                errorElement.classList.remove("error--hidden");
-            });
-    }
-
-    // Function to delete an employer
-    function deleteEmployer(employerId) {
-        if (!confirm("Are you sure you want to delete this employer?")) {
-            return;
-        }
-
-        fetch("/employers/delete_employer", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ employer_id: employerId }),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.error) {
-                    alert("Error: " + data.error);
-                } else {
-                    alert("Employer deleted successfully!");
-                    fetchEmployers(); // Refresh the table dynamically
-                }
-            })
-            .catch((error) => {
-                console.error("Error deleting employer:", error);
-            });
-    }
-
-    // Attach event listeners for delete buttons
-    function attachDeleteEventListeners() {
-        document.querySelectorAll(".delete-employer").forEach((button) => {
-            button.addEventListener("click", function () {
-                const employerId = this.dataset.id;
-                deleteEmployer(employerId);
-            });
+    for (row of employerTableBody.rows) {
+        employers.push({
+            id: row.cells[0].textContent,
+            title: row.cells[1].textContent,
+            email: row.cells[2].textContent,
         });
     }
 
-    // Fetch all employers on page load
-    fetchEmployers();
+    // Function to filter table rows based on search criteria
+    function filterTableRows() {
+        const title = titleInput.value.trim().toLowerCase();
+        const email = emailInput.value.trim().toLowerCase();
+        const rows = employerTableBody.querySelectorAll("tr");
+        let hasResults = false;
 
-    // Handle search form submission
-    searchForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent form submission reload
+        for (const row of employerTableBody.rows) {
+            const employer = employers[row.rowIndex - 1];
+            let shouldShow = true;
 
-        // Get form values
-        const title = document.getElementById("title").value.trim();
-        const email = document.getElementById("email").value.trim();
+            if (title && !employer.title.toLowerCase().includes(title)) shouldShow = false;
+            if (email && !employer.email.toLowerCase().includes(email)) shouldShow = false;
 
-        // Fetch filtered employers
-        fetchEmployers(title, email);
+            row.style.display = shouldShow ? "" : "none";
+
+        }
+    }
+
+    // Add event listeners to input fields for live filtering
+    titleInput.addEventListener("input", filterTableRows);
+    emailInput.addEventListener("input", filterTableRows);
+
+    deleteButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+            const employerId = button.dataset.id;
+            if (!confirm("Are you sure you want to delete this employer?")) {
+                return;
+            }
+
+            fetch("/employers/delete_employer", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ employer_id: employerId }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        alert("Error: " + data.error);
+                    } else {
+                        alert("Employer deleted successfully!");
+
+                        // Remove the corresponding table row
+                        const row = document.querySelector(
+                            `.delete-employer[data-id="${employerId}"]`
+                        ).closest("tr");
+                        row.remove();
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error deleting employer:", error);
+                });
+        });
     });
 });
