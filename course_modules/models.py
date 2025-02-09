@@ -50,6 +50,23 @@ class Module:
 
         DATABASE_MANAGER.delete("modules", module["_id"])
 
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "modules" in student and module_id in student["modules"]:
+                student["modules"].remove(module_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        for opportunity in opportunities:
+            if (
+                "modules_required" in opportunity
+                and module_id in opportunity["modules_required"]
+            ):
+                opportunity["modules_required"].remove(module_id)
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
         # Update cache
         modules = DATABASE_MANAGER.get_all("modules")
         modules_cache["data"] = modules

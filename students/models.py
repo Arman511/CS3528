@@ -133,11 +133,24 @@ class Student:
             "students", "student_id", str(student_id)
         )
 
-        if student:
-            DATABASE_MANAGER.delete_by_id("students", student["_id"])
-            return jsonify({"message": "Student deleted"}), 200
+        if not student:
+            return jsonify({"error": "Student not found"}), 404
 
-        return jsonify({"error": "Student not found"}), 404
+        DATABASE_MANAGER.delete_by_id("students", student["_id"])
+
+        opportunies = Opportunity().get_opportunities()
+
+        for opportunity in opportunies:
+            if (
+                "preferences" in opportunity
+                and student["_id"] in opportunity["preferences"]
+            ):
+                opportunity["preferences"].remove(student["_id"])
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
+        return jsonify({"message": "Student deleted"}), 200
 
     def delete_students(self):
         """Deleting all students."""

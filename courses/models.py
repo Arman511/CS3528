@@ -38,7 +38,8 @@ class Course:
 
         return jsonify({"error": "Course not added"}), 400
 
-    def delete_course(self, id_val):
+    def delete_course_by_id(self, course_id):
+
         """Deletes a course from the database."""
         from app import DATABASE_MANAGER
 
@@ -46,6 +47,23 @@ class Course:
 
         if not course:
             return jsonify({"error": "Course not found"}), 404
+
+        students = DATABASE_MANAGER.get_all_by_field("students", "course_id", course_id)
+
+        if students and len(students) > 0:
+            return jsonify({"error": "Course has students enrolled"}), 400
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+
+        for opportunity in opportunities:
+            if (
+                "courses_required" in opportunity
+                and course_id in opportunity["courses_required"]
+            ):
+                opportunity["courses_required"].remove(course_id)
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
 
         DATABASE_MANAGER.delete_by_id("courses", course["_id"])
         # Update cache
