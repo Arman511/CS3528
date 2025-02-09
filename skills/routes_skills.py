@@ -1,7 +1,7 @@
 """Handles the routes for the skills module."""
 
 import uuid
-from flask import jsonify, render_template, request
+from flask import jsonify, redirect, render_template, request
 from core import handlers
 from .models import Skill
 
@@ -34,3 +34,49 @@ def add_skills_routes(app):
             "skill_description": request.form.get("skill_description"),
         }
         return Skill().add_skill(skill)
+
+    @app.route("/skills/attempted_skill_search", methods=["GET"])
+    @handlers.login_required
+    def search_attempt_skills():
+        """Approval page for attempted Skills"""
+        attempted_skills = Skill().get_list_attempted_skills()
+
+        return render_template(
+            "/skills/skill_approval.html",
+            attempted_skills=attempted_skills,
+            user_type="admin",
+        )
+
+    @app.route("/skills/approve_skill", methods=["POST"])
+    @handlers.login_required
+    def approve_skill():
+        uuid = request.args.get("attempt_skill_id")
+        description = request.json.get("description")
+
+        return Skill().approve_skill(uuid, description)
+
+    @app.route("/skills/reject_skill", methods=["POST"])
+    @handlers.login_required
+    def reject_skill():
+        uuid = request.args.get("attempt_skill_id")
+
+        return Skill().reject_skill(uuid)
+
+    @app.route("/skills/update_attempted_skill", methods=["GET", "POST"])
+    @handlers.login_required
+    def update_attempted_skill():
+        if request.method == "GET":
+            skill_id = request.args.get("attempt_skill_id")
+            skill = Skill().get_attempted_skill(skill_id)
+            if skill is None:
+                return redirect("/404")
+            return render_template("/skills/update_attempt_skill.html", skill=skill)
+        else:
+            skill_id = request.form.get("skill_id")
+            skill_name = request.form.get("skill_name").lower()
+            skill_description = request.form.get("skill_description")
+            if not skill_name or not skill_description:
+                return jsonify({"error": "One of the inputs is blank"}), 400
+            return Skill().update_attempt_skill(
+                skill_id, skill_name, skill_description, user_type="admin"
+            )

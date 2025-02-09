@@ -3,10 +3,8 @@ This module defines the User class which handles user authentication and session
 """
 
 import uuid
-from flask import jsonify, request, session
-from pymongo import TEXT
+from flask import jsonify, session
 import pandas as pd
-from core import handlers
 from opportunities.models import Opportunity
 
 
@@ -42,7 +40,9 @@ class Student:
             return jsonify({"error": "Student already in database"}), 400
 
         if overwrite:
-            DATABASE_MANAGER.delete_one_by_field("students", "student_id", student["student_id"])
+            DATABASE_MANAGER.delete_one_by_field(
+                "students", "student_id", student["student_id"]
+            )
 
         DATABASE_MANAGER.insert("students", student)
 
@@ -68,7 +68,7 @@ class Student:
         """Getting student."""
         from app import DATABASE_MANAGER
 
-        student = DATABASE_MANAGER.get_by_id("students", _id)
+        student = DATABASE_MANAGER.get_one_by_id("students", _id)
 
         if student:
             return student
@@ -86,6 +86,17 @@ class Student:
 
         return []
 
+    def get_students_map(self):
+        """Getting all students."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        if students:
+            return {student["_id"]: student for student in students}
+
+        return {}
+
     def update_student_by_id(self, student_id, student_data):
         """Update student in the database by student_id."""
         # Attempt to update the student directly with the provided data
@@ -94,6 +105,19 @@ class Student:
         result = DATABASE_MANAGER.update_by_field(
             "students", "student_id", str(student_id), student_data
         )
+
+        # Return True if the update was successful (i.e., a document was matched and modified)
+        if result.matched_count > 0:
+            return jsonify({"message": "Student updated"}), 200
+        else:
+            return jsonify({"error": "Student not found"}), 404
+
+    def update_student_by_uuid(self, uuid, student_data):
+        """Update student in the database by student_id."""
+        # Attempt to update the student directly with the provided data
+        from app import DATABASE_MANAGER
+
+        result = DATABASE_MANAGER.update_one_by_id("students", uuid, student_data)
 
         # Return True if the update was successful (i.e., a document was matched and modified)
         if result.matched_count > 0:
@@ -136,75 +160,12 @@ class Student:
 
         return jsonify({"error": "Student not found"}), 404
 
-    def get_students_by_course(self, course):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_field(
-            "students", "course", request.form.get("course")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_skills(self, skills):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_field(
-            "students", "skills", request.form.get("skills")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_course_and_skills(self, course, skills):
-        """Getting students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_two_fields(
-            "students", "course", course, "skills", skills
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
-    def get_students_by_name(self, first_name, last_name):
-        """Getting students by name."""
-        from app import DATABASE_MANAGER
-
-        # Ensure text index is created on the collection
-        DATABASE_MANAGER.create_index(
-            "students", [("first_name", TEXT), ("last_name", TEXT)]
-        )
-
-        students = DATABASE_MANAGER.get_all_by_text_search(
-            "students", (f"{first_name} {last_name}")
-        )
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
     def import_from_xlsx(self, base_email, file):
         """Importing students from Excel file."""
         from app import DATABASE_MANAGER
 
-        if "file" not in request.files:
-            return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
-            return jsonify({"error": "Invalid file type"}), 400
         try:
             df = pd.read_excel(file)
-
             students = df.to_dict(orient="records")
             data = []
             for student in students:
@@ -253,12 +214,9 @@ class Student:
         ) as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def student_login(self):
+    def student_login(self, student_id, password):
         """Handle student login."""
         from app import DATABASE_MANAGER
-
-        student_id = request.form.get("student_id")
-        password = request.form.get("password")
 
         # Find the student by id which is their password
         student = DATABASE_MANAGER.get_one_by_id("students", password)

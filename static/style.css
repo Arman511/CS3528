@@ -38,7 +38,6 @@
     box-sizing: border-box;
 }
 
-
 .table-wrapper {
     width: 100%;
     overflow-x: auto;
@@ -179,6 +178,7 @@ a {
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
+    text-decoration: underline;
 }
 
 a:hover {
@@ -186,11 +186,12 @@ a:hover {
     text-decoration: underline;
 }
 
-html, body {
+html,
+body {
     height: 100%;
-    margin: 0; 
+    margin: 0;
     display: flex;
-    flex-direction: column; 
+    flex-direction: column;
 }
 .page-wrapper {
     background-color: #fff;

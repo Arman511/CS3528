@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-{% if user_type == "employer" %}
-    {% include "employers/navbar.html" %}
-{% elif user_type == "admin" %}
-    {% include "user/navbar.html" %}
-{% endif %}
+    {% if user_type == "employer" %}
+        {% include "employers/navbar.html" %}
+    {% elif user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% endif %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Add/Update placement</h2>
@@ -56,27 +56,24 @@
                        id="spots_available"
                        class="form-control"
                        placeholder="Number of spots available"
-                       value="{{ opportunity.spots_available }}" />
+                       value="{{ opportunity.spots_available|int }}" />
                 <label for="placement_duration">Placement Duration:</label>
                 <select id="placement_duration"
                         name="placement_duration"
                         class="form-control"
                         required>
                     <option value="1_day"
-                            {% if "1_day"==opportunity.placement_duration %}selected{% endif %}>1 Day</option>
+                            {% if "1_day"==opportunity.duration %}selected{% endif %}>1 Day</option>
                     <option value="1_week"
-                            {% if "1_week"==opportunity.placement_duration %}selected{% endif %}>1 Week</option>
+                            {% if "1_week"==opportunity.duration %}selected{% endif %}>1 Week</option>
                     <option value="1_month"
-                            {% if "1_month"==opportunity.placement_duration %}selected{% endif %}>1 Month</option>
+                            {% if "1_month"==opportunity.duration %}selected{% endif %}>1 Month</option>
                     <option value="3_months"
-                            {% if "3_months"==opportunity.placement_duration %}selected{% endif %}>3 Months</option>
+                            {% if "3_months"==opportunity.duration %}selected{% endif %}>3 Months</option>
                     <option value="6_months"
-                            {% if "6_months"==opportunity.placement_duration %}selected{% endif %}>6 Months</option>
+                            {% if "6_months"==opportunity.duration %}selected{% endif %}>6 Months</option>
                     <option value="12_months"
-                            {% if "12_months"==opportunity.placement_duration %}selected{% endif %}>
-                        12
-                        Months
-                    </option>
+                            {% if "12_months"==opportunity.duration %}selected{% endif %}>12 Months</option>
                 </select>
                 <label for="modules">Modules:</label>
                 <select id="modules" name="modules" class="form-control" multiple>
@@ -89,19 +86,25 @@
                 <p class="success success--hidden"></p>
                 <input type="submit" value="Add/Update" class="btn" />
             </form>
+            <p class="employer_id"
+               employer_id="{{ opportunity.employer_id }}"
+               hidden></p>
             <script src="/static/employer_add_update_opportunity/script.js"></script>
             <script>
                 $(document).ready(function () {
                     $('#modules').selectize({
                         plugins: ["remove_button"],
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#course').selectize({
                         plugins: [ "remove_button"],
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                     $('#placement_duration').selectize({
                         sortField: 'text',
+                        dropdownParent: 'body'
                     });
                 });
             </script>

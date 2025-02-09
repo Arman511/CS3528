@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper card-dynamic-width">
+        <!-- First Card: Search Form -->
+        <div class="card search-card">
+            <h1 class="center">Search Opportunities</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <div>
+                        <label for="name">Skill Name:</label>
+                        <input type="text" id="name" name="name" class="field" />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div>
+                        <label for="description">Description:</label>
+                        <input type="text" id="description" name="description" class="field" />
+                    </div>
+                </div>
+                <div>
+                    <label for="usage_min">Usage (Min):</label>
+                    <input type="number" id="usage_min" name="usage_min" class="field" />
+                </div>
+                <div>
+                    <label for="usage_max">Usage (Max):</label>
+                    <input type="number" id="usage_max" name="usage_max" class="field" />
+                </div>
+                <div class="form-group">
+                    <p class="error error--hidden"></p>
+                </div>
+            </form>
+        </div>
+        <!-- Second Card: Table -->
+        <div class="card card-dynamic-width">
+            <h2 class="center">Attempted Skills</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Skill</th>
+                            <th>Description</th>
+                            <th>Usage Count</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attempted-skills-table">
+                        {% for skill in attempted_skills %}
+                            <tr>
+                                <td>{{ skill.skill_name|title }}</td>
+                                <td>{{ skill.skill_description }}</td>
+                                <td>{{ skill.used }}</td>
+                                <td>
+                                    <button type="button"
+                                            class="btn btn-info btn-sm mb-2 approve-btn"
+                                            data-id="{{ skill._id }}">Approve</button>
+                                    <button type="button"
+                                            class="btn btn-info btn-sm mb-2 update-btn"
+                                            data-id="{{ skill._id }}">Update</button>
+                                    <button type="button"
+                                            class="btn btn-warning btn-sm mb-2 reject-btn"
+                                            data-id="{{ skill._id }}">Reject</button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/static/search_attempted_skills/script.js"></script>
+{% endblock content %}

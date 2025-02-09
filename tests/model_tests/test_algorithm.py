@@ -1,6 +1,15 @@
 """Tests for the matching algorithm."""
 
-from ..algorithm.matching import Matching
+import os
+import sys
+
+# flake8: noqa: F811
+
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
+
+from algorithm.matching import Matching
 
 
 def test_basic_matching_without_conflicts():
@@ -27,6 +36,33 @@ def test_basic_matching_without_conflicts():
     )
 
     assert result == expected
+
+
+def test_get_matches_function():
+    """Tests a basic matching without any conflicts."""
+    students_preference = {
+        "Student_1": ["company_1"],
+        "Student_2": ["company_2"],
+        "Student_3": ["company_3"],
+    }
+    employer_preference = {
+        "company_1": {"positions": 1, "Student_1": 1},
+        "company_2": {"positions": 1, "Student_2": 1},
+        "company_3": {"positions": 1, "Student_3": 1},
+    }
+    match = Matching(students_preference, employer_preference)
+    result = match.find_best_match()
+    expected = (
+        [],
+        {
+            "company_1": ["Student_1"],
+            "company_2": ["Student_2"],
+            "company_3": ["Student_3"],
+        },
+    )
+    matches = match.get_matches()
+
+    assert result == expected == matches
 
 
 def test_students_exceed_company_positions():

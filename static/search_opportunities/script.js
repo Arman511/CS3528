@@ -1,68 +1,90 @@
 document.addEventListener("DOMContentLoaded", function () {
     const searchForm = document.getElementById("searchForm");
     const opportunityTable = document.getElementById("opportunity-table");
-    const errorElement = document.querySelector(".error");
 
-    searchForm.addEventListener("submit", function (event) {
-        event.preventDefault();
-        const formData = new FormData(searchForm);
-
-        // Convert formData to a JSON object
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-
-        // Send the form data as JSON to the dynamic URL
-        fetch("/opportunities/search", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(data),
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log(data);
-                if (data.error) {
-                    errorElement.textContent = data.error;
-                    errorElement.classList.remove("error--hidden");
-                } else {
-                    errorElement.classList.add("error--hidden");
-                    renderTable(data);
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error);
-                errorElement.textContent = "An error occurred while searching.";
-                errorElement.classList.remove("error--hidden");
-            });
-    });
-
-    function renderTable(opportunities) {
-        opportunityTable.innerHTML = "";
-        opportunities.forEach((opportunity) => {
-            const row = document.createElement("tr");
-
-            row.innerHTML = `
-                <td>${opportunity.title}</td>
-                <td>${opportunity.description}</td>
-                <td>${opportunity.company_name}</td>
-                <td><a href="${opportunity.url}">${opportunity.url}</a></td>
-                <td>${opportunity.location}</td>
-                <td>${opportunity.modules_required}</td>
-                <td>${opportunity.courses_required}</td>
-                <td>${opportunity.spots_available}</td>
-                <td>${opportunity.duration}</td>
-                <td>
-                    <a href="/employers/rank_students?opportunity_id=${opportunity._id}" class="btn btn-primary btn-sm mb-2">Rank</a>
-                    <a href="/opportunities/employer_add_update_opportunity?opportunity_id=${opportunity._id}" class="btn btn-info btn-sm mb-2">Update</a>
-                    <a href="/opportunities/employer_delete_opportunity?opportunity_id=${opportunity._id}" class="btn btn-danger btn-sm">Delete</a>
-                    
-                </td>
-            `;
-
-            opportunityTable.appendChild(row);
+    const opportunities = [];
+    for (row of opportunityTable.rows) {
+        opportunities.push({
+            title: row.cells[0].innerText.toLowerCase(),
+            description: row.cells[1].innerText.toLowerCase(),
+            company: row.cells[2].innerText.toLowerCase(),
+            url: row.cells[3].innerText.toLowerCase(),
+            location: row.cells[4].innerText.toLowerCase(),
+            courses_required: row.cells[5].dataset.courses.toLowerCase().split(', ').filter(Boolean),
+            modules_required: row.cells[6].dataset.modules.toLowerCase().split(', ').filter(Boolean),
+            spots_available: parseInt(row.cells[7].innerText.trim(), 10) || 0,
+            duration: row.cells[8].innerText.trim().replace(" ", "_").toLowerCase(),
         });
     }
+
+    const titleSearchInput = document.getElementById("title");
+    const cnameSearchInput = document.getElementById("company");
+    const descriptionSearchInput = document.getElementById("description");
+    const locationSearchInput = document.getElementById("location");
+
+    const spotsMinSearchInput = document.getElementById("spots_min");
+    const spotsMaxSearchInput = document.getElementById("spots_max");
+
+    function filterOpportunities() {
+        const titleValue = titleSearchInput.value.toLowerCase();
+        const companyValue = cnameSearchInput ? cnameSearchInput.value.toLowerCase() : null;
+        const descriptionValue = descriptionSearchInput.value.toLowerCase();
+        const locationValue = locationSearchInput.value.toLowerCase();
+
+        // Get values from Selectize inputs
+        let courseValue = $("#course").val();
+        let modulesValue = $("#modules").val() || [];
+        let durationValue = $("#placement_duration").val();
+
+        courseValue = courseValue ? courseValue.toLowerCase() : null;
+        modulesValue = modulesValue.map(module => module.toLowerCase());
+        durationValue = durationValue ? durationValue.toLowerCase() : null;
+
+        const spotsMinValue = parseInt(spotsMinSearchInput.value, 10) || 0;
+        const spotsMaxValue = parseInt(spotsMaxSearchInput.value, 10) || Number.MAX_SAFE_INTEGER;
+
+        for (const row of opportunityTable.rows) {
+            const opportunity = opportunities[row.rowIndex - 1];
+            let shouldShow = true;
+
+            if (titleValue && !opportunity.title.includes(titleValue)) shouldShow = false;
+            if (companyValue && !opportunity.company.includes(companyValue)) shouldShow = false;
+            if (descriptionValue && !opportunity.description.includes(descriptionValue)) shouldShow = false;
+            if (locationValue && !opportunity.location.includes(locationValue)) shouldShow = false;
+            if (courseValue && !opportunity.courses_required.includes(courseValue)) shouldShow = false;
+            if (modulesValue.length && !modulesValue.every(module => opportunity.modules_required.includes(module))) shouldShow = false;
+            if (opportunity.spots_available < spotsMinValue || opportunity.spots_available > spotsMaxValue) shouldShow = false;
+            if (durationValue && !durationValue.includes(opportunity.duration)) shouldShow = false;
+            row.style.display = shouldShow ? "" : "none";
+        }
+    }
+
+    // Attach event listeners
+    titleSearchInput.addEventListener("input", filterOpportunities);
+    if (cnameSearchInput) cnameSearchInput.addEventListener("input", filterOpportunities);
+    descriptionSearchInput.addEventListener("input", filterOpportunities);
+    locationSearchInput.addEventListener("input", filterOpportunities);
+    spotsMinSearchInput.addEventListener("input", filterOpportunities);
+    spotsMaxSearchInput.addEventListener("input", filterOpportunities);
+
+    // Initialize Selectize for the select elements
+    $("#course").selectize({
+        sortField: 'text',
+        dropdownParent: 'body',
+        onChange: filterOpportunities
+    });
+
+    $("#modules").selectize({
+        plugins: ["remove_button"],
+        sortField: 'text',
+        dropdownParent: 'body',
+        onChange: filterOpportunities
+    });
+
+    $("#placement_duration").selectize({
+        plugins: ["remove_button"],
+        sortField: 'text',
+        dropdownParent: 'body',
+        onChange: filterOpportunities
+    });
 });

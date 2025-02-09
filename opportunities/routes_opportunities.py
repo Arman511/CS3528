@@ -12,7 +12,7 @@ from .models import Opportunity
 def add_opportunities_routes(app):
     """Add routes for opportunities"""
 
-    @app.route("/opportunities/search", methods=["GET", "POST"])
+    @app.route("/opportunities/search", methods=["GET"])
     @handlers.admin_or_employers_required
     def search_opportunities():
         """
@@ -24,56 +24,37 @@ def add_opportunities_routes(app):
         employer = session.get("employer")
 
         # Determine user_type based on session data
-        user_type = None
-        if user:
-            user_type = "admin"
-        else:
-            user_type = "employer"
-
-        print(f"[DEBUG] User type: {user_type}")
-        if user_type is None:
+        if not user and not employer:
             return {"error": "Unauthorized access."}, 403
 
-        if request.method == "POST":
-            data = request.get_json()  # Get the JSON data from the request
+        user_type = "admin" if user else "employer"
+        print(f"[DEBUG] User type: {user_type}")
 
-            title = data.get("title")
-            if user_type == "admin":
-                company_name = data.get("company")
-                print("Admin - Method POST")
-                return Opportunity().search_opportunities(title, company_name)
-            else:
-                print("Employer - Method POST")
-                return Opportunity().search_opportunities(
-                    title, employer["company_name"]
-                )
+        # Common opportunity search parameters
+        company_name = employer.get("company_name") if employer else ""
+        title = ""
 
-        # For GET requests
+        # Fetch opportunities based on user type
+        opportunities = Opportunity().search_opportunities(
+            title=title, company_name=company_name
+        )
+
+        # Prepare context for rendering
+        context = {
+            "opportunities": opportunities,
+            "user_type": user_type,
+            "courses": Course().get_courses(),
+            "modules": Module().get_modules(),
+        }
+
+        # Add employers map if admin
         if user_type == "admin":
-            print("Admin - Method GET")
-            opportunities = Opportunity().search_opportunities(
-                title="", company_name=""
-            )
             employers_map = {
-                employer["_id"]: employer
-                for employer in list(Employers().get_employers())
+                employer["_id"]: employer for employer in Employers().get_employers()
             }
-            return render_template(
-                "opportunities/search.html",
-                opportunities=opportunities,
-                employers_map=employers_map,
-                user_type=user_type,
-            )
-        elif user_type == "employer":
-            print("Employer - Method GET")
-            opportunities = Opportunity().search_opportunities(
-                title="", company_name=employer["company_name"]
-            )
-            return render_template(
-                "opportunities/search.html",
-                opportunities=opportunities,
-                user_type=user_type,
-            )
+            context["employers_map"] = employers_map
+
+        return render_template("opportunities/search.html", **context)
 
     @app.route(
         "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
@@ -115,7 +96,14 @@ def add_opportunities_routes(app):
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
-
+            else:
+                if (
+                    Opportunity().get_opportunity_by_id(opportunity["_id"])[
+                        "employer_id"
+                    ]
+                    != session["employer"]["_id"]
+                ):
+                    return {"error": "Unauthorized Access."}, 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 

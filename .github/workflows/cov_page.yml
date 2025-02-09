@@ -1,0 +1,70 @@
+# GitHub Actions workflow for building Jekyll, running tests, and deploying coverage report
+name: Coverage Report
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+permissions:
+  contents: write  # Needed for pushing the coverage report
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  # Test and coverage job
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.11.0
+        with:
+          mongodb-version: "8.0"
+          mongodb-replica-set: test-rs
+        env:
+          CI: true
+          IS_GITHUB_ACTION: "True"
+          IS_TEST: "True"
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          
+      - name: Run tests with coverage
+        env:
+          SECRET_KEY: "psZsPEYjcq9@?(!6w=dK"
+        run: |
+          coverage run -m pytest
+          coverage html
+
+      - name: Deploy coverage report
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          
+          
+          git checkout --orphan coverage_report
+          git rm -rf .
+          
+          mv htmlcov/* .
+
+            echo "[Coverage Report](https://arman511.github.io/CS3528/)" > README.md
+          
+          git add *
+          git reset '*.pyc'
+          git commit -m "Update coverage report"
+          
+          # Push the coverage report to Pages
+          git push -f origin coverage_report
