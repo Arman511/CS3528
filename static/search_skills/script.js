@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const deleteButtons = document.querySelectorAll(".delete-btn");
     const skills = [];
 
-    for (const row of skillsTable.rows) {
+    for (const row of skillTableBody.rows) {
         skills.push({
             skill_name: row.cells[0].innerText.toLowerCase(),
             skill_description: row.cells[1].innerText.toLowerCase(),
@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const filterSkills = () => {
         const name = nameInput.value.toLowerCase();
+        const description = descriptionInput.value.toLowerCase();
 
         for (const row of skillTableBody.rows) {
             const skill = skills[row.rowIndex - 1];
@@ -32,6 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
     };
 
     nameInput.addEventListener("input", filterSkills);
+    descriptionInput.addEventListener("input", filterSkills);
 
     deleteButtons.forEach((deleteButton) => {
         deleteButton.addEventListener("click", async () => {

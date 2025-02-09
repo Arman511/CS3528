@@ -29,9 +29,9 @@ class Skill:
 
         # Check if the skill is in the cache
         for skill in skills_cache["data"]:
-            if skill["skill_name"].lower() == skill_name.lower():
+            if skill_name and skill["skill_name"].lower() == skill_name.lower():
                 return skill
-            if skill["_id"] == skill_id:
+            if skill_id and skill["_id"] == skill_id:
                 return skill
 
         return None
@@ -72,6 +72,13 @@ class Skill:
         skills = DATABASE_MANAGER.get_all("skills")
         skills_cache["data"] = skills
         skills_cache["last_updated"] = datetime.now()
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            if skill_id in student.get("skills", []):
+                student["skills"].remove(skill_id)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         return jsonify({"message": "Deleted"}), 200
 

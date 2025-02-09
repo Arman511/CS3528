@@ -16,16 +16,14 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        let form = new FormData();
+        form.append("skill_id", skillId);
+        form.append("skill_name", skillName);
+        form.append("skill_description", skillDescription);
+
         fetch("/skills/update_attempted_skill", {
             method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                skill_id: skillId,
-                skill_name: skillName,
-                skill_description: skillDescription
-            })
+            body: form
         })
             .then(response => response.json())
             .then(data => {
