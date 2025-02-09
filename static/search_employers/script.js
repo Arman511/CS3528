@@ -1,55 +1,47 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const searchForm = document.getElementById("searchForm");
     const employerTableBody = document.getElementById("employer-table");
     const errorElement = document.querySelector(".error");
+    const titleInput = document.getElementById("title");
+    const emailInput = document.getElementById("email");
 
-    // Function to fetch employers
-    function fetchEmployers(title = "", email = "") {
-        fetch("/employers/search_employers", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ title, email }),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error("Failed to fetch employers");
-                }
-                return response.json();
-            })
-            .then((data) => {
-                if (data.length === 0) {
-                    errorElement.textContent = "No employers found.";
-                    errorElement.classList.remove("error--hidden");
-                    employerTableBody.innerHTML = "";
-                    return;
-                }
+    // Function to filter table rows based on search criteria
+    function filterTableRows() {
+        const title = titleInput.value.trim().toLowerCase();
+        const email = emailInput.value.trim().toLowerCase();
+        const rows = employerTableBody.querySelectorAll("tr");
+        let hasResults = false;
 
-                errorElement.classList.add("error--hidden");
+        rows.forEach((row) => {
+            const companyName = row.children[1].textContent.toLowerCase();
+            const employerEmail = row.children[2].textContent.toLowerCase();
 
-                // Populate the table
-                employerTableBody.innerHTML = data
-                    .map(
-                        (employer) => `
-                        <tr>
-                            <td>${employer._id}</td>
-                            <td>${employer.company_name}</td>
-                            <td>${employer.email}</td>
-                            <td>
-                                <a href="/employers/update_employer?employer_id=${employer._id}" class="btn btn-info btn-sm mb-2">Update</a>
-                                <button class="btn btn-danger btn-sm delete-employer" data-id="${employer._id}">Delete</button>
-                            </td>
-                        </tr>
-                    `
-                    )
-                    .join("");
+            const matchesTitle = title ? companyName.includes(title) : true;
+            const matchesEmail = email ? employerEmail.includes(email) : true;
 
-                attachDeleteEventListeners();
-            })
-            .catch((error) => {
-                errorElement.textContent =
-                    "An error occurred. Please try again.";
-                errorElement.classList.remove("error--hidden");
+            if (matchesTitle && matchesEmail) {
+                row.style.display = ""; // Show row
+                hasResults = true;
+            } else {
+                row.style.display = "none"; // Hide row
+            }
+        });
+
+        if (!hasResults) {
+            errorElement.textContent = "No employers found.";
+            errorElement.classList.remove("error--hidden");
+        } else {
+            errorElement.classList.add("error--hidden");
+        }
+    }
+
+    // Attach delete functionality to buttons
+    function attachDeleteEventListeners() {
+        document.querySelectorAll(".delete-employer").forEach((button) => {
+            button.addEventListener("click", function () {
+                const employerId = this.dataset.id;
+                deleteEmployer(employerId);
             });
+        });
     }
 
     // Function to delete an employer
@@ -69,7 +61,12 @@ document.addEventListener("DOMContentLoaded", function () {
                     alert("Error: " + data.error);
                 } else {
                     alert("Employer deleted successfully!");
-                    fetchEmployers(); // Refresh the table dynamically
+
+                    // Remove the corresponding table row
+                    const row = document.querySelector(
+                        `.delete-employer[data-id="${employerId}"]`
+                    ).closest("tr");
+                    row.remove();
                 }
             })
             .catch((error) => {
@@ -77,28 +74,10 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    // Attach event listeners for delete buttons
-    function attachDeleteEventListeners() {
-        document.querySelectorAll(".delete-employer").forEach((button) => {
-            button.addEventListener("click", function () {
-                const employerId = this.dataset.id;
-                deleteEmployer(employerId);
-            });
-        });
-    }
+    // Add event listeners to input fields for live filtering
+    titleInput.addEventListener("input", filterTableRows);
+    emailInput.addEventListener("input", filterTableRows);
 
-    // Fetch all employers on page load
-    fetchEmployers();
-
-    // Handle search form submission
-    searchForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent form submission reload
-
-        // Get form values
-        const title = document.getElementById("title").value.trim();
-        const email = document.getElementById("email").value.trim();
-
-        // Fetch filtered employers
-        fetchEmployers(title, email);
-    });
+    // Attach delete event listeners on page load
+    attachDeleteEventListeners();
 });
