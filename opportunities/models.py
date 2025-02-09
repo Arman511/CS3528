@@ -215,11 +215,12 @@ class Opportunity:
             and opportunity["employer_id"] != session["employer"]["_id"]
         ):
             return jsonify({"error": "Unauthorized Access."}), 401
-        result = None
-        if opportunity:
-            result = DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
-            cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-            cache["last_updated"] = datetime.now()
+        if not opportunity:
+            return jsonify({"error": "Opportunity not found"}), 404
+
+        DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
+        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
+        cache["last_updated"] = datetime.now()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -228,10 +229,7 @@ class Opportunity:
                 student["preferences"].remove(opportunity_id)
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
-        if result:
-            return jsonify({"message": "Opportunity deleted"}), 200
-
-        return jsonify({"error": "Opportunity not found"}), 404
+        return jsonify({"message": "Opportunity deleted"}), 200
 
     def delete_opportunities(self):
         """Deleting all opportunities."""
