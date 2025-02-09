@@ -22,3 +22,18 @@ def add_course_routes(app):
             "course_description": request.form.get("course_description"),
         }
         return Course().add_course(course)
+
+    @app.route("/courses/delete_course", methods=["POST"])
+    @handlers.login_required
+    def delete_course():
+        uuid = request.args.get("uuid")
+        return Course().delete_course(uuid)
+
+    @app.route("/courses/search", methods=["GET"])
+    @handlers.login_required
+    def search_course():
+        courses = Course().get_courses()
+
+        return render_template(
+            "/courses/search.html", courses=courses, user_type="admin"
+        )
