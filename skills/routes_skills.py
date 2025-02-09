@@ -35,6 +35,42 @@ def add_skills_routes(app):
         }
         return Skill().add_skill(skill)
 
+    @app.route("/skills/search", methods=["GET"])
+    @handlers.login_required
+    def list_skills():
+        return render_template(
+            "/skills/search.html", user_type="admin", skills=Skill().get_skills()
+        )
+
+    @app.route("/skills/delete", methods=["DELETE"])
+    @handlers.login_required
+    def delete_skill():
+        skill_id = request.args.get("skill_id")
+        if not skill_id:
+            return jsonify({"error": "Missing skill ID"}, 400)
+        return Skill().delete_skill(skill_id)
+
+    @app.route("/skills/update", methods=["POST", "GET"])
+    @handlers.login_required
+    def update_skill():
+        if request.method == "POST":
+            skill_id = request.form.get("skill_id")
+            skill_name = request.form.get("skill_name")
+            skill_description = request.form.get("skill_description")
+
+            if not skill_id or not skill_name or not skill_description:
+                return jsonify({"error": "Missing fields"}), 400
+
+            return Skill().update_skill(skill_id, skill_name, skill_description)
+
+        skill_id = request.args.get("skill_id")
+        skill = Skill().find_skill(None, skill_id)
+        if skill is None:
+            return redirect("/404")
+        return render_template(
+            "/skills/update_skill.html", skill=skill, user_type="admin"
+        )
+
     @app.route("/skills/attempted_skill_search", methods=["GET"])
     @handlers.login_required
     def search_attempt_skills():
