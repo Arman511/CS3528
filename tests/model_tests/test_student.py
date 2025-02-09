@@ -269,7 +269,7 @@ def test_delete_student_by_id(app, database):
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
@@ -277,39 +277,42 @@ def test_delete_student_by_id(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     database.insert("students", student1)
-    
+
     with app.app_context():
         response = Student().delete_student_by_id("123")
         json_response = response[0].get_json()
         assert response[1] == 200
         assert json_response["message"] == "Student deleted"
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
+
 
 def test_delete_student_by_id_not_found(app, database):
 
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+
     with app.app_context():
         response = Student().delete_student_by_id("123")
         json_response = response[0].get_json()
         assert response[1] == 404
         assert json_response["error"] == "Student not found"
-        
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    database.delete_all_by_field("students", "_id", "123")    
+    database.delete_all_by_field("students", "_id", "123")
+
 
 def test_delete_students(app, database):
 
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
+    current_students = database.get_all("students")
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
@@ -317,9 +320,9 @@ def test_delete_students(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-    
+
     database.insert("students", student1)
-    
+
     student2 = {
         "_id": "124",
         "first_name": "dummy2",
@@ -327,17 +330,22 @@ def test_delete_students(app, database):
         "email": "dummy2@dummy.com",
         "student_id": "124",
     }
-    
+
     database.insert("students", student2)
-    
+
     with app.app_context():
         response = Student().delete_students()
         json_response = response[0].get_json()
         assert response[1] == 200
         assert json_response["message"] == "All students deleted"
-        
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
+    database.delete_all_by_field("students", "_id", "124")
+
+    for student in current_students:
+        database.insert("students", student)
+
 
 def test_get_student_by_email(app, database):
 
@@ -354,37 +362,42 @@ def test_get_student_by_email(app, database):
     }
 
     database.insert("students", student1)
-    
+
     with app.app_context():
         response = Student().get_student_by_email("dummy@dummy.com")
         assert response[1] == 200
-       
-    
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
-    
-    
+
+
 def test_get_student_by_email_not_found(app, database):
     from students.models import Student
-    
+
     with app.app_context():
         response = Student().get_student_by_email("dummy@dummy.com")
         json_response = response[0].get_json()
         assert response[1] == 404
         assert json_response["error"] == "Student not found"
 
+
 def test_import_from_xlsx(app, database):
 
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
-    
-    mock_df = ({"_id": ["123", "124"], "first_name": ["dummy1", "dummy2"], "last_name": ["dummy1", "dummy2"], "email": ["dummy@dummy.com","dummy2@dummy.com"], "student_id": ["123", "124"]})
-    
+
+    mock_df = {
+        "_id": ["123", "124"],
+        "first_name": ["dummy1", "dummy2"],
+        "last_name": ["dummy1", "dummy2"],
+        "email": ["dummy@dummy.com", "dummy2@dummy.com"],
+        "student_id": ["123", "124"],
+    }
+
     mock_read_excel.return_value = mock_df
-    
-    #with app.app_context():
-        
+
+    # with app.app_context():
 
     pass
 
@@ -393,7 +406,7 @@ def test_student_login(app, database):
 
     from students.models import Student
 
-    database.delete_all_by_field("students", "email","dummy@dummy.com")
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
     student1 = {
         "_id": "123",
@@ -401,27 +414,25 @@ def test_student_login(app, database):
         "last_name": "dummy1",
         "email": "dummy@dummy.com",
         "student_id": "123",
-        "password": pbkdf2_sha256.hash("password")
+        "password": pbkdf2_sha256.hash("password"),
     }
 
     database.insert("students", student1)
-    
+
     with app.app_context():
-        response = Student().student_login(student1["student_id"],password")
-        json_response = response[0].get_json()  
-        
-        
+        response = Student().student_login(student1["student_id"], password)
+        json_response = response[0].get_json()
+
         assert response[1] == 200
         assert json_response["message"] == "Login successful"
-        
+
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
-            
-def test_rank_preferences(app, database):
 
+
+def test_rank_preferences(app, database):
     pass
 
 
 def test_get_oppertunities_by_student(app, database):
-
     pass
