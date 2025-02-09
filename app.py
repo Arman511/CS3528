@@ -22,7 +22,6 @@ load_dotenv()
 DATABASE = "cs3528_testing"
 
 if os.getenv("IS_TEST") == "True":
-    print(os.getenv("IS_TEST"))
     print("In test mode")
     DATABASE = os.getenv("MONGO_DB_TEST", "")
 else:
