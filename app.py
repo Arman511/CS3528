@@ -40,6 +40,7 @@ tables = [
     "modules",
     "employers",
     "deadline",
+    "config",
 ]
 
 for table in tables:
