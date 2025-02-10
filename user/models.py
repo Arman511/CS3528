@@ -3,7 +3,6 @@ User model.
 """
 
 from email.mime.text import MIMEText
-import uuid
 from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
@@ -27,7 +26,6 @@ class User:
     def register(self, user):
         """Registers a new user by creating a user dictionary with a unique ID,
         name, email, and password, and returns a JSON response indicating failure."""
-        session.clear()
         from app import DATABASE_MANAGER
 
         if "email" not in user or "password" not in user:
@@ -39,13 +37,6 @@ class User:
 
         # Insert the user into the database
         DATABASE_MANAGER.insert("users", user)
-
-        if "_id" not in user:
-            user["_id"] = uuid.uuid1().hex
-
-        # Start session or return success response
-        if user:
-            return self.start_session(user)
 
         return jsonify({"error": "Signup failed"}), 400
 

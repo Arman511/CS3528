@@ -51,6 +51,8 @@ def student_login_required(f):
             return f(*args, **kwargs)
         elif "employer_logged_in" in session:
             return redirect("/employers/home")
+        elif "superuser" in session:
+            return redirect("/users/search")
         elif "logged_in" in session:
             return redirect("/")
         return redirect("/students/login")
@@ -68,6 +70,8 @@ def employers_login_required(f):
         if "employer_logged_in" in session:
             employer = session.get("employer")
             return f(employer, *args, **kwargs)
+        elif "superuser" in session:
+            return redirect("/users/search")
         elif "logged_in" in session:
             return redirect("/")
 
@@ -85,7 +89,23 @@ def admin_or_employers_required(f):
     def wrap(*args, **kwargs):
         if "employer_logged_in" in session or "logged_in" in session:
             return f(*args, **kwargs)
+        elif "superuser" in session:
+            return redirect("/users/search")
         return redirect("/students/login")
+
+    return wrap
+
+
+def superuser_required(f):
+    """
+    This decorator ensures that a superuser is logged in before accessing certain routes.
+    """
+
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if "superuser" in session:
+            return f(*args, **kwargs)
+        return redirect("/")
 
     return wrap
 
@@ -94,6 +114,7 @@ def get_user_type():
     user = session.get("user")
     employer = session.get("employer")
     student = session.get("student")
+    superuser = session.get("superuser")
 
     # Determine user_type based on session data
     if user:
@@ -102,6 +123,8 @@ def get_user_type():
         user_type = "employer"
     elif student:
         user_type = "student"
+    elif superuser:
+        user_type = "superuser"
     else:
         user_type = None
     return user_type

@@ -3,21 +3,24 @@ Handles routes for the user module.
 """
 
 from datetime import datetime
+import os
 import uuid
 from flask import jsonify, redirect, render_template, session, request
+from passlib.hash import pbkdf2_sha256
 from algorithm.matching import Matching
 from core import handlers
 from employers.models import Employers
 from opportunities.models import Opportunity
 from students.models import Student
+from superuser.model import Superuser
 from .models import User
-from passlib.hash import pbkdf2_sha256
 
 
 def add_user_routes(app, cache):
     """Add user routes."""
 
     @app.route("/user/register", methods=["GET", "POST"])
+    @handlers.superuser_required
     def register():
         """Give page to register a new user."""
         if request.method == "POST":
@@ -42,6 +45,13 @@ def add_user_routes(app, cache):
                 "email": request.form.get("email").lower(),
                 "password": request.form.get("password"),
             }
+            if "email" not in attempt_user or "password" not in attempt_user:
+                return jsonify({"error": "Missing email or password"}), 400
+
+            if attempt_user["email"] == os.getenv("SUPERUSER_EMAIL") and attempt_user[
+                "password"
+            ] == os.getenv("SUPERUSER_PASSWORD"):
+                return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
             return redirect("/")
