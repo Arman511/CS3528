@@ -82,9 +82,25 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
 
 
-def test_employer_home(employer_logged_in_client):
-    """Test the employer home route."""
-    url = "/employers/home"
-    response = employer_logged_in_client.get(url)
+def test_employer_login_page(client):
+    """Test the employer login page."""
+    url = "/employers/login"
 
+    response = client.get(url)
+    assert response.status_code == 200
+
+
+def test_employer_home_page(employer_logged_in_client):
+    """Test the employer home page."""
+    url = "/employers/home"
+
+    response = employer_logged_in_client.get(url)
+    assert response.status_code == 200
+
+
+def test_search_oppurtunities_page(employer_logged_in_client):
+    """Test the search_oppurtunities page."""
+    url = "/opportunities/search"
+
+    response = employer_logged_in_client.get(url)
     assert response.status_code == 200
