@@ -239,29 +239,6 @@ def test_create_index(database):
     assert isinstance(result, str)
 
 
-def test_get_all_by_list_query(database):
-    test_data1 = {"_id": "test18", "categories": ["A", "B", "C"], "status": "active"}
-    test_data2 = {"_id": "test19", "categories": ["A", "B", "C"], "status": "inactive"}
-    test_data3 = {"_id": "test20", "categories": ["D", "E", "F"], "status": "active"}
-    test_data4 = {"_id": "test21", "categories": ["A", "B", "C"], "status": "active"}
-    database.insert("test_collection", test_data1)
-    database.insert("test_collection", test_data2)
-    database.insert("test_collection", test_data3)
-    database.insert("test_collection", test_data4)
-
-    query = [("categories", ["A"], 1), ("status", "active", 0)]
-    results = database.get_all_by_list_query("test_collection", query)
-    assert len(results) == 2
-    assert results[0]["categories"] == ["A", "B", "C"]
-    assert results[0]["status"] == "active"
-    assert results[0]["_id"] == "test18"
-
-    database.delete_by_id("test_collection", "test18")
-    database.delete_by_id("test_collection", "test19")
-    database.delete_by_id("test_collection", "test20")
-    database.delete_by_id("test_collection", "test21")
-
-
 def test_delete_one_by_field(database):
     test_data = {"_id": "test20", "category": "A", "name": "Entry to delete"}
     database.insert("test_collection", test_data)

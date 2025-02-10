@@ -101,15 +101,6 @@ class DatabaseMongoManager(DatabaseInterface):
     def create_index(self, table, field):
         return self.database[table].create_index(field)
 
-    def get_all_by_list_query(self, table, query):
-        mongo_query = {}
-        for field, value, match_type in query:
-            if match_type == 0:
-                mongo_query[field] = value
-            elif match_type == 1:
-                mongo_query[field] = {"$in": value}
-        return list(self.database[table].find(mongo_query))
-
     def get_all_by_text_search(self, table, search_text):
         return list(self.database[table].find({"$text": {"$search": search_text}}))
 

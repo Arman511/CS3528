@@ -13,17 +13,6 @@ from core.email_handler import send_email
 class Student:
     """Student class."""
 
-    def search_students(self, query):
-        """Searching students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_list_query("students", query)
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
     def add_student(self, student, overwrite=False):
         """Adding new student."""
         # student = {
