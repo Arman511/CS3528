@@ -206,7 +206,7 @@ class Skill:
         skills = DATABASE_MANAGER.get_all_by_field(
             "skills", "skill_name", skill_name.capitalize()
         )
-        skills.append(
+        skills.extend(
             DATABASE_MANAGER.get_all_by_field("skills", "skill_name", skill_name)
         )
         for skill in skills:
