@@ -1,1 +1,27 @@
-
+{% extends "base.html" %}
+{% block content %}
+    {% include "/superuser/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Configure Settings</h1>
+            <form class="configure_form" name="configure_form">
+                <label for="max_skills">Max Skills:</label>
+                <input type="number"
+                       name="max_skills"
+                       class="field"
+                       placeholder="Max Skills"
+                       required
+                       value="{{ max_skills }}" />
+                <label for="min_num_ranking_student_to_opportunity">Min Number of Ranking Student to Opportunity:</label>
+                <input type="number"
+                       name="min_num_ranking_student_to_opportunity"
+                       class="field"
+                       placeholder="Min Number of Ranking Student to Opportunity"
+                       required
+                       value="{{ min_num_ranking_student_to_opportunity }}" />
+                <input type="submit" value="Save" class="btn" />
+            </form>
+        </div>
+    </div>
+    <script src="/static/config/script.js"></script>
+{% endblock content %}

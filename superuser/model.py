@@ -24,3 +24,16 @@ class Superuser:
         session.clear()
 
         return jsonify({"error": "Invalid login credentials"}), 401
+
+    def configure_settings(self, max_skills, min_num_ranking_student_to_opportunity):
+        """Configures the settings for the superuser."""
+        from app import CONFIG_MANAGER
+
+        try:
+            CONFIG_MANAGER.set_num_of_skills(max_skills)
+            CONFIG_MANAGER.set_min_num_ranking_student_to_opportunities(
+                min_num_ranking_student_to_opportunity
+            )
+            return jsonify({"message": "Settings updated successfully"}), 200
+        except Exception as e:
+            return jsonify({"error": str(e)}), 500

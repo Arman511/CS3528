@@ -141,8 +141,11 @@ class User:
         """Updates a user's name and email by their UUID."""
         from app import DATABASE_MANAGER
 
-        user = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
-        if not user:
+        original = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
+        find_email = DATABASE_MANAGER.get_by_email("users", email)
+        if find_email and find_email["_id"] != user_uuid:
+            return jsonify({"error": "Email address already in use"}), 400
+        if not original:
             return jsonify({"error": "User not found"}), 404
 
         update_data = {"name": name, "email": email}

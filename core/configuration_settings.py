@@ -56,7 +56,7 @@ class Config:
         self.database_manager.update_one_by_field(
             "config", "name", "num_of_skills", {"value": num_of_skills}
         )
-        self.update()
+        self.max_num_of_skills = num_of_skills
 
     def set_min_num_ranking_student_to_opportunities(
         self, min_num_ranking_student_to_opportunities
@@ -67,4 +67,6 @@ class Config:
             "min_num_ranking_student_to_opportunities",
             {"value": min_num_ranking_student_to_opportunities},
         )
-        self.update()
+        self.min_num_ranking_student_to_opportunities = (
+            min_num_ranking_student_to_opportunities
+        )
