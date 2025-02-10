@@ -48,6 +48,8 @@ jobs:
           IS_TEST: "True"
           MONGO_DB_TEST: "cs3528_test"
           IS_GITHUB_ACTION: "True"
+          SUPERUSER_EMAIL: "dummy@admin.com"
+          SUPERUSER_PASSWORD: "dummy"
         run: |
           coverage run -m pytest
           coverage html
