@@ -97,8 +97,6 @@ There are 3 deadlines which are managed by the admin team which throughout their
 
 ## Coverage
 
-## Coverage
-
 To run the tests and generate a coverage report in the terminal:
 
 ```
