@@ -11,6 +11,7 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from itsdangerous import URLSafeSerializer
 from passlib.hash import pbkdf2_sha256
 import pytest
 from dotenv import load_dotenv
@@ -45,6 +46,7 @@ def database():
     DATABASE.connection.close()
 
 
+@pytest.fixture()
 def employer_logged_in_client(client, database: DatabaseMongoManager):
     """Fixture to login an employer."""
     database.add_table("employers")
@@ -54,10 +56,9 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "company_name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
     }
 
-    database.insert_one("employers", employer)
+    database.insert("employers", employer)
 
     url = "/employers/login"
     client.post(
@@ -65,7 +66,25 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
         data={"email": "dummy@dummy.com"},
         content_type="application/x-www-form-urlencoded",
     )
-    
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    url = "/employers/otp"
+    client.post(
+        url,
+        data={"otp": otp},
+        content_type="application/x-www-form-urlencoded",
+    )
+
     yield client
-    
+
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_employer_home(employer_logged_in_client):
+    """Test the employer home route."""
+    url = "/employers/home"
+    response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
