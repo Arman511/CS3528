@@ -12,6 +12,7 @@ from skills import routes_skills
 from courses import routes_courses
 from course_modules import routes_modules
 from employers import routes_employers
+from superuser import routes_superuser
 
 
 def allowed_file(filename, types):
@@ -29,6 +30,8 @@ def login_required(f):
     def wrap(*args, **kwargs):
         if "logged_in" in session:
             return f(*args, **kwargs)
+        elif "superuser" in session:
+            return redirect("/user/search")
         elif "employer_logged_in" in session:
             return redirect("/employers/home")
         return redirect("/students/login")
@@ -52,7 +55,7 @@ def student_login_required(f):
         elif "employer_logged_in" in session:
             return redirect("/employers/home")
         elif "superuser" in session:
-            return redirect("/users/search")
+            return redirect("/user/search")
         elif "logged_in" in session:
             return redirect("/")
         return redirect("/students/login")
@@ -71,7 +74,7 @@ def employers_login_required(f):
             employer = session.get("employer")
             return f(employer, *args, **kwargs)
         elif "superuser" in session:
-            return redirect("/users/search")
+            return redirect("/user/search")
         elif "logged_in" in session:
             return redirect("/")
 
@@ -90,7 +93,7 @@ def admin_or_employers_required(f):
         if "employer_logged_in" in session or "logged_in" in session:
             return f(*args, **kwargs)
         elif "superuser" in session:
-            return redirect("/users/search")
+            return redirect("/user/search")
         return redirect("/students/login")
 
     return wrap
@@ -103,7 +106,7 @@ def superuser_required(f):
 
     @wraps(f)
     def wrap(*args, **kwargs):
-        if "superuser" in session:
+        if "superuser" in session and session.get("superuser"):
             return f(*args, **kwargs)
         return redirect("/")
 
@@ -148,6 +151,7 @@ def configure_routes(app, cache):
     routes_courses.add_course_routes(app)
     routes_modules.add_module_routes(app)
     routes_employers.add_employer_routes(app)
+    routes_superuser.add_superuser_routes(app)
 
     @app.route("/")
     @login_required

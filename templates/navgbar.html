@@ -16,6 +16,8 @@
             Hello, {{ session.employer.company_name }}
           {% elif user_type == 'student' %}
             Hello, {{ session.student.first_name }}
+          {% elif user_type == 'superuser' %}
+            Hello, Superuser
           {% else %}
             Didn't work
           {% endif %}

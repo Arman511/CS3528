@@ -21,7 +21,7 @@ class User:
         del user["password"]
         session["logged_in"] = True
         session["user"] = {"_id": user["_id"], "name": user["name"]}
-        return jsonify(session["user"]), 200
+        return jsonify({"message": "/"}), 200
 
     def register(self, user):
         """Registers a new user by creating a user dictionary with a unique ID,

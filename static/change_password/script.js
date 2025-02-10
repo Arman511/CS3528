@@ -12,14 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         // Clear previous errors
         errorParagraph.classList.add("error--hidden");
-
-        // Check if new password and old password are the same
-        if (oldPassword === newPassword) {
-            errorParagraph.textContent = "The new password cannot be the same as the old password.";
-            errorParagraph.classList.remove("error--hidden");
-            return;
-        }
-
         // Check if new password and confirm password match
         if (newPassword !== confirmPassword) {
             errorParagraph.textContent = "New password and confirm password do not match.";
@@ -38,7 +30,7 @@ document.addEventListener("DOMContentLoaded", () => {
         })
             .then(async (response) => {
                 if (response.ok) {
-                    window.location.href = "/users/search"; // Redirect on success
+                    window.location.href = "/user/search"; // Redirect on success
                 } else {
                     let errorResponse = await response.text(); // Get the error message from the server
                     throw new Error(errorResponse);

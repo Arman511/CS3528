@@ -35,7 +35,7 @@ def add_user_routes(app, cache):
                 "password": pbkdf2_sha256.hash(password),  # Hash only the password
             }
             return User().register(user)
-        return render_template("user/register.html")
+        return render_template("user/register.html", user_type="superuser")
 
     @app.route("/user/update", methods=["GET", "POST"])
     @handlers.superuser_required
@@ -46,7 +46,7 @@ def add_user_routes(app, cache):
             user = User().get_user_by_uuid(uuid)
             if not user:
                 return redirect("/404")
-            return render_template("user/update.html", user=user)
+            return render_template("user/update.html", user=user, user_type="superuser")
         uuid = request.args.get("uuid")
         name = request.form.get("name")
         email = request.form.get("email")
@@ -90,7 +90,9 @@ def add_user_routes(app, cache):
             if new_password != confirm_password:
                 return jsonify({"error": "Passwords don't match"}), 400
             return User().change_password(uuid, new_password, confirm_password)
-        return render_template("user/change_password.html", uuid)
+        return render_template(
+            "user/change_password.html", uuid=uuid, user_type="superuser"
+        )
 
     @app.route("/user/deadline", methods=["GET", "POST"])
     @handlers.login_required
@@ -300,3 +302,9 @@ def add_user_routes(app, cache):
             str: Rendered HTML template for the home page.
         """
         return render_template("/user/home.html", user_type="admin")
+
+    @app.route("/user/search", methods=["GET"])
+    @handlers.superuser_required
+    def search_users():
+        users = User().get_users_without_passwords()
+        return render_template("user/search.html", users=users, user_type="superuser")

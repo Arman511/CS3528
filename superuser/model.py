@@ -1,7 +1,7 @@
 """This module contains the Superuser class that is responsible for handling"""
 
 import os
-from flask import session, jsonify, redirect
+from flask import session, jsonify
 
 
 class Superuser:
@@ -20,7 +20,7 @@ class Superuser:
         ] == os.getenv("SUPERUSER_PASSWORD"):
             session["user"] = {"email": attempt_user["email"]}
             session["superuser"] = True
-            return redirect("/users/search")
+            return jsonify({"message": "/user/search"}), 200
         session.clear()
 
         return jsonify({"error": "Invalid login credentials"}), 401
