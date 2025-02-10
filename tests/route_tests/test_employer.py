@@ -44,7 +44,7 @@ def database():
     # Cleanup code
     DATABASE.connection.close()
 
-
+@pytest.fixture
 def employer_logged_in_client(client, database: DatabaseMongoManager):
     """Fixture to login an employer."""
     database.add_table("employers")
@@ -57,7 +57,7 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
         "password": pbkdf2_sha256.hash("dummy"),
     }
 
-    database.insert_one("employers", employer)
+    database.insert("employers", employer)
 
     url = "/employers/login"
     client.post(
@@ -69,3 +69,25 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
     yield client
     
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_employer_login_page(client):
+    """Test the employer login page."""
+    url = "/employers/login"
+    
+    response = client.get(url)
+    assert response.status_code == 200
+    
+def test_employer_home_page(employer_logged_in_client):
+    """Test the employer home page."""
+    url = "/employers/home"
+    
+    response = employer_logged_in_client.get(url)
+    assert response.status_code == 200
+
+def test_search_oppurtunities_page(employer_logged_in_client):
+    """Test the search_oppurtunities page."""
+    url = "/opportunities/search"
+    
+    response = employer_logged_in_client.get(url)
+    assert response.status_code == 200
