@@ -6,6 +6,7 @@
 import os
 import sys
 import uuid
+from unittest.mock import patch
 
 # Add the root directory to the Python path
 sys.path.append(
@@ -107,3 +108,102 @@ def test_search_oppurtunities_page(employer_logged_in_client):
 
     response = employer_logged_in_client.get(url)
     assert response.status_code == 200
+
+
+def test_employer_delete_opportunity_page(employer_logged_in_client):
+    """Test the employer_delete_opportunity page."""
+    url = "/opportunities/employer_delete_opportunity"
+
+    response = employer_logged_in_client.get(url)
+    assert response.status_code == 302
+
+
+def test_employers_rank_students_no_opportunity_id(employer_logged_in_client):
+    """Test the rank_students page without providing an opportunity ID."""
+
+    url = "/employers/rank_students"  # No opportunity_id in the request
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ):
+        response = employer_logged_in_client.get(url)  # GET request
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Need opportunity ID."}
+
+
+def test_employers_rank_students_past_oppotunities_deadline(
+    employer_logged_in_client, database
+):
+    """Test the rank_students page."""
+    url = "/employers/rank_students"
+
+    deadlines = database.get_all("deadline")
+
+    database.delete_all("deadline")
+
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
+    response = employer_logged_in_client.get(url)
+    assert response.status_code == 200
+    assert b"Ranking deadline has passed as of 2022-10-15" in response.data
+
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
+
+
+def test_employers_rank_students_wrong_opportunity_id(
+    employer_logged_in_client, database
+):
+    """Test the rank_students page with an incorrect opportunity_id."""
+
+    url = "/employers/rank_students?opportunity_id=123"  # Pass opportunity_id in query string
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "23424"})
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ):
+        response = employer_logged_in_client.get(url)  # GET request
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer does not own this opportunity."}
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+
+
+def test_employers_rank_students_past_student_ranking_deadline(
+    employer_logged_in_client, database
+):
+    """Test that employers cannot rank students before the student ranking deadline has passed."""
+
+    url = "/employers/rank_students?opportunity_id=123"
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
+
+    with employer_logged_in_client.session_transaction() as session:
+        session["employer"] = {"_id": "test_employer_id"}
+
+    # Use patch directly
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
+    ), patch(
+        "app.DEADLINE_MANAGER.get_student_ranking_deadline", return_value="2025-10-15"
+    ):
+
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+    assert (
+        b"Student ranking deadline must have passed before you can start, wait till 2025-10-15"
+        in response.data
+    )
+
+    database.delete_all_by_field("opportunities", "_id", "123")
