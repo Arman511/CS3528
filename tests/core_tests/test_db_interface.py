@@ -68,9 +68,6 @@ class MockDatabaseInterface(DatabaseInterface, ABC):
     def create_index(self, table, field):
         return True
 
-    def get_all_by_list_query(self, table, query):
-        return []
-
     def get_all_by_text_search(self, table, search_text):
         return []
 
