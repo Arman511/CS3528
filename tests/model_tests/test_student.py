@@ -185,7 +185,13 @@ def test_get_student_by_id(app, database):
     database.delete_all_by_field("students", "_id", "123")
 
 
-# def test_get_student_by_id_not_found(app, database):
+def test_get_student_by_id_not_found(app, database):
+    
+    from students.models import Student
+
+    assert Student().get_student_by_id("999") == None
+
+    database.delete_all_by_field("students", "_id", "999")
 
 
 def test_get_all_students(app, database):
@@ -202,14 +208,21 @@ def test_get_all_students(app, database):
     database.delete_all_by_field("students", "_id", "123")
 
 
-# def test_get_all_students_empty(app, database):
+def test_get_all_students_empty(app, database):
+    
+    from students.models import Student
+    
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    result = Student().get_students()
 
+    assert result == []
 
 def test_update_student_by_id_success(app, database):
 
     from students.models import Student
 
-    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("students", "email", "")
 
     student1 = {
         "_id": "123",
@@ -524,7 +537,7 @@ def test_rank_preferences_invalid_student(app, database):
             
            
            
-
+#Not working
 def test_get_oppertunities_by_student(app, database):
     from students.models import Student
 
@@ -560,4 +573,3 @@ def test_get_oppertunities_by_student_invalid(app, database):
             assert response[1] == 404
     
 
-    
