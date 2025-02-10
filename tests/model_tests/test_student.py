@@ -526,4 +526,38 @@ def test_rank_preferences_invalid_student(app, database):
            
 
 def test_get_oppertunities_by_student(app, database):
-    pass
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+    
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().get_opportunities_by_student(student1["student_id"])
+            json_response = response.get_json()
+            assert Student.valid_oppertunities(json_response)
+            
+def test_get_oppertunities_by_student_invalid(app, database):   
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+      
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().get_opportunities_by_student(["student_id"])
+            json_response = response[0].get_json()
+            assert json_response["error"] == "Student not found"
+            assert response[1] == 404
+    
+
+    
