@@ -451,3 +451,242 @@ def test_get_skills_map(database, skill_model, app):
 
     database.delete_all_by_field("skills", "skill_name", "Skill 1")
     database.delete_all_by_field("skills", "skill_name", "Skill 2")
+
+
+def test_attempt_add_existing_skill(database, skill_model, app):
+    """Test attempt_add_skill method with existing skill."""
+    database.delete_all_by_field(
+        "attempted_skills", "skill_name", "Existing Attempted Skill"
+    )
+    existing_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Existing Attempted Skill",
+        "used": 1,
+    }
+    database.insert("attempted_skills", existing_skill)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.attempt_add_skill("Existing Attempted Skill")[0]
+            assert response.status_code == 200
+            updated_skill = database.get_one_by_field(
+                "attempted_skills", "skill_name", "Existing Attempted Skill"
+            )
+            assert updated_skill["used"] == 2
+
+    database.delete_all_by_field(
+        "attempted_skills", "skill_name", "Existing Attempted Skill"
+    )
+
+
+def test_get_list_attempted_skills(database, skill_model, app):
+    """Test get_list_attempted_skills method."""
+    current_attempted_skills = database.get_all("attempted_skills")
+    database.delete_all("attempted_skills")
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill 1")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill 2")
+
+    sample_skill_1 = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Attempted Skill 1",
+        "used": 1,
+    }
+    sample_skill_2 = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Attempted Skill 2",
+        "used": 1,
+    }
+    database.insert("attempted_skills", sample_skill_1)
+    database.insert("attempted_skills", sample_skill_2)
+
+    with app.app_context():
+        with app.test_request_context():
+            attempted_skills = skill_model.get_list_attempted_skills()
+            assert len(attempted_skills) == 2
+            assert any(
+                skill["skill_name"] == "Attempted Skill 1" for skill in attempted_skills
+            )
+            assert any(
+                skill["skill_name"] == "Attempted Skill 2" for skill in attempted_skills
+            )
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill 1")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill 2")
+
+    for skill in current_attempted_skills:
+        database.insert("attempted_skills", skill)
+
+
+def test_get_attempted_skill_success(database, skill_model, app):
+    """Test get_attempted_skill method success."""
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill")
+    sample_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Attempted Skill",
+        "used": 1,
+    }
+    database.insert("attempted_skills", sample_skill)
+
+    with app.app_context():
+        with app.test_request_context():
+            skill = skill_model.get_attempted_skill(sample_skill["_id"])
+            assert skill is not None
+            assert skill["skill_name"] == "Attempted Skill"
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill")
+
+
+def test_get_attempted_skill_failure(database, skill_model, app):
+    """Test get_attempted_skill method failure."""
+    with app.app_context():
+        with app.test_request_context():
+            skill = skill_model.get_attempted_skill("nonexistentid")
+            assert skill is None
+
+
+def test_approve_skill_updates_students(database, skill_model, app):
+    """Test approve_skill method updates students."""
+    database.delete_all_by_field("skills", "skill_name", "Approve Skill")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Approve Skill")
+    database.delete_all_by_field("students", "email", "student@example.com")
+
+    attempted_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Approve Skill",
+        "used": 1,
+    }
+    database.insert("attempted_skills", attempted_skill)
+
+    sample_student = {
+        "_id": uuid.uuid4().hex,
+        "email": "student@example.com",
+        "skills": [],
+        "attempted_skills": [attempted_skill["_id"]],
+    }
+    database.insert("students", sample_student)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.approve_skill(
+                attempted_skill["_id"], "Approved Description"
+            )[0]
+            assert response.status_code == 200
+            assert database.get_one_by_id("skills", attempted_skill["_id"]) is not None
+
+            updated_student = database.get_one_by_id("students", sample_student["_id"])
+            assert attempted_skill["_id"] in updated_student["skills"]
+            assert attempted_skill["_id"] not in updated_student["attempted_skills"]
+
+    database.delete_all_by_field("skills", "skill_name", "Approve Skill")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Approve Skill")
+    database.delete_all_by_field("students", "email", "student@example.com")
+
+
+def test_approve_skill_empty_description(database, skill_model, app):
+    """Test approve_skill method with empty description."""
+    database.delete_all_by_field("attempted_skills", "skill_name", "Approve Skill")
+    attempted_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Approve Skill",
+        "used": 1,
+    }
+    database.insert("attempted_skills", attempted_skill)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.approve_skill(attempted_skill["_id"], "")
+            assert response[1] == 400
+            assert response[0].json["error"] == "Description is empty"
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Approve Skill")
+
+
+def test_approve_nonexistent_skill(database, skill_model, app):
+    """Test approve_skill method with non-existent skill."""
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.approve_skill("nonexistentid", "Description")
+            assert response[1] == 404
+            assert response[0].json["error"] == "Attempted skill not found"
+
+
+def test_reject_skill_updates_students(database, skill_model, app):
+    """Test reject_skill method updates students."""
+    database.delete_all_by_field("attempted_skills", "skill_name", "Reject Skill")
+    database.delete_all_by_field("students", "email", "student@example.com")
+
+    attempted_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Reject Skill",
+        "used": 1,
+    }
+    database.insert("attempted_skills", attempted_skill)
+
+    sample_student = {
+        "_id": uuid.uuid4().hex,
+        "email": "student@example.com",
+        "skills": [],
+        "attempted_skills": [attempted_skill["_id"]],
+    }
+    database.insert("students", sample_student)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.reject_skill(attempted_skill["_id"])[0]
+            assert response.status_code == 200
+            assert (
+                database.get_one_by_id("attempted_skills", attempted_skill["_id"])
+                is None
+            )
+
+            updated_student = database.get_one_by_id("students", sample_student["_id"])
+            assert attempted_skill["_id"] not in updated_student["attempted_skills"]
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Reject Skill")
+    database.delete_all_by_field("students", "email", "student@example.com")
+
+
+def test_reject_nonexistent_skill(database, skill_model, app):
+    """Test reject_skill method with non-existent skill."""
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.reject_skill("nonexistentid")
+            assert response[1] == 404
+            assert response[0].json["error"] == "Attempted skill not found"
+
+
+def test_update_attempt_skill(database, skill_model, app):
+    """Test update_attempt_skill method."""
+    database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill")
+    sample_skill = {
+        "_id": uuid.uuid4().hex,
+        "skill_name": "Attempted Skill",
+        "skill_description": "Old Description",
+    }
+    database.insert("attempted_skills", sample_skill)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.update_attempt_skill(
+                sample_skill["_id"], "Updated Skill", "Updated Description"
+            )[0]
+            assert response.status_code == 200
+            updated_skill = database.get_one_by_id(
+                "attempted_skills", sample_skill["_id"]
+            )
+            assert updated_skill["skill_name"] == "Updated Skill"
+            assert updated_skill["skill_description"] == "Updated Description"
+
+    database.delete_all_by_field("attempted_skills", "skill_name", "Updated Skill")
+
+
+def test_update_attempt_skill_invalid_id(database, skill_model, app):
+    """Test update_attempt_skill method with invalid skill ID."""
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.update_attempt_skill(
+                "nonexistentid", "Updated Skill", "Updated Description"
+            )
+            assert response[1] == 404
+            assert response[0].json["error"] == "Skill not found"
