@@ -191,7 +191,7 @@ def configure_routes(app, cache):
         Returns:
             str: Rendered 404.html template.
         """
-        return render_template("404.html", user_type=get_user_type())
+        return render_template("404.html", user_type=get_user_type()), 404
 
     @app.route("/500")
     def error_500():
@@ -200,4 +200,4 @@ def configure_routes(app, cache):
         Returns:
             str: Rendered 500.html template.
         """
-        return render_template("500.html", user_type=get_user_type())
+        return render_template("500.html", user_type=get_user_type()), 500
