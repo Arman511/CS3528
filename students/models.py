@@ -187,30 +187,24 @@ class Student:
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
                 if temp_student["email"].split("@")[1] != base_email:
-                    return (
-                        jsonify(
-                            {
-                                "message": (
-                                    f"Incorrect student {temp_student['first_name']} "
-                                    f"{temp_student['last_name']}"
-                                )
-                            }
-                        ),
-                        400,
-                    )
+                    errorMSG = {
+                        "error": (
+                            f"Invalid student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']}"
+                        )
+                    }
+                    return jsonify(errorMSG), 400
+
                 temp_student["student_id"] = str(student["Student Number"])
                 if len(str(temp_student["student_id"])) != 8:
-                    return (
-                        jsonify(
-                            {
-                                "error": (
-                                    f"Invalid student {temp_student['first_name']}, "
-                                    f"{temp_student['last_name']}"
-                                )
-                            }
-                        ),
-                        400,
-                    )
+                    errorMSG = {
+                        "error": (
+                            f"Invalid student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']}"
+                        )
+                    }
+                    return jsonify(errorMSG), 400
+
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
                 )
@@ -292,11 +286,7 @@ class Student:
 
         valid_opportunities = []
         for opportunity in opportunities:
-            modules_required = set(
-                module
-                for module in opportunity["modules_required"]
-                if module.strip().replace('"', "") != ""
-            )
+            modules_required = set(opportunity["modules_required"])
 
             if modules_required.issubset(student["modules"]):
                 if (
