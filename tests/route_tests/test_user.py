@@ -76,6 +76,28 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
+@pytest.fixture()
+def superuser_logged_in_client(client, database: DatabaseMongoManager):
+    """Fixture to login a superuser."""
+    database.add_table("users")
+
+    superuser_email = os.getenv("SUPERUSER_EMAIL")
+    superuser_password = os.getenv("SUPERUSER_PASSWORD")
+
+    url = "/user/login"
+
+    client.post(
+        url,
+        data={
+            "email": superuser_email,
+            "password": superuser_password,
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    yield client
+
+
 def test_upload_student_page(user_logged_in_client):
     """Test upload student page."""
     url = "/students/upload"
@@ -164,20 +186,20 @@ def test_search_opportunity_page(user_logged_in_client):
     assert response.status_code == 200
 
 
-def test_register_page(client):
+def test_register_page(superuser_logged_in_client):
     """Test register page."""
     url = "/user/register"
 
-    response = client.get(url)
+    response = superuser_logged_in_client.get(url)
     assert response.status_code == 200
 
 
-def test_register_user(client, database):
+def test_register_user(superuser_logged_in_client, database):
     """Test register user."""
     url = "/user/register"
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
-    response = client.post(
+    response = superuser_logged_in_client.post(
         url,
         data={
             "name": "dummy",
@@ -188,17 +210,17 @@ def test_register_user(client, database):
         content_type="application/x-www-form-urlencoded",
     )
 
-    assert response.status_code == 200
+    assert response.status_code == 201
     assert database.get_by_email("users", "dummy@dummy.com") is not None
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_register_user_password_mismatch(client, database):
+def test_register_user_password_mismatch(superuser_logged_in_client, database):
     """Test register user."""
     url = "/user/register"
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
-    response = client.post(
+    response = superuser_logged_in_client.post(
         url,
         data={
             "name": "dummy",
@@ -214,7 +236,7 @@ def test_register_user_password_mismatch(client, database):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_email_already_in_use(client, database):
+def test_email_already_in_use(superuser_logged_in_client, database):
     """Test register user."""
     url = "/user/register"
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
@@ -228,7 +250,7 @@ def test_email_already_in_use(client, database):
 
     database.insert("users", user)
 
-    response = client.post(
+    response = superuser_logged_in_client.post(
         url,
         data={
             "name": "dummy2",

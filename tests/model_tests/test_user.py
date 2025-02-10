@@ -77,8 +77,7 @@ def test_start_session(app):
             response = User().start_session(user)
             json_data = response[0].get_json()
             assert response[1] == 200
-            assert json_data["_id"] == "123"
-            assert json_data["name"] == "Test User"
+            assert json_data["message"] == "/"
             assert "password" not in json_data
 
 
@@ -95,13 +94,11 @@ def test_register_success(app, database):
 
     with app.app_context():
         with app.test_request_context():
+            session["superuser"] = True
             response = User().register(user)
             json_data = response[0].get_json()
-            assert response[1] == 200
-            assert json_data["_id"] == "124"
-            assert json_data["name"] == "New User"
-            assert "password" not in json_data
-            assert "logged_in" in session
+            assert response[1] == 201
+            assert json_data["message"] == "User registered successfully"
             session.clear()
 
     # Delete the user from the database
@@ -169,8 +166,7 @@ def test_login_success(app, database):
             json_data = response[0].get_json()
             assert "logged_in" in session
             assert response[1] == 200
-            assert json_data["_id"] == "126"
-            assert json_data["name"] == "Login User"
+            assert json_data["message"] == "/"
             assert "password" not in json_data
             session.clear()
 
