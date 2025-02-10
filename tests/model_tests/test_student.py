@@ -399,6 +399,41 @@ def test_import_from_xlsx_valid(app, database):
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
+def test_import_from_xlsx_invalid_email(app, database):
+    
+        from students.models import Student
+
+        database.delete_all_by_field("students", "email", "dummy@dummy.com")
+
+        with app.app_context():
+            with open("tests/data/Invalid_students_email.xlsx", "rb") as f:
+                response = Student().import_from_xlsx("dummy.com", f)
+                json_response = response[0].get_json()
+                assert json_response["error"] == "Invalid student dummy1, dummy1"
+                assert response[1] == 400
+
+            students = database.get_all_by_field("students", "email", "dummy@dummy.com")
+            assert len(students) == 0
+
+        database.delete_all_by_field("students", "email", "dummy@dummy.com")
+# Not working properly, doesnt like response[0] or [1]
+def test_import_from_xlsx_invalid_student_id(app, database):
+    
+        from students.models import Student
+
+        database.delete_all_by_field("students", "email", "dummy@dummy.com")
+
+        with app.app_context():
+            with open("tests/data/Invalid_students_Id.xlsx", "rb") as f:
+                response = Student().import_from_xlsx("dummy.com", f)
+                json_response = response[0].get_json()
+                assert json_response["error"] == "Invalid student dummy1, dummy1"
+                assert response[1] == 400
+
+            students = database.get_all_by_field("students", "email", "dummy@dummy.com")
+            assert len(students) == 0
+
+        database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
 def test_student_login(app, database):
 
@@ -420,17 +455,75 @@ def test_student_login(app, database):
         with app.test_request_context():
             response = Student().student_login(student1["student_id"], student1["_id"])
             json_response = response[0].get_json()
-
             assert response[1] == 200
             assert json_response["message"] == "Login successful"
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
+def test_student_login_invalid(app, database):
+    
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+    
+    
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().student_login(student1["student_id"],"124")
+            json_response = response[0].get_json()
+            assert response[1] == 401
+            assert json_response["error"] == "Invalid id or password"
+
+
 
 def test_rank_preferences(app, database):
-    pass
+    from students.models import Student
 
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student1 = {
+        "_id": "123",
+        "first_name": "dummy1",
+        "last_name": "dummy1",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+    database.insert("students", student1)
+       
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().rank_preferences(student1["student_id"], ["1","2","3"])
+            json_response = response[0].get_json()
+            assert response[1] == 200
+            assert json_response["message"] == "Preferences updated"
+
+def test_rank_preferences_invalid_student(app, database):
+    
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().rank_preferences(["student_id"], ["1","2","3"])
+            json_response = response[0].get_json()
+            assert json_response["error"] == "Student not found"
+            assert response[1] == 404
+            
+           
+           
 
 def test_get_oppertunities_by_student(app, database):
     pass
