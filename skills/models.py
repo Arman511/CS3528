@@ -3,11 +3,7 @@ Skills model.
 """
 
 import uuid
-from datetime import datetime, timedelta
 from flask import jsonify
-
-# Cache to store skills and the last update time
-skills_cache = {"data": [], "last_updated": datetime.now()}
 
 
 class Skill:
@@ -18,21 +14,10 @@ class Skill:
         """Check if a skill exists in the database."""
         from app import DATABASE_MANAGER
 
-        # Check if the skill is already in the cache
-        current_time = datetime.now()
-        one_week_ago = current_time - timedelta(weeks=1)
-
-        # Check if cache is valid
-        if not skills_cache["data"] or skills_cache["last_updated"] <= one_week_ago:
-            skills_cache["data"] = DATABASE_MANAGER.get_all("skills")
-            skills_cache["last_updated"] = current_time
-
-        # Check if the skill is in the cache
-        for skill in skills_cache["data"]:
-            if skill_name and skill["skill_name"].lower() == skill_name.lower():
-                return skill
-            if skill_id and skill["_id"] == skill_id:
-                return skill
+        if skill_name:
+            return DATABASE_MANAGER.get_one_by_field("skills", "skill_name", skill_name)
+        if skill_id:
+            return DATABASE_MANAGER.get_one_by_id("skills", skill_id)
 
         return None
 
@@ -47,15 +32,10 @@ class Skill:
         # Check if skill already exists#
         from app import DATABASE_MANAGER
 
-        if self.find_skill(skill["skill_name"], None) is not None:
+        if self.find_skill(skill["skill_name"], None):
             return jsonify({"error": "Skill already in database"}), 400
 
         DATABASE_MANAGER.insert("skills", skill)
-
-        if skill:
-            # Update cache
-            skills_cache["data"].append(skill)
-            skills_cache["last_updated"] = datetime.now()
 
         return jsonify(skill), 200
 
@@ -63,15 +43,10 @@ class Skill:
         """Delete kill from database"""
         from app import DATABASE_MANAGER
 
-        if not self.find_skill(None, skill_id):
+        result = DATABASE_MANAGER.delete_by_id("skills", skill_id)
+
+        if result.deleted_count == 0:
             return jsonify({"error": "Skill not found"}), 404
-
-        DATABASE_MANAGER.delete_by_id("skills", skill_id)
-
-        # Update cache
-        skills = DATABASE_MANAGER.get_all("skills")
-        skills_cache["data"] = skills
-        skills_cache["last_updated"] = datetime.now()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -102,27 +77,10 @@ class Skill:
         """Get full list of skills if cached get that instead"""
         from app import DATABASE_MANAGER
 
-        current_time = datetime.now()
-        one_week_ago = current_time - timedelta(weeks=1)
-
-        # Check if cache is valid
-        if (
-            skills_cache["data"]
-            and skills_cache["last_updated"]
-            and skills_cache["last_updated"] > one_week_ago
-        ):
-            return skills_cache["data"]
-
         # Fetch skills from the database
         skills = DATABASE_MANAGER.get_all("skills")
 
-        if skills:
-            # Update cache
-            skills_cache["data"] = skills
-            skills_cache["last_updated"] = current_time
-            return skills
-
-        return []
+        return skills
 
     def get_skills_map(self):
         """Get skills map"""
@@ -181,7 +139,7 @@ class Skill:
         skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
 
         if not skill:
-            return jsonify({"error": "Skill not found"}), 404
+            return jsonify({"error": "Attempted skill not found"}), 404
 
         del skill["used"]
         if description == "":
@@ -190,11 +148,6 @@ class Skill:
         skill["skill_name"] = skill["skill_name"].capitalize()
         DATABASE_MANAGER.insert("skills", skill)
         DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
-
-        # Update cache
-        skills = DATABASE_MANAGER.get_all("skills")
-        skills_cache["data"] = skills
-        skills_cache["last_updated"] = datetime.now()
 
         # Update students
         students = DATABASE_MANAGER.get_all("students")
@@ -213,7 +166,7 @@ class Skill:
         skill = DATABASE_MANAGER.get_one_by_id("attempted_skills", skill_id)
 
         if not skill:
-            return jsonify({"error": "Skill not found"}), 404
+            return jsonify({"error": "Attempted skill not found"}), 404
 
         DATABASE_MANAGER.delete_by_id("attempted_skills", skill_id)
 
@@ -241,25 +194,31 @@ class Skill:
 
         return jsonify({"message": "Updated"}), 200
 
-    def update_skill(self, skill_id, skill_name, skill_description):
+    def update_skill(self, skill_id, skill_name: str, skill_description):
         """Updates a skill"""
 
         from app import DATABASE_MANAGER
 
-        if not self.find_skill(None, skill_id):
+        original = self.find_skill(None, skill_id)
+        if not original:
             return jsonify({"error": "Skill not found"}), 404
 
-        skill = {
+        skills = DATABASE_MANAGER.get_all_by_field(
+            "skills", "skill_name", skill_name.capitalize()
+        )
+        skills.extend(
+            DATABASE_MANAGER.get_all_by_field("skills", "skill_name", skill_name)
+        )
+        for skill in skills:
+            if skill["_id"] != original["_id"]:
+                return jsonify({"error": "Skill name already in use"}), 400
+
+        updated_skill = {
             "_id": skill_id,
-            "skill_name": skill_name,
+            "skill_name": skill_name.capitalize(),
             "skill_description": skill_description,
         }
 
-        DATABASE_MANAGER.update_one_by_id("skills", skill_id, skill)
-
-        # Update cache
-        skills = DATABASE_MANAGER.get_all("skills")
-        skills_cache["data"] = skills
-        skills_cache["last_updated"] = datetime.now()
+        DATABASE_MANAGER.update_one_by_id("skills", skill_id, updated_skill)
 
         return jsonify({"message": "Updated"}), 200

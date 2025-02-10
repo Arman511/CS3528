@@ -54,15 +54,15 @@ document.addEventListener('DOMContentLoaded', function () {
             const skillId = approveButton.getAttribute("data-id");
             const row = approveButton.closest("tr");
             const descriptionCell = row.cells[1];
-            let description = descriptionCell.innerText.trim();
+            let skill_description = descriptionCell.innerText.trim();
 
-            if (!description) {
-                description = prompt("Please enter a description for this skill:");
-                if (!description) {
+            if (!skill_description) {
+                skill_description = prompt("Please enter a description for this skill:");
+                if (!skill_description) {
                     alert("Description is required to approve the skill.");
                     return;
                 }
-                descriptionCell.innerText = description;
+                descriptionCell.innerText = skill_description;
             }
 
             const response = await fetch(`/skills/approve_skill?attempt_skill_id=${skillId}`, {
@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ description })
+                body: JSON.stringify({ skill_description: skill_description })
             });
 
             if (response.ok) {
