@@ -39,7 +39,7 @@ class Module:
 
         return jsonify({"error": "module not added"}), 400
 
-    def delete_module(self, module_id):
+    def delete_module_by_id(self, module_id):
         """Deletes a module from the database."""
         from app import DATABASE_MANAGER
 
@@ -63,6 +63,42 @@ class Module:
                 and module_id in opportunity["modules_required"]
             ):
                 opportunity["modules_required"].remove(module_id)
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
+        # Update cache
+        modules = DATABASE_MANAGER.get_all("modules")
+        modules_cache["data"] = modules
+        modules_cache["last_updated"] = datetime.now()
+
+        return jsonify(module), 200
+
+    def delete_module_by_uuid(self, uuid):
+        """Deletes a module from the database."""
+
+        from app import DATABASE_MANAGER
+
+        module = DATABASE_MANAGER.get_one_by_id("modules", uuid)
+
+        if not module:
+            return jsonify({"error": "module not found"}), 404
+
+        DATABASE_MANAGER.delete_by_id("modules", uuid)
+
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "modules" in student and uuid in student["modules"]:
+                student["modules"].remove(uuid)
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        for opportunity in opportunities:
+            if (
+                "modules_required" in opportunity
+                and uuid in opportunity["modules_required"]
+            ):
+                opportunity["modules_required"].remove(uuid)
                 DATABASE_MANAGER.update_one_by_id(
                     "opportunities", opportunity["_id"], opportunity
                 )
