@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "superuser/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Update User</h1>
+            <form class="user_adding_form" name="user_updating_form">
+                {% csrf_token %}
+                <p id="_id" data-id="{{ user._id }}" hidden></p>
+                <label for="user_name">User Name</label>
+                <input type="text"
+                       name="user_name"
+                       class="field"
+                       placeholder="Name"
+                       id="user_name"
+                       value="{{ user.name }}"
+                       required />
+                <label for="user_description">User Email</label>
+                <input type="email"
+                       name="user_email"
+                       class="field"
+                       placeholder="Email"
+                       id="user_email"
+                       value="{{ user.email }}"
+                       required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Update user" class="btn" />
+            </form>
+        </div>
+        <script src="/static/update_user/script.js"></script>
+    </div>
+{% endblock content %}

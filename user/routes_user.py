@@ -21,7 +21,7 @@ def add_user_routes(app, cache):
 
     @app.route("/user/register", methods=["GET", "POST"])
     @handlers.superuser_required
-    def register():
+    def register_user():
         """Give page to register a new user."""
         if request.method == "POST":
             password = request.form.get("password")
@@ -36,6 +36,21 @@ def add_user_routes(app, cache):
             }
             return User().register(user)
         return render_template("user/register.html")
+
+    @app.route("/user/update", methods=["GET", "POST"])
+    @handlers.superuser_required
+    def update_user():
+        """Update user."""
+        if request.method == "GET":
+            uuid = request.args.get("uuid")
+            user = User().get_user_by_uuid(uuid)
+            if not user:
+                return redirect("/404")
+            return render_template("user/update.html", user=user)
+        uuid = request.args.get("uuid")
+        name = request.form.get("name")
+        email = request.form.get("email")
+        return User().update_user(uuid, name, email)
 
     @app.route("/user/login", methods=["GET", "POST"])
     def login():
@@ -57,12 +72,25 @@ def add_user_routes(app, cache):
             return redirect("/")
         return render_template("user/login.html", user_type="admin")
 
-    # @app.route("/user/change_password", methods=["GET", "POST"])
-    # def change_password():
-    #     """Change user password."""
-    #     if request.method == "POST":
-    #         return User().change_password()
-    #     return render_template("user/change_password.html")
+    @app.route("/user/delete", methods=["POST"])
+    @handlers.superuser_required
+    def delete_user():
+        """Delete user."""
+        uuid = request.args.get("uuid")
+        return User().delete_user_by_uuid(uuid)
+
+    @app.route("/user/change_password", methods=["GET", "POST"])
+    @handlers.superuser_required
+    def change_password():
+        """Change user password."""
+        uuid = request.args.get("uuid")
+        if request.method == "POST":
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+            if new_password != confirm_password:
+                return jsonify({"error": "Passwords don't match"}), 400
+            return User().change_password(uuid, new_password, confirm_password)
+        return render_template("user/change_password.html", uuid)
 
     @app.route("/user/deadline", methods=["GET", "POST"])
     @handlers.login_required

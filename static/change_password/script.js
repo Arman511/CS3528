@@ -6,8 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
         e.preventDefault(); // Prevent form submission for validation
 
         // Grab form field values
-        const email = form.email.value;
-        const oldPassword = form.old_password.value;
+        const uuid = form.uuid.value;
         const newPassword = form.new_password.value;
         const confirmPassword = form.confirm_password.value;
 
@@ -29,15 +28,17 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         // If all validations pass, submit the form
-        let formData = new FormData(form);
+        let formData = new FormData();
+        formData.append("new_password", newPassword);
+        formData.append("confirm_password", confirmPassword);
 
-        fetch("/user/change_password", {
+        fetch(`/user/change_password?uuid=${uuid}`, {
             method: "POST",
             body: formData,
         })
             .then(async (response) => {
                 if (response.ok) {
-                    window.location.href = "/"; // Redirect on success
+                    window.location.href = "/users/search"; // Redirect on success
                 } else {
                     let errorResponse = await response.text(); // Get the error message from the server
                     throw new Error(errorResponse);
