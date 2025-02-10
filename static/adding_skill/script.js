@@ -13,9 +13,7 @@ form.addEventListener("submit", function (e) {
     })
         .then(async (response) => {
             if (response.ok) {
-                skill_name_box.textContent = "";
-                skill_desc_box.textContent = "";
-                alert("Skill added");
+                window.location.href = "/skills/search"; // Redirect to the search page
             } else if (response.status === 401 || response.status === 400) {
                 let errorResponse = await response.json(); // Parse JSON response
                 throw new Error(errorResponse.error); // Throw error with the extracted message
