@@ -43,7 +43,7 @@
                         </option>
                     {% endfor %}
                 </select>
-                <label for="skills">Skills (Max 10):</label>
+                <label for="skills" data-max_skills="{{ max_num_skills }}">Skills (Max {{ max_num_skills }}):</label>
                 <select id="skills" name="skills" class="form-control" multiple required>
                     {% for skill in skills %}
                         <option value="{{ skill._id }}"
@@ -103,12 +103,11 @@
                 <p class="success success--hidden"></p>
                 <input type="submit" value="Update" class="btn" />
             </form>
-            <script src="/static/student_update/script.js"></script>
             <script>
                 $(document).ready(function () {
                     $('#skills').selectize({
                         plugins: ["remove_button"],
-                        maxItems: 10,
+                        maxItems: {{max_num_skills}},
                         sortField: 'text',
                         dropdownParent: 'body'
                     });
@@ -128,6 +127,7 @@
                     });
                 });
             </script>
+            <script src="/static/student_update/script.js"></script>
         </div>
     </div>
 {% endblock content %}
