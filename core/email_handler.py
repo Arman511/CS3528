@@ -29,6 +29,11 @@ def send_otp(recipient):
     """Sends an OTP"""
     otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
     otp = generate_otp()
+    session["OTP"] = otp_serializer.dumps(otp)
+
+    if os.getenv("IS_TEST") == "True":
+        return
+
     body = f"HERE IS YOUR OTP {otp}"
     msg = MIMEText(body)
     msg["Subject"] = "Skillpoint: OTP"
@@ -37,7 +42,6 @@ def send_otp(recipient):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipient, msg.as_string())
-    session["OTP"] = otp_serializer.dumps(otp)
 
 
 def send_email(msg, recipients):
