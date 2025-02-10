@@ -243,6 +243,7 @@ def test_update_course_not_updated(database, course_model, sample_course, app):
 def test_update_course_students(database, course_model, sample_course, app):
     """Test updating a course and ensuring students are updated."""
     database.delete_all_by_field("courses", "course_id", "CS101")
+    database.delete_all_by_field("courses", "course_id", "CS102")
     database.delete_all_by_field("students", "email", "student@dummy.com")
     with app.app_context():
         with app.test_request_context():
