@@ -408,11 +408,12 @@ def test_import_from_xlsx_valid(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
 
     with app.app_context():
-        with open("tests/data/valid_students.xlsx", "rb") as f:
-            response = Student().import_from_xlsx("dummy.com", f)
-            json_response = response[0].get_json()
-            assert response[1] == 200
-            assert json_response["message"] == "27 students imported"
+        with app.test_request_context():
+            with open("tests/data/valid_students.xlsx", "rb") as f:
+                response = Student().import_from_xlsx("dummy.com", f)
+                json_response = response[0].get_json()
+                assert response[1] == 200
+                assert json_response["message"] == "27 students imported"
 
         students = database.get_all_by_field("students", "email", "dummy@dummy.com")
         assert len(students) == 27
