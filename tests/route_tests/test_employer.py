@@ -81,6 +81,9 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
 
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
 
+    with client.session_transaction() as session:
+        session.clear()
+
 
 def test_employer_login_page(client):
     """Test the employer login page."""
