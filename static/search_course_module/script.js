@@ -67,4 +67,21 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
+
+    document.getElementById('delete-all-modules').addEventListener('click', function (event) {
+        event.preventDefault();
+        if (confirm('Are you sure you want to delete all modules?')) {
+            if (confirm('This action cannot be undone. Are you absolutely sure?')) {
+                fetch('/course_modules/delete_all', {
+                    method: 'DELETE',
+                }).then(response => {
+                    if (response.ok) {
+                        location.reload();
+                    } else {
+                        alert('Failed to delete all modules.');
+                    }
+                });
+            }
+        }
+    });
 });

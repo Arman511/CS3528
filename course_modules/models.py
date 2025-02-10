@@ -3,7 +3,10 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
+import uuid
 from flask import jsonify
+import pandas as pd
+from flask import send_file
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -222,3 +225,73 @@ class Module:
         modules_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Updated"}), 200
+
+    def delete_all_modules(self):
+        """Deletes all modules from the database."""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("modules")
+        return jsonify({"message": "Deleted"}), 200
+
+    def download_all_modules(self):
+        """Download all modules"""
+        from app import DATABASE_MANAGER
+
+        modules = DATABASE_MANAGER.get_all("modules")
+        # Create a DataFrame from the modules
+        df = pd.DataFrame(modules)
+
+        # Define the file path
+        file_path = "/tmp/modules.xlsx"
+
+        # Save the DataFrame to an Excel file
+        df.to_excel(
+            file_path,
+            index=False,
+            header=["Course_id", "Course_name", "Course_description"],
+        )
+
+        # Send the file as an attachment
+        yield send_file(
+            file_path, as_attachment=True, attachment_filename="modules.xlsx"
+        )
+
+    def upload_course_modules(self, file):
+        """Add course modules from an Excel file."""
+
+        from app import DATABASE_MANAGER
+
+        # Read the Excel file
+        df = pd.read_excel(file)
+
+        # Convert the DataFrame to a list of dictionaries
+        modules = df.to_dict(orient="records")
+
+        clean_data = []
+
+        for i, module in enumerate(modules):
+            temp = {
+                "_id": uuid.uuid4().hex,
+                "module_id": module.get("Module_id", ""),
+                "module_name": module.get("Module_name", ""),
+                "module_description": module.get("Module_description", ""),
+            }
+            if temp["module_id"] and temp["module_name"]:
+                clean_data.append(temp)
+            else:
+                return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
+
+            if DATABASE_MANAGER.get_one_by_field(
+                "modules", "module_id", module["module_id"]
+            ):
+                return jsonify({"error": "module already in database"}), 400
+
+        for module in clean_data:
+            DATABASE_MANAGER.insert("modules", module)
+
+        # Update cache
+        modules = DATABASE_MANAGER.get_all("modules")
+        modules_cache["data"] = modules
+        modules_cache["last_updated"] = datetime.now()
+
+        return jsonify({"message": "Uploaded"}), 200
