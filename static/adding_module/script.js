@@ -24,7 +24,7 @@ form.addEventListener("submit", function (event) {
         .then(async (response) => {
             if (response.ok) {
                 alert("Module added");
-                form.reset();
+                window.location.href = "/course_modules/search";
             } else if (response.status === 401 || response.status === 400) {
                 const errorResponse = await response.json();
                 throw new Error(errorResponse.error);

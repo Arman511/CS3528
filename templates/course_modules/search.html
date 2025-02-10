@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper card-dynamic-width">
+        <div class="card search-card">
+            <h1 class="center">Search module</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="search-module-name">Search Module Name:</label>
+                    <input type="text" id="search-module-name" name="search" class="field" />
+                    <label for="search-module-id">Search Module ID:</label>
+                    <input type="text" id="search-module-id" name="search" class="field" />
+                    <label for="search-module-description">Search module Description:</label>
+                    <input type="text"
+                           id="search-module-description"
+                           name="search"
+                           class="field" />
+                </div>
+            </form>
+        </div>
+        <div class="card card-dynamic-width">
+            <h2 class="center">Modules</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Module ID</th>
+                            <th>Module Name</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="module-table">
+                        {% for module in modules %}
+                            <tr id="module-{{ module._id }}">
+                                <td>{{ module.module_id }}</td>
+                                <td>{{ module.module_name }}</td>
+                                <td>{{ module.module_description }}</td>
+                                <td>
+                                    <a href="{{ url_for('update_module', uuid=module._id) }}"
+                                       class="btn btn-info btn-sm mb-2">Update</a>
+                                    <a data-id="{{ module._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/static/search_course_module/script.js"></script>
+{% endblock content %}
