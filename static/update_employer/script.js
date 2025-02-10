@@ -1,40 +1,49 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const updateForm = document.getElementById("updateForm");
-    const errorElement = document.querySelector(".error");
-    updateForm.addEventListener("submit", function (event) {
-        event.preventDefault(); // Prevent page reload
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.querySelector(".update_employer_form");
+    const errorParagraph = document.querySelector(".error");
+
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
         // Collect form data
-        const employerId = document.getElementById("employer_id").value;
-        const companyName = document.getElementById("company_name").value.trim();
-        const email = document.getElementById("email").value.trim();
+        let employerId = document.getElementById("employer_id").value;
+        let companyName = document.getElementById("company_name").value.trim();
+        let email = document.getElementById("email").value.trim();
+
+        // Validation
         if (!companyName || !email) {
-            errorElement.textContent = "All fields are required.";
-            errorElement.classList.remove("error--hidden");
+            errorParagraph.textContent = "All fields are required.";
+            errorParagraph.classList.remove("error--hidden");
             return;
         }
-        // Send update request
-        fetch("/employers/update_employer", {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: new URLSearchParams({
-                employer_id: employerId,
-                company_name: companyName,
-                email: email
-            })
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                if (data.error) {
-                    errorElement.textContent = data.error;
-                    errorElement.classList.remove("error--hidden");
-                } else {
-                    alert("Employer updated successfully!");
-                    window.location.href = "/employers/search_employers"; // Redirect back
-                }
-            })
-            .catch(() => {
-                errorElement.textContent = "An error occurred. Please try again.";
-                errorElement.classList.remove("error--hidden");
+
+        // Create form data
+        let formData = new FormData();
+        formData.append("employer_id", employerId);
+        formData.append("company_name", companyName);
+        formData.append("email", email);
+
+        try {
+            const response = await fetch("/employers/update_employer", {
+                method: "POST",
+                body: formData,
             });
+
+            if (response.ok) {
+                const data = await response.json();
+                alert(data.message || "Employer updated successfully.");
+                errorParagraph.classList.add("error--hidden");
+                window.location.href = "/employers/search_employers"; // Redirect on success
+            } else {
+                const errorData = await response.json();
+                errorParagraph.textContent =
+                    errorData.error || "Error updating employer.";
+                errorParagraph.classList.remove("error--hidden");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            errorParagraph.textContent = "Error updating employer.";
+            errorParagraph.classList.remove("error--hidden");
+        }
     });
 });

@@ -11,14 +11,17 @@ courses_cache = {"data": None, "last_updated": None}
 class Course:
     """Course data model"""
 
+    def reset_cache(self):
+        """Resets the courses cache."""
+        from app import DATABASE_MANAGER
+
+        courses = DATABASE_MANAGER.get_all("courses")
+        courses_cache["data"] = courses
+        courses_cache["last_updated"] = datetime.now()
+        return courses
+
     def add_course(self, course):
         """Adds a course to the database."""
-        # course = {
-        #     "_id": uuid.uuid1().hex,
-        #     "course_id": request.form.get("course_id"),
-        #     "course_name": request.form.get("course_name"),
-        #     "course_description": request.form.get("course_description"),
-        # }
         from app import DATABASE_MANAGER
 
         if DATABASE_MANAGER.get_one_by_field(
@@ -30,27 +33,42 @@ class Course:
 
         if course:
             # Update cache
-            courses = DATABASE_MANAGER.get_all("courses")
-            courses_cache["data"] = courses
-            courses_cache["last_updated"] = datetime.now()
+            self.reset_cache()
             return jsonify(course), 200
 
         return jsonify({"error": "Course not added"}), 400
 
-    def delete_course(self, course_id):
+    def delete_course_by_uuid(self, id_val):
         """Deletes a course from the database."""
         from app import DATABASE_MANAGER
 
-        course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
+        course = DATABASE_MANAGER.get_one_by_id("courses", id_val)
 
         if not course:
             return jsonify({"error": "Course not found"}), 404
 
+        students = DATABASE_MANAGER.get_all_by_field(
+            "students", "course", course["course_id"]
+        )
+
+        if students and len(students) > 0:
+            return jsonify({"error": "Course has students enrolled"}), 400
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+
+        for opportunity in opportunities:
+            if (
+                "courses_required" in opportunity
+                and course["course_id"] in opportunity["courses_required"]
+            ):
+                opportunity["courses_required"].remove(course["course_id"])
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
         DATABASE_MANAGER.delete_by_id("courses", course["_id"])
         # Update cache
-        courses = DATABASE_MANAGER.get_all("courses")
-        courses_cache["data"] = courses
-        courses_cache["last_updated"] = datetime.now()
+        self.reset_cache()
 
         return jsonify(course), 200
 
@@ -60,6 +78,16 @@ class Course:
 
         course = DATABASE_MANAGER.get_one_by_field("courses", "course_id", course_id)
 
+        if course:
+            return course
+
+        return None
+
+    def get_course_by_uuid(self, uuid):
+        """Get course by uuid"""
+        from app import DATABASE_MANAGER
+
+        course = DATABASE_MANAGER.get_one_by_id("courses", uuid)
         if course:
             return course
 
@@ -92,8 +120,7 @@ class Course:
 
         if courses:
             # Update cache
-            courses_cache["data"] = courses
-            courses_cache["last_updated"] = current_time
+            self.reset_cache()
             return courses
 
         return []
@@ -102,3 +129,30 @@ class Course:
         """Get courses map"""
         courses = self.get_courses()
         return {course["course_id"]: course for course in courses}
+
+    def update_course(self, uuid, updated_course):
+        """Update course"""
+        from app import DATABASE_MANAGER
+
+        original = DATABASE_MANAGER.get_one_by_id("courses", uuid)
+        if not original:
+            return jsonify({"error": "Course not found"}), 404
+
+        if (
+            "course_id" in updated_course
+            and updated_course["course_id"] != original["course_id"]
+        ):
+            match = DATABASE_MANAGER.get_one_by_field(
+                "courses", "course_id", updated_course["course_id"]
+            )
+            if match:
+                return jsonify({"error": "Course ID already exists"}), 400
+        DATABASE_MANAGER.update_one_by_id("courses", uuid, updated_course)
+
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "course" in student and original["course_id"] == student["course"]:
+                student["course"] = updated_course["course_id"]
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+        self.reset_cache()
+        return jsonify({"message": "Course was updated"}), 200

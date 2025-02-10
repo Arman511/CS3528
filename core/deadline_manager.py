@@ -44,7 +44,9 @@ class DeadlineManager:
     def is_past_details_deadline(self) -> bool:
         """Check if the deadline has passed."""
         deadline = self.get_details_deadline()
-        return datetime.datetime.now().strftime("%Y-%m-%d") >= deadline
+        return datetime.datetime.now() >= datetime.datetime.strptime(
+            deadline, "%Y-%m-%d"
+        )
 
     def get_student_ranking_deadline(self):
         """Get the deadline from the database."""

@@ -14,6 +14,8 @@ def add_skills_routes(app):
     def attempt_add_skill_student():
         """Attempt to add a skill to a student."""
         skill_name = request.json.get("skill_name").lower()
+        if not skill_name:
+            return jsonify({"error": "Missing skill name"}), 400
 
         return Skill().attempt_add_skill(skill_name)
 
@@ -33,6 +35,8 @@ def add_skills_routes(app):
             "skill_name": request.form.get("skill_name"),
             "skill_description": request.form.get("skill_description"),
         }
+        if skill["skill_name"] == "" or skill["skill_description"] == "":
+            return jsonify({"error": "One of the inputs is blank"}), 400
         return Skill().add_skill(skill)
 
     @app.route("/skills/search", methods=["GET"])
@@ -47,7 +51,7 @@ def add_skills_routes(app):
     def delete_skill():
         skill_id = request.args.get("skill_id")
         if not skill_id:
-            return jsonify({"error": "Missing skill ID"}, 400)
+            return jsonify({"error": "Missing skill ID"}), 400
         return Skill().delete_skill(skill_id)
 
     @app.route("/skills/update", methods=["POST", "GET"])
@@ -87,7 +91,7 @@ def add_skills_routes(app):
     @handlers.login_required
     def approve_skill():
         uuid = request.args.get("attempt_skill_id")
-        description = request.json.get("description")
+        description = request.json.get("skill_description")
 
         return Skill().approve_skill(uuid, description)
 
@@ -113,6 +117,4 @@ def add_skills_routes(app):
             skill_description = request.form.get("skill_description")
             if not skill_name or not skill_description:
                 return jsonify({"error": "One of the inputs is blank"}), 400
-            return Skill().update_attempt_skill(
-                skill_id, skill_name, skill_description, user_type="admin"
-            )
+            return Skill().update_attempt_skill(skill_id, skill_name, skill_description)

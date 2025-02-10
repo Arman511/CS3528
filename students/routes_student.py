@@ -4,6 +4,7 @@ Handles routes for the student module.
 
 import os
 from dotenv import load_dotenv
+import time
 from flask import jsonify, redirect, render_template, request, session
 from core import handlers
 from courses.models import Course
@@ -125,7 +126,7 @@ def add_student_routes(app):
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course")
+            student["course"] = request.form.get("course").upper()
             return Student().update_student_by_id(student_id, student)
 
         # Render the template
@@ -175,7 +176,7 @@ def add_student_routes(app):
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course")
+            student["course"] = request.form.get("course").upper()
             return Student().update_student_by_uuid(uuid, student)
 
         uuid = request.args.get("uuid")
@@ -226,3 +227,16 @@ def add_student_routes(app):
         """Routing to deal with success"""
         session.clear()
         return render_template("student/update_successful_page.html")
+
+    @app.route("/students/forgot_password/<int:student_id>", methods=["POST"])
+    def student_forgot_password(student_id):
+        """Forgot password."""
+        student = Student().get_student_by_id(student_id)
+        if not student:
+            time.sleep(0.5)
+            return jsonify({"message": "Email sent"}), 200
+
+        Student().send_student_password_email(
+            student["first_name"], student["email"], student["_id"]
+        )
+        return jsonify({"message": "Email sent"}), 200

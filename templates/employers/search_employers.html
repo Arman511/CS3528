@@ -2,7 +2,7 @@
 {% block content %}
     {% include "user/navbar.html" %}
     <div class="card-wrapper card-dynamic-width">
-        <!-- First Card: Search Form -->
+        <!-- Search Form -->
         <div class="card search-card">
             <h1 class="center">Search Employers</h1>
             <form id="searchForm">
@@ -16,13 +16,9 @@
                         <input type="text" id="email" name="email" class="field" />
                     </div>
                 </div>
-                <div class="form-group">
-                    <p class="error error--hidden"></p>
-                    <input type="submit" value="Search" class="btn" />
-                </div>
             </form>
         </div>
-        <!-- Second Card: Employers Table -->
+        <!-- Employers Table -->
         <div class="card card-dynamic-width">
             <h2 class="center">Employers</h2>
             <div class="table-wrapper">

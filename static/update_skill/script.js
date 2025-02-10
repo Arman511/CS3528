@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.querySelector(".skill_adding_form");
+    const form = document.querySelector(".skill_updating_form");
     const errorElement = document.querySelector(".error");
     const skillIdElement = document.getElementById("_id");
 

@@ -21,9 +21,11 @@ load_dotenv()
 
 DATABASE = "cs3528_testing"
 
-if os.getenv("IS_TEST"):
+if os.getenv("IS_TEST") == "True":
+    print("In test mode")
     DATABASE = os.getenv("MONGO_DB_TEST", "")
 else:
+    print("In production mode")
     DATABASE = os.getenv("MONGO_DB_PROD", "")
 
 DATABASE_MANAGER = DatabaseMongoManager(os.getenv("MONGO_URI"), DATABASE)

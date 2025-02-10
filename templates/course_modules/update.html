@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "user/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Update Module</h1>
+            <form class="update-module-form" name="update-module-form">
+                <p id="_id" data-id="{{ module._id }}" hidden></p>
+                <label for="module_id">Module ID</label>
+                <input type="text"
+                       name="module_id"
+                       class="field"
+                       placeholder="module ID"
+                       id="module_id"
+                       value="{{ module.module_id }}"
+                       required />
+                <label for="module_name">Module Name</label>
+                <input type="text"
+                       name="module_name"
+                       class="field"
+                       placeholder="module Name"
+                       id="module_name"
+                       value="{{ module.module_name }}"
+                       required />
+                <label for="module_description">Module Description</label>
+                <input type="text"
+                       name="module_description"
+                       class="field"
+                       placeholder="module Description"
+                       id="module_description"
+                       value="{{ module.module_description }}"
+                       required />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Update module" class="btn" />
+            </form>
+        </div>
+        <script src="/static/update_course_module/script.js"></script>
+    </div>
+{% endblock content %}
