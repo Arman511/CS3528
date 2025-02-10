@@ -273,7 +273,6 @@ def test_update_skill_name_conflict(database, skill_model, app):
             response = skill_model.update_skill(
                 sample_skill["_id"], "Existing Skill", "Updated description"
             )
-            print(response)
             assert response[1] == 400
             assert response[0].json["error"] == "Skill name already in use"
 

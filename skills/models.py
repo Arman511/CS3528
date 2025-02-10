@@ -206,6 +206,9 @@ class Skill:
         skills = DATABASE_MANAGER.get_all_by_field(
             "skills", "skill_name", skill_name.capitalize()
         )
+        skills.append(
+            DATABASE_MANAGER.get_all_by_field("skills", "skill_name", skill_name)
+        )
         for skill in skills:
             if skill["_id"] != original["_id"]:
                 return jsonify({"error": "Skill name already in use"}), 400
