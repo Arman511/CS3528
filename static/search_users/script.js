@@ -43,7 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             if (confirm(`Are you sure you want to delete the user "${userName}"?`)) {
                 try {
-                    const response = await fetch(`/users/delete?uuid=${userId}`, {
+                    const response = await fetch(`/user/delete?uuid=${userId}`, {
                         method: "DELETE",
                     });
 

@@ -38,7 +38,7 @@ class User:
         # Insert the user into the database
         DATABASE_MANAGER.insert("users", user)
 
-        return jsonify({"error": "Signup failed"}), 400
+        return jsonify({"message": "User registered successfully"}), 201
 
     def login(self, attempt_user):
         """Validates user credentials and returns a JSON response indicating
@@ -112,18 +112,18 @@ class User:
         """Deletes a user by their UUID."""
         from app import DATABASE_MANAGER
 
-        user = DATABASE_MANAGER.get_by_uuid("users", user_uuid)
+        user = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        DATABASE_MANAGER.delete("users", user_uuid)
+        DATABASE_MANAGER.delete_by_id("users", user_uuid)
         return jsonify({"message": "User deleted successfully"}), 200
 
     def get_user_by_uuid(self, user_uuid):
         """Retrieves a user by their UUID."""
         from app import DATABASE_MANAGER
 
-        user = DATABASE_MANAGER.get_by_uuid("users", user_uuid)
+        user = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
         if user:
             return user
         return None

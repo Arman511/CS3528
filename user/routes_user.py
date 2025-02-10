@@ -30,7 +30,7 @@ def add_user_routes(app, cache):
                 return jsonify({"error": "Passwords don't match"}), 400
             user = {
                 "_id": uuid.uuid1().hex,
-                "name": request.form.get("name"),
+                "name": request.form.get("name").title(),
                 "email": request.form.get("email").lower(),
                 "password": pbkdf2_sha256.hash(password),  # Hash only the password
             }
@@ -72,7 +72,7 @@ def add_user_routes(app, cache):
             return redirect("/")
         return render_template("user/login.html", user_type="admin")
 
-    @app.route("/user/delete", methods=["POST"])
+    @app.route("/user/delete", methods=["DELETE"])
     @handlers.superuser_required
     def delete_user():
         """Delete user."""
