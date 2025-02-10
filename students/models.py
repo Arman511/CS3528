@@ -188,7 +188,7 @@ class Student:
                             f"{temp_student['last_name']}"
                         )
                     }
-                    return jsonify(errorMSG, 400)
+                    return jsonify(errorMSG), 400
 
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
@@ -251,11 +251,7 @@ class Student:
 
         valid_opportunities = []
         for opportunity in opportunities:
-            modules_required = set(
-                module
-                for module in opportunity["modules_required"]
-                if module.strip().replace('"', "") != ""
-            )
+            modules_required = set(opportunity["modules_required"])
 
             if modules_required.issubset(student["modules"]):
                 if (

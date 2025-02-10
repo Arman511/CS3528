@@ -550,10 +550,68 @@ def test_rank_preferences_invalid_student(app, database):
 
 
 # Not working
-def test_get_oppertunities_by_student(app, database):
+def test_get_opportunities_by_student(app, database):
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("modules", "module_id", "123")
+    database.delete_all_by_field("modules", "module_id", "124")
+    database.delete_all_by_field("courses", "course_id", "123")
+    database.delete_all_by_field("opportunities", "title", "dummy1")
+    database.delete_all_by_field("opportunities", "title", "dummy2")
+    database.delete_all_by_field("opportunities", "title", "dummy3")
+
+    module1 = {
+        "_id": "123",
+        "module_id": "123",
+        "module_name": "dummy1",
+        "module_description": "dummy1",
+    }
+    database.insert("modules", module1)
+    module2 = {
+        "_id": "124",
+        "module_id": "124",
+        "module_name": "dummy2",
+        "module_description": "dummy2",
+    }
+    database.insert("modules", module2)
+
+    course = {
+        "_id": "123",
+        "course_id": "123",
+        "course_name": "dummy1",
+        "course_description": "dummy1",
+    }
+    database.insert("courses", course)
+
+    opportunity1 = {
+        "_id": "123",
+        "title": "dummy1",
+        "description": "dummy1",
+        "modules_required": ["123"],
+        "courses_required": ["123"],
+        "duration": "1_day",
+    }
+    database.insert("opportunities", opportunity1)
+
+    opportunity2 = {
+        "_id": "124",
+        "title": "dummy2",
+        "description": "dummy2",
+        "modules_required": ["123", "124"],
+        "courses_required": ["123"],
+        "duration": "1_week",
+    }
+    database.insert("opportunities", opportunity2)
+
+    opportunity3 = {
+        "_id": "125",
+        "title": "dummy3",
+        "description": "dummy3",
+        "modules_required": ["123", "124"],
+        "courses_required": ["123"],
+        "duration": "1_month",
+    }
 
     student1 = {
         "_id": "123",
@@ -561,6 +619,9 @@ def test_get_oppertunities_by_student(app, database):
         "last_name": "dummy1",
         "email": "dummy@dummy.com",
         "student_id": "123",
+        "modules": ["123", "124"],
+        "course": "123",
+        "placement_duration": ["1_day", "1_week"],
     }
 
     database.insert("students", student1)
@@ -568,11 +629,18 @@ def test_get_oppertunities_by_student(app, database):
     with app.app_context():
         with app.test_request_context():
             response = Student().get_opportunities_by_student(student1["student_id"])
-            json_response = response.get_json()
-            assert Student.valid_oppertunities(json_response)
+            assert len(response) == 2
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("modules", "module_id", "123")
+    database.delete_all_by_field("modules", "module_id", "124")
+    database.delete_all_by_field("courses", "course_id", "123")
+    database.delete_all_by_field("opportunities", "title", "dummy1")
+    database.delete_all_by_field("opportunities", "title", "dummy2")
+    database.delete_all_by_field("opportunities", "title", "dummy3")
 
 
-def test_get_oppertunities_by_student_invalid(app, database):
+def test_get_opportunities_by_student_invalid(app, database):
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
