@@ -6,6 +6,7 @@
             <h1 class="center">Update Skill</h1>
             <form class="skill_adding_form" name="skill_updating_form">
                 <p id="_id" data-id="{{ skill._id }}" hidden></p>
+                <label for="skill_name">Skill Name</label>
                 <input type="text"
                        name="skill_name"
                        class="field"
@@ -13,6 +14,7 @@
                        id="skill_name"
                        value="{{ skill.skill_name }}"
                        required />
+                <label for="skill_description">Skill Description</label>
                 <input type="text"
                        name="skill_description"
                        class="field"
