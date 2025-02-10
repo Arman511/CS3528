@@ -137,6 +137,16 @@ class Course:
         original = DATABASE_MANAGER.get_one_by_id("courses", uuid)
         if not original:
             return jsonify({"error": "Course not found"}), 404
+
+        if (
+            "course_id" in updated_course
+            and updated_course["course_id"] != original["course_id"]
+        ):
+            match = DATABASE_MANAGER.get_one_by_field(
+                "courses", "course_id", updated_course["course_id"]
+            )
+            if match:
+                return jsonify({"error": "Course ID already exists"}), 400
         DATABASE_MANAGER.update_one_by_id("courses", uuid, updated_course)
 
         students = DATABASE_MANAGER.get_all("students")
