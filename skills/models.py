@@ -32,9 +32,7 @@ class Skill:
         # Check if skill already exists#
         from app import DATABASE_MANAGER
 
-        if DATABASE_MANAGER.get_one_by_field(
-            "skills", "skill_name", skill["skill_name"]
-        ):
+        if self.find_skill(skill["skill_name"], None):
             return jsonify({"error": "Skill already in database"}), 400
 
         DATABASE_MANAGER.insert("skills", skill)

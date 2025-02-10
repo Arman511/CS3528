@@ -164,10 +164,10 @@ def test_signout(client):
 def test_404_page(client):
     """Test custom 404 error page."""
     response = client.get("/404")
-    assert response.status_code == 200
+    assert response.status_code == 404
 
 
 def test_500_page(client):
     """Test custom 500 error page."""
     response = client.get("/500")
-    assert response.status_code == 200
+    assert response.status_code == 500
