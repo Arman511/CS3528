@@ -1,4 +1,4 @@
-""" Test for the employer routes."""
+"""Test for the employer routes."""
 
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
