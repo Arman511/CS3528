@@ -125,12 +125,20 @@ def add_student_routes(app):
             )
             if student["placement_duration"] == [""]:
                 student["placement_duration"] = []
+            valid_durations = set(
+                ["1_day", "1_week", "1_month", "3_months", "6_months", "12_months"]
+            )
+            if not set(student["placement_duration"]).issubset(valid_durations):
+                return jsonify({"error": "Invalid placement duration"}), 400
             student["modules"] = (
                 request.form.get("modules")[1:-1].replace('"', "").split(",")
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course").upper()
+            student["course"] = request.form.get("course")
+            if student["course"] == "":
+                return jsonify({"error": "Please select a course"}), 400
+            student["course"] = student["course"].upper()
             return Student().update_student_by_id(student_id, student)
 
         # Render the template
@@ -174,14 +182,30 @@ def add_student_routes(app):
             student["placement_duration"] = (
                 request.form.get("placement_duration")[1:-1].replace('"', "").split(",")
             )
-            if student["placement_duration"] == [""]:
-                student["placement_duration"] = []
+            if (
+                student["placement_duration"] == [""]
+                or student["placement_duration"] == []
+            ):
+                return jsonify({"error": "Please select a placement duration"}), 400
+            valid_durations = set(
+                "1_day",
+                "1_week",
+                "1_month",
+                "3_months",
+                "6_months",
+                "12_months",
+            )
+            if not set(student["placement_duration"]).issubset(valid_durations):
+                return jsonify({"error": "Invalid placement duration"}), 400
             student["modules"] = (
                 request.form.get("modules")[1:-1].replace('"', "").split(",")
             )
             if student["modules"] == [""]:
                 student["modules"] = []
-            student["course"] = request.form.get("course").upper()
+            student["course"] = request.form.get("course")
+            if student["course"] == "":
+                return jsonify({"error": "Please select a course"}), 400
+            student["course"] = student["course"].upper()
             return Student().update_student_by_uuid(uuid, student)
 
         uuid = request.args.get("uuid")
