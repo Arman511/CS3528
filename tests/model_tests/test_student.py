@@ -857,6 +857,8 @@ def test_get_opportunities_by_student(app, database):
         "duration": "1_month",
     }
 
+    database.insert("opportunities", opportunity3)
+
     student1 = {
         "_id": "123",
         "first_name": "dummy1",
