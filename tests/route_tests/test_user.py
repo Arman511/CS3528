@@ -666,3 +666,19 @@ def test_search_users_page(superuser_logged_in_client):
 
     response = superuser_logged_in_client.get(url)
     assert response.status_code == 200
+
+def test_add_employer_post(user_logged_in_client, database):
+    """Test POST request to add employer route."""
+    url = "/employers/add_employer"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    
+    employer_data = {"_id": uuid.uuid1().hex, "company_name": "dummy", "email": "dummy@dummy.com"}
+    
+    response = user_logged_in_client.post(
+        url,
+        data=employer_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+    assert response.status_code == 200
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
