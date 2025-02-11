@@ -6,8 +6,8 @@ from dotenv import load_dotenv
 
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
-os.environ["IS_TEST"] = "True"
 
+os.environ["IS_TEST"] = "True"
 load_dotenv()
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
