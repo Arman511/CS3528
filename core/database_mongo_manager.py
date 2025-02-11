@@ -109,3 +109,6 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def delete_collection(self, table):
         return self.database[table].drop()
+
+    def insert_many(self, table, data):
+        return self.database[table].insert_many(data)

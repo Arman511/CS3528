@@ -270,7 +270,11 @@ class Module:
         modules = df.to_dict(orient="records")
 
         clean_data = []
-        ids = []
+        current_modules = set(
+            module["module_id"] for module in DATABASE_MANAGER.get_all("modules")
+        )
+
+        ids = set()
 
         for i, module in enumerate(tqdm(modules, desc="Uploading modules")):
             temp = {
@@ -286,17 +290,14 @@ class Module:
                 )
             if temp["module_id"] and temp["module_name"]:
                 clean_data.append(temp)
-                ids.append(temp["module_id"])
+                ids.add(temp["module_id"])
             else:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
 
-            if DATABASE_MANAGER.get_one_by_field(
-                "modules", "module_id", temp["module_id"]
-            ):
-                return jsonify({"error": "module already in database"}), 400
+            if temp["module_id"] in current_modules:
+                return jsonify({"error": "Module already in database"}), 400
 
-        for module in tqdm(clean_data, desc="Inserting modules"):
-            DATABASE_MANAGER.insert("modules", module)
+        DATABASE_MANAGER.insert_many("modules", clean_data)
 
         # Update cache
         modules = DATABASE_MANAGER.get_all("modules")

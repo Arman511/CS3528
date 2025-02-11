@@ -202,7 +202,10 @@ class Course:
         courses = df.to_dict(orient="records")
 
         clean_data = []
-        ids = []
+        current_ids = set(
+            course["course_id"] for course in DATABASE_MANAGER.get_all("courses")
+        )
+        ids = set()
 
         for i, course in enumerate(tqdm(courses, desc="Uploading courses")):
             temp = {
@@ -222,13 +225,10 @@ class Course:
             else:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
 
-            if DATABASE_MANAGER.get_one_by_field(
-                "courses", "course_id", temp["course_id"]
-            ):
-                return jsonify({"error": "Course already in database"}), 400
+            if temp["course_id"] in current_ids:
+                return jsonify({"error": "Course ID already exists"}), 400
 
-        for course in tqdm(clean_data, desc="Inserting courses"):
-            DATABASE_MANAGER.insert("courses", course)
+        DATABASE_MANAGER.insert_many("courses", clean_data)
 
         # Update cache
         courses = DATABASE_MANAGER.get_all("courses")
