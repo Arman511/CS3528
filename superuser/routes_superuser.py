@@ -29,7 +29,5 @@ def add_superuser_routes(app):
             return Superuser().configure_settings(
                 new_max_skills, new_min_num_ranking_student_to_opportunity
             )
-        except ValueError:
+        except Exception:
             return jsonify({"error": "Invalid input"}), 400
-        except Exception as e:
-            return jsonify({"error": str(e)}), 500
