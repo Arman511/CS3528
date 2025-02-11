@@ -1,4 +1,4 @@
-""" Test for the employer routes."""
+"""Test for the employer routes."""
 
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
@@ -207,3 +207,26 @@ def test_employers_rank_students_past_student_ranking_deadline(
     )
 
     database.delete_all_by_field("opportunities", "_id", "123")
+    
+def test_employers_rank_students_success(employer_logged_in_client, database):
+    """Test the rank_students page."""
+    url = "/employers/rank_students?opportunity_id=123"
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
+
+    with employer_logged_in_client.session_transaction() as session:
+        session["employer"] = {"_id": "test_employer_id"}
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=True
+    ):
+
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "test_employer_id")
