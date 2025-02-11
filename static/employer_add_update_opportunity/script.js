@@ -25,6 +25,8 @@ document.addEventListener("DOMContentLoaded", () => {
                 selectedModules.push(modulesSelect.options[i].value);
             }
         }
+
+
         let formData = new FormData();
         formData.append("_id", _id);
         formData.append("title", title);
@@ -36,7 +38,13 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("modules_required", JSON.stringify(selectedModules));
         formData.append("spots_available", spots_available);
         formData.append("employer_id", document.querySelector(".employer_id").getAttribute("employer_id"));
-
+        try {
+            let company = document.getElementById("company").value;
+            formData.append("company", company);
+        }
+        catch (error) {
+            console.error("You are an employer");
+        }
         try {
             const response = await fetch(
                 "/opportunities/employer_add_update_opportunity",

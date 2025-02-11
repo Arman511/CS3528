@@ -3,7 +3,9 @@ Opportunity model.
 """
 
 from datetime import datetime
-from flask import jsonify, session
+import uuid
+from flask import jsonify, send_file, session
+import pandas as pd
 from core import handlers
 from employers.models import Employers
 
@@ -265,3 +267,189 @@ class Opportunity:
             "opportunities", "_id", opportunity_id, {"preferences": preferences}
         )
         return jsonify({"message": "Preferences updated"}), 200
+
+    def delete_all_opportunities(self, is_admin):
+        """Deleting all opportunities."""
+        if is_admin:
+            return self.delete_all_opportunities_admin()
+        else:
+            return self.delete_all_opportunities_employer()
+
+    def delete_all_opportunities_employer(self):
+        """Deleting all opportunities."""
+        from app import DATABASE_MANAGER
+
+        opportunities = DATABASE_MANAGER.get_all_by_field(
+            "opportunities", "employer_id", session["employer"]["_id"]
+        )
+        opportunity_ids = set(opportunity["_id"] for opportunity in opportunities)
+
+        for opportunity in opportunities:
+            DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
+
+        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
+        cache["last_updated"] = datetime.now()
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        student_updates = []
+        for student in students:
+            if "preferences" in student:
+                new_preferences = [
+                    preference
+                    for preference in student["preferences"]
+                    if preference not in opportunity_ids
+                ]
+            if new_preferences != student["preferences"]:
+                student_updates.append((student["_id"], new_preferences))
+
+        for student_id, new_preferences in student_updates:
+            DATABASE_MANAGER.update_one_by_id(
+                "students", student_id, {"preferences": new_preferences}
+            )
+
+        return jsonify({"message": "All opportunities deleted"}), 200
+
+    def delete_all_opportunities_admin(self):
+        """Deleting all opportunities."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            if "preferences" in student:
+                student["preferences"] = []
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        DATABASE_MANAGER.delete_all("opportunities")
+        cache["data"] = []
+        cache["last_updated"] = datetime.now()
+        return jsonify({"message": "All opportunities deleted"}), 200
+
+    def download_opportunities(self, is_admin):
+        """Download all opportunities."""
+        from app import DATABASE_MANAGER
+
+        opportunities_data = []
+        if is_admin:
+            employers = DATABASE_MANAGER.get_all("employers")
+            employers_dict = {
+                employer["_id"]: employer["email"] for employer in employers
+            }
+            opportunities = DATABASE_MANAGER.get_all("opportunities")
+        else:
+            opportunities = DATABASE_MANAGER.get_all_by_field(
+                "opportunities", "employer_id", session["employer"]["_id"]
+            )
+
+        for opportunity in opportunities:
+            opportunity_data = {
+                "Title": opportunity.pop("title"),
+                "Description": opportunity.pop("description"),
+                "URL": opportunity.pop("url"),
+                "Modules_required": ",".join(opportunity.pop("modules_required")),
+                "Courses_required": ",".join(opportunity.pop("courses_required")),
+                "Spots_available": opportunity.pop("spots_available"),
+                "Location": opportunity.pop("location"),
+                "Duration": opportunity.pop("duration"),
+            }
+            if is_admin:
+                employer_email = employers_dict.get(opportunity["employer_id"])
+                if employer_email:
+                    opportunity_data["Employer_email"] = employer_email
+            del opportunity["_id"]
+            del opportunity["employer_id"]
+            opportunities_data.append(opportunity_data)
+
+        df = pd.DataFrame(opportunities_data)
+        file_path = "/tmp/opportunities.xlsx"
+        df.to_excel(file_path, index=False)
+
+        return send_file(
+            file_path, as_attachment=True, download_name="opportunities.xlsx"
+        )
+
+    def upload_opportunities(self, file, is_admin):
+        """Upload opportunities from an Excel file."""
+        from app import DATABASE_MANAGER
+
+        try:
+            df = pd.read_excel(file)
+            opportunities = df.to_dict(orient="records")
+
+            email_to_employers_map = {
+                employer["email"]: employer["_id"]
+                for employer in DATABASE_MANAGER.get_all("employers")
+            }
+            modules = set(
+                module["module_id"] for module in DATABASE_MANAGER.get_all("modules")
+            )
+            courses = set(
+                course["course_id"] for course in DATABASE_MANAGER.get_all("courses")
+            )
+            clean_data = []
+            for i, opportunity in enumerate(opportunities):
+                temp = {
+                    "_id": uuid.uuid4().hex,
+                    "title": opportunity["Title"].strip(),
+                    "description": opportunity["Description"].strip(),
+                    "url": opportunity["URL"].strip(),
+                    "modules_required": [
+                        module.strip()
+                        for module in opportunity["Modules_required"].split(",")
+                    ],
+                    "courses_required": [
+                        course.strip()
+                        for course in opportunity["Courses_required"].split(",")
+                    ],
+                    "spots_available": opportunity["Spots_available"],
+                    "location": opportunity["Location"].strip(),
+                    "duration": opportunity["Duration"].strip(),
+                }
+                if is_admin:
+                    employer_id = email_to_employers_map.get(
+                        opportunity["Employer_email"]
+                    )
+                    if employer_id:
+                        temp["employer_id"] = employer_id
+                    else:
+                        return (
+                            jsonify(
+                                {
+                                    "error": f"Employer email {opportunity['Employer_email']} not found in database at row {i+2}"
+                                }
+                            ),
+                            400,
+                        )
+                else:
+                    temp["employer_id"] = session["employer"]["_id"]
+
+                if not set(temp["modules_required"]).issubset(modules):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid module(s) in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                if not set(temp["courses_required"]).issubset(courses):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid course(s) in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                clean_data.append(temp)
+
+            DATABASE_MANAGER.insert_many("opportunities", clean_data)
+            cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
+            cache["last_updated"] = datetime.now()
+
+            return jsonify({"message": "Opportunities uploaded successfully"}), 200
+
+        except Exception as e:
+            print(f"[ERROR] Failed to upload opportunities: {e}")
+            return jsonify({"error": "Failed to upload opportunities"}), 500

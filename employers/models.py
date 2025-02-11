@@ -30,7 +30,7 @@ class Employers:
         # }
 
         if DATABASE_MANAGER.get_one_by_field_strict(
-            "employers", "email", employer["email"]
+            "employers", "email", employer["email"].lower()
         ):
             return jsonify({"error": "Email already in use"}), 400
 
@@ -39,6 +39,7 @@ class Employers:
             "company_name",
             employer["company_name"],
         )
+        employer["email"] = employer["email"].lower()
         if existing_employer:
             return jsonify({"error": "Company name already exists"}), 400
 
@@ -226,7 +227,8 @@ class Employers:
             }
             if not temp["company_name"] or not temp["email"]:
                 return jsonify({"error": "Company name and email are required"}), 400
-            elif temp["company_name"].lower() in current_employer_names:
+            temp["email"] = temp["email"].lower()
+            if temp["company_name"].lower() in current_employer_names:
                 return (
                     jsonify(
                         {
