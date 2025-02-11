@@ -42,12 +42,13 @@
         {# Template inserted here #}
       {% endblock content %}
     </main>
-    <footer class="text-center py-3">
-      <p>© 2025 SkillPilot. All rights reserved.</p>
-      <p>
+    <footer class="text-center py-4 bg-light text-black">
+      <p class="mb-2">© 2025 SkillPilot. All rights reserved.</p>
+      <p class="mb-3">
         This website uses cookies to ensure you get the best experience. By logging in, you agree to our
-        <a href="{{ url_for("privacy_policy") }}">Privacy Policy</a>.
+        <a href="{{ url_for("privacy_policy") }}" class="text-black fw-bold">Privacy Policy</a>.
       </p>
+      <a href="{{ url_for("tutorial") }}" class="btn btn-primary btn-sm">View Tutorial</a>
     </footer>
   </body>
 </html>

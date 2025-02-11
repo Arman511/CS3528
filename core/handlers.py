@@ -228,3 +228,20 @@ def configure_routes(app, cache):
             str: Rendered 500.html template.
         """
         return render_template("500.html", user_type=get_user_type()), 500
+
+    @app.route("/tutorial")
+    def tutorial():
+        """The tutorial route which renders the page specific to a user type."""
+
+        user_type = get_user_type()
+
+        if user_type == "admin":
+            return render_template("tutorials/tutorial_admin.html")
+        elif user_type == "employer":
+            return render_template("tutorials/tutorial_employer.html")
+        elif user_type == "student":
+            return render_template("tutorials/tutorial_student.html")
+        elif user_type == "superuser":
+            return render_template("tutorials/tutorial_superuser.html")
+
+        return render_template("tutorials/tutorial_login.html")
