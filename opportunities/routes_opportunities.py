@@ -93,7 +93,7 @@ def add_opportunities_routes(app):
                         .replace('"', "")
                         .split(",")
                     ],
-                    "spots_available": request.form.get("spots_available"),
+                    "spots_available": int(request.form.get("spots_available")),
                     "duration": request.form.get("duration"),
                 }
 
@@ -104,6 +104,17 @@ def add_opportunities_routes(app):
                             f"Field {key} is required and cannot be empty."
                         )
 
+                if opportunity["spots_available"] < 1:
+                    raise ValueError("Spots available must be at least 1.")
+                elif opportunity["duration"] not in [
+                    "1_day",
+                    "1_week",
+                    "1_month",
+                    "3_months",
+                    "6_months",
+                    "12_months",
+                ]:
+                    raise ValueError("Invalid duration value.")
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
             if handlers.is_admin():
