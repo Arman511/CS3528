@@ -4,6 +4,9 @@ from datetime import datetime, timedelta
 import time
 from flask import redirect, jsonify, session
 from core import email_handler
+import pandas as pd
+from flask import send_file
+import uuid
 
 employers_cache = {"data": None, "last_updated": None}
 
@@ -153,3 +156,101 @@ class Employers:
             return ""
 
         return employer["email"]
+
+    def delete_all_employers(self):
+        """Deletes all employers."""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("employers")
+        employers_cache["data"] = []
+        employers_cache["last_updated"] = datetime.now()
+
+        DATABASE_MANAGER.delete_all("opportunities")
+
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "preferences" in student:
+                student["preferences"] = []
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        return jsonify({"message": "All employers deleted"}), 200
+
+    def download_all_employers(self):
+        """Downloads all employers."""
+        from app import DATABASE_MANAGER
+
+        employers = DATABASE_MANAGER.get_all("employers")
+        for employer in employers:
+            employer.pop("_id")
+            employer["Company_name"] = employer.pop("company_name")
+            employer["Email"] = employer.pop("email")
+
+        # Convert employers to DataFrame
+        df = pd.DataFrame(employers)
+
+        # Save DataFrame to Excel file
+        file_path = "/tmp/employers.xlsx"
+        df.to_excel(file_path, index=False)
+
+        # Send the file
+        return send_file(
+            file_path, as_attachment=True, attachment_filename="employers.xlsx"
+        )
+
+    def upload_employers(self, file):
+        """Uploads employers."""
+
+        from app import DATABASE_MANAGER
+
+        # Read the file
+        df = pd.read_excel(file)
+
+        # Convert DataFrame to list of dictionaries
+        employers = df.to_dict(orient="records")
+
+        current_employers = DATABASE_MANAGER.get_all("employers")
+
+        current_employer_names = set(
+            employer["company_name"].lower() for employer in current_employers
+        )
+        current_employer_emails = set(
+            employer["email"].lower() for employer in current_employers
+        )
+        clean_data = []
+        for i, employer in enumerate(employers):
+            temp = {
+                "_id": uuid.uuid4().hex,
+                "company_name": employer["Company_name"],
+                "email": employer["Email"],
+            }
+            if not temp["company_name"] or not temp["email"]:
+                return jsonify({"error": "Company name and email are required"}), 400
+            elif temp["company_name"].lower() in current_employer_names:
+                return (
+                    jsonify(
+                        {
+                            "error": f"Company name {temp['company_name']} already exists as row {i+2}"
+                        }
+                    ),
+                    400,
+                )
+            elif temp["email"].lower() in current_employer_emails:
+                return (
+                    jsonify(
+                        {"error": f"Email {temp['email']} already exists as row {i+2}"}
+                    ),
+                    400,
+                )
+
+            clean_data.append(temp)
+
+        DATABASE_MANAGER.insert_many("employers", clean_data)
+
+        # Update cache
+        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
+        employers_cache["last_updated"] = datetime.now()
+
+        return (
+            jsonify({"message": f"{len(clean_data)} employers uploaded successfully"}),
+            200,
+        )
