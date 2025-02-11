@@ -82,7 +82,58 @@ def test_add_student_success(app, database):
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
+    
+    def test_add_student_no_id(app, database):
+    
+        from students.models import Student
 
+        database.delete_all_by_field("students", "email", "dummy@dummy.com")
+
+        result = database.delete_all_by_field("students", "email", "dummy@dummy.com")
+        
+        student = {
+            "_id": "123",
+            "first_name": "dummy",
+            "last_name": "dummy",
+            "email": "dummy@dummy.com",
+            "student_id": "123",
+        }
+        
+
+        database.insert("students", student)  
+            
+        with app.app_context():
+            with app.test_request_context():
+                response = Student().add_student(student)
+                json_response = response[0].get_json()
+                assert response[1] == 400
+                assert json_response["error"] == "Student already in database"
+             
+def test_add_student_no_id(app, database):
+    
+    from students.models import Student
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    
+    student = {
+        "_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "student_id": "123",
+    }
+    
+
+    database.insert("students", student)  
+        
+    with app.app_context():
+        with app.test_request_context():
+            response = Student().add_student(student)
+            json_response = response[0].get_json()
+            assert response[1] == 400
+            assert json_response["error"] == "Student already in database"
+             
+    
 
 def test_add_student_duplicate(app, database):
     """Test adding a student with a id."""
