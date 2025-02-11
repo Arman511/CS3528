@@ -234,6 +234,23 @@ class Module:
         DATABASE_MANAGER.delete_all("modules")
         modules_cache["data"] = []
         modules_cache["last_updated"] = datetime.now()
+
+        students = DATABASE_MANAGER.get_all("students")
+        DATABASE_MANAGER.delete_all("students")
+        updated_students = []
+        for student in students:
+            if "module" in student:
+                student["modules"] = []
+            updated_students.append(student)
+
+        DATABASE_MANAGER.insert_many("students", updated_students)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        DATABASE_MANAGER.delete_all("opportunities")
+        for opp in opportunities:
+            opp["modules_required"] = []
+        DATABASE_MANAGER.insert_many("opportunities")
+
         return jsonify({"message": "Deleted"}), 200
 
     def download_all_modules(self):
@@ -283,16 +300,16 @@ class Module:
                 "module_name": module.get("Module_name", ""),
                 "module_description": module.get("Module_description", ""),
             }
-            if temp["module_id"] in ids:
-                return (
-                    jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
-                    400,
-                )
             if temp["module_id"] and temp["module_name"]:
                 clean_data.append(temp)
                 ids.add(temp["module_id"])
             else:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
+            if temp["module_id"] in ids:
+                return (
+                    jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
+                    400,
+                )
 
             if temp["module_id"] in current_modules:
                 return jsonify({"error": "Module already in database"}), 400
