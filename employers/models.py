@@ -193,9 +193,7 @@ class Employers:
         df.to_excel(file_path, index=False)
 
         # Send the file
-        return send_file(
-            file_path, as_attachment=True, attachment_filename="employers.xlsx"
-        )
+        return send_file(file_path, as_attachment=True, download_name="employers.xlsx")
 
     def upload_employers(self, file):
         """Uploads employers."""
@@ -216,6 +214,9 @@ class Employers:
         current_employer_emails = set(
             employer["email"].lower() for employer in current_employers
         )
+
+        emails = set()
+        company_names = set()
         clean_data = []
         for i, employer in enumerate(employers):
             temp = {
@@ -241,8 +242,26 @@ class Employers:
                     ),
                     400,
                 )
+            elif temp["email"].lower() in emails:
+                return (
+                    jsonify(
+                        {"error": f"Email {temp['email']} already exists as row {i+2}"}
+                    ),
+                    400,
+                )
+            elif temp["company_name"].lower() in company_names:
+                return (
+                    jsonify(
+                        {
+                            "error": f"Company name {temp['company_name']} already exists as row {i+2}"
+                        }
+                    ),
+                    400,
+                )
 
             clean_data.append(temp)
+            emails.add(temp["email"].lower())
+            company_names.add(temp["company_name"].lower())
 
         DATABASE_MANAGER.insert_many("employers", clean_data)
 

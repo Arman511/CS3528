@@ -64,7 +64,7 @@ def add_employer_routes(app):
             return Employers().register_employer(employer)
         return render_template("employers/add_employer.html", user_type="admin")
 
-    @app.route("/employers/search_employers", methods=["GET"])
+    @app.route("/employers/search", methods=["GET"])
     @handlers.login_required
     def search_employers():
         employers = Employers().get_employers()
@@ -168,7 +168,7 @@ def add_employer_routes(app):
             if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
                 return jsonify({"error": "Invalid file type"}), 400
 
-            return Employers().upload_employers()
+            return Employers().upload_employers(file)
 
         return render_template("employers/upload.html", user_type="admin")
 

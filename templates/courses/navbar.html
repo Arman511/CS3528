@@ -36,22 +36,24 @@
 <script>
     document.getElementById("delete-all-courses").addEventListener("click", async () => {
         if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
+            if (confirm("This is your final warning. Do you really want to delete all courses?")) {
             try {
                 const response = await fetch("/courses/delete_all", {
-                    method: "DELETE",
+                method: "DELETE",
                 });
 
                 if (response.ok) {
-                    alert("All courses have been deleted successfully.");
-                    window.location.reload();
+                alert("All courses have been deleted successfully.");
+                window.location.reload();
                 } else {
-                    const errorData = await response.json();
-                    alert(errorData.error || "Failed to delete courses.");
+                const errorData = await response.json();
+                alert(errorData.error || "Failed to delete courses.");
                 }
             } catch (error) {
                 console.error(error);
                 alert("An error occurred while trying to delete courses.");
             }
+            }
         }
-    });
+        });
 </script>
