@@ -3,6 +3,7 @@ This module defines the User class which handles user authentication and session
 """
 
 from email.mime.text import MIMEText
+from optparse import OptionError
 import uuid
 from flask import jsonify, session
 import pandas as pd
@@ -207,11 +208,7 @@ class Student:
                 )
 
             return jsonify({"message": f"{len(students)} students imported"}), 200
-        except (
-            pd.errors.EmptyDataError,
-            pd.errors.ParserError,
-            FileNotFoundError,
-        ) as e:
+        except Exception as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
     def send_student_password_email(self, name, email, password):
