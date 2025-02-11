@@ -378,7 +378,7 @@ class Opportunity:
             opportunities = df.to_dict(orient="records")
 
             email_to_employers_map = {
-                employer["email"]: employer["_id"]
+                employer["email"].lower(): employer["_id"]
                 for employer in DATABASE_MANAGER.get_all("employers")
             }
             modules = set(
@@ -406,9 +406,21 @@ class Opportunity:
                     "location": opportunity["Location"].strip(),
                     "duration": opportunity["Duration"].strip(),
                 }
+
+                try:
+                    temp["spots_available"] = int(temp["spots_available"])
+                except Exception:
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid spots available value in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
                 if is_admin:
                     employer_id = email_to_employers_map.get(
-                        opportunity["Employer_email"]
+                        opportunity["Employer_email"].lower().strip()
                     )
                     if employer_id:
                         temp["employer_id"] = employer_id
