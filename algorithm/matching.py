@@ -51,7 +51,7 @@ class Matching:
 
             # Check current matches of the chosen employer
             current_matches = placement_current_match[choice]
-            positions = self.placement_rank[choice]["positions"]
+            positions = int(self.placement_rank[choice]["positions"])
 
             # If there are positions available, add the student
             if (
