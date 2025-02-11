@@ -236,12 +236,16 @@ def configure_routes(app, cache):
         user_type = get_user_type()
 
         if user_type == "admin":
-            return render_template("tutorials/tutorial_admin.html")
+            return render_template("tutorials/tutorial_admin.html", user_type="admin")
         elif user_type == "employer":
-            return render_template("tutorials/tutorial_employer.html")
+            return render_template(
+                "tutorials/tutorial_employer.html", user_type="employer"
+            )
         elif user_type == "student":
             return render_template("tutorials/tutorial_student.html")
         elif user_type == "superuser":
-            return render_template("tutorials/tutorial_superuser.html")
+            return render_template(
+                "tutorials/tutorial_superuser.html", user_type="superuser"
+            )
 
         return render_template("tutorials/tutorial_login.html")
