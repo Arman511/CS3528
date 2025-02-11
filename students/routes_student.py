@@ -91,6 +91,7 @@ def add_student_routes(app):
     def student_details(student_id):
         """Get or update student details."""
         from app import DEADLINE_MANAGER
+        from app import CONFIG_MANAGER
 
         if session["student"]["student_id"] != str(student_id):
             session.clear()
@@ -107,7 +108,11 @@ def add_student_routes(app):
             student = {}
             student["comments"] = request.form.get("comments")
             skills = request.form.get("skills")[1:-1].replace('"', "").split(",")
-            student["skills"] = skills[:10] if len(skills) > 10 else skills
+            student["skills"] = (
+                skills[: CONFIG_MANAGER.get_max_num_of_skills()]
+                if len(skills) > CONFIG_MANAGER.get_max_num_of_skills()
+                else skills
+            )
             if student["skills"] == [""]:
                 student["skills"] = []
             student["attempted_skills"] = (
@@ -140,6 +145,7 @@ def add_student_routes(app):
                 skill["_id"]: skill for skill in Skill().get_list_attempted_skills()
             },
             user_type="student",
+            max_num_skills=CONFIG_MANAGER.get_max_num_of_skills(),
         )
 
     @app.route("/students/update_student", methods=["GET", "POST"])
@@ -196,6 +202,7 @@ def add_student_routes(app):
     def rank_preferences(student_id):
         """Rank preferences."""
         from app import DEADLINE_MANAGER
+        from app import CONFIG_MANAGER
 
         if "student" not in session:
             return redirect("/students/login")
@@ -210,15 +217,29 @@ def add_student_routes(app):
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
+        opportunities = Student().get_opportunities_by_student(student_id)
         if request.method == "POST":
             preferences = [a[5:].strip() for a in request.form.get("ranks").split(",")]
+            min_ranked = CONFIG_MANAGER.get_min_num_ranking_student_to_opportunities()
+            if len(opportunities) > min_ranked:
+                if len(preferences) < min_ranked:
+                    return (
+                        jsonify(
+                            {
+                                "error": "Please rank at least "
+                                + str(min_ranked)
+                                + " opportunities"
+                            }
+                        ),
+                        400,
+                    )
             return Student().rank_preferences(student_id, preferences)
-        opportunities = Student().get_opportunities_by_student(student_id)
         return render_template(
             "student/student_rank_opportunities.html",
             opportunities=opportunities,
             employers_col=Employers().get_employer_by_id,
             user_type="student",
+            min_ranked=CONFIG_MANAGER.get_min_num_ranking_student_to_opportunities(),
         )
 
     @app.route("/students/update_success")

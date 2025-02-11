@@ -3,22 +3,25 @@ Handles routes for the user module.
 """
 
 from datetime import datetime
+import os
 import uuid
 from flask import jsonify, redirect, render_template, session, request
+from passlib.hash import pbkdf2_sha256
 from algorithm.matching import Matching
 from core import handlers
 from employers.models import Employers
 from opportunities.models import Opportunity
 from students.models import Student
+from superuser.model import Superuser
 from .models import User
-from passlib.hash import pbkdf2_sha256
 
 
 def add_user_routes(app, cache):
     """Add user routes."""
 
     @app.route("/user/register", methods=["GET", "POST"])
-    def register():
+    @handlers.superuser_required
+    def register_user():
         """Give page to register a new user."""
         if request.method == "POST":
             password = request.form.get("password")
@@ -27,32 +30,69 @@ def add_user_routes(app, cache):
                 return jsonify({"error": "Passwords don't match"}), 400
             user = {
                 "_id": uuid.uuid1().hex,
-                "name": request.form.get("name"),
+                "name": request.form.get("name").title(),
                 "email": request.form.get("email").lower(),
                 "password": pbkdf2_sha256.hash(password),  # Hash only the password
             }
             return User().register(user)
-        return render_template("user/register.html")
+        return render_template("user/register.html", user_type="superuser")
+
+    @app.route("/user/update", methods=["GET", "POST"])
+    @handlers.superuser_required
+    def update_user():
+        """Update user."""
+        if request.method == "GET":
+            uuid = request.args.get("uuid")
+            user = User().get_user_by_uuid(uuid)
+            if not user:
+                return redirect("/404")
+            return render_template("user/update.html", user=user, user_type="superuser")
+        uuid = request.args.get("uuid")
+        name = request.form.get("name")
+        email = request.form.get("email")
+        return User().update_user(uuid, name, email)
 
     @app.route("/user/login", methods=["GET", "POST"])
     def login():
         """Gives login form to user."""
         if request.method == "POST":
             attempt_user = {
-                "email": request.form.get("email").lower(),
+                "email": request.form.get("email"),
                 "password": request.form.get("password"),
             }
+            if not attempt_user["email"] or not attempt_user["password"]:
+                return jsonify({"error": "Missing email or password"}), 400
+            attempt_user["email"] = attempt_user["email"].lower()
+            if attempt_user["email"] == os.getenv("SUPERUSER_EMAIL") and attempt_user[
+                "password"
+            ] == os.getenv("SUPERUSER_PASSWORD"):
+                return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
             return redirect("/")
         return render_template("user/login.html", user_type="admin")
 
-    # @app.route("/user/change_password", methods=["GET", "POST"])
-    # def change_password():
-    #     """Change user password."""
-    #     if request.method == "POST":
-    #         return User().change_password()
-    #     return render_template("user/change_password.html")
+    @app.route("/user/delete", methods=["DELETE"])
+    @handlers.superuser_required
+    def delete_user():
+        """Delete user."""
+        uuid = request.args.get("uuid")
+        return User().delete_user_by_uuid(uuid)
+
+    @app.route("/user/change_password", methods=["GET", "POST"])
+    @handlers.superuser_required
+    def change_password():
+        """Change user password."""
+        uuid = request.args.get("uuid")
+        if request.method == "POST":
+            new_password = request.form.get("new_password")
+            confirm_password = request.form.get("confirm_password")
+            if new_password != confirm_password:
+                return jsonify({"error": "Passwords don't match"}), 400
+            return User().change_password(uuid, new_password, confirm_password)
+        return render_template(
+            "user/change_password.html", uuid=uuid, user_type="superuser"
+        )
 
     @app.route("/user/deadline", methods=["GET", "POST"])
     @handlers.login_required
@@ -161,8 +201,8 @@ def add_user_routes(app, cache):
         """Send match email."""
         student_uuid = request.form.get("student")
         opportunity_uuid = request.form.get("opportunity")
-        student_email = (request.form.get("student_email"),)
-        employer_email = (request.form.get("employer_email"),)
+        student_email = request.form.get("student_email")
+        employer_email = request.form.get("employer_email")
         return User().send_match_email(
             student_uuid, opportunity_uuid, student_email, employer_email
         )
@@ -262,3 +302,9 @@ def add_user_routes(app, cache):
             str: Rendered HTML template for the home page.
         """
         return render_template("/user/home.html", user_type="admin")
+
+    @app.route("/user/search", methods=["GET"])
+    @handlers.superuser_required
+    def search_users():
+        users = User().get_users_without_passwords()
+        return render_template("user/search.html", users=users, user_type="superuser")

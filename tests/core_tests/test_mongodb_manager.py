@@ -31,6 +31,8 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
+    DATABASE.delete_all("test_collection")  # Cleanup after tests
+    DATABASE.delete_collection("test_collection")
     yield DATABASE
     DATABASE.delete_all("test_collection")  # Cleanup after tests
     DATABASE.delete_collection("test_collection")
@@ -169,6 +171,9 @@ def test_text_search_on_non_indexed_field(database):
 
 
 def test_get_all_by_field(database):
+    """Test fetching all entries by a specific field value."""
+    database.delete_all("test_collection")
+    database.delete_collection("test_collection")
     test_data1 = {"_id": "test8", "category": "A", "name": "Entry 1"}
     test_data2 = {"_id": "test9", "category": "B", "name": "Entry 2"}
     test_data3 = {"_id": "test10", "category": "A", "name": "Entry 3"}

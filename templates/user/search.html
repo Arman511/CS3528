@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "superuser/navbar.html" %}
+    <div class="card-wrapper card-dynamic-width">
+        <div class="card search-card">
+            <h1 class="center">Search Users</h1>
+            <form id="searchForm">
+                <div class="form-group">
+                    <label for="search-name">Search User Name:</label>
+                    <input type="text" id="search-name" name="name" class="field" />
+                    <label for="search-email">Search User Email:</label>
+                    <input type="text" id="search-email" name="email" class="field" />
+                </div>
+                <button type="submit" class="btn btn-primary">Search</button>
+            </form>
+        </div>
+        <div class="card card-dynamic-width">
+            <h2 class="center">Users</h2>
+            <div class="table-wrapper">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>User ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="user-table">
+                        {% for user in users %}
+                            <tr id="user-{{ user._id }}">
+                                <td>{{ user._id }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    <a href="{{ url_for('update_user', uuid=user._id) }}"
+                                       class="btn btn-info btn-sm mb-2">Update</a>
+                                    <a href="{{ url_for('change_password', uuid=user._id) }}"
+                                       class="btn btn-info btn-sm mb-2">Change Password</a>
+                                    <a data-id="{{ user._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="/static/search_users/script.js"></script>
+{% endblock content %}

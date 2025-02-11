@@ -3,7 +3,6 @@ User model.
 """
 
 from email.mime.text import MIMEText
-import uuid
 from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
@@ -22,12 +21,11 @@ class User:
         del user["password"]
         session["logged_in"] = True
         session["user"] = {"_id": user["_id"], "name": user["name"]}
-        return jsonify(session["user"]), 200
+        return jsonify({"message": "/"}), 200
 
     def register(self, user):
         """Registers a new user by creating a user dictionary with a unique ID,
         name, email, and password, and returns a JSON response indicating failure."""
-        session.clear()
         from app import DATABASE_MANAGER
 
         if "email" not in user or "password" not in user:
@@ -40,14 +38,7 @@ class User:
         # Insert the user into the database
         DATABASE_MANAGER.insert("users", user)
 
-        if "_id" not in user:
-            user["_id"] = uuid.uuid1().hex
-
-        # Start session or return success response
-        if user:
-            return self.start_session(user)
-
-        return jsonify({"error": "Signup failed"}), 400
+        return jsonify({"message": "User registered successfully"}), 201
 
     def login(self, attempt_user):
         """Validates user credentials and returns a JSON response indicating
@@ -62,25 +53,18 @@ class User:
 
         return jsonify({"error": "Invalid login credentials"}), 401
 
-    # def change_password(self):
-    #     """Change user password."""
-    #     user = session.get("user")
-    #     old_password = request.form.get("old_password")
-    #     new_password = request.form.get("new_password")
-    #     confirm_password = request.form.get("confirm_password")
+    def change_password(self, uuid, new_password, confirm_password):
+        """Change user password."""
+        from app import DATABASE_MANAGER
 
-    #     if not pbkdf2_sha256.verify(old_password, user["password"]):
-    #         return jsonify({"error": "Invalid old password"}), 400
+        if new_password != confirm_password:
+            return jsonify({"error": "Passwords don't match"}), 400
 
-    #     if new_password != confirm_password:
-    #         return jsonify({"error": "Passwords don't match"}), 400
+        DATABASE_MANAGER.update_one_by_id(
+            "users", uuid, {"password": pbkdf2_sha256.hash(new_password)}
+        )
 
-    #     database.users_collection.update_one(
-    #         {"_id": user["_id"]},
-    #         {"$set": {"password": pbkdf2_sha256.hash(new_password)}},
-    #     )
-
-    #     return jsonify({"message": "Password updated successfully"}), 200
+        return jsonify({"message": "Password updated successfully"}), 200
 
     def change_deadline(
         self, details_deadline, student_ranking_deadline, opportunities_ranking_deadline
@@ -123,3 +107,47 @@ class User:
         msg["To"] = ", ".join(recipients)
         email_handler.send_email(msg, recipients)
         return jsonify({"message": "Email Sent"}), 200
+
+    def delete_user_by_uuid(self, user_uuid):
+        """Deletes a user by their UUID."""
+        from app import DATABASE_MANAGER
+
+        user = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        DATABASE_MANAGER.delete_by_id("users", user_uuid)
+        return jsonify({"message": "User deleted successfully"}), 200
+
+    def get_user_by_uuid(self, user_uuid):
+        """Retrieves a user by their UUID."""
+        from app import DATABASE_MANAGER
+
+        user = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
+        if user:
+            return user
+        return None
+
+    def get_users_without_passwords(self):
+        """Retrieves all users without passwords."""
+        from app import DATABASE_MANAGER
+
+        users = DATABASE_MANAGER.get_all("users")
+        for user in users:
+            del user["password"]
+        return users
+
+    def update_user(self, user_uuid, name, email):
+        """Updates a user's name and email by their UUID."""
+        from app import DATABASE_MANAGER
+
+        original = DATABASE_MANAGER.get_one_by_id("users", user_uuid)
+        find_email = DATABASE_MANAGER.get_by_email("users", email)
+        if find_email and find_email["_id"] != user_uuid:
+            return jsonify({"error": "Email address already in use"}), 400
+        if not original:
+            return jsonify({"error": "User not found"}), 404
+
+        update_data = {"name": name, "email": email}
+        DATABASE_MANAGER.update_one_by_id("users", user_uuid, update_data)
+        return jsonify({"message": "User updated successfully"}), 200
