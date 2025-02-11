@@ -48,7 +48,7 @@ tables = [
 for table in tables:
     DATABASE_MANAGER.add_table(table)
 
-CONFIG_MANAGER = Config()
+CONFIG_MANAGER = Config(DATABASE_MANAGER)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")

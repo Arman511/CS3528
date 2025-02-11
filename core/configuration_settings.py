@@ -4,10 +4,9 @@
 class Config:
     """App configuration settings"""
 
-    def __init__(self):
-        from app import DATABASE_MANAGER
+    def __init__(self, database_manager):
 
-        self.database_manager = DATABASE_MANAGER
+        self.database_manager = database_manager
         self.max_num_of_skills = 10
         self.min_num_ranking_student_to_opportunities = 5
 

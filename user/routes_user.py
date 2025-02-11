@@ -57,12 +57,12 @@ def add_user_routes(app, cache):
         """Gives login form to user."""
         if request.method == "POST":
             attempt_user = {
-                "email": request.form.get("email").lower(),
+                "email": request.form.get("email"),
                 "password": request.form.get("password"),
             }
-            if "email" not in attempt_user or "password" not in attempt_user:
+            if not attempt_user["email"] or not attempt_user["password"]:
                 return jsonify({"error": "Missing email or password"}), 400
-
+            attempt_user["email"] = attempt_user["email"].lower()
             if attempt_user["email"] == os.getenv("SUPERUSER_EMAIL") and attempt_user[
                 "password"
             ] == os.getenv("SUPERUSER_PASSWORD"):
@@ -201,8 +201,8 @@ def add_user_routes(app, cache):
         """Send match email."""
         student_uuid = request.form.get("student")
         opportunity_uuid = request.form.get("opportunity")
-        student_email = (request.form.get("student_email"),)
-        employer_email = (request.form.get("employer_email"),)
+        student_email = request.form.get("student_email")
+        employer_email = request.form.get("employer_email")
         return User().send_match_email(
             student_uuid, opportunity_uuid, student_email, employer_email
         )
