@@ -38,8 +38,13 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-
+    deadlines = DATABASE.get_all("deadline")
+    DATABASE.delete_all("deadline")
     yield DATABASE
+
+    DATABASE.delete_all("deadline")
+    for deadline in deadlines:
+        DATABASE.insert("deadline", deadline)
 
     # Cleanup code
     DATABASE.connection.close()
@@ -292,10 +297,6 @@ def test_deadline_change(user_logged_in_client, database):
     assert database.get_one_by_field("deadline", "type", 0)["deadline"] == "2022-10-11"
     assert database.get_one_by_field("deadline", "type", 1)["deadline"] == "2022-10-14"
     assert database.get_one_by_field("deadline", "type", 2)["deadline"] == "2022-10-18"
-
-    database.delete_all("deadline")
-    for deadline in deadlines:
-        database.insert("deadline", deadline)
 
 
 def test_update_user(superuser_logged_in_client, database):
