@@ -1,9 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
-    <div class="alert alert-danger mt-5 text-center">
-        <p>{{ data }}</p>
+    <div class="card-wrapper">
+        <div class="card ">
+            <h2 class="card-title text-center">Passed Deadline</h2>
+            <div class="alert alert-danger text-center">
+                <p>{{ data }}</p>
+            </div>
+            <button class="btn btn-primary"
+                    onclick='window.location.href="{{ referrer }}"'>Back</button>
+        </div>
     </div>
-    <button class="btn btn-primary"
-            onclick='window.location.href="{{ referrer }}"'>Back</button>
 {% endblock content %}

@@ -225,6 +225,7 @@ def add_user_routes(app, cache):
                 ),
                 user_type="admin",
                 user=session["user"].get("name"),
+                page="matching",
             )
 
         students = Student().get_students()
