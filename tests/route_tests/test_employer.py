@@ -1,4 +1,4 @@
-""" Test for the employer routes."""
+"""Test for the employer routes."""
 
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
@@ -90,6 +90,20 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
     with client.session_transaction() as session:
         session.clear()
 
+def test_employer_otp_no_login(client):
+    """Test OTP endpoint when employer is not logged in."""
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer not logged in."}
+
+def test_employer_otp_no_otp(client):
+    """Test OTP endpoint when OTP is not in session."""
+    with client.session_transaction() as session:
+        session["employer"] = {"_id": "123"}
+
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "OTP not sent."}
 
 def test_employer_login_page(client):
     """Test the employer login page."""
@@ -205,3 +219,26 @@ def test_employers_rank_students_past_student_ranking_deadline(
     )
 
     database.delete_all_by_field("opportunities", "_id", "123")
+    
+def test_employers_rank_students_success(employer_logged_in_client, database):
+    """Test the rank_students page."""
+    url = "/employers/rank_students?opportunity_id=123"
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
+
+    with employer_logged_in_client.session_transaction() as session:
+        session["employer"] = {"_id": "test_employer_id"}
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=True
+    ):
+
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "test_employer_id")
