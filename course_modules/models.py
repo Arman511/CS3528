@@ -280,7 +280,10 @@ class Module:
                 "module_description": module.get("Module_description", ""),
             }
             if temp["module_id"] in ids:
-                continue
+                return (
+                    jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
+                    400,
+                )
             if temp["module_id"] and temp["module_name"]:
                 clean_data.append(temp)
                 ids.append(temp["module_id"])
