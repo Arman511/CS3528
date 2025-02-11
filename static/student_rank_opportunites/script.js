@@ -2,6 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let submit_button = document.getElementById("submit-ranks");
     let url = window.location.href;
     let student_id = url.substring(url.lastIndexOf("/") + 1);
+    let min_ranked = parseInt(document.getElementById("rank-opportunities-info").dataset.min_ranked, 10);
     submit_button.addEventListener("click", async function () {
         let all_ranks = document.getElementsByClassName("opportunity-rank");
         let ranks = [];
@@ -12,7 +13,7 @@ document.addEventListener("DOMContentLoaded", function () {
             ranks.push([all_ranks[i].value, all_ranks[i].id]);
         }
         let len = all_ranks.length;
-        if (ranks.length < 5 && all_ranks.length >= 5) {
+        if (ranks.length < min_ranked && all_ranks.length >= min_ranked) {
             alert("Please rank at least 5 or all of the opportunities");
             return;
         }

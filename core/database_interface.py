@@ -83,10 +83,6 @@ class DatabaseInterface(ABC):
         pass
 
     @abstractmethod
-    def get_all_by_list_query(self, table, query):
-        pass
-
-    @abstractmethod
     def get_all_by_text_search(self, table, search_text):
         pass
 

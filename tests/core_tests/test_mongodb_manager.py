@@ -31,6 +31,8 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
+    DATABASE.delete_all("test_collection")  # Cleanup after tests
+    DATABASE.delete_collection("test_collection")
     yield DATABASE
     DATABASE.delete_all("test_collection")  # Cleanup after tests
     DATABASE.delete_collection("test_collection")
@@ -169,6 +171,9 @@ def test_text_search_on_non_indexed_field(database):
 
 
 def test_get_all_by_field(database):
+    """Test fetching all entries by a specific field value."""
+    database.delete_all("test_collection")
+    database.delete_collection("test_collection")
     test_data1 = {"_id": "test8", "category": "A", "name": "Entry 1"}
     test_data2 = {"_id": "test9", "category": "B", "name": "Entry 2"}
     test_data3 = {"_id": "test10", "category": "A", "name": "Entry 3"}
@@ -237,29 +242,6 @@ def test_update_by_field(database):
 def test_create_index(database):
     result = database.create_index("test_collection", "name")
     assert isinstance(result, str)
-
-
-def test_get_all_by_list_query(database):
-    test_data1 = {"_id": "test18", "categories": ["A", "B", "C"], "status": "active"}
-    test_data2 = {"_id": "test19", "categories": ["A", "B", "C"], "status": "inactive"}
-    test_data3 = {"_id": "test20", "categories": ["D", "E", "F"], "status": "active"}
-    test_data4 = {"_id": "test21", "categories": ["A", "B", "C"], "status": "active"}
-    database.insert("test_collection", test_data1)
-    database.insert("test_collection", test_data2)
-    database.insert("test_collection", test_data3)
-    database.insert("test_collection", test_data4)
-
-    query = [("categories", ["A"], 1), ("status", "active", 0)]
-    results = database.get_all_by_list_query("test_collection", query)
-    assert len(results) == 2
-    assert results[0]["categories"] == ["A", "B", "C"]
-    assert results[0]["status"] == "active"
-    assert results[0]["_id"] == "test18"
-
-    database.delete_by_id("test_collection", "test18")
-    database.delete_by_id("test_collection", "test19")
-    database.delete_by_id("test_collection", "test20")
-    database.delete_by_id("test_collection", "test21")
 
 
 def test_delete_one_by_field(database):

@@ -16,11 +16,8 @@
                 <input type="submit" value="Log In" class="btn" />
             </form>
             <p class="center">
-                Don't have an account? <a href="/user/register">Register</a>
-            </p>
-            <p class="center">
                 Are you a student?
-                <a href="/students/login">Student Login</a>
+                <a href="{{ url_for("login_student") }}">Student Login</a>
             </p>
             <p class="center">
                 Are you an employer?

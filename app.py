@@ -11,11 +11,13 @@ from flask import Flask
 from flask_caching import Cache
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+from core.configuration_settings import Config  # noqa: E402
 from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
 from core import handlers  # noqa: E402
 
 DATABASE_MANAGER = None
 DEADLINE_MANAGER = None
+CONFIG_MANAGER = None
 
 load_dotenv()
 
@@ -40,10 +42,13 @@ tables = [
     "modules",
     "employers",
     "deadline",
+    "config",
 ]
 
 for table in tables:
     DATABASE_MANAGER.add_table(table)
+
+CONFIG_MANAGER = Config(DATABASE_MANAGER)
 
 app = Flask(__name__)
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")

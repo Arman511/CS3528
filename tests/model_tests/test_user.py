@@ -32,11 +32,11 @@ def app():
 
 
 @pytest.fixture()
-def client():
-    """Fixture to create a test client."""
-    from ...app import app  # pylint: disable=import-outside-toplevel
+def user_model():
+    """Fixture to create a user model."""
+    from user.models import User
 
-    return app.test_client()
+    return User()
 
 
 @pytest.fixture()
@@ -62,9 +62,8 @@ def database():
     DATABASE.connection.close()
 
 
-def test_start_session(app):
-    from user.models import User
-
+def test_start_session(app, user_model):
+    """Tests the start_session method of the User model."""
     user = {
         "_id": "123",
         "name": "Test User",
@@ -74,17 +73,15 @@ def test_start_session(app):
 
     with app.app_context():
         with app.test_request_context():  # Add this line
-            response = User().start_session(user)
+            response = user_model.start_session(user)
             json_data = response[0].get_json()
             assert response[1] == 200
-            assert json_data["_id"] == "123"
-            assert json_data["name"] == "Test User"
+            assert json_data["message"] == "/"
             assert "password" not in json_data
 
 
-def test_register_success(app, database):
-    from user.models import User
-
+def test_register_success(app, database, user_model):
+    """Tests the register method of the User model."""
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "124",
@@ -95,22 +92,19 @@ def test_register_success(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().register(user)
+            session["superuser"] = True
+            response = user_model.register(user)
             json_data = response[0].get_json()
-            assert response[1] == 200
-            assert json_data["_id"] == "124"
-            assert json_data["name"] == "New User"
-            assert "password" not in json_data
-            assert "logged_in" in session
+            assert response[1] == 201
+            assert json_data["message"] == "User registered successfully"
             session.clear()
 
     # Delete the user from the database
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_register_email_in_use(app, database):
-    from user.models import User
-
+def test_register_email_in_use(app, database, user_model):
+    """Tests the register method of the User model when the email is already in use."""
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "125",
@@ -119,12 +113,11 @@ def test_register_email_in_use(app, database):
         "password": "password",
     }
 
-    # Insert the user into the database to simulate existing user
     database.insert("users", user)
 
     with app.app_context():
         with app.test_request_context():
-            response = User().register(user)
+            response = user_model.register(user)
             json_data = response[0].get_json()
             assert response[1] == 400
             assert json_data["error"] == "Email address already in use"
@@ -132,21 +125,19 @@ def test_register_email_in_use(app, database):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_register_failure(app):
-    from user.models import User
+def test_register_failure(app, user_model):
+    """Tests the register method of the User model when the request is missing the email or password."""
 
-    # Simulate failure by not inserting the user into the database
     with app.app_context():
         with app.test_request_context():
-            response = User().register({})
+            response = user_model.register({})
             json_data = response[0].get_json()
             assert response[1] == 400
             assert json_data["error"] == "Missing email or password"
 
 
-def test_login_success(app, database):
-    from user.models import User
-
+def test_login_success(app, database, user_model):
+    """Tests the login method of the User model."""
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "126",
@@ -165,21 +156,19 @@ def test_login_success(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().login(attempt_user)
+            response = user_model.login(attempt_user)
             json_data = response[0].get_json()
             assert "logged_in" in session
             assert response[1] == 200
-            assert json_data["_id"] == "126"
-            assert json_data["name"] == "Login User"
+            assert json_data["message"] == "/"
             assert "password" not in json_data
             session.clear()
 
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_login_invalid_credentials(app, database):
-    from user.models import User
-
+def test_login_invalid_credentials(app, database, user_model):
+    """Tests the login method of the User model when the credentials are invalid."""
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
     user = {
         "_id": "127",
@@ -198,7 +187,7 @@ def test_login_invalid_credentials(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().login(attempt_user)
+            response = user_model.login(attempt_user)
             json_data = response[0].get_json()
             assert response[1] == 401
             assert json_data["error"] == "Invalid login credentials"
@@ -206,9 +195,8 @@ def test_login_invalid_credentials(app, database):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-def test_login_user_not_found(app, database):
-    from user.models import User
-
+def test_login_user_not_found(app, database, user_model):
+    """Tests the login method of the User model when the user is not found."""
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
     attempt_user = {
@@ -218,15 +206,14 @@ def test_login_user_not_found(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().login(attempt_user)
+            response = user_model.login(attempt_user)
             json_data = response[0].get_json()
             assert response[1] == 401
             assert json_data["error"] == "Invalid login credentials"
 
 
-def test_update_deadlines_success(app, database):
-    from user.models import User
-
+def test_update_deadlines_success(app, database, user_model):
+    """Tests the change_deadline method of the User model."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -237,7 +224,9 @@ def test_update_deadlines_success(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().change_deadline("2023-12-31", "2024-01-15", "2024-01-31")
+            response = user_model.change_deadline(
+                "2023-12-31", "2024-01-15", "2024-01-31"
+            )
             json_data = response[0].get_json()
             assert response[1] == 200
             assert json_data["message"] == "All deadlines updated successfully"
@@ -259,9 +248,8 @@ def test_update_deadlines_success(app, database):
         database.insert("deadline", deadline)
 
 
-def test_update_deadlines_invalid_format(app, database):
-    from user.models import User
-
+def test_update_deadlines_invalid_format(app, database, user_model):
+    """Tests the change_deadline method of the User model with an invalid date format."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -272,7 +260,7 @@ def test_update_deadlines_invalid_format(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().change_deadline(
+            response = user_model.change_deadline(
                 "invalid-date", "2024-01-15", "2024-01-31"
             )
             json_data = response[0].get_json()
@@ -284,9 +272,8 @@ def test_update_deadlines_invalid_format(app, database):
         database.insert("deadline", deadline)
 
 
-def test_update_deadlines_details_later_than_student_ranking(app, database):
-    from user.models import User
-
+def test_update_deadlines_details_later_than_student_ranking(app, database, user_model):
+    """Tests the change_deadline method of the User model with the details deadline later than the student ranking deadline."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -297,7 +284,9 @@ def test_update_deadlines_details_later_than_student_ranking(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = User().change_deadline("2024-01-16", "2024-01-15", "2024-01-31")
+            response = user_model.change_deadline(
+                "2024-01-16", "2024-01-15", "2024-01-31"
+            )
             json_data = response[0].get_json()
             assert response[1] == 400
             assert (
@@ -311,10 +300,9 @@ def test_update_deadlines_details_later_than_student_ranking(app, database):
 
 
 def test_update_deadlines_student_ranking_later_than_opportunities_ranking(
-    app, database
+    app, database, user_model
 ):
-    from user.models import User
-
+    """Tests the change_deadline method of the User model with the student ranking deadline later than the opportunities ranking deadline."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -325,7 +313,9 @@ def test_update_deadlines_student_ranking_later_than_opportunities_ranking(
 
     with app.app_context():
         with app.test_request_context():
-            response = User().change_deadline("2024-01-15", "2024-01-31", "2024-01-30")
+            response = user_model.change_deadline(
+                "2024-01-15", "2024-01-31", "2024-01-30"
+            )
             json_data = response[0].get_json()
             assert response[1] == 400
             assert (
@@ -336,3 +326,313 @@ def test_update_deadlines_student_ranking_later_than_opportunities_ranking(
     database.delete_all("deadline")
     for deadline in deadlines:
         database.insert("deadline", deadline)
+
+
+def test_send_match_email(app, database, user_model):
+    """Tests the send_match_email method of the User model."""
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    database.delete_all_by_field("opportunities", "employer_id", "employer-uuid")
+
+    student_uuid = "student-uuid"
+    student = {
+        "_id": "student-uuid",
+        "first_name": "Student",
+        "last_name": "User",
+        "email": "dummy@dummy.com",
+    }
+    database.insert("students", student)
+    opportunity_uuid = "opportunity-uuid"
+    opportunity = {
+        "_id": "opportunity-uuid",
+        "title": "Software Developer",
+        "employer_id": "employer-uuid",
+    }
+    database.insert("opportunities", opportunity)
+
+    employer = {
+        "_id": "employer-uuid",
+        "company_name": "Employer",
+        "email": "dummy@dummy.com",
+    }
+    database.insert("employers", employer)
+    student_email = "student@example.com"
+    employer_email = "employer@example.com"
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.send_match_email(
+                student_uuid, opportunity_uuid, student_email, employer_email
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 200
+            assert json_data["message"] == "Email Sent"
+
+    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    database.delete_all_by_field("opportunities", "employer_id", "employer-uuid")
+
+
+def test_delete_user_success(app, database, user_model):
+    """Tests the delete_user_by_uuid method of the User model."""
+    database.delete_all_by_field("users", "email", "delete@dummy.com")
+
+    user_uuid = "delete-success-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Delete User",
+        "email": "delete@dummy.com",
+        "password": "password",
+    }
+
+    database.insert("users", user)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.delete_user_by_uuid(user_uuid)
+            json_data = response[0].get_json()
+            assert response[1] == 200
+            assert json_data["message"] == "User deleted successfully"
+            assert database.get_one_by_id("users", user_uuid) is None
+
+    database.delete_all_by_field("users", "email", "delete@dummy.com")
+
+
+def test_delete_user_not_found(app, database, user_model):
+    """Tests the delete_user_by_uuid method of the User model when the user is not found."""
+    user_uuid = "non-existent-uuid"
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.delete_user_by_uuid(user_uuid)
+            json_data = response[0].get_json()
+            assert response[1] == 404
+            assert json_data["error"] == "User not found"
+
+
+def test_get_user_by_uuid_success(app, database, user_model):
+    """Tests the get_user_by_uuid method of the User model."""
+    database.delete_all_by_field("users", "email", "get@dummy.com")
+
+    user_uuid = "get-success-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Get User",
+        "email": "get@dummy.com",
+        "password": "password",
+    }
+
+    # Insert the user into the database
+    database.insert("users", user)
+
+    with app.app_context():
+        with app.test_request_context():
+            retrieved_user = user_model.get_user_by_uuid(user_uuid)
+            assert retrieved_user is not None
+            assert retrieved_user["_id"] == user_uuid
+            assert retrieved_user["email"] == "get@dummy.com"
+
+    database.delete_all_by_field("users", "email", "get@dummy.com")
+
+
+def test_get_user_by_uuid_not_found(app, database, user_model):
+    """Tests the get_user_by_uuid method of the User model when the user is not found."""
+    user_uuid = "non-existent-uuid"
+
+    with app.app_context():
+        with app.test_request_context():
+            retrieved_user = user_model.get_user_by_uuid(user_uuid)
+            assert retrieved_user is None
+
+
+def test_get_users_without_passwords(app, database, user_model):
+    """Tests the get_users_without_passwords method of the User model."""
+    database.delete_all_by_field("users", "email", "nopassword1@dummy.com")
+    database.delete_all_by_field("users", "email", "nopassword2@dummy.com")
+    existing_users = database.get_all("users")
+    database.delete_all("users")
+
+    user1 = {
+        "_id": "user1-uuid",
+        "name": "User One",
+        "email": "nopassword1@dummy.com",
+        "password": "password1",
+    }
+    user2 = {
+        "_id": "user2-uuid",
+        "name": "User Two",
+        "email": "nopassword2@dummy.com",
+        "password": "password2",
+    }
+
+    database.insert("users", user1)
+    database.insert("users", user2)
+
+    with app.app_context():
+        with app.test_request_context():
+            users = user_model.get_users_without_passwords()
+            assert len(users) == 2
+            for user in users:
+                assert "password" not in user
+
+    database.delete_all_by_field("users", "email", "nopassword1@dummy.com")
+    database.delete_all_by_field("users", "email", "nopassword2@dummy.com")
+
+    for user in existing_users:
+        database.insert("users", user)
+
+
+def test_update_user_success(app, database, user_model):
+    """Tests the update_user method of the User model."""
+    database.delete_all_by_field("users", "email", "update@dummy.com")
+    database.delete_all_by_field("users", "email", "updated@dummy.com")
+
+    user_uuid = "update-success-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Update User",
+        "email": "update@dummy.com",
+        "password": "password",
+    }
+
+    database.insert("users", user)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.update_user(
+                user_uuid, "Updated Name", "updated@dummy.com"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 200
+            assert json_data["message"] == "User updated successfully"
+            updated_user = database.get_one_by_id("users", user_uuid)
+            assert updated_user["name"] == "Updated Name"
+            assert updated_user["email"] == "updated@dummy.com"
+
+    database.delete_all_by_field("users", "email", "update@dummy.com")
+    database.delete_all_by_field("users", "email", "updated@dummy.com")
+
+
+def test_update_user_email_in_use(app, database, user_model):
+    """Tests the update_user method of the User model when the email is already in use."""
+    database.delete_all_by_field("users", "email", "update@dummy.com")
+    database.delete_all_by_field("users", "email", "existing@dummy.com")
+
+    user_uuid = "update-email-in-use-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Update User",
+        "email": "update@dummy.com",
+        "password": "password",
+    }
+
+    existing_user = {
+        "_id": "existing-uuid",
+        "name": "Existing User",
+        "email": "existing@dummy.com",
+        "password": "password",
+    }
+
+    database.insert("users", user)
+    database.insert("users", existing_user)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.update_user(
+                user_uuid, "Updated Name", "existing@dummy.com"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert json_data["error"] == "Email address already in use"
+
+    database.delete_all_by_field("users", "email", "update@dummy.com")
+    database.delete_all_by_field("users", "email", "existing@dummy.com")
+
+
+def test_update_user_not_found(app, database, user_model):
+    """Tests the update_user method of the User model when the user is not found."""
+    database.delete_all_by_field("users", "email", "update@dummy.com")
+
+    user_uuid = "non-existent-uuid"
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.update_user(
+                user_uuid, "Updated Name", "update@dummy.com"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 404
+            assert json_data["error"] == "User not found"
+
+
+def test_change_password_success(app, database, user_model):
+    """Tests the change_password method of the User model."""
+    database.delete_all_by_field("users", "email", "changepassword@dummy.com")
+
+    user_uuid = "change-password-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Change Password User",
+        "email": "changepassword@dummy.com",
+        "password": pbkdf2_sha256.hash("oldpassword"),
+    }
+
+    database.insert("users", user)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.change_password(
+                user_uuid, "newpassword", "newpassword"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 200
+            assert json_data["message"] == "Password updated successfully"
+            updated_user = database.get_one_by_id("users", user_uuid)
+            assert pbkdf2_sha256.verify("newpassword", updated_user["password"])
+
+    database.delete_all_by_field("users", "email", "changepassword@dummy.com")
+
+
+def test_change_password_mismatch(app, database, user_model):
+    """Tests the change_password method of the User model when passwords don't match."""
+    database.delete_all_by_field("users", "email", "changepassword@dummy.com")
+
+    user_uuid = "change-password-uuid"
+    user = {
+        "_id": user_uuid,
+        "name": "Change Password User",
+        "email": "changepassword@dummy.com",
+        "password": pbkdf2_sha256.hash("oldpassword"),
+    }
+
+    database.insert("users", user)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.change_password(
+                user_uuid, "newpassword", "differentpassword"
+            )
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert json_data["error"] == "Passwords don't match"
+
+    database.delete_all_by_field("users", "email", "changepassword@dummy.com")
+
+
+def test_register_missing_name(app, database, user_model):
+    """Tests the register method of the User model when the request is missing the name."""
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
+    user = {
+        "_id": "128",
+        "email": "dummy@dummy.com",
+        "password": "password",
+    }
+
+    with app.app_context():
+        with app.test_request_context():
+            response = user_model.register(user)
+            json_data = response[0].get_json()
+            assert response[1] == 400
+            assert json_data["error"] == "Missing name"
+
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")

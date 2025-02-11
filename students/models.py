@@ -13,17 +13,6 @@ from core.email_handler import send_email
 class Student:
     """Student class."""
 
-    def search_students(self, query):
-        """Searching students."""
-        from app import DATABASE_MANAGER
-
-        students = DATABASE_MANAGER.get_all_by_list_query("students", query)
-
-        if students:
-            return jsonify(students), 200
-
-        return jsonify({"error": "No students found"}), 404
-
     def add_student(self, student, overwrite=False):
         """Adding new student."""
         # student = {
@@ -187,30 +176,24 @@ class Student:
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
                 if temp_student["email"].split("@")[1] != base_email:
-                    return (
-                        jsonify(
-                            {
-                                "message": (
-                                    f"Incorrect student {temp_student['first_name']} "
-                                    f"{temp_student['last_name']}"
-                                )
-                            }
-                        ),
-                        400,
-                    )
+                    errorMSG = {
+                        "error": (
+                            f"Invalid student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']}"
+                        )
+                    }
+                    return jsonify(errorMSG), 400
+
                 temp_student["student_id"] = str(student["Student Number"])
                 if len(str(temp_student["student_id"])) != 8:
-                    return (
-                        jsonify(
-                            {
-                                "error": (
-                                    f"Invalid student {temp_student['first_name']}, "
-                                    f"{temp_student['last_name']}"
-                                )
-                            }
-                        ),
-                        400,
-                    )
+                    errorMSG = {
+                        "error": (
+                            f"Invalid student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']}"
+                        )
+                    }
+                    return jsonify(errorMSG), 400
+
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
                 )
@@ -292,11 +275,7 @@ class Student:
 
         valid_opportunities = []
         for opportunity in opportunities:
-            modules_required = set(
-                module
-                for module in opportunity["modules_required"]
-                if module.strip().replace('"', "") != ""
-            )
+            modules_required = set(opportunity["modules_required"])
 
             if modules_required.issubset(student["modules"]):
                 if (
