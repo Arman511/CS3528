@@ -4,6 +4,7 @@
         {% include "employers/navbar.html" %}
     {% elif user_type == "admin" %}
         {% include "user/navbar.html" %}
+        {% include "opportunities/navbar.html" %}
     {% endif %}
     <div class="card-wrapper">
         <div class="card">
@@ -28,6 +29,17 @@
                        name="description"
                        class="form-control"
                        value="{{ opportunity.description }}" />
+                {% if user_type == "admin" %}
+                    <label for="company">Company:</label>
+                    <select id="company" name="company" class="form-control">
+                        {% for employer in employers %}
+                            <option value="{{ employer._id }}"
+                                    {% if employer._id == opportunity.employer_id %}selected{% endif %}>
+                                {{ employer.company_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                {% endif %}
                 <label for="course">Course:</label>
                 <select id="course"
                         name="course"
@@ -106,6 +118,12 @@
                         sortField: 'text',
                         dropdownParent: 'body'
                     });
+                    {% if user_type == "admin" %}
+                    $('#company').selectize({
+                        sortField: 'text',
+                        dropdownParent: 'body'
+                    });
+                    {% endif %}
                 });
             </script>
         </div>
