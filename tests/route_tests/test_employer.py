@@ -124,6 +124,7 @@ def test_employer_delete_opportunity_page_no_opportunity_id(employer_logged_in_c
     response = employer_logged_in_client.get(url)
     assert response.status_code == 302
 
+
 def test_employers_rank_students_no_opportunity_id(employer_logged_in_client):
     """Test the rank_students page without providing an opportunity ID."""
 
@@ -206,26 +207,30 @@ def test_employers_rank_students_past_student_ranking_deadline(
     )
 
     database.delete_all_by_field("opportunities", "_id", "123")
-    
+
+
 def test_employer_update_opportunity(employer_logged_in_client, database):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
 
-    with patch(
-        "app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True
-    ):
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
         response = employer_logged_in_client.get(url)
-        
+
     assert response.status_code == 200
     assert b"Adding/Updating details deadline has passed as of " in response.data
+
 
 def test_employer_update_opportunity_post(employer_logged_in_client, database):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
 
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
-    database.insert("employers", {"_id": "test_employer_id", "email": "dummy@dummy.com"})
-    employer_id = database.get_one_by_field("employers", "email", "dummy@dummy.com")["_id"]
+    database.insert(
+        "employers", {"_id": "test_employer_id", "email": "dummy@dummy.com"}
+    )
+    employer_id = database.get_one_by_field("employers", "email", "dummy@dummy.com")[
+        "_id"
+    ]
 
     form_data = {
         "_id": "123",
@@ -246,14 +251,12 @@ def test_employer_update_opportunity_post(employer_logged_in_client, database):
 
     assert response.status_code == 200  # Adjust based on actual expected behavior
 
-def test_get_opportunity_no_id(employer_logged_in_client):
+
+def test_get_opportunity_page_no_id(employer_logged_in_client):
     """Test retrieving an opportunity without an ID, ensuring UUID is generated."""
     url = "/opportunities/employer_add_update_opportunity"  # No opportunity_id
 
-    
-    with patch(
-        "app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False
-    ):
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
         response = employer_logged_in_client.get(url)
 
     assert response.status_code == 200

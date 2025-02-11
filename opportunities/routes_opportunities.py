@@ -108,7 +108,7 @@ def add_opportunities_routes(app):
         if opportunity_id is not None:
             opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
         else:
-            opportunity = {"_id": uuid.uuid4().hex}
+            opportunity = {"_id": uuid.uuid4().hex, "spots_available": 1}
 
         # Include employer in the context
         employer = session.get("employer", None)

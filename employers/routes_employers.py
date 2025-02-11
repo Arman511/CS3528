@@ -48,7 +48,7 @@ def add_employer_routes(app):
     def add_employer():
         if request.method == "POST":
             employer = {
-                "_id": uuid.uuid1().hex,
+                "_id": uuid.uuid4().hex,
                 "company_name": request.form.get("company_name"),
                 "email": request.form.get("email"),
             }
