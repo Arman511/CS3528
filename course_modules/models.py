@@ -7,6 +7,7 @@ import uuid
 from flask import jsonify
 import pandas as pd
 from flask import send_file
+from tqdm import tqdm
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -231,6 +232,8 @@ class Module:
         from app import DATABASE_MANAGER
 
         DATABASE_MANAGER.delete_all("modules")
+        modules_cache["data"] = []
+        modules_cache["last_updated"] = datetime.now()
         return jsonify({"message": "Deleted"}), 200
 
     def download_all_modules(self):
@@ -267,16 +270,20 @@ class Module:
         modules = df.to_dict(orient="records")
 
         clean_data = []
+        ids = []
 
-        for i, module in enumerate(modules):
+        for i, module in enumerate(tqdm(modules, desc="Uploading modules")):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "module_id": module.get("Module_id", ""),
                 "module_name": module.get("Module_name", ""),
                 "module_description": module.get("Module_description", ""),
             }
+            if temp["module_id"] in ids:
+                continue
             if temp["module_id"] and temp["module_name"]:
                 clean_data.append(temp)
+                ids.append(temp["module_id"])
             else:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
 
@@ -285,7 +292,7 @@ class Module:
             ):
                 return jsonify({"error": "module already in database"}), 400
 
-        for module in clean_data:
+        for module in tqdm(clean_data, desc="Inserting modules"):
             DATABASE_MANAGER.insert("modules", module)
 
         # Update cache

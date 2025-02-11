@@ -30,13 +30,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
             else {
                 let data = await response.json();
-                showError(data.message);
+                showError(data.error);
             }
 
         } catch (error) {
-            console.log(error);
-            let data = await error.json();
-            showError(data.message);
+            showError('An error occurred while uploading the file. Please try again.');
         }
     });
 
