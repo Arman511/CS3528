@@ -14,6 +14,7 @@ sys.path.append(
 from passlib.hash import pbkdf2_sha256
 import pytest
 from dotenv import load_dotenv
+from unittest.mock import patch
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -815,3 +816,30 @@ def test_delete_employer(user_logged_in_client, database):
     assert response.json == {"message": "Employer deleted"}
 
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+def test_employer_add_opportunity_post(user_logged_in_client, database):
+    """Test the employer_update_opportunity page."""
+    url = "/opportunities/employer_add_update_opportunity"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("opportunities", "_id", "1234")
+    opportunity = {
+        "_id": "1234",
+        "title": "Software Internship",
+        "description": "A great opportunity to learn.",
+        "url": "https://example.com",
+        "location": "Remote",
+        "modules_required": '["CS101", "CS102"]',  # Matches how the request expects it
+        "courses_required": '["Computer_Science"]',
+        "spots_available": 3,
+        "duration": "6_months",
+    }
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = user_logged_in_client.post(
+            url, data=opportunity, content_type="application/x-www-form-urlencoded"
+        )
+
+    assert response.status_code == 200  # Adjust based on actual expected behavior
+    database.delete_by_id("opportunities", "1234")
+    database.delete_all_by_field("employers", "email", "dummy@dummy,com")
