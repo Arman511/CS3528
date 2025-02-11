@@ -42,13 +42,7 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    deadlines = DATABASE.get_all("deadline")
-
-    DATABASE.delete_all("deadline")
     yield DATABASE
-    DATABASE.delete_all("deadline")
-    for deadline in deadlines:
-        DATABASE.insert("deadline", deadline)
 
     # Cleanup code
     DATABASE.connection.close()
@@ -220,36 +214,32 @@ def test_employer_update_opportunity(employer_logged_in_client, database):
     assert b"Adding/Updating details deadline has passed as of " in response.data
 
 
-def test_employer_update_opportunity_post(employer_logged_in_client, database):
+def test_employer_add_opportunity_post(employer_logged_in_client, database):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
 
-    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
-    database.insert(
-        "employers", {"_id": "test_employer_id", "email": "dummy@dummy.com"}
-    )
-    employer_id = database.get_one_by_field("employers", "email", "dummy@dummy.com")[
-        "_id"
-    ]
-
-    form_data = {
-        "_id": "123",
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("opportunities", "_id", "1234")
+    opportunity = {
+        "_id": "1234",
         "title": "Software Internship",
         "description": "A great opportunity to learn.",
         "url": "https://example.com",
         "location": "Remote",
         "modules_required": '["CS101", "CS102"]',  # Matches how the request expects it
-        "courses_required": '["Computer Science"]',
-        "spots_available": "3",
-        "duration": "6 months",
+        "courses_required": '["Computer_Science"]',
+        "spots_available": 3,
+        "duration": "6_months",
     }
 
     with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
         response = employer_logged_in_client.post(
-            url, data=form_data, content_type="application/x-www-form-urlencoded"
+            url, data=opportunity, content_type="application/x-www-form-urlencoded"
         )
 
     assert response.status_code == 200  # Adjust based on actual expected behavior
+    database.delete_by_id("opportunities", "1234")
+    database.delete_all_by_field("employers", "email", "dummy@dummy,com")
 
 
 def test_get_opportunity_page_no_id(employer_logged_in_client):
