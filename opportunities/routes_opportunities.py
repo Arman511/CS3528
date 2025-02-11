@@ -1,7 +1,7 @@
 """Routes for opportunities"""
 
 import uuid
-from flask import flash, redirect, render_template, request, session, url_for
+from flask import flash, jsonify, redirect, render_template, request, session, url_for
 from core import handlers
 from course_modules.models import Module
 from courses.models import Course
@@ -73,33 +73,46 @@ def add_opportunities_routes(app):
             )
 
         if request.method == "POST":
-            opportunity = {
-                "_id": request.form.get("_id"),
-                "title": request.form.get("title"),
-                "description": request.form.get("description"),
-                "url": request.form.get("url"),
-                "employer_id": None,
-                "location": request.form.get("location"),
-                "modules_required": request.form.get("modules_required")[1:-1]
-                .replace('"', "")
-                .split(","),
-                "courses_required": request.form.get("courses_required")[1:-1]
-                .replace('"', "")
-                .split(","),
-                "spots_available": request.form.get("spots_available"),
-                "duration": request.form.get("duration"),
-            }
+            try:
+                opportunity = {
+                    "_id": request.form.get("_id"),
+                    "title": request.form.get("title"),
+                    "description": request.form.get("description"),
+                    "url": request.form.get("url"),
+                    "employer_id": None,
+                    "location": request.form.get("location"),
+                    "modules_required": [
+                        module.strip()
+                        for module in request.form.get("modules_required")[1:-1]
+                        .replace('"', "")
+                        .split(",")
+                    ],
+                    "courses_required": [
+                        course.strip()
+                        for course in request.form.get("courses_required")[1:-1]
+                        .replace('"', "")
+                        .split(",")
+                    ],
+                    "spots_available": request.form.get("spots_available"),
+                    "duration": request.form.get("duration"),
+                }
+
+                # Check if any required field is empty
+                for key, value in opportunity.items():
+                    if not value and key != "employer_id":
+                        raise ValueError(
+                            f"Field {key} is required and cannot be empty."
+                        )
+
+            except Exception as e:
+                return jsonify({"error": str(e)}), 400
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
             else:
-                if (
-                    Opportunity().get_opportunity_by_id(opportunity["_id"])[
-                        "employer_id"
-                    ]
-                    != session["employer"]["_id"]
-                ):
-                    return {"error": "Unauthorized Access."}, 401
+                original = Opportunity().get_opportunity_by_id(opportunity["_id"])
+                if original and original["employer_id"] != session["employer"]["_id"]:
+                    return jsonify({"error": "Unauthorized Access."}), 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 
