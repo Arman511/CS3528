@@ -211,7 +211,7 @@ class Opportunity:
         opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", opportunity_id)
 
         if (
-            handlers.user_type() == "employer"
+            handlers.get_user_type() == "employer"
             and opportunity["employer_id"] != session["employer"]["_id"]
         ):
             return jsonify({"error": "Unauthorized Access."}), 401
