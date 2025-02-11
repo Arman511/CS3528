@@ -3,7 +3,6 @@ This module defines the User class which handles user authentication and session
 """
 
 from email.mime.text import MIMEText
-from optparse import OptionError
 import uuid
 from flask import jsonify, session
 import pandas as pd
