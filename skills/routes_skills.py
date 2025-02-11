@@ -23,7 +23,9 @@ def add_skills_routes(app):
     @handlers.login_required
     def add_skill():
         if request.method == "GET":
-            return render_template("/skills/adding_skills.html", user_type="admin")
+            return render_template(
+                "/skills/adding_skills.html", user_type="admin", page="skills"
+            )
 
         if not request.form.get("skill_name") or not request.form.get(
             "skill_description"
@@ -43,7 +45,10 @@ def add_skills_routes(app):
     @handlers.login_required
     def list_skills():
         return render_template(
-            "/skills/search.html", user_type="admin", skills=Skill().get_skills()
+            "/skills/search.html",
+            user_type="admin",
+            skills=Skill().get_skills(),
+            page="skills",
         )
 
     @app.route("/skills/delete", methods=["DELETE"])
@@ -72,7 +77,7 @@ def add_skills_routes(app):
         if skill is None:
             return redirect("/404")
         return render_template(
-            "/skills/update_skill.html", skill=skill, user_type="admin"
+            "/skills/update_skill.html", skill=skill, user_type="admin", page="skills"
         )
 
     @app.route("/skills/attempted_skill_search", methods=["GET"])
@@ -85,6 +90,7 @@ def add_skills_routes(app):
             "/skills/skill_approval.html",
             attempted_skills=attempted_skills,
             user_type="admin",
+            page="skills",
         )
 
     @app.route("/skills/approve_skill", methods=["POST"])
@@ -110,7 +116,9 @@ def add_skills_routes(app):
             skill = Skill().get_attempted_skill(skill_id)
             if skill is None:
                 return redirect("/404")
-            return render_template("/skills/update_attempt_skill.html", skill=skill)
+            return render_template(
+                "/skills/update_attempt_skill.html", skill=skill, page="skills"
+            )
         else:
             skill_id = request.form.get("skill_id")
             skill_name = request.form.get("skill_name").lower()

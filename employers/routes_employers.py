@@ -62,14 +62,19 @@ def add_employer_routes(app):
                 "email": request.form.get("email"),
             }
             return Employers().register_employer(employer)
-        return render_template("employers/add_employer.html", user_type="admin")
+        return render_template(
+            "employers/add_employer.html", user_type="admin", page="employers"
+        )
 
     @app.route("/employers/search", methods=["GET"])
     @handlers.login_required
     def search_employers():
         employers = Employers().get_employers()
         return render_template(
-            "employers/search_employers.html", user_type="admin", employers=employers
+            "employers/search_employers.html",
+            user_type="admin",
+            employers=employers,
+            page="employers",
         )
 
     @app.route("/employers/update_employer", methods=["GET", "POST"])
@@ -93,7 +98,10 @@ def add_employer_routes(app):
             return redirect(url_for("search_employers"))
 
         return render_template(
-            "employers/update_employer.html", user_type="admin", employer=employer
+            "employers/update_employer.html",
+            user_type="admin",
+            employer=employer,
+            page="employers",
         )
 
     @app.route("/employers/delete_employer", methods=["POST"])
@@ -170,7 +178,9 @@ def add_employer_routes(app):
 
             return Employers().upload_employers(file)
 
-        return render_template("employers/upload.html", user_type="admin")
+        return render_template(
+            "employers/upload.html", user_type="admin", page="employers"
+        )
 
     @app.route("/employers/delete_all", methods=["DELETE"])
     @handlers.login_required

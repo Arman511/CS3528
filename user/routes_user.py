@@ -119,6 +119,7 @@ def add_user_routes(app, cache):
             opportunities_ranking_deadline=DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
             user_type="admin",
             user=session["user"].get("name"),
+            page="deadline",
         )
 
     @app.route("/user/problem", methods=["GET"])
@@ -193,6 +194,7 @@ def add_user_routes(app, cache):
             problems=problems,
             user_type="admin",
             user=session["user"].get("name"),
+            page="problems",
         )
 
     @app.route("/user/send_match_email", methods=["POST"])
@@ -291,6 +293,7 @@ def add_user_routes(app, cache):
             last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             user_type="admin",
             user=session["user"].get("name"),
+            page="matching",
         )
 
     @app.route("/user/home")
@@ -301,7 +304,7 @@ def add_user_routes(app, cache):
         Returns:
             str: Rendered HTML template for the home page.
         """
-        return render_template("/user/home.html", user_type="admin")
+        return render_template("/user/home.html", user_type="admin", page="")
 
     @app.route("/user/search", methods=["GET"])
     @handlers.superuser_required

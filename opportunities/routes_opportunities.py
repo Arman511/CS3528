@@ -53,6 +53,7 @@ def add_opportunities_routes(app):
                 employer["_id"]: employer for employer in Employers().get_employers()
             }
             context["employers_map"] = employers_map
+            context["page"] = "opportunities"
 
         return render_template("opportunities/search.html", **context)
 
@@ -124,6 +125,7 @@ def add_opportunities_routes(app):
             modules=Module().get_modules(),
             user_type="admin" if "logged_in" in session else "employer",
             employer=employer,  # Add employer to the template context
+            page="opportunities",
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])

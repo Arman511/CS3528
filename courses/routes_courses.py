@@ -13,7 +13,9 @@ def add_course_routes(app):
     @handlers.login_required
     def add_course():
         if request.method == "GET":
-            return render_template("/courses/adding_course.html", user_type="admin")
+            return render_template(
+                "/courses/adding_course.html", user_type="admin", page="courses"
+            )
 
         course = {
             "_id": uuid.uuid1().hex,
@@ -35,7 +37,7 @@ def add_course_routes(app):
         courses = Course().get_courses()
 
         return render_template(
-            "/courses/search.html", courses=courses, user_type="admin"
+            "/courses/search.html", courses=courses, user_type="admin", page="courses"
         )
 
     @app.route("/courses/update", methods=["GET", "POST"])
@@ -45,7 +47,7 @@ def add_course_routes(app):
         if request.method == "GET":
             course = Course().get_course_by_uuid(id_val)
             return render_template(
-                "/courses/update.html", course=course, user_type="admin"
+                "/courses/update.html", course=course, user_type="admin", page="courses"
             )
 
         course = {
@@ -59,7 +61,9 @@ def add_course_routes(app):
     @handlers.login_required
     def upload_courses():
         if request.method == "GET":
-            return render_template("courses/upload.html", user_type="admin")
+            return render_template(
+                "courses/upload.html", user_type="admin", page="courses"
+            )
 
         file = request.files["file"]
         if not file:

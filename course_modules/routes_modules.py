@@ -14,7 +14,7 @@ def add_module_routes(app):
     def add_course_module():
         if request.method == "GET":
             return render_template(
-                "course_modules/adding_modules.html", user_type="admin"
+                "course_modules/adding_modules.html", user_type="admin", page="modules"
             )
 
         module = {
@@ -31,7 +31,10 @@ def add_module_routes(app):
         """Search modules page"""
         modules = Module().get_modules()
         return render_template(
-            "course_modules/search.html", modules=modules, user_type="admin"
+            "course_modules/search.html",
+            modules=modules,
+            user_type="admin",
+            page="modules",
         )
 
     @app.route("/course_modules/delete", methods=["DELETE"])
@@ -52,6 +55,7 @@ def add_module_routes(app):
                 "course_modules/update.html",
                 module=module,
                 user_type="admin",
+                page="modules",
             )
         uuid = request.args.get("uuid")
 
@@ -66,7 +70,9 @@ def add_module_routes(app):
     @handlers.login_required
     def upload_course_modules():
         if request.method == "GET":
-            return render_template("course_modules/upload.html", user_type="admin")
+            return render_template(
+                "course_modules/upload.html", user_type="admin", page="modules"
+            )
 
         file = request.files["file"]
         if not file:

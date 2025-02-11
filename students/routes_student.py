@@ -23,26 +23,24 @@ def add_student_routes(app):
         """Adding new student."""
         return Student().add_student()
 
-    @app.route("/students/upload_xlsx", methods=["POST"])
+    @app.route("/students/upload", methods=["GET", "POST"])
     @handlers.login_required
-    def upload_xlsx():
+    def upload_page():
         """Route to upload students from a XLSX file."""
+        if request.method == "GET":
+            return render_template(
+                "/student/upload_student_data.html", user_type="admin", page="students"
+            )
         load_dotenv()
         base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
         if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
-
-        if not handlers.allowed_file(request.files["file"].filename, ["xlsx", "xls"]):
-            return jsonify({"error": "Invalid file type"}), 400
         file = request.files["file"]
 
-        return Student().import_from_xlsx(base_email, file)
+        if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
+            return jsonify({"error": "Invalid file type"}), 400
 
-    @app.route("/students/upload", methods=["GET"])
-    @handlers.login_required
-    def upload_page():
-        """Route to upload students from a XLSX file."""
-        return render_template("/student/upload_student_data.html", user_type="admin")
+        return Student().import_from_xlsx(base_email, file, page="students")
 
     @app.route("/students/search")
     @handlers.login_required
@@ -58,6 +56,7 @@ def add_student_routes(app):
             modules=Module().get_modules(),
             students=Student().get_students(),
             user_type="admin",
+            page="students",
         )
 
     @app.route("/students/delete_student/<int:student_id>", methods=["DELETE"])
@@ -195,6 +194,7 @@ def add_student_routes(app):
             modules=Module().get_modules(),
             attempted_skills=Skill().get_list_attempted_skills(),
             user_type="admin",
+            page="students",
         )
 
     @app.route("/students/rank_preferences/<int:student_id>", methods=["GET", "POST"])

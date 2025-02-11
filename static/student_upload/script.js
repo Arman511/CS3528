@@ -4,7 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     xlsForm.addEventListener("submit", async function (event) {
         event.preventDefault();
         const formData = new FormData(xlsForm);
-        const response = await fetch("/students/upload_xlsx", {
+        const response = await fetch("/students/upload", {
             method: "POST",
             body: formData,
         });
