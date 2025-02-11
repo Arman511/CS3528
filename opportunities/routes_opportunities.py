@@ -23,10 +23,6 @@ def add_opportunities_routes(app):
         user = session.get("user")
         employer = session.get("employer")
 
-        # Determine user_type based on session data
-        if not user and not employer:
-            return {"error": "Unauthorized access."}, 403
-
         user_type = "admin" if user else "employer"
         print(f"[DEBUG] User type: {user_type}")
 
