@@ -38,7 +38,7 @@ class Student:
         DATABASE_MANAGER.insert("students", student)
 
         if student:
-            return jsonify(student), 200
+            return jsonify({"message": "Student added"}), 200
 
         return jsonify({"error": "Student not added"}), 400
 
