@@ -40,7 +40,7 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    deadlines = database.get_all("deadline")
+    deadlines = DATABASE.get_all("deadline")
 
     DATABASE.delete_all("deadline")
     yield DATABASE
