@@ -5,7 +5,6 @@ from datetime import datetime, timedelta
 from flask import jsonify, send_file
 import pandas as pd
 import uuid
-from tqdm import tqdm
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -207,7 +206,7 @@ class Course:
         )
         ids = set()
 
-        for i, course in enumerate(tqdm(courses, desc="Uploading courses")):
+        for i, course in enumerate(courses, desc="Uploading courses"):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "course_id": course.get("Course_id", ""),
