@@ -40,8 +40,13 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
+    deadlines = DATABASE.get_all("deadline")
 
+    DATABASE.delete_all("deadline")
     yield DATABASE
+    DATABASE.delete_all("deadline")
+    for deadline in deadlines:
+        DATABASE.insert("deadline", deadline)
 
     # Cleanup code
     DATABASE.connection.close()
@@ -139,10 +144,6 @@ def test_employers_rank_students_past_oppotunities_deadline(
     """Test the rank_students page."""
     url = "/employers/rank_students"
 
-    deadlines = database.get_all("deadline")
-
-    database.delete_all("deadline")
-
     database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
     database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
     database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
@@ -150,9 +151,6 @@ def test_employers_rank_students_past_oppotunities_deadline(
     response = employer_logged_in_client.get(url)
     assert response.status_code == 200
     assert b"Ranking deadline has passed as of 2022-10-15" in response.data
-
-    for deadline in deadlines:
-        database.insert("deadline", deadline)
 
 
 def test_employers_rank_students_wrong_opportunity_id(
