@@ -23,7 +23,7 @@ def add_course_routes(app):
         }
         return Course().add_course(course)
 
-    @app.route("/courses/delete_course", methods=["POST"])
+    @app.route("/courses/delete", methods=["DELETE"])
     @handlers.login_required
     def delete_course():
         uuid = request.args.get("uuid")
@@ -67,7 +67,7 @@ def add_course_routes(app):
         if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
             return {"error": "Invalid file type"}, 400
 
-        return Course().upload_courses(file)
+        return Course().upload_course_data(file)
 
     @app.route("/courses/download_template", methods=["GET"])
     @handlers.login_required

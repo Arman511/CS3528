@@ -287,7 +287,7 @@ class Module:
         modules = df.to_dict(orient="records")
 
         clean_data = []
-        current_modules = set(
+        current_ids = set(
             module["module_id"] for module in DATABASE_MANAGER.get_all("modules")
         )
 
@@ -300,19 +300,17 @@ class Module:
                 "module_name": module.get("Module_name", ""),
                 "module_description": module.get("Module_description", ""),
             }
-            if temp["module_id"] and temp["module_name"]:
-                clean_data.append(temp)
-                ids.add(temp["module_id"])
-            else:
+            if not temp["module_id"] or not temp["module_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
-            if temp["module_id"] in ids:
+            elif temp["module_id"] in ids:
                 return (
                     jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
                     400,
                 )
-
-            if temp["module_id"] in current_modules:
+            elif temp["module_id"] in current_ids:
                 return jsonify({"error": "Module already in database"}), 400
+            clean_data.append(temp)
+            ids.add(temp["module_id"])
 
         DATABASE_MANAGER.insert_many("modules", clean_data)
 
