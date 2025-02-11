@@ -668,6 +668,7 @@ def test_search_users_page(superuser_logged_in_client):
     response = superuser_logged_in_client.get(url)
     assert response.status_code == 200
 
+
 def test_delete_opportunity(user_logged_in_client, database):
     """Test the delete opportunity."""
     url = "/opportunities/employer_delete_opportunity?opportunity_id=123"
@@ -678,3 +679,139 @@ def test_delete_opportunity(user_logged_in_client, database):
     response = user_logged_in_client.get(url)
 
     assert response.status_code == 302
+
+
+def test_add_employer_post(user_logged_in_client, database):
+    """Test POST request to add employer route."""
+    url = "/employers/add_employer"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    employer_data = {
+        "_id": uuid.uuid1().hex,
+        "company_name": "dummy",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=employer_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+    assert response.status_code == 200
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_post(user_logged_in_client, database):
+    """Test POST request to update employer route."""
+
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    updated_data = {
+        "employer_id": "123",
+        "company_name": "dummy1",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=updated_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_post_wrong_id(user_logged_in_client, database):
+    """Test POST request to update employer route."""
+
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    updated_data = {
+        "employer_id": "1234",
+        "company_name": "dummy1",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=updated_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 404
+    assert response.json == {"error": "Employer not found"}
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_get_wrong_id(user_logged_in_client, database):
+    """Test GET request to update employer with a non-existent employer ID."""
+
+    url = "/employers/update_employer?employer_id=9999"  # Non-existent employer_id
+
+    response = user_logged_in_client.get(
+        url, follow_redirects=True
+    )  # Follow the redirect
+
+    assert (
+        response.status_code == 200
+    )  # Since it redirects, it should be 200 after landing
+
+
+def test_update_employer_get_method(user_logged_in_client, database):
+    """Test GET request to update employer route."""
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    response = user_logged_in_client.get(url, query_string={"employer_id": "123"})
+
+    assert response.status_code == 200
+
+
+def test_delete_employer_no_id(user_logged_in_client):
+    """Test POST request to delete employer route without providing an employer ID."""
+    url = "/employers/delete_employer"
+
+    response = user_logged_in_client.post(url, json={}, content_type="application/json")
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer ID is required"}
+
+
+def test_delete_employer(user_logged_in_client, database):
+    """Test POST request to delete employer route."""
+    url = "/employers/delete_employer"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    employer = {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    database.insert("employers", employer)
+
+    response = user_logged_in_client.post(
+        url,
+        json={"employer_id": "123"},
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    assert response.json == {"message": "Employer deleted"}
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")

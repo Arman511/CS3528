@@ -24,8 +24,12 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-
+    deadlines = DATABASE.get_all("deadline")
+    DATABASE.delete_all("deadline")
     yield DATABASE
+    DATABASE.delete_all("deadline")
+    for deadline in deadlines:
+        DATABASE.insert("deadline", deadline)
 
     # Cleanup code after the test
     DATABASE.connection.close()
