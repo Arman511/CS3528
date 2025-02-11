@@ -16,7 +16,6 @@ import pytest
 from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
-from datetime import datetime, timedelta
 import uuid
 
 os.environ["IS_TEST"] = "True"
