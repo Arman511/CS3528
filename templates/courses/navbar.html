@@ -1,0 +1,57 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <button class="navbar-toggler mx-auto"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavCourses"
+                aria-controls="navbarNavCourses"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center text-center w-100"
+             id="navbarNavCourses">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("search_course") }}">Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("upload_courses") }}">Upload Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("add_course") }}">Add Course</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger font-weight-bold"
+                       href="#"
+                       id="delete-all-courses">Delete All Courses</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("download_all_courses") }}">Download All Courses</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+    document.getElementById("delete-all-courses").addEventListener("click", async () => {
+        if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
+            try {
+                const response = await fetch("/courses/delete_all", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All courses have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete courses.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete courses.");
+            }
+        }
+    });
+</script>

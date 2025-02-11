@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
+    {% include "courses/navbar.html" %}
     <div class="card-wrapper">
         <div class="card">
             <h1 class="center">Upload</h1>
@@ -12,7 +13,7 @@
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Upload" class="btn mb-2" />
             </form>
-            <a href="{{ url_for("download_course_modules_template") }}" class="btn">Download Template</a>
+            <a href="{{ url_for("download_courses_template") }}" class="btn">Download Template</a>
             <script src="/static/upload_courses/script.js"></script>
         </div>
     </div>

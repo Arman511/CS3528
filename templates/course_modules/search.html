@@ -1,24 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "user/navbar.html" %}
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class=" justify-content-end" id="navbarNavCourseModules">
-            <ul class="navbar-nav">
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("add_course_module") }}">Add Module</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#" id="delete-all-modules">Delete All Modules</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
+    {% include "course_modules/navbar.html" %}
     <div class="card-wrapper card-dynamic-width">
         <div class="card search-card">
             <h1 class="center">Search module</h1>
