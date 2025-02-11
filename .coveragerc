@@ -8,3 +8,4 @@ omit =
     */templates/*
     */static/*
     *.html
+    gunicorn_config.py
