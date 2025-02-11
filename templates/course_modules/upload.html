@@ -8,9 +8,9 @@
                   class="upload_form"
                   enctype="multipart/form-data">
                 <label for="file">XLSX</label>
-                <input type="file" name="file" class="field" required />
+                <input type="file" name="file" class="field" required accept=".xlsx" />
                 <p class="error error--hidden"></p>
-                <input type="submit" value="Upload" class="btn" />
+                <input type="submit" value="Upload" class="btn mb-2" />
             </form>
             <a href="{{ url_for("download_course_modules_template") }}" class="btn">Download Template</a>
             <script src="/static/upload_course_modules/script.js"></script>

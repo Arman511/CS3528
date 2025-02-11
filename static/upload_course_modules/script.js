@@ -1,0 +1,53 @@
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.forms['upload_xls_form'];
+    const errorElement = document.querySelector('.error');
+
+    form.addEventListener('submit', async function (event) {
+        event.preventDefault();
+        const fileInput = form.elements['file'];
+        const file = fileInput.files[0];
+
+        if (!file) {
+            showError('No file selected');
+            return;
+        }
+
+        if (!isValidFileType(file)) {
+            showError('Invalid file type. Please upload an XLSX or XLS file.');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', file);
+        try {
+            const response = await fetch('/course_modules/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                window.location.href = '/course_modules/search';
+            }
+            else {
+                let data = await response.json();
+                showError(data.message);
+            }
+
+        } catch (error) {
+            console.log(error);
+            let data = await error.json();
+            showError(data.message);
+        }
+    });
+
+    function showError(message) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('error--hidden');
+    }
+
+    function isValidFileType(file) {
+        const allowedExtensions = ['xlsx', 'xls'];
+        const fileExtension = file.name.split('.').pop().toLowerCase();
+        return allowedExtensions.includes(fileExtension);
+    }
+});

@@ -244,17 +244,16 @@ class Module:
         # Define the file path
         file_path = "/tmp/modules.xlsx"
 
+        df.drop(columns=["_id"], inplace=True)
         # Save the DataFrame to an Excel file
         df.to_excel(
             file_path,
             index=False,
-            header=["Course_id", "Course_name", "Course_description"],
+            header=["Module_id", "Module_name", "Module_description"],
         )
 
         # Send the file as an attachment
-        yield send_file(
-            file_path, as_attachment=True, attachment_filename="modules.xlsx"
-        )
+        return send_file(file_path, download_name="modules.xlsx", as_attachment=True)
 
     def upload_course_modules(self, file):
         """Add course modules from an Excel file."""
@@ -282,7 +281,7 @@ class Module:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
 
             if DATABASE_MANAGER.get_one_by_field(
-                "modules", "module_id", module["module_id"]
+                "modules", "module_id", temp["module_id"]
             ):
                 return jsonify({"error": "module already in database"}), 400
 

@@ -74,13 +74,13 @@ def add_module_routes(app):
         if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
             return {"error": "Invalid file type"}, 400
 
-        return Module().upload_module(file)
+        return Module().upload_course_modules(file)
 
     @app.route("/course_modules/download_template", methods=["GET"])
     @handlers.login_required
     def download_course_modules_template():
         return send_file(
-            "/data_model_upload_template/course_modules_template.xlsx",
+            "data_model_upload_template/course_modules_template.xlsx",
             as_attachment=True,
         )
 
