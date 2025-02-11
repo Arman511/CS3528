@@ -682,3 +682,24 @@ def test_add_employer_post(user_logged_in_client, database):
     assert response.status_code == 200
 
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    
+def test_update_employer_post(user_logged_in_client, database):
+    """Test POST request to update employer route."""
+    url = "/employers/update_employer?_id=123"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    
+    database.insert("employers", {"_id": 123, "company_name": "dummy", "email": "dummy@dummy.com"})
+    employer_data = database.get_by_email("employers", "dummy@dummy.com")
+    employer_data["company_name"] = "dummy1"
+    
+    response = user_logged_in_client.post(
+        url,
+        data=employer_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+    
+    assert response.status_code == 200
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+    
+    
