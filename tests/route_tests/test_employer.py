@@ -85,6 +85,20 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
     with client.session_transaction() as session:
         session.clear()
 
+def test_employer_otp_no_login(client):
+    """Test OTP endpoint when employer is not logged in."""
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer not logged in."}
+
+def test_employer_otp_no_otp(client):
+    """Test OTP endpoint when OTP is not in session."""
+    with client.session_transaction() as session:
+        session["employer"] = {"_id": "123"}
+
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "OTP not sent."}
 
 def test_employer_login_page(client):
     """Test the employer login page."""
