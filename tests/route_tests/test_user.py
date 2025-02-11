@@ -669,7 +669,8 @@ def test_search_users_page(superuser_logged_in_client):
     assert response.status_code == 200
 
     database.delete_all_by_field("opportunities", "title", "dummy_opportunity")
-    
+
+
 def test_delete_opportunity(user_logged_in_client, database):
     """Test the delete opportunity."""
     url = "/opportunities/employer_delete_opportunity?opportunity_id=123"

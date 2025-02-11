@@ -42,7 +42,13 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
+    deadlines = DATABASE.get_all("deadline")
+    DATABASE.delete_all("deadline")
     yield DATABASE
+
+    DATABASE.delete_all("deadline")
+    for deadline in deadlines:
+        DATABASE.insert("deadline", deadline)
 
     # Cleanup code
     DATABASE.connection.close()
@@ -232,8 +238,6 @@ def test_employer_add_opportunity_post(employer_logged_in_client, database):
         "duration": "6_months",
     }
 
-    
-
     with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
         response = employer_logged_in_client.post(
             url, data=opportunity, content_type="application/x-www-form-urlencoded"
@@ -252,13 +256,17 @@ def test_get_opportunity_page_no_id(employer_logged_in_client):
         response = employer_logged_in_client.get(url)
 
     assert response.status_code == 200
-    
+
+
 def test_get_oppotunity_page_with_id(employer_logged_in_client, database):
     """Test retrieving an opportunity with an ID."""
     url = "/opportunities/employer_add_update_opportunity?opportunity_id=123"  # Pass opportunity
-    
+
     database.delete_all_by_field("opportunities", "_id", "123")
-    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id", "spots_available": 1})
+    database.insert(
+        "opportunities",
+        {"_id": "123", "employer_id": "test_employer_id", "spots_available": 1},
+    )
 
     with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
         response = employer_logged_in_client.get(url)
