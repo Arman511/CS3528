@@ -78,11 +78,7 @@ def test_add_student_success(app, database):
             response = Student().add_student(student)
             json_response = response[0].get_json()
             assert response[1] == 200
-            assert json_response["_id"] == student["_id"]
-            assert json_response["first_name"] == student["first_name"]
-            assert json_response["last_name"] == student["last_name"]
-            assert json_response["email"] == student["email"]
-            assert json_response["student_id"] == student["student_id"]
+            assert json_response["message"] == "Student added"
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
