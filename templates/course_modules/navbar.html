@@ -35,7 +35,7 @@
         event.preventDefault();
         if (confirm('Are you sure you want to delete all modules?')) {
             if (confirm('This action cannot be undone. Are you absolutely sure?')) {
-                fetch('/course_modules/delete_all', {
+                fetch("{{url_for('delete_all_course_modules')}}", {
                     method: 'DELETE',
                 }).then(response => {
                     if (response.ok) {
