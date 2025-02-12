@@ -129,13 +129,13 @@ def add_skills_routes(app):
 
     @app.route("/skills/download_all", methods=["GET"])
     @handlers.login_required
-    def download_all():
+    def download_all_skills():
         """Download all skills"""
         return Skill().download_all()
 
     @app.route("/skills/download_attempted", methods=["GET"])
     @handlers.login_required
-    def download_attempted():
+    def download_all_attempted_skills():
         """Download attempted skills"""
         return Skill().download_attempted()
 
