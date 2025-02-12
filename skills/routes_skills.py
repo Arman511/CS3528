@@ -159,7 +159,9 @@ def add_skills_routes(app):
     @handlers.login_required
     def download_skills_template():
         """Download the skills template"""
-        return send_file("data_model_upload_template/skills_template.xlsx")
+        return send_file(
+            "data_model_upload_template/skills_template.xlsx", as_attachment=True
+        )
 
     @app.route("/skills/delete_all_attempted_skill", methods=["DELETE"])
     @handlers.login_required
