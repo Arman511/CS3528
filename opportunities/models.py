@@ -300,8 +300,8 @@ class Opportunity:
                     for preference in student["preferences"]
                     if preference not in opportunity_ids
                 ]
-            if new_preferences != student["preferences"]:
-                student_updates.append((student["_id"], new_preferences))
+                if new_preferences != student["preferences"]:
+                    student_updates.append((student["_id"], new_preferences))
 
         for student_id, new_preferences in student_updates:
             DATABASE_MANAGER.update_one_by_id(
@@ -391,20 +391,12 @@ class Opportunity:
             for i, opportunity in enumerate(opportunities):
                 temp = {
                     "_id": uuid.uuid4().hex,
-                    "title": opportunity["Title"].strip(),
-                    "description": opportunity["Description"].strip(),
-                    "url": opportunity["URL"].strip(),
-                    "modules_required": [
-                        module.strip()
-                        for module in opportunity["Modules_required"].split(",")
-                    ],
-                    "courses_required": [
-                        course.strip()
-                        for course in opportunity["Courses_required"].split(",")
-                    ],
+                    "title": opportunity["Title"],
+                    "description": opportunity["Description"],
+                    "url": opportunity["URL"],
                     "spots_available": opportunity["Spots_available"],
-                    "location": opportunity["Location"].strip(),
-                    "duration": opportunity["Duration"].strip(),
+                    "location": opportunity["Location"],
+                    "duration": opportunity["Duration"],
                 }
 
                 try:
@@ -436,6 +428,55 @@ class Opportunity:
                 else:
                     temp["employer_id"] = session["employer"]["_id"]
 
+                if not temp["duration"]:
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Duration is required and cannot be empty in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                if temp["duration"] not in set(
+                    [
+                        "1_day",
+                        "1_week",
+                        "1_month",
+                        "3_months",
+                        "6_months",
+                        "12_months",
+                    ]
+                ):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Invalid duration value in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                modules_required_string = opportunity["Modules_required"]
+                if not isinstance(modules_required_string, str):
+                    temp["modules_required"] = []
+                else:
+                    temp["modules_required"] = [
+                        module.strip()
+                        for module in modules_required_string.replace('"', "").split(
+                            ","
+                        )
+                    ]
+
+                courses_required_string = opportunity["Courses_required"]
+                if not isinstance(courses_required_string, str):
+                    temp["courses_required"] = []
+                else:
+                    temp["courses_required"] = [
+                        course.strip()
+                        for course in courses_required_string.replace('"', "").split(
+                            ","
+                        )
+                    ]
+
                 if not set(temp["modules_required"]).issubset(modules):
                     return (
                         jsonify(
@@ -454,6 +495,64 @@ class Opportunity:
                         ),
                         400,
                     )
+                if not isinstance(temp["title"], str) or not temp["title"].strip():
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Title is required and cannot be empty in opportunity at row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                if (
+                    not isinstance(temp["description"], str)
+                    or not temp["description"].strip()
+                ):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Description is required and cannot be empty in opportunity at row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                if not isinstance(temp["location"], str):
+                    temp["location"] = ""
+                if not isinstance(temp["url"], str):
+                    temp["url"] = ""
+                if (
+                    not isinstance(temp["spots_available"], int)
+                    or temp["spots_available"] < 1
+                ):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Spots available must be at least 1 in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+                if not isinstance(temp["duration"], str):
+                    return (
+                        jsonify(
+                            {
+                                "error": f"Duration is required and cannot be empty in opportunity: {temp['title']}, row {i+2}"
+                            }
+                        ),
+                        400,
+                    )
+
+                temp["title"] = temp["title"].strip()
+                temp["description"] = temp["description"].strip()
+                temp["url"] = (
+                    temp["url"].strip() if isinstance(temp["url"], str) else ""
+                )
+                temp["location"] = (
+                    temp["location"].strip()
+                    if isinstance(temp["location"], str)
+                    else ""
+                )
+
                 clean_data.append(temp)
 
             DATABASE_MANAGER.insert_many("opportunities", clean_data)

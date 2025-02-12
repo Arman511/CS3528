@@ -43,6 +43,8 @@ def send_otp(recipient):
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipient, msg.as_string())
 
+    print(f"Email sent to {recipient}")
+
 
 def send_email(msg, recipients):
     """Sends an email"""
@@ -52,3 +54,5 @@ def send_email(msg, recipients):
     with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipients, msg.as_string())
+
+    print(f"Email sent to {recipients}")
