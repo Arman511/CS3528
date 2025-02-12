@@ -304,9 +304,9 @@ class Student:
                 "Student Number": student["student_id"],
             }
             if "course" in student:
-                student_data["Courses"] = student["courses"]
+                student_data["Course"] = student["course"]
             else:
-                student_data["Courses"] = ""
+                student_data["Course"] = ""
 
             if "modules" in student:
                 student_data["Modules"] = ",".join(student["modules"])
