@@ -37,31 +37,56 @@
                 <li class="nav-item">
                     <a class="nav-link" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
+                </li>
             </ul>
         </div>
     </div>
 </nav>
 <script>
-    document.getElementById("delete-all-courses").addEventListener("click", async () => {
-        if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
-            if (confirm("This is your final warning. Do you really want to delete all courses?")) {
+    document.getElementById("delete-all-attempted-skills").addEventListener("click", async () => {
+        if (confirm("Are you sure you want to delete all attempted skills? This action cannot be undone.")) {
+            if (confirm("This is your final warning. Do you really want to delete all attempted skills?")) {
             try {
-                const response = await fetch("/courses/delete_all", {
+                const response = await fetch("{{url_for('delete_all_attempted_skills')}}", {
                 method: "DELETE",
                 });
 
                 if (response.ok) {
-                alert("All courses have been deleted successfully.");
+                alert("All attempted skills have been deleted successfully.");
                 window.location.reload();
                 } else {
                 const errorData = await response.json();
-                alert(errorData.error || "Failed to delete courses.");
+                alert(errorData.error || "Failed to delete attempted skills.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("An error occurred while trying to delete courses.");
+                alert("An error occurred while trying to delete attempted skills.");
             }
             }
         }
         });
+        document.getElementById("delete-all-skills").addEventListener("click", async () => {
+            if (confirm("Are you sure you want to delete all skills? This action cannot be undone.")) {
+                if (confirm("This is your final warning. Do you really want to delete all skills?")) {
+                try {
+                    const response = await fetch("{{url_for('delete_all_skills')}}", {
+                    method: "DELETE",
+                    });
+    
+                    if (response.ok) {
+                    alert("All courses have been deleted successfully.");
+                    window.location.reload();
+                    } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete skills.");
+                    }
+                } catch (error) {
+                    console.error(error);
+                    alert("An error occurred while trying to delete skills.");
+                }
+                }
+            }
+            });
 </script>
