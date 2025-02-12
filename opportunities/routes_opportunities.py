@@ -1,7 +1,16 @@
 """Routes for opportunities"""
 
 import uuid
-from flask import flash, jsonify, redirect, render_template, request, session, url_for
+from flask import (
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 from core import handlers
 from course_modules.models import Module
 from courses.models import Course
@@ -49,6 +58,7 @@ def add_opportunities_routes(app):
                 employer["_id"]: employer for employer in Employers().get_employers()
             }
             context["employers_map"] = employers_map
+            context["page"] = "opportunities"
 
         return render_template("opportunities/search.html", **context)
 
@@ -93,7 +103,7 @@ def add_opportunities_routes(app):
                         .replace('"', "")
                         .split(",")
                     ],
-                    "spots_available": request.form.get("spots_available"),
+                    "spots_available": int(request.form.get("spots_available")),
                     "duration": request.form.get("duration"),
                 }
 
@@ -104,6 +114,17 @@ def add_opportunities_routes(app):
                             f"Field {key} is required and cannot be empty."
                         )
 
+                if opportunity["spots_available"] < 1:
+                    raise ValueError("Spots available must be at least 1.")
+                elif opportunity["duration"] not in [
+                    "1_day",
+                    "1_week",
+                    "1_month",
+                    "3_months",
+                    "6_months",
+                    "12_months",
+                ]:
+                    raise ValueError("Invalid duration value.")
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
             if handlers.is_admin():
@@ -133,6 +154,7 @@ def add_opportunities_routes(app):
             modules=Module().get_modules(),
             user_type="admin" if "logged_in" in session else "employer",
             employer=employer,  # Add employer to the template context
+            page="opportunities",
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
@@ -146,3 +168,57 @@ def add_opportunities_routes(app):
         Opportunity().delete_opportunity_by_id(opportunity_id)
         flash("Opportunity deleted successfully", "success")
         return redirect(url_for("search_opportunities"))
+
+    @app.route("/opportunities/upload", methods=["GET", "POST"])
+    @handlers.admin_or_employers_required
+    def upload_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+
+        if request.method == "POST":
+            file = request.files["file"]
+            if not file:
+                return jsonify({"error": "No file provided"}), 400
+            if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
+                return jsonify({"error": "Invalid file type"}), 400
+
+            if user_type == "admin":
+                return Opportunity().upload_opportunities(file, True)
+
+            return Opportunity().upload_opportunities(file, False)
+
+        return render_template(
+            "opportunities/upload.html",
+            user_type=user_type,
+            page="opportunities",
+        )
+
+    @app.route("/opportunities/download_all", methods=["GET"])
+    @handlers.admin_or_employers_required
+    def download_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+        if user_type == "admin":
+            return Opportunity().download_opportunities(True)
+        return Opportunity().download_opportunities(False)
+
+    @app.route("/opportunities/download_template", methods=["GET"])
+    @handlers.admin_or_employers_required
+    def download_opportunities_template():
+        user_type = "admin" if handlers.is_admin() else "employer"
+
+        if user_type == "admin":
+            return send_file(
+                "data_model_upload_template/admin_opportunities_template.xlsx",
+                as_attachment=True,
+            )
+        return send_file(
+            "data_model_upload_template/employer_opportunities_template.xlsx",
+            as_attachment=True,
+        )
+
+    @app.route("/opportunities/delete_all", methods=["DELETE"])
+    @handlers.admin_or_employers_required
+    def delete_all_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+        if user_type == "admin":
+            return Opportunity().delete_all_opportunities(True)
+        return Opportunity().delete_all_opportunities(False)

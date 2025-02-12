@@ -1,7 +1,7 @@
 """Handles the routes for the skills module."""
 
 import uuid
-from flask import jsonify, redirect, render_template, request
+from flask import jsonify, redirect, render_template, request, send_file
 from core import handlers
 from .models import Skill
 
@@ -23,7 +23,9 @@ def add_skills_routes(app):
     @handlers.login_required
     def add_skill():
         if request.method == "GET":
-            return render_template("/skills/adding_skills.html", user_type="admin")
+            return render_template(
+                "/skills/adding_skills.html", user_type="admin", page="skills"
+            )
 
         if not request.form.get("skill_name") or not request.form.get(
             "skill_description"
@@ -43,7 +45,10 @@ def add_skills_routes(app):
     @handlers.login_required
     def list_skills():
         return render_template(
-            "/skills/search.html", user_type="admin", skills=Skill().get_skills()
+            "/skills/search.html",
+            user_type="admin",
+            skills=Skill().get_skills(),
+            page="skills",
         )
 
     @app.route("/skills/delete", methods=["DELETE"])
@@ -72,7 +77,7 @@ def add_skills_routes(app):
         if skill is None:
             return redirect("/404")
         return render_template(
-            "/skills/update_skill.html", skill=skill, user_type="admin"
+            "/skills/update_skill.html", skill=skill, user_type="admin", page="skills"
         )
 
     @app.route("/skills/attempted_skill_search", methods=["GET"])
@@ -85,6 +90,7 @@ def add_skills_routes(app):
             "/skills/skill_approval.html",
             attempted_skills=attempted_skills,
             user_type="admin",
+            page="skills",
         )
 
     @app.route("/skills/approve_skill", methods=["POST"])
@@ -110,7 +116,9 @@ def add_skills_routes(app):
             skill = Skill().get_attempted_skill(skill_id)
             if skill is None:
                 return redirect("/404")
-            return render_template("/skills/update_attempt_skill.html", skill=skill)
+            return render_template(
+                "/skills/update_attempt_skill.html", skill=skill, page="skills"
+            )
         else:
             skill_id = request.form.get("skill_id")
             skill_name = request.form.get("skill_name").lower()
@@ -118,3 +126,51 @@ def add_skills_routes(app):
             if not skill_name or not skill_description:
                 return jsonify({"error": "One of the inputs is blank"}), 400
             return Skill().update_attempt_skill(skill_id, skill_name, skill_description)
+
+    @app.route("/skills/download_all", methods=["GET"])
+    @handlers.login_required
+    def download_all_skills():
+        """Download all skills"""
+        return Skill().download_all()
+
+    @app.route("/skills/download_attempted", methods=["GET"])
+    @handlers.login_required
+    def download_all_attempted_skills():
+        """Download attempted skills"""
+        return Skill().download_attempted()
+
+    @app.route("/skills/upload", methods=["GET", "POST"])
+    @handlers.login_required
+    def upload_skills():
+        """Upload skills from an excel file"""
+        if request.method == "GET":
+            return render_template(
+                "/skills/upload.html", user_type="admin", page="skills"
+            )
+        else:
+            file = request.files["file"]
+            if not file:
+                return jsonify({"error": "No file uploaded"}), 400
+            if not handlers.allowed_file(file.filename, ["xlsx"]):
+                return jsonify({"error": "Invalid file type"}), 400
+            return Skill().upload_skills(file)
+
+    @app.route("/skills/download_template", methods=["GET"])
+    @handlers.login_required
+    def download_skills_template():
+        """Download the skills template"""
+        return send_file(
+            "data_model_upload_template/skills_template.xlsx", as_attachment=True
+        )
+
+    @app.route("/skills/delete_all_attempted_skill", methods=["DELETE"])
+    @handlers.login_required
+    def delete_all_attempted_skills():
+        """Delete all attempted skills"""
+        return Skill().delete_all_attempted_skill()
+
+    @app.route("/skills/delete_all_skills", methods=["DELETE"])
+    @handlers.login_required
+    def delete_all_skills():
+        """Delete all skills"""
+        return Skill().delete_all_skills()

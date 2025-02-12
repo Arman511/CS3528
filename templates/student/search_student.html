@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
+    {% include "/student/navbar.html" %}
     <div class="card-wrapper card-dynamic-width">
         <!-- First Card: Search Form -->
         <div class="card search-card">
@@ -78,48 +79,60 @@
                                 <td>{{ student.last_name }}</td>
                                 <td>{{ student.email }}</td>
                                 <td>{{ student.student_id }}</td>
-                                <td>{{ student.course }}</td>
-                                <td data-skills="{% for skill in student.skills %}{{ skills_map[skill].skill_name }}, {% endfor %}">
-                                    <div class="collapsible-content">
-                                        {% for skill in student.skills[:2] %}
-                                            {# Show only first 2 #}
-                                            {{ skills_map[skill].skill_name }}
-                                            <br />
-                                        {% endfor %}
-                                        {% if student.skills|length > 2 %}
-                                            <div class="collapse" id="skills-{{ student.student_id }}">
-                                                {% for skill in student.skills[2:] %}
-                                                    {{ skills_map[skill].skill_name }}
-                                                    <br />
-                                                {% endfor %}
-                                            </div>
-                                            <a href="#"
-                                               class="toggle-btn text-primary small"
-                                               data-bs-toggle="collapse"
-                                               data-bs-target="#skills-{{ student.student_id }}">Show More</a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td data-modules="{% for module in student.modules %}{{ module }}, {% endfor %}">
-                                    <div class="collapsible-content">
-                                        {% for module in student.modules[:2] %}
-                                            {{ module }}
-                                            <br />
-                                        {% endfor %}
-                                        {% if student.modules|length > 2 %}
-                                            <div class="collapse" id="modules-{{ student.student_id }}">
-                                                {% for module in student.modules[2:] %}
-                                                    {{ module }}
-                                                    <br />
-                                                {% endfor %}
-                                            </div>
-                                            <a href="#"
-                                               class="toggle-btn text-primary small"
-                                               data-bs-toggle="collapse"
-                                               data-bs-target="#modules-{{ student.student_id }}">Show More</a>
-                                        {% endif %}
-                                    </div>
-                                </td>
+                                {% if "course" in student %}
+                                    <td>{{ student.course }}</td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if "skills" in student %}
+                                    <td data-skills="{% for skill in student.skills %}{{ skills_map[skill].skill_name }}, {% endfor %}">
+                                        <div class="collapsible-content">
+                                            {% for skill in student.skills[:2] %}
+                                                {# Show only first 2 #}
+                                                {{ skills_map[skill].skill_name }}
+                                                <br />
+                                            {% endfor %}
+                                            {% if student.skills|length > 2 %}
+                                                <div class="collapse" id="skills-{{ student.student_id }}">
+                                                    {% for skill in student.skills[2:] %}
+                                                        {{ skills_map[skill].skill_name }}
+                                                        <br />
+                                                    {% endfor %}
+                                                </div>
+                                                <a href="#"
+                                                   class="toggle-btn text-primary small"
+                                                   data-bs-toggle="collapse"
+                                                   data-bs-target="#skills-{{ student.student_id }}">Show More</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
+                                {% if "modules" in student %}
+                                    <td data-modules="{% for module in student.modules %}{{ module }}, {% endfor %}">
+                                        <div class="collapsible-content">
+                                            {% for module in student.modules[:2] %}
+                                                {{ module }}
+                                                <br />
+                                            {% endfor %}
+                                            {% if student.modules|length > 2 %}
+                                                <div class="collapse" id="modules-{{ student.student_id }}">
+                                                    {% for module in student.modules[2:] %}
+                                                        {{ module }}
+                                                        <br />
+                                                    {% endfor %}
+                                                </div>
+                                                <a href="#"
+                                                   class="toggle-btn text-primary small"
+                                                   data-bs-toggle="collapse"
+                                                   data-bs-target="#modules-{{ student.student_id }}">Show More</a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                {% else %}
+                                    <td></td>
+                                {% endif %}
                                 <td>
                                     <a href="{{ url_for('update_student', uuid=student._id) }}">
                                         <button class="btn btn-info btn-sm update-button mb-2"

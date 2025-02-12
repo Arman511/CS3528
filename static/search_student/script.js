@@ -6,16 +6,16 @@ document.addEventListener("DOMContentLoaded", () => {
 
     for (const row of studentTable.rows) {
         students.push({
-            first_name: row.cells[0].innerText.toLowerCase(),
-            last_name: row.cells[1].innerText.toLowerCase(),
-            email: row.cells[2].innerText.toLowerCase(),
-            student_id: row.cells[3].innerText,
-            course_id: row.cells[4].innerText,
-            skills: row.cells[5].dataset.skills
+            first_name: row.cells[0].innerText.toLowerCase() || "",
+            last_name: row.cells[1].innerText.toLowerCase() || "",
+            email: row.cells[2].innerText.toLowerCase() || "",
+            student_id: row.cells[3].innerText || "",
+            course_id: row.cells[4].innerText || "",
+            skills: (row.cells[5].dataset.skills || "")
                 .toLowerCase()
                 .split(", ")
                 .filter(Boolean),
-            modules: row.cells[6].dataset.modules
+            modules: (row.cells[6].dataset.modules || "")
                 .toLowerCase()
                 .split(", ")
                 .filter(Boolean),

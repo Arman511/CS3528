@@ -1,7 +1,7 @@
 """Handles the routes for the course module."""
 
 import uuid
-from flask import render_template, request
+from flask import render_template, request, send_file
 from core import handlers
 from .models import Course
 
@@ -13,7 +13,9 @@ def add_course_routes(app):
     @handlers.login_required
     def add_course():
         if request.method == "GET":
-            return render_template("/courses/adding_course.html", user_type="admin")
+            return render_template(
+                "/courses/adding_course.html", user_type="admin", page="courses"
+            )
 
         course = {
             "_id": uuid.uuid1().hex,
@@ -23,7 +25,7 @@ def add_course_routes(app):
         }
         return Course().add_course(course)
 
-    @app.route("/courses/delete_course", methods=["POST"])
+    @app.route("/courses/delete", methods=["DELETE"])
     @handlers.login_required
     def delete_course():
         uuid = request.args.get("uuid")
@@ -35,7 +37,7 @@ def add_course_routes(app):
         courses = Course().get_courses()
 
         return render_template(
-            "/courses/search.html", courses=courses, user_type="admin"
+            "/courses/search.html", courses=courses, user_type="admin", page="courses"
         )
 
     @app.route("/courses/update", methods=["GET", "POST"])
@@ -45,7 +47,7 @@ def add_course_routes(app):
         if request.method == "GET":
             course = Course().get_course_by_uuid(id_val)
             return render_template(
-                "/courses/update_course.html", course=course, user_type="admin"
+                "/courses/update.html", course=course, user_type="admin", page="courses"
             )
 
         course = {
@@ -54,3 +56,37 @@ def add_course_routes(app):
             "course_description": request.form.get("course_description"),
         }
         return Course().update_course(id_val, course)
+
+    @app.route("/courses/upload", methods=["GET", "POST"])
+    @handlers.login_required
+    def upload_courses():
+        if request.method == "GET":
+            return render_template(
+                "courses/upload.html", user_type="admin", page="courses"
+            )
+
+        file = request.files["file"]
+        if not file:
+            return {"error": "No file provided"}, 400
+        if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
+            return {"error": "Invalid file type"}, 400
+
+        return Course().upload_course_data(file)
+
+    @app.route("/courses/download_template", methods=["GET"])
+    @handlers.login_required
+    def download_courses_template():
+        return send_file(
+            "data_model_upload_template/courses_template.xlsx",
+            as_attachment=True,
+        )
+
+    @app.route("/courses/delete_all", methods=["DELETE"])
+    @handlers.login_required
+    def delete_all_courses():
+        return Course().delete_all_courses()
+
+    @app.route("/courses/download_all", methods=["GET"])
+    @handlers.login_required
+    def download_all_courses():
+        return Course().download_all_courses()

@@ -3,7 +3,8 @@ Skills model.
 """
 
 import uuid
-from flask import jsonify
+from flask import jsonify, send_file
+import pandas as pd
 
 
 class Skill:
@@ -104,6 +105,7 @@ class Skill:
         new_skill = {
             "_id": uuid.uuid1().hex,
             "skill_name": skill_name,
+            "skill_description": "",
             "used": 1,
         }
 
@@ -222,3 +224,119 @@ class Skill:
         DATABASE_MANAGER.update_one_by_id("skills", skill_id, updated_skill)
 
         return jsonify({"message": "Updated"}), 200
+
+    def download_all(self):
+        """Returns a xlsx file with all skills"""
+        from app import DATABASE_MANAGER
+
+        skills = DATABASE_MANAGER.get_all("skills")
+        clean_data = []
+
+        for skill in skills:
+            temp = {}
+            temp["Skill_Name"] = skill.pop("skill_name")
+            temp["Skill_Description"] = skill.pop("skill_description")
+            clean_data.append(temp)
+
+        df = pd.DataFrame(clean_data)
+
+        tmpFile = "/tmp/skills.xlsx"
+
+        df.to_excel(tmpFile, index=False)
+
+        return send_file(tmpFile, as_attachment=True, download_name="skills.xlsx")
+
+    def download_attempted(self):
+        """Returns a xlsx file with all attempted skills"""
+        from app import DATABASE_MANAGER
+
+        skills = DATABASE_MANAGER.get_all("attempted_skills")
+        clean_data = []
+        for skill in skills:
+            temp = {}
+            temp["Skill_Name"] = skill.pop("skill_name")
+            if "skill_description" in skill:
+                temp["Skill_Description"] = skill.pop("skill_description")
+            else:
+                temp["Skill_Description"] = ""
+            temp["Used"] = skill.pop("used")
+            clean_data.append(temp)
+
+        df = pd.DataFrame(clean_data)
+
+        tmpFile = "/tmp/attempted_skills.xlsx"
+
+        df.to_excel(tmpFile, index=False)
+
+        return send_file(
+            tmpFile, as_attachment=True, download_name="attempted_skills.xlsx"
+        )
+
+    def upload_skills(self, file):
+        """Upload skills"""
+
+        try:
+            df = pd.read_excel(file)
+        except Exception:
+            return jsonify({"error": "Invalid file"}), 400
+
+        skills = df.to_dict(orient="records")
+
+        from app import DATABASE_MANAGER
+
+        current_skills = set(
+            skill["skill_name"].lower() for skill in DATABASE_MANAGER.get_all("skills")
+        )
+        skill_names = set()
+        clean_data = []
+        try:
+            for skill in skills:
+                temp = {
+                    "_id": uuid.uuid4().hex,
+                    "skill_name": skill["Skill_Name"],
+                    "skill_description": skill["Skill_Description"],
+                }
+
+                if temp["skill_name"].lower() in current_skills:
+                    continue
+                elif temp["skill_name"].lower() in skill_names:
+                    continue
+                skill_names.add(temp["skill_name"].lower())
+
+                clean_data.append(temp)
+        except Exception:
+            return jsonify({"error": "Invalid file"}), 400
+
+        DATABASE_MANAGER.insert_many("skills", clean_data)
+
+        return jsonify({"message": "Uploaded"}), 200
+
+    def delete_all_skills(self):
+        """Delete all skills"""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("skills")
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            if "skills" in student:
+                student["skills"] = []
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        return jsonify({"message": "Deleted"}), 200
+
+    def delete_all_attempted_skill(self):
+        """Delete all attempted skills"""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("attempted_skills")
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            if "attempted_skills" in student:
+                student["attempted_skills"] = []
+                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        return jsonify({"message": "Deleted"}), 200
