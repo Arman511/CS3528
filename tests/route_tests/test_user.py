@@ -875,16 +875,102 @@ def test_register_student(user_logged_in_client, database):
     student = {
         "student_id": "123",
         "first_name": "dummy",
+        "last_name": "dummy",
         "email": "dummy@dummy.com",
+        "course": "Computer Science",
+        "modules": [],
+        "comments": "",
     }
 
     response = user_logged_in_client.post(
-        url, data=student, content_type="application/x-www-form-urlencoded"
+        url, json=student, content_type="application/json"
     )
 
     assert response.status_code == 200
     
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up
     
+
+
+def test_update_student_post_no_uuid(user_logged_in_client, database):
+    """Test POST request to update student route."""
+    url = "/students/update_student"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    student = {
+        "_id": "123",
+        "student_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "course": "dummy",
+        "skills": ["dummy"],
+        "comments": "dummy",
+        "attempted_skills": ["dummy"],
+        "has_car": "dummy",
+        "placement_duration": "dummy",
+        "modules": ["dummy"],
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=student,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 404
+    assert response.json == {"error": "Invalid request"}
+    
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up
+
+
+def test_update_student_post_with_uuid(user_logged_in_client, database):
+    """Test POST request to update student route."""
+    url = "/students/update_student?uuid=123"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    student = {
+        "_id": "123",
+        "student_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "course": "dummy",
+        "skills": ["dummy"],
+        "comments": "dummy",
+        "attempted_skills": ["dummy"],
+        "has_car": "dummy",
+        "placement_duration": ["1_day"],
+        "modules": ["dummy"],
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=student,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    assert response.json == {"message": "Student updated"}
+    found_student = database.get_one_by_id("students", "123")
+    assert found_student is not None
+    assert found_student["first_name"] == "dummy"
+    database.delete_all_by_field("students", "student_id", "123") 
+
+
+def test_update_student_get_method(user_logged_in_client, database):
+    """Test GET request to update student route."""
+    url = "/students/update_student"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    response = user_logged_in_client.get(url, query_string={"uuid": "123"})
+
+    assert response.status_code == 200
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up
+
 
 
     

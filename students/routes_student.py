@@ -186,6 +186,8 @@ def add_student_routes(app):
         if request.method == "POST":
             student = {}
             uuid = request.args.get("uuid")
+            if not uuid or uuid == "":
+                return jsonify({"error": "Invalid request"}), 404
             student["student_id"] = request.form.get("student_id")
             student["first_name"] = request.form.get("first_name")
             student["last_name"] = request.form.get("last_name")
