@@ -75,7 +75,7 @@ def add_student_routes(app):
             password = request.form.get("password")
             return Student().student_login(student_id, password)
 
-        if "student" in session and "student_signed_in" in session:
+        if "student" in session and "student_logged_in" in session:
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
             )
