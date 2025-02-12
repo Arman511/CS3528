@@ -3,6 +3,7 @@ User model.
 """
 
 from email.mime.text import MIMEText
+import os
 from flask import jsonify, session
 from passlib.hash import pbkdf2_sha256
 from core import email_handler
@@ -33,6 +34,8 @@ class User:
         elif "name" not in user:
             return jsonify({"error": "Missing name"}), 400
         elif DATABASE_MANAGER.get_by_email("users", user["email"]):
+            return jsonify({"error": "Email address already in use"}), 400
+        elif user["email"] == os.getenv("SUPERUSER_EMAIL"):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
@@ -147,6 +150,8 @@ class User:
             return jsonify({"error": "Email address already in use"}), 400
         if not original:
             return jsonify({"error": "User not found"}), 404
+        if email == os.getenv("SUPERUSER_EMAIL"):
+            return jsonify({"error": "Email address already in use"}), 400
 
         update_data = {"name": name, "email": email}
         DATABASE_MANAGER.update_one_by_id("users", user_uuid, update_data)
