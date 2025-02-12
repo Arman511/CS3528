@@ -284,7 +284,7 @@ class Skill:
         skill_names = set()
         clean_data = []
         try:
-            for i, skill in enumerate(skills):
+            for skill in skills:
                 temp = {
                     "_id": uuid.uuid4().hex,
                     "skill_name": skill["Skill_Name"],
