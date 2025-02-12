@@ -230,13 +230,15 @@ class Skill:
         from app import DATABASE_MANAGER
 
         skills = DATABASE_MANAGER.get_all("skills")
+        clean_data = []
 
         for skill in skills:
-            skill["Skill_Name"] = skill.pop("skill_name")
-            skill["Skill_Description"] = skill.pop("skill_description")
-            del skill["_id"]
+            temp = {}
+            temp["Skill_Name"] = skill.pop("skill_name")
+            temp["Skill_Description"] = skill.pop("skill_description")
+            clean_data.append(temp)
 
-        df = pd.DataFrame(skills)
+        df = pd.DataFrame(clean_data)
 
         tmpFile = "/tmp/skills.xlsx"
 
@@ -249,14 +251,18 @@ class Skill:
         from app import DATABASE_MANAGER
 
         skills = DATABASE_MANAGER.get_all("attempted_skills")
-
+        clean_data = []
         for skill in skills:
-            skill["Skill_Name"] = skill.pop("skill_name")
-            skill["Skill_Description"] = skill.pop("skill_description")
-            skill["Used"] = skill.pop("used")
-            del skill["_id"]
+            temp = {}
+            temp["Skill_Name"] = skill.pop("skill_name")
+            if "skill_description" in skill:
+                temp["Skill_Description"] = skill.pop("skill_description")
+            else:
+                temp["Skill_Description"] = ""
+            temp["Used"] = skill.pop("used")
+            clean_data.append(temp)
 
-        df = pd.DataFrame(skills)
+        df = pd.DataFrame(clean_data)
 
         tmpFile = "/tmp/attempted_skills.xlsx"
 
