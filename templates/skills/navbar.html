@@ -1,0 +1,67 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+        <button class="navbar-toggler mx-auto"
+                type="button"
+                data-bs-toggle="collapse"
+                data-bs-target="#navbarNavSkills"
+                aria-controls="navbarNavSkills"
+                aria-expanded="false"
+                aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center text-center w-100"
+             id="navbarNavSkills">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("list_skills") }}">Search</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("search_attempt_skills") }}">Search Attempted</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("upload_skills") }}">Upload Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("add_skills") }}">Add Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger font-weight-bold"
+                       href="#"
+                       id="delete-all-skills">Delete All Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-danger font-weight-bold"
+                       href="#"
+                       id="delete-all-attempted-skills">Delete All Attempted Skills</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<script>
+    document.getElementById("delete-all-courses").addEventListener("click", async () => {
+        if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
+            if (confirm("This is your final warning. Do you really want to delete all courses?")) {
+            try {
+                const response = await fetch("/courses/delete_all", {
+                method: "DELETE",
+                });
+
+                if (response.ok) {
+                alert("All courses have been deleted successfully.");
+                window.location.reload();
+                } else {
+                const errorData = await response.json();
+                alert(errorData.error || "Failed to delete courses.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete courses.");
+            }
+            }
+        }
+        });
+</script>
