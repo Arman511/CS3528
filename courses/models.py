@@ -2,7 +2,11 @@
 Courses model."""
 
 from datetime import datetime, timedelta
-from flask import jsonify
+from flask import jsonify, send_file
+import pandas as pd
+import uuid
+
+from tqdm import tqdm
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -54,7 +58,9 @@ class Course:
         if students and len(students) > 0:
             return jsonify({"error": "Course has students enrolled"}), 400
 
-        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        opportunities = DATABASE_MANAGER.get_all_by_in_list(
+            "opportunities", "courses_required", [course["course_id"]]
+        )
 
         for opportunity in opportunities:
             if (
@@ -156,3 +162,101 @@ class Course:
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
         self.reset_cache()
         return jsonify({"message": "Course was updated"}), 200
+
+    def delete_all_courses(self):
+        """Deletes all courses from the database."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+        for student in students:
+            if "modules" in student:
+                return jsonify({"error": "Students have modules assigned"}), 400
+
+        DATABASE_MANAGER.delete_all("courses")
+        courses_cache["data"] = []
+        courses_cache["last_updated"] = datetime.now()
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        DATABASE_MANAGER.delete_all("opportunities")
+        updated_opportunities = []
+        for opportunity in opportunities:
+            if "courses_required" in opportunity:
+                opportunity["courses_required"] = []
+            updated_opportunities.append(opportunity)
+
+        DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
+
+        return jsonify({"message": "Deleted"}), 200
+
+    def download_all_courses(self):
+        """Download all courses"""
+        from app import DATABASE_MANAGER
+
+        courses = DATABASE_MANAGER.get_all("courses")
+
+        for course in courses:
+            course_data = course.pop("course_name").rsplit(", ", 1)
+            course["Course_name"] = course_data[0]
+            course["Qualification"] = course_data[1]
+            course["UCAS_code"] = course.pop("course_id")
+            course["Course_description"] = course.pop("course_description")
+
+            del course["_id"]
+        # Create a DataFrame from the courses
+        df = pd.DataFrame(courses)
+
+        # Define the file path
+        file_path = "/tmp/courses.xlsx"
+        # Save the DataFrame to an Excel file
+        df.to_excel(
+            file_path,
+            index=False,
+            columns=["UCAS_code", "Course_name", "Qualification", "Course_description"],
+        )
+
+        # Send the file as an attachment
+        return send_file(file_path, download_name="courses.xlsx", as_attachment=True)
+
+    def upload_course_data(self, file):
+        """Add courses from an Excel file."""
+        from app import DATABASE_MANAGER
+
+        # Read the Excel file
+        df = pd.read_excel(file)
+
+        # Convert the DataFrame to a list of dictionaries
+        courses = df.to_dict(orient="records")
+
+        clean_data = []
+        current_ids = set(
+            course["course_id"] for course in DATABASE_MANAGER.get_all("courses")
+        )
+        ids = set()
+
+        for i, course in tqdm(enumerate(courses), desc="Uploading courses"):
+            temp = {
+                "_id": uuid.uuid4().hex,
+                "course_id": course.get("UCAS_code", ""),
+                "course_name": f"{course.get('Course_name', '')}, {course.get('Qualification', '')}",
+                "course_description": course.get("Course_description", ""),
+            }
+            if not temp["course_id"] or not temp["course_name"]:
+                return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
+            elif temp["course_id"] in ids:
+                return (
+                    jsonify({"error": "Duplicate course ID in row " + str(i + 1)}),
+                    400,
+                )
+            elif temp["course_id"] in current_ids:
+                return jsonify({"error": "Course ID already exists"}), 400
+            clean_data.append(temp)
+            ids.add(temp["course_id"])
+
+        DATABASE_MANAGER.insert_many("courses", clean_data)
+
+        # Update cache
+        courses = DATABASE_MANAGER.get_all("courses")
+        courses_cache["data"] = courses
+        courses_cache["last_updated"] = datetime.now()
+
+        return jsonify({"message": "Uploaded"}), 200

@@ -1,75 +1,63 @@
-let attemptedSkills = [];
 document.addEventListener("DOMContentLoaded", () => {
-    let updateForm = document.querySelector(".update_form");
-    let errorElement = document.querySelector(".error");
-    let successElement = document.querySelector(".success");
-    let uuid = document.getElementById("uuid").value;
+    let attemptedSkills = [];
+    const updateForm = document.getElementById("updateForm");
+    const errorElement = document.querySelector(".error");
+    const successElement = document.querySelector(".success");
     updateForm.addEventListener("submit", async (event) => {
         event.preventDefault();
-        let student_id = document.getElementById("student_id").value;
-        let student_email = document.getElementById("email").value;
-        let selectedCourse = document.getElementById("course").value;
-        if (selectedCourse === "None") {
-            errorElement.textContent = "Please select a course";
-            errorElement.classList.remove("error--hidden");
-            successElement.classList.add("success--hidden");
-            return;
-        }
-        let selectedSkills = [];
-        let selectAttemptedSkills = [];
-        let skillsSelect = document.getElementById("skills");
-        for (let i = 0; i < skillsSelect.options.length; i++) {
-            if (skillsSelect.options[i].selected) {
-                if (skillsSelect.options[i].text.includes("(Attempted)")) {
-                    selectAttemptedSkills.push(skillsSelect.options[i].value);
-                } else if (
-                    attemptedSkills.includes(skillsSelect.options[i].value)
-                ) {
-                    selectAttemptedSkills.push(skillsSelect.options[i].value);
+
+        const student_id = document.getElementById("student_id").value;
+        const student_email = document.getElementById("email").value;
+        const selectedCourse = document.getElementById("course").value;
+        const skillsSelect = document.getElementById("skills");
+        const selectedSkills = [];
+        const selecteAttemptedSkills = [];
+
+        Array.from(skillsSelect.options).forEach(option => {
+            if (option.selected) {
+                if (option.text.includes("(Attempted)")) {
+                    selecteAttemptedSkills.push(option.value);
+                } else if (attemptedSkills.includes(option.value)) {
+                    selecteAttemptedSkills.push(option.value);
                 } else {
-                    selectedSkills.push(skillsSelect.options[i].value);
+                    selectedSkills.push(option.value);
                 }
             }
-        }
-        let selectedPlacementDuration = [];
-        let placementDurationSelect =
-            document.getElementById("placement_duration");
+        });
 
-        for (let i = 0; i < placementDurationSelect.options.length; i++) {
-            selectedPlacementDuration.push(
-                placementDurationSelect.options[i].value
-            );
-        }
-        let hasCar = document.getElementById("has_car").checked;
-        let selectedModules = [];
-        let modulesSelect = document.getElementById("modules");
-        for (let i = 0; i < modulesSelect.options.length; i++) {
-            if (modulesSelect.options[i].selected) {
-                selectedModules.push(modulesSelect.options[i].value);
-            }
-        }
-        let comments = document.getElementById("comments").value;
-        let formData = new FormData();
+        const selectedPlacementDuration = Array.from(document.getElementById("placement_duration").selectedOptions).map(option => option.value);
+        const hasCar = document.getElementById("has_car").checked;
+        const selectedModules = Array.from(document.getElementById('modules').selectedOptions).map(option => option.value);
+
+
+        const comments = document.getElementById("comments").value;
+        const formData = new FormData();
         formData.append("student_id", student_id);
+        formData.append("first_name", first_name);
+        formData.append("last_name", last_name);
         formData.append("email", student_email);
         formData.append("course", selectedCourse);
-        formData.append("skills", JSON.stringify(selectedSkills));
+        formData.append("skills", selectedSkills);
         formData.append(
             "placement_duration",
-            JSON.stringify(selectedPlacementDuration)
+            selectedPlacementDuration
         );
         formData.append("has_car", hasCar);
-        formData.append("modules", JSON.stringify(selectedModules));
+        formData.append("modules", selectedModules);
         formData.append(
             "attempted_skills",
-            JSON.stringify(selectAttemptedSkills)
+            selecteAttemptedSkills
         );
         formData.append("comments", comments);
+
         try {
-            const response = await fetch(`/students/details?uuid=${uuid}`, {
-                method: "POST",
-                body: formData,
-            });
+            const response = await fetch(
+                `/students/details/${student_id}`,
+                {
+                    method: "POST",
+                    body: formData,
+                }
+            );
 
             if (response.ok) {
                 window.location.href = "/students/update_success";
@@ -80,12 +68,12 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         } catch (error) {
             console.error("Error:", error);
-            const errorElement = document.querySelector(".error");
             errorElement.textContent = "Error updating student";
             errorElement.classList.remove("error--hidden");
             successElement.classList.add("success--hidden");
         }
     });
+
 
     document
         .getElementById("add_skill")

@@ -2,7 +2,16 @@
 
 import os
 import uuid
-from flask import flash, jsonify, redirect, request, render_template, session, url_for
+from flask import (
+    flash,
+    jsonify,
+    redirect,
+    request,
+    render_template,
+    send_file,
+    session,
+    url_for,
+)
 from itsdangerous import URLSafeSerializer
 from core import handlers
 from course_modules.models import Module
@@ -53,14 +62,19 @@ def add_employer_routes(app):
                 "email": request.form.get("email"),
             }
             return Employers().register_employer(employer)
-        return render_template("employers/add_employer.html", user_type="admin")
+        return render_template(
+            "employers/add_employer.html", user_type="admin", page="employers"
+        )
 
-    @app.route("/employers/search_employers", methods=["GET"])
+    @app.route("/employers/search", methods=["GET"])
     @handlers.login_required
     def search_employers():
         employers = Employers().get_employers()
         return render_template(
-            "employers/search_employers.html", user_type="admin", employers=employers
+            "employers/search_employers.html",
+            user_type="admin",
+            employers=employers,
+            page="employers",
         )
 
     @app.route("/employers/update_employer", methods=["GET", "POST"])
@@ -84,7 +98,10 @@ def add_employer_routes(app):
             return redirect(url_for("search_employers"))
 
         return render_template(
-            "employers/update_employer.html", user_type="admin", employer=employer
+            "employers/update_employer.html",
+            user_type="admin",
+            employer=employer,
+            page="employers",
         )
 
     @app.route("/employers/delete_employer", methods=["POST"])
@@ -147,3 +164,40 @@ def add_employer_routes(app):
             get_skill_name=Skill().get_skill_name_by_id,
             user_type="employer",
         )
+
+    @app.route("/employers/upload", methods=["GET", "POST"])
+    @handlers.login_required
+    def upload_employers():
+        """Route for uploading employers"""
+        if request.method == "POST":
+            file = request.files["file"]
+            if not file:
+                return jsonify({"error": "No file provided"}), 400
+            if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
+                return jsonify({"error": "Invalid file type"}), 400
+
+            return Employers().upload_employers(file)
+
+        return render_template(
+            "employers/upload.html", user_type="admin", page="employers"
+        )
+
+    @app.route("/employers/delete_all", methods=["DELETE"])
+    @handlers.login_required
+    def delete_all_employers():
+        """Route to delete all employers"""
+        return Employers().delete_all_employers()
+
+    @app.route("/employers/download_template", methods=["GET"])
+    @handlers.login_required
+    def download_employers_template():
+        """Route to download employers template"""
+        return send_file(
+            "data_model_upload_template/employers_template.xlsx", as_attachment=True
+        )
+
+    @app.route("/employers/download_all", methods=["GET"])
+    @handlers.login_required
+    def download_all_employers():
+        """Route to download all employers"""
+        return Employers().download_all_employers()

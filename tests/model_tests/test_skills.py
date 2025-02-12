@@ -38,9 +38,16 @@ def database():
     DATABASE = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-
+    skills = DATABASE.get_all("skills")
+    attempted_skills = DATABASE.get_all("attempted_skills")
+    DATABASE.delete_all("skills")
+    DATABASE.delete_all("attempted_skills")
     yield DATABASE
 
+    for skill in skills:
+        DATABASE.insert("skills", skill)
+    for skill in attempted_skills:
+        DATABASE.insert("attempted_skills", skill)
     DATABASE.delete_all_by_field("users", "email", "dummy@dummy.com")
     DATABASE.delete_all_by_field("courses", "course_id", "CS101")
     # Cleanup code

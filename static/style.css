@@ -287,3 +287,11 @@ footer a:hover {
         padding: 12px;
     }
 }
+
+.active {
+    background-color: #4e8e8e;
+    color: #fff;
+    font-weight: bold;
+    border: 2px solid #22699a;
+    box-shadow: 0 0 10px rgba(78, 142, 142, 0.5);
+}

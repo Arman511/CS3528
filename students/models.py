@@ -4,7 +4,7 @@ This module defines the User class which handles user authentication and session
 
 from email.mime.text import MIMEText
 import uuid
-from flask import jsonify, session
+from flask import jsonify, send_file, session
 import pandas as pd
 from opportunities.models import Opportunity
 from core.email_handler import send_email
@@ -282,3 +282,79 @@ class Student:
                         valid_opportunities.append(opportunity)
 
         return valid_opportunities
+
+    def download_students(self):
+        """Download all students as a XLSX file."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        clean_data = []
+
+        skills_map = {
+            skill["_id"]: skill["skill_name"]
+            for skill in DATABASE_MANAGER.get_all("skills")
+        }
+
+        for student in students:
+            student_data = {
+                "First Name": student["first_name"],
+                "Last Name": student["last_name"],
+                "Email (Uni)": student["email"],
+                "Student Number": student["student_id"],
+            }
+            if "course" in student:
+                student_data["Course"] = student["course"]
+            else:
+                student_data["Course"] = ""
+
+            if "modules" in student:
+                student_data["Modules"] = ",".join(student["modules"])
+            else:
+                student_data["Modules"] = ""
+
+            if "skills" in student:
+                student_data["Skills"] = ",".join(
+                    [skills_map[skill] for skill in student["skills"]]
+                )
+            else:
+                student_data["Skills"] = ""
+
+            if "comments" in student:
+                student_data["Comments"] = student["comments"]
+            else:
+                student_data["Comments"] = ""
+
+            if "placement_duration" in student:
+                student_data["Placement Duration"] = ",".join(
+                    student["placement_duration"]
+                )
+            else:
+                student_data["Placement Duration"] = ""
+
+            clean_data.append(student_data)
+
+        df = pd.DataFrame(clean_data)
+
+        tmpFile = "/tmp/students.xlsx"
+
+        df.to_excel(tmpFile, index=False)
+
+        return send_file(tmpFile, as_attachment=True, download_name="students.xlsx")
+
+    def delete_all_students(self):
+        """Delete all students."""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("students")
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+
+        for opportunity in opportunities:
+            if "preferences" in opportunity:
+                opportunity["preferences"] = []
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
+        return jsonify({"message": "All students deleted"}), 200

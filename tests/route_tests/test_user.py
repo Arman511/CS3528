@@ -161,7 +161,7 @@ def test_add_course_page(user_logged_in_client):
 
 def test_search_employer_page(user_logged_in_client):
     """Test search employer page."""
-    url = "/employers/search_employers"
+    url = "/employers/search"
 
     response = user_logged_in_client.get(url)
     assert response.status_code == 200

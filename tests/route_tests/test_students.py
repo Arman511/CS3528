@@ -54,6 +54,9 @@ def database():
     skills = DATABASE.get_all("skills")
     DATABASE.delete_all("skills")
 
+    attempted_skills = DATABASE.get_all("attempted_skills")
+    DATABASE.delete_all("attempted_skills")
+
     employers = DATABASE.get_all("employers")
     DATABASE.delete_all("employers")
 
@@ -81,6 +84,10 @@ def database():
     DATABASE.delete_all("skills")
     for skill in skills:
         DATABASE.insert("skills", skill)
+
+    DATABASE.delete_all("attempted_skills")
+    for attempted_skill in attempted_skills:
+        DATABASE.insert("attempted_skills", attempted_skill)
 
     DATABASE.delete_all("employers")
     for employer in employers:

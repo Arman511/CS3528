@@ -107,6 +107,7 @@ def test_add_course_post(user_logged_in_client, database):
 
 def test_delete_course(user_logged_in_client, database):
     """Test POST request to delete course route."""
+    database.delete_all_by_field("courses", "course_id", "CS101")
     course = {
         "_id": uuid.uuid4().hex,
         "course_id": "CS101",
@@ -114,8 +115,8 @@ def test_delete_course(user_logged_in_client, database):
         "course_description": "Basic concepts of computer science.",
     }
     database.insert("courses", course)
-    url = f"/courses/delete_course?uuid={course['_id']}"
-    response = user_logged_in_client.post(url)
+    url = f"/courses/delete?uuid={course['_id']}"
+    response = user_logged_in_client.delete(url)
     assert response.status_code == 200
     deleted_course = database.get_one_by_id("courses", course["_id"])
     assert deleted_course is None

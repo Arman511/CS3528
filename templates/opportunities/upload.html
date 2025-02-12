@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if user_type == "employer" %}
+        {% include "employers/navbar.html" %}
+    {% elif user_type == "admin" %}
+        {% include "user/navbar.html" %}
+        {% include "opportunities/navbar.html" %}
+    {% endif %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Upload</h1>
+            <form name="upload_xls_form"
+                  class="upload_form"
+                  enctype="multipart/form-data">
+                <label for="file">XLSX</label>
+                <input type="file" name="file" class="field" required accept=".xlsx" />
+                <p class="error error--hidden"></p>
+                <input type="submit" value="Upload" class="btn mb-2" />
+            </form>
+            <a href="{{ url_for("download_opportunities_template") }}" class="btn">Download Template</a>
+            <script src="/static/upload_opportunities/script.js"></script>
+        </div>
+    </div>
+{% endblock content %}

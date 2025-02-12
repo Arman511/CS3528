@@ -21,6 +21,7 @@ CONFIG_MANAGER = None
 
 load_dotenv()
 
+
 DATABASE = "cs3528_testing"
 
 if os.getenv("IS_TEST") == "True":

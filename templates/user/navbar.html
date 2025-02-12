@@ -11,49 +11,31 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("upload_page") }}">Upload Student XLSX</a>
+            <li class="nav-item {{ 'active' if page == 'students' }}">
+                <a class="nav-link" href="{{ url_for("search_page") }}">Students</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_page") }}">Search Student</a>
+            <li class="nav-item {{ 'active' if page == 'opportunities' }}">
+                <a class="nav-link" href="{{ url_for("search_opportunities") }}">Opportunities</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_opportunities") }}">Search Opportunities</a>
+            <li class="nav-item {{ 'active' if page == 'employers' }}">
+                <a class="nav-link" href="{{ url_for("search_employers") }}">Employers</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_employers") }}">Search Employers</a>
+            <li class="nav-item {{ 'active' if page == 'courses' }}">
+                <a class="nav-link" href="{{ url_for("search_course") }}">Courses</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_course") }}">Search Courses</a>
+            <li class="nav-item {{ 'active' if page == 'modules' }}">
+                <a class="nav-link" href="{{ url_for("search_modules") }}">Course Modules</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_modules") }}">Search Modules</a>
+            <li class="nav-item {{ 'active' if page == 'skills' }}">
+                <a class="nav-link" href="{{ url_for("list_skills") }}">Skills</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("list_skills") }}">Search Skills</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("add_skill") }}">Add Skill</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("search_attempt_skills") }}">Search Attempt Skills</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("add_course") }}">Add Course</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("add_course_module") }}">Add Module</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ url_for("add_employer") }}">Add Employer</a>
-            </li>
-            <li class="nav-item">
+            <li class="nav-item {{ 'active' if page == 'problems' }}">
                 <a class="nav-link" href="{{ url_for("problems") }}">Problems</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ 'active' if page == 'matching' }}">
                 <a class="nav-link" href="{{ url_for("matching") }}">Matching</a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ 'active' if page == 'deadline' }}">
                 <a class="nav-link" href="{{ url_for("deadline") }}">Change Deadline</a>
             </li>
         </ul>
