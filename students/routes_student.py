@@ -102,7 +102,7 @@ def add_student_routes(app):
             password = request.form.get("password")
             return Student().student_login(student_id, password)
 
-        if "student" in session and "student_signed_in" in session:
+        if "student" in session and "student_logged_in" in session:
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
             )
@@ -149,8 +149,8 @@ def add_student_routes(app):
             student["placement_duration"] = request.form.get(
                 "placement_duration"
             ).split(",")
-            if student["placement_duration"] == [""]:
-                student["placement_duration"] = []
+            if student["placement_duration"] == [""] or student["placement_duration"] == []:
+                return jsonify({"error": "Please select a placement duration"}), 400
             valid_durations = set(
                 ["1_day", "1_week", "1_month", "3_months", "6_months", "12_months"]
             )
