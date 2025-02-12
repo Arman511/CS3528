@@ -165,7 +165,7 @@ def add_skills_routes(app):
 
     @app.route("/skills/delete_all_attempted_skill", methods=["DELETE"])
     @handlers.login_required
-    def delete_all_attempted_skill():
+    def delete_all_attempted_skills():
         """Delete all attempted skills"""
         return Skill().delete_all_attempted_skill()
 
