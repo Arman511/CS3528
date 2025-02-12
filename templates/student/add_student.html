@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "/user/navbar.html" %}
+    {% include "/student/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h2 class="center">Add Student</h2>
+            <form id="addForm">
+                <div class="form-group">
+                    <label for="student_id">Student Number*:</label>
+                    <input name="student_id"
+                           id="student_id"
+                           class="form-control"
+                           type="text"
+                           required />
+                </div>
+                <div class="form-group">
+                    <label for="first_name">First Name*:</label>
+                    <input type="text"
+                           id="first_name"
+                           name="first_name"
+                           class="form-control"
+                           required />
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Last Name*:</label>
+                    <input type="text"
+                           id="last_name"
+                           name="last_name"
+                           class="form-control"
+                           required />
+                </div>
+                <div class="form-group">
+                    <label for="email">Email*:</label>
+                    <input type="email" id="email" name="email" class="form-control" required />
+                </div>
+                <div class="form-group">
+                    <label for="course">Course*:</label>
+                    <select id="course" name="course" class="form-control" required>
+                        <option value="" selected disabled>Select Course</option>
+                        {% for course in courses %}
+                            <option value="{{ course.course_id }}">{{ course.course_id + ": " + course.course_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="modules">Modules:</label>
+                    <select id="modules" name="modules" class="form-control" multiple>
+                        <option value="" selected disabled>Select Modules</option>
+                        {% for module in modules %}
+                            <option value="{{ module.module_id }}">{{ module.module_id + ": " + module.module_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="comments">Any Other Comments:</label>
+                    <textarea id="comments" name="comments" class="form-control" rows="4"></textarea>
+                </div>
+                <p class="error error--hidden"></p>
+                <p class="success success--hidden"></p>
+                <input type="submit" value="Update" class="btn" />
+            </form>
+            <script>
+                $(document).ready(function () {
+                    $('#modules').selectize({
+                        plugins: ["remove_button"],
+                        sortField: 'text',
+                        dropdownParent: 'body'
+                    });
+                    $('#course').selectize({
+                        plugins: ["remove_button"],
+                        sortField: 'text',
+                        dropdownParent: 'body'
+                    });
+                });
+            </script>
+            <script src="/static/adding_student/script.js"></script>
+        </div>
+    </div>
+{% endblock content %}

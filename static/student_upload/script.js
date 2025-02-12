@@ -12,6 +12,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (response.ok) {
             const data = await response.json();
             alert(data.message);
+            window.location.href = "/students/search";
         } else {
             console.log("Error");
             alert("Error: " + response.json().error);
