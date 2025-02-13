@@ -2,12 +2,10 @@
 This module defines the User class which handles user authentication and session management.
 """
 
-from email.mime.text import MIMEText
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
 from opportunities.models import Opportunity
-from core.email_handler import send_email
 
 
 class Student:
@@ -200,30 +198,10 @@ class Student:
                 data.append(temp_student)
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)
-                self.send_student_password_email(
-                    temp_student["first_name"],
-                    temp_student["email"],
-                    temp_student["_id"],
-                )
 
             return jsonify({"message": f"{len(students)} students imported"}), 200
         except Exception as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
-
-    def send_student_password_email(self, name, email, password):
-        """Send email to student with their password."""
-
-        body = (
-            f"<p>Dear {name},</p>"
-            f"<p>Your login password is: <strong>{password}</strong>.</p>"
-            "<p>Please keep this information secure and do not share it with anyone.</p>"
-            "<p>Best,<br>Skillpoint</p>"
-        )
-
-        msg = MIMEText(body, "html")
-        msg["Subject"] = "Your Account Password"
-        msg["To"] = email
-        send_email(msg, [email])
 
     def student_login(self, student_id, password):
         """Handle student login."""

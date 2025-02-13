@@ -1,55 +1,81 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", () => {
     let form = document.querySelector(".login_form");
     let error_paragraph = document.querySelector(".error");
-    let forgot_password = document.querySelector(".forgot_password");
+    let submitButton = form.querySelector("input[type='submit']");
+    let otpModal = document.getElementById("otpModal");
+    let otpInput = document.getElementById("otpInput");
+    let otpErrorParagraph = document.querySelector(".otp_error");
 
-    // Form submission logic
-    form.addEventListener("submit", function (e) {
-        e.preventDefault(); // Prevent form submission
-        let formData = new FormData(form); // Collect form data
+    form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        submitButton.disabled = true;
 
-        fetch("/students/login", {
-            method: "POST",
-            body: formData,
-        })
-            .then(async (response) => {
-                if (response.ok) {
-                    window.location.href = `/students/details/${formData.get(
-                        "student_id"
-                    )}`;
-                } else if (response.status === 401 || response.status === 400) {
-                    let errorResponse = await response.json(); // Parse JSON response
-                    throw new Error(errorResponse.error); // Throw error with the extracted message
-                } else {
-                    throw new Error("Server error"); // General server error message
-                }
-            })
-            .catch((error) => {
-                console.error("Error:", error); // Log error to console
-                error_paragraph.textContent = error.message; // Use `error.message` to display the error
-                error_paragraph.classList.remove("error--hidden"); // Ensure the error paragraph is visible
-            });
-    });
+        let formData = new FormData(form);
 
-    forgot_password.addEventListener("click", function () {
-        let student_id = prompt("Enter your student ID");
-
-        if (student_id) {
-            fetch(`/students/forgot_password/${student_id}`, {
+        try {
+            const response = await fetch("/students/login", {
                 method: "POST",
-            })
-                .then(async (response) => {
-                    if (response.ok) {
-                        alert("Password reset link sent to your email");
-                    } else {
-                        let errorResponse = await response.json();
-                        throw new Error(errorResponse.error);
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    alert(error.message);
-                });
+                body: formData,
+            });
+
+            if (response.ok) {
+                // Show OTP modal
+                otpModal.style.display = "flex";
+            } else {
+                error_paragraph.textContent = "Email was invalid";
+                error_paragraph.classList.remove("error--hidden");
+            }
+        } catch (error) {
+            console.log(error);
+            error_paragraph.textContent = "Invalid";
+            error_paragraph.classList.remove("error--hidden");
+        } finally {
+            submitButton.disabled = false;
+            otpInput.value = "";
         }
     });
+
+    window.submitOtp = async function () {
+        let otp = otpInput.value;
+        if (otp) {
+            let otpFormData = new FormData();
+            otpFormData.append("otp", otp);
+            let student_id = document.getElementById("student_id").value;
+
+            try {
+                const otp_response = await fetch("/students/otp", {
+                    method: "POST",
+                    body: otpFormData,
+                });
+
+                if (otp_response.ok) {
+                    window.location.href = `/students/details/${student_id}`;
+                } else {
+                    error_paragraph.textContent = "OTP was invalid";
+                    error_paragraph.classList.remove("error--hidden");
+                    otpErrorParagraph.textContent = "OTP was invalid";
+                    otpErrorParagraph.classList.remove("error--hidden");
+                }
+            } catch (error) {
+                console.log(error);
+                otpErrorParagraph.textContent = "An error occurred";
+                otpErrorParagraph.classList.remove("error--hidden");
+            } finally {
+                hideOtpModal();
+            }
+        } else {
+            otpErrorParagraph.textContent = "OTP was empty";
+            otpErrorParagraph.classList.remove("error--hidden");
+        }
+    };
+
+    window.cancelOtp = function () {
+        error_paragraph.textContent = "OTP entry canceled.";
+        error_paragraph.classList.remove("error--hidden");
+        hideOtpModal();
+    };
+
+    function hideOtpModal() {
+        otpModal.style.display = "none";
+    }
 });
