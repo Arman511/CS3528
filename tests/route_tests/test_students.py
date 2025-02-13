@@ -11,6 +11,7 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from itsdangerous import URLSafeSerializer
 import pytest
 from unittest.mock import patch
 from dotenv import load_dotenv
@@ -117,12 +118,23 @@ def student_logged_in_client(client, database: DatabaseMongoManager):
     }
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 
@@ -216,12 +228,23 @@ def student_logged_in_client_after_details(client, database: DatabaseMongoManage
     database.insert("attempted_skills", attempted_skill)
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 
@@ -413,14 +436,27 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
     database.insert("opportunities", opportunity4)
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
         content_type="application/x-www-form-urlencoded",
     )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    yield client
 
     yield client
 
@@ -436,7 +472,6 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
     database.delete_all_by_field("opportunities", "title", "Opportunity 2")
     database.delete_all_by_field("opportunities", "title", "Opportunity 3")
     database.delete_all_by_field("opportunities", "title", "Opportunity 4")
-
 
 
 def test_student_update_successful(student_logged_in_client):

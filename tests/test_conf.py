@@ -2,9 +2,8 @@
 
 import os
 import uuid
-from pymongo import MongoClient
 import pytest
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 
 from dotenv import load_dotenv
 
@@ -50,7 +49,7 @@ def user_logged_in_client(client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)

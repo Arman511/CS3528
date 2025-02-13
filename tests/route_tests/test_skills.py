@@ -7,11 +7,14 @@ import os
 import sys
 import uuid
 
+from itsdangerous import URLSafeSerializer
+
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
+from flask import session
+from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
 
@@ -66,7 +69,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -111,8 +114,17 @@ def student_logged_in_client(client, database: DatabaseMongoManager):
         url,
         data={
             "student_id": "123456",
-            "password": student["_id"],
         },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 

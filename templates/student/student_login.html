@@ -8,21 +8,11 @@
                        name="student_id"
                        class="field"
                        placeholder="Student Number (e.g. 52327765)"
+                       id="student_id"
                        required />
-                <div class="password-container">
-                    <input type="password"
-                           name="password"
-                           class="field"
-                           placeholder="Password"
-                           required />
-                </div>
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Log In" class="btn" />
             </form>
-            <p class="center">
-                Forgot your password?
-                <a class="forgot_password">Reset it here</a>
-            </p>
             <p class="center">
                 Are you part of the placement team?
                 <a href="{{ url_for("login") }}">Login</a>
@@ -31,6 +21,18 @@
                 Are you an employer?
                 <a href="{{ url_for("employer_login") }}">Login</a>
             </p>
+        </div>
+        <div id="otpModal" class="modal">
+            <div class="modal-content">
+                <p>Enter the OTP sent to your email:</p>
+                <input type="text" id="otpInput" class="field" />
+                <p class="error error--hidden otp_error"></p>
+                <br>
+                <br>
+                <button onclick="submitOtp()" class="btn">Submit</button>
+                <br>
+                <button onclick="cancelOtp()" class="btn">Cancel</button>
+            </div>
         </div>
         <script src="/static/student_login/script.js"></script>
     </div>
