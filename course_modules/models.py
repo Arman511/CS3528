@@ -52,7 +52,7 @@ class Module:
         if not module:
             return jsonify({"error": "module not found"}), 404
 
-        DATABASE_MANAGER.delete("modules", module["_id"])
+        DATABASE_MANAGER.delete_by_id("modules", module["_id"])
 
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
@@ -247,9 +247,11 @@ class Module:
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")
+        updated_opportunities = []
         for opp in opportunities:
             opp["modules_required"] = []
-        DATABASE_MANAGER.insert_many("opportunities")
+            updated_opportunities.append(opp)
+        DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
 
         return jsonify({"message": "Deleted"}), 200
 

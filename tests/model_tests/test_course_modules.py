@@ -89,18 +89,13 @@ def test_update_module_by_uuid(database, module_model, app, sample_module):
             updated_module = database.get_one_by_id("modules", sample_module["_id"])
             assert updated_module["module_name"] == "Advanced CS"
 
-def test_delete_all_modules(database, module_model, app):
+def test_delete_all_modules(database, module_model, app, sample_module):
     """Test delete_all_modules method."""
-    database.delete_all_by_field("modules", "module_id", "CS101")
     with app.app_context():
         with app.test_request_context():
-            module_model.add_module(sample_module)
-            module_id = sample_module["_id"]
             response = module_model.delete_all_modules()[0]
             assert response.status_code == 200
-            assert database.get_all("modules") is None 
-    database.delete_all_by_field("modules", "module_id", "CS101")
-
+            assert database.get_all("modules") == []
 
 def test_download_all_modules(database, module_model, app):
     """Test download_all_modules method."""
@@ -118,7 +113,7 @@ def test_download_all_modules(database, module_model, app):
 
 def test_upload_course_modules(database, module_model, app):
     """Test upload_course_modules method."""
-    file_path = "/tmp/test_modules.xlsx"
+    file_path = "/data_model_upload_template/course_modules_template.xlsx"
     data = pd.DataFrame([
         {"Module_id": "CS102", "Module_name": "Advanced CS", "Module_description": "Next level CS"}
     ])
@@ -174,3 +169,25 @@ def test_update_module_by_uuid(database, module_model, app, sample_module):
             assert response.status_code == 200
             updated_module = database.get_one_by_id("modules", sample_module["_id"])
             assert updated_module["module_name"] == "Advanced CS"
+
+def test_reset_cache(database, module_model, app):
+    """Test reset_cache method."""
+    from course_modules.models import modules_cache
+    sample_module = {
+        "_id": uuid.uuid4().hex,
+        "module_id": "CS101",
+        "module_name": "Introduction to CS",
+        "module_description": "A basic CS course",
+    }
+    database.insert("modules", sample_module)
+
+    # Ensure the cache is reset
+    with app.app_context():
+        with app.test_request_context():
+            module_model.reset_cache()
+            assert modules_cache["data"] is not None
+            assert len(modules_cache["data"]) > 0
+            assert modules_cache["last_updated"] is not None
+
+    # Clean up the database
+    database.delete_all_by_field("modules", "module_id", "CS101")
