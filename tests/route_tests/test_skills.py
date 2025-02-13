@@ -458,6 +458,9 @@ def test_update_attempted_skill_post(user_logged_in_client, database):
     assert updated_skill["skill_description"] == "Updated description"
 
     database.delete_by_id("attempted_skills", attempt_skill_id)
+    database.delete_all_by_field("attempted_skills", "skill_name", "Updated Skill")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
+    database.delete_all_by_field("skills", "skill_name", "Updated Skill")
 
 
 def test_update_attempted_skill_post_missing_fields(user_logged_in_client, database):
@@ -485,23 +488,9 @@ def test_update_attempted_skill_get_nonexistent(user_logged_in_client):
 
 def test_search_attempt_skills(user_logged_in_client, database):
     """Test searching for attempted skills."""
-    database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
-
-    attempt_skill_id = uuid.uuid4().hex
-    database.insert(
-        "attempted_skills",
-        {
-            "_id": attempt_skill_id,
-            "skill_name": "Test Skill",
-            "skill_description": "Test description",
-        },
-    )
-
     url = "/skills/attempted_skill_search"
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
-
-    database.delete_by_id("attempted_skills", attempt_skill_id)
 
 
 def test_search_attempt_skills_empty(user_logged_in_client, database):
