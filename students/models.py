@@ -2,9 +2,11 @@
 This module defines the User class which handles user authentication and session management.
 """
 
+import time
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
+from core import email_handler
 from opportunities.models import Opportunity
 
 
@@ -203,20 +205,22 @@ class Student:
         except Exception as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def student_login(self, student_id, password):
+    def student_login(self, student_id):
         """Handle student login."""
         from app import DATABASE_MANAGER
 
         # Find the student by id which is their password
-        student = DATABASE_MANAGER.get_one_by_id("students", password)
+        student = DATABASE_MANAGER.get_one_by_field(
+            "students", "student_id", student_id
+        )
 
-        if student and str(student.get("student_id")) == student_id:
-            del student["_id"]
+        if student:
+            email_handler.send_otp(student["email"])
             session["student"] = student
-            session["student_logged_in"] = True
-            return jsonify({"message": "Login successful"}), 200
+        else:
+            time.sleep(1.5)
 
-        return jsonify({"error": "Invalid id or password"}), 401
+        return jsonify({"message": "OTP sent"}), 200
 
     def rank_preferences(self, student_id, preferences):
         """Sets a students preferences."""
