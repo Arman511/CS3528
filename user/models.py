@@ -5,7 +5,7 @@ User model.
 from email.mime.text import MIMEText
 import os
 from flask import jsonify, session
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 from core import email_handler
 from employers.models import Employers
 from opportunities.models import Opportunity
@@ -51,7 +51,7 @@ class User:
         session.clear()
         user = DATABASE_MANAGER.get_by_email("users", attempt_user["email"])
 
-        if user and pbkdf2_sha256.verify(attempt_user["password"], user["password"]):
+        if user and pbkdf2_sha512.verify(attempt_user["password"], user["password"]):
             return self.start_session(user)
 
         return jsonify({"error": "Invalid login credentials"}), 401
@@ -64,7 +64,7 @@ class User:
             return jsonify({"error": "Passwords don't match"}), 400
 
         DATABASE_MANAGER.update_one_by_id(
-            "users", uuid, {"password": pbkdf2_sha256.hash(new_password)}
+            "users", uuid, {"password": pbkdf2_sha512.hash(new_password)}
         )
 
         return jsonify({"message": "Password updated successfully"}), 200
