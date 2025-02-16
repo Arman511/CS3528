@@ -252,7 +252,8 @@ class Module:
         for opp in opportunities:
             opp["modules_required"] = []
             updated_opportunities.append(opp)
-        DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
+        if updated_opportunities:
+            DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
 
         return jsonify({"message": "Deleted"}), 200
 
