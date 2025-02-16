@@ -5,8 +5,8 @@ Handles routes for the student module.
 import os
 import uuid
 from dotenv import load_dotenv
-import time
 from flask import jsonify, redirect, render_template, request, session
+from itsdangerous import URLSafeSerializer
 from core import handlers
 from courses.models import Course
 from employers.models import Employers
@@ -99,14 +99,28 @@ def add_student_routes(app):
         """Logins a student"""
         if request.method == "POST":
             student_id = request.form.get("student_id")
-            password = request.form.get("password")
-            return Student().student_login(student_id, password)
+            return Student().student_login(student_id)
 
-        if "student" in session and "student_signed_in" in session:
+        if "student" in session and "student_logged_in" in session:
             return redirect(
                 "/students/details/" + str(session["student"]["student_id"])
             )
         return render_template("student/student_login.html")
+
+    @app.route("/students/otp", methods=["POST"])
+    def student_otp():
+
+        if "student" not in session:
+            return jsonify({"error": "Employer not logged in."}), 400
+        otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+        if "OTP" not in session:
+            return jsonify({"error": "OTP not sent."}), 400
+        if request.form.get("otp") != otp_serializer.loads(session["OTP"]):
+            return jsonify({"error": "Invalid OTP."}), 400
+
+        session["student_logged_in"] = True
+
+        return jsonify({"message": "OTP verified"}), 200
 
     @app.route("/students/passed_deadline")
     def past_deadline():
@@ -149,8 +163,11 @@ def add_student_routes(app):
             student["placement_duration"] = request.form.get(
                 "placement_duration"
             ).split(",")
-            if student["placement_duration"] == [""]:
-                student["placement_duration"] = []
+            if (
+                student["placement_duration"] == [""]
+                or student["placement_duration"] == []
+            ):
+                return jsonify({"error": "Please select a placement duration"}), 400
             valid_durations = set(
                 ["1_day", "1_week", "1_month", "3_months", "6_months", "12_months"]
             )
@@ -292,19 +309,6 @@ def add_student_routes(app):
         """Routing to deal with success"""
         session.clear()
         return render_template("student/update_successful_page.html")
-
-    @app.route("/students/forgot_password/<int:student_id>", methods=["POST"])
-    def student_forgot_password(student_id):
-        """Forgot password."""
-        student = Student().get_student_by_id(student_id)
-        if not student:
-            time.sleep(0.5)
-            return jsonify({"message": "Email sent"}), 200
-
-        Student().send_student_password_email(
-            student["first_name"], student["email"], student["_id"]
-        )
-        return jsonify({"message": "Email sent"}), 200
 
     @app.route("/students/download", methods=["GET"])
     @handlers.login_required

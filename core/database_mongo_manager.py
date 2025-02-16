@@ -21,7 +21,11 @@ class DatabaseMongoManager(DatabaseInterface):
     def connect(self, connection, database):
         load_dotenv()
         self.connection = pymongo.MongoClient()
-        if os.getenv("IS_GITHUB_ACTION") == "False":
+        if (
+            os.getenv("IS_GITHUB_ACTION") == "False"
+            and connection is not None
+            and os.getenv("OFFLINE") != "True"
+        ):
             self.connection = pymongo.MongoClient(connection)
 
         try:

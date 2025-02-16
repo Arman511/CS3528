@@ -11,7 +11,7 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
 from unittest.mock import patch
@@ -61,7 +61,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -251,7 +251,7 @@ def test_email_already_in_use(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -308,7 +308,7 @@ def test_update_user(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -359,7 +359,7 @@ def test_update_user_get_request(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -383,7 +383,7 @@ def test_login_user(client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -412,7 +412,7 @@ def test_login_user_invalid_password(client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -506,7 +506,7 @@ def test_delete_user(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -530,7 +530,7 @@ def test_change_password(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -548,7 +548,7 @@ def test_change_password(superuser_logged_in_client, database):
     assert response.status_code == 200
     updated_user = database.get_by_email("users", "dummy@dummy.com")
     assert updated_user is not None
-    assert pbkdf2_sha256.verify("new_dummy_password", updated_user["password"])
+    assert pbkdf2_sha512.verify("new_dummy_password", updated_user["password"])
 
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
@@ -562,7 +562,7 @@ def test_change_password_mismatch(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -592,7 +592,7 @@ def test_get_change_password_page(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -622,7 +622,7 @@ def test_send_match_email(user_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "company_name": "dummy_employer",
         "email": "dummy_employer@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     opportunity = {

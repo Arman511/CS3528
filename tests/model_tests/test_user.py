@@ -4,7 +4,7 @@ import os
 import sys
 from dotenv import load_dotenv
 import pytest
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 
 from flask import session
 
@@ -143,7 +143,7 @@ def test_login_success(app, database, user_model):
         "_id": "126",
         "name": "Login User",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     # Insert the user into the database
@@ -174,7 +174,7 @@ def test_login_invalid_credentials(app, database, user_model):
         "_id": "127",
         "name": "Invalid User",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("password"),
+        "password": pbkdf2_sha512.hash("password"),
     }
 
     # Insert the user into the database
@@ -574,7 +574,7 @@ def test_change_password_success(app, database, user_model):
         "_id": user_uuid,
         "name": "Change Password User",
         "email": "changepassword@dummy.com",
-        "password": pbkdf2_sha256.hash("oldpassword"),
+        "password": pbkdf2_sha512.hash("oldpassword"),
     }
 
     database.insert("users", user)
@@ -588,7 +588,7 @@ def test_change_password_success(app, database, user_model):
             assert response[1] == 200
             assert json_data["message"] == "Password updated successfully"
             updated_user = database.get_one_by_id("users", user_uuid)
-            assert pbkdf2_sha256.verify("newpassword", updated_user["password"])
+            assert pbkdf2_sha512.verify("newpassword", updated_user["password"])
 
     database.delete_all_by_field("users", "email", "changepassword@dummy.com")
 
@@ -602,7 +602,7 @@ def test_change_password_mismatch(app, database, user_model):
         "_id": user_uuid,
         "name": "Change Password User",
         "email": "changepassword@dummy.com",
-        "password": pbkdf2_sha256.hash("oldpassword"),
+        "password": pbkdf2_sha512.hash("oldpassword"),
     }
 
     database.insert("users", user)
