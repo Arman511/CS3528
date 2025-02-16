@@ -1,0 +1,6 @@
+Module_id, Module_name, Module_description
+CS101, Intro to CS, Basic CS concepts
+CS102, Advanced CS, Next level CS
+CS103, Algorithms, Data structures and algorithms
+CS104, Databases, Introduction to databases
+CS105, Machine Learning, Fundamentals of ML

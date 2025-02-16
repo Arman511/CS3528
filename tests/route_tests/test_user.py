@@ -817,6 +817,7 @@ def test_delete_employer(user_logged_in_client, database):
 
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
 
+
 def test_employer_add_opportunity_post(user_logged_in_client, database):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
@@ -844,19 +845,24 @@ def test_employer_add_opportunity_post(user_logged_in_client, database):
     database.delete_by_id("opportunities", "1234")
     database.delete_all_by_field("employers", "email", "dummy@dummy,com")
 
+
 def test_delete_student(user_logged_in_client, database):
     """Test the delete student route."""
-    
+
     # Define student ID as an integer to match the route
     student_id = 123
-    
+
     url = f"/students/delete_student/{student_id}"  # Format the URL correctly
 
     # Ensure no existing student with this ID
     database.delete_all_by_field("students", "_id", str(student_id))
 
     # Insert a test student with an integer ID
-    student = {"student_id": str(student_id), "first_name": "dummy", "email": "dummy@dummy.com"}
+    student = {
+        "student_id": str(student_id),
+        "first_name": "dummy",
+        "email": "dummy@dummy.com",
+    }
     database.insert("students", student)
 
     # Send DELETE request
@@ -866,11 +872,14 @@ def test_delete_student(user_logged_in_client, database):
     assert response.status_code == 200
     assert response.json == {"message": "Student deleted"}
 
+
 def test_register_student(user_logged_in_client, database):
     """Test the register student route."""
     url = "/students/add_student"
 
-    database.delete_all_by_field("students", "student_id", "123")  # Ensure no existing student with this ID
+    database.delete_all_by_field(
+        "students", "student_id", "123"
+    )  # Ensure no existing student with this ID
 
     student = {
         "student_id": "123",
@@ -887,9 +896,8 @@ def test_register_student(user_logged_in_client, database):
     )
 
     assert response.status_code == 200
-    
+
     database.delete_all_by_field("students", "student_id", "123")  # Clean up
-    
 
 
 def test_update_student_post_no_uuid(user_logged_in_client, database):
@@ -921,7 +929,7 @@ def test_update_student_post_no_uuid(user_logged_in_client, database):
 
     assert response.status_code == 404
     assert response.json == {"error": "Invalid request"}
-    
+
     database.delete_all_by_field("students", "student_id", "123")  # Clean up
 
 
@@ -957,7 +965,7 @@ def test_update_student_post_with_uuid(user_logged_in_client, database):
     found_student = database.get_one_by_id("students", "123")
     assert found_student is not None
     assert found_student["first_name"] == "dummy"
-    database.delete_all_by_field("students", "student_id", "123") 
+    database.delete_all_by_field("students", "student_id", "123")
 
 
 def test_update_student_get_method(user_logged_in_client, database):
@@ -970,9 +978,3 @@ def test_update_student_get_method(user_logged_in_client, database):
 
     assert response.status_code == 200
     database.delete_all_by_field("students", "student_id", "123")  # Clean up
-
-
-
-    
-    
-    

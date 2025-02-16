@@ -25,10 +25,11 @@ load_dotenv()
 @pytest.fixture()
 def client():
     """Fixture to create a test client."""
-    from ...app import app 
+    from ...app import app
 
     app.config["TESTING"] = True
     return app.test_client()
+
 
 @pytest.fixture()
 def database():
@@ -45,6 +46,7 @@ def database():
         DATABASE.insert("modules", module)
 
     DATABASE.connection.close()
+
 
 @pytest.fixture()
 def user_logged_in_client(client, database: DatabaseMongoManager):
@@ -77,7 +79,6 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
 
-
 @pytest.fixture()
 def sample_module(database):
     """Fixture to create a sample module."""
@@ -88,6 +89,7 @@ def sample_module(database):
         "module_description": "Basic programming concepts",
     }
     database.delete_all_by_field("modules", "module_id", "CS101")
+
 
 def test_add_module(user_logged_in_client, database, sample_module):
     """Test adding a module."""
@@ -104,12 +106,14 @@ def test_add_module(user_logged_in_client, database, sample_module):
     assert response.status_code == 200
     assert database.get_one_by_field("modules", "module_id", "CS101") is not None
 
+
 def test_search_modules(user_logged_in_client, database, sample_module):
     """Test searching modules."""
     database.insert("modules", sample_module)
     url = "/course_modules/search"
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
+
 
 def test_delete_module(user_logged_in_client, database, sample_module):
     """Test deleting a module."""
@@ -118,6 +122,7 @@ def test_delete_module(user_logged_in_client, database, sample_module):
     response = user_logged_in_client.delete(url)
     assert response.status_code == 200
     assert database.get_one_by_id("modules", sample_module["_id"]) is None
+
 
 def test_update_module(user_logged_in_client, database, sample_module):
     """Test updating a module."""
@@ -137,20 +142,30 @@ def test_update_module(user_logged_in_client, database, sample_module):
     assert updated_module["module_id"] == "CS102"
     assert updated_module["module_name"] == "Intro to Programming"
 
+
 def test_upload_invalid_file(user_logged_in_client):
     """Test uploading an invalid file type."""
     url = "/course_modules/upload"
-    response = user_logged_in_client.post(
-        url, data={}, content_type="multipart/form-data"
-    )
+    file_path = "tests/data/invalid_course_modules.txt"
+
+    with open(file_path, "rb") as file:
+        response = user_logged_in_client.post(
+            url,
+            data={"file": (file, "invalid_course_modules.txt")},
+            content_type="multipart/form-data",
+        )
+
     assert response.status_code == 400
-    assert response.json["error"] == "No file provided"
+    assert response.json["error"] == "Invalid file type"  
+
+
 
 def test_download_template(user_logged_in_client):
     """Test downloading the course module template."""
     url = "/course_modules/download_template"
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
+
 
 def test_delete_all_modules(user_logged_in_client, database, sample_module):
     """Test deleting all modules."""
@@ -159,6 +174,7 @@ def test_delete_all_modules(user_logged_in_client, database, sample_module):
     response = user_logged_in_client.delete(url)
     assert response.status_code == 200
     assert len(database.get_all("modules")) == 0
+
 
 def test_download_all_modules(user_logged_in_client, database, sample_module):
     """Test downloading all modules."""
