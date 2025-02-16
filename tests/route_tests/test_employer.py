@@ -263,9 +263,11 @@ def test_employer_add_opportunity_post(employer_logged_in_client, database):
     assert response.status_code == 200  # Adjust based on actual expected behavior
     database.delete_by_id("opportunities", "1234")
     database.delete_all_by_field("employers", "email", "dummy@dummy,com")
-    
 
-def test_employer_add_opportunity_post_different_employer_id(employer_logged_in_client, database):
+
+def test_employer_add_opportunity_post_different_employer_id(
+    employer_logged_in_client, database
+):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
 
@@ -283,7 +285,7 @@ def test_employer_add_opportunity_post_different_employer_id(employer_logged_in_
         "duration": "6_months",
     }
     database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
-    
+
     with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
         response = employer_logged_in_client.post(
             url, data=opportunity, content_type="application/x-www-form-urlencoded"
