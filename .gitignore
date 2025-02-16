@@ -35,3 +35,4 @@ not_full_courses.json
 .coverage
 htmlcov/
 tests/data/~$valid_students.xlsx
+temp/

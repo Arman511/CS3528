@@ -3,6 +3,7 @@ Opportunity model.
 """
 
 from datetime import datetime
+import os
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
@@ -362,7 +363,11 @@ class Opportunity:
             opportunities_data.append(opportunity_data)
 
         df = pd.DataFrame(opportunities_data)
-        file_path = "/tmp/opportunities.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/opportunities.xlsx"
+        else:
+            file_path = "/tmp/opportunities.xlsx"
         df.to_excel(file_path, index=False)
 
         return send_file(

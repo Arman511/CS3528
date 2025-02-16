@@ -2,11 +2,11 @@
 Courses model."""
 
 from datetime import datetime, timedelta
+import os
 from flask import jsonify, send_file
 import pandas as pd
 import uuid
 
-from tqdm import tqdm
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -218,7 +218,11 @@ class Course:
         df = pd.DataFrame(courses)
 
         # Define the file path
-        file_path = "/tmp/courses.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/courses.xlsx"
+        else:
+            file_path = "/tmp/courses.xlsx"
         # Save the DataFrame to an Excel file
         df.to_excel(
             file_path,
@@ -245,7 +249,7 @@ class Course:
         )
         ids = set()
 
-        for i, course in tqdm(enumerate(courses), desc="Uploading courses"):
+        for i, course in enumerate(courses):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "course_id": course.get("UCAS_code", ""),

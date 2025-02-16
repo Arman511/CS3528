@@ -2,6 +2,7 @@
 This module defines the User class which handles user authentication and session management.
 """
 
+import os
 import time
 import uuid
 from flask import jsonify, send_file, session
@@ -318,7 +319,11 @@ class Student:
 
         df = pd.DataFrame(clean_data)
 
-        tmpFile = "/tmp/students.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            tmpFile = "temp/students.xlsx"
+        else:
+            tmpFile = "/tmp/students.xlsx"
 
         df.to_excel(tmpFile, index=False)
 
