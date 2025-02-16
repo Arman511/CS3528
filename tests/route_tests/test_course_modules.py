@@ -11,7 +11,7 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
 
@@ -41,9 +41,8 @@ def database():
     modules = DATABASE.get_all("modules")
     DATABASE.delete_all("modules")
     yield DATABASE
-
-    for module in modules:
-        DATABASE.insert("modules", module)
+    DATABASE.delete_all("modules")
+    DATABASE.insert_many("modules", modules)
 
     DATABASE.connection.close()
 
@@ -58,7 +57,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -170,10 +169,18 @@ def test_download_template(user_logged_in_client):
 def test_delete_all_modules(user_logged_in_client, database, sample_module):
     """Test deleting all modules."""
     database.insert("modules", sample_module)
+    students = database.get_all("students")
+    opportunities = database.get_all("opportunities")
     url = "/course_modules/delete_all"
     response = user_logged_in_client.delete(url)
     assert response.status_code == 200
     assert len(database.get_all("modules")) == 0
+
+    # Restore the students and opportunities
+    database.delete_all("students")
+    database.insert_many("students", students)
+    database.delete_all("opportunities")
+    database.insert_many("opportunities", opportunities)
 
 
 def test_download_all_modules(user_logged_in_client, database, sample_module):

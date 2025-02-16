@@ -36,6 +36,7 @@ def database():
     )
     modules = DATABASE.get_all("modules")
     DATABASE.delete_all("modules")
+
     yield DATABASE
     DATABASE.delete_all("modules")
     DATABASE.insert_many("modules", modules)
@@ -112,11 +113,45 @@ def test_update_module_by_uuid(database, module_model, app, sample_module):
 
 def test_delete_all_modules(database, module_model, app, sample_module):
     """Test delete_all_modules method."""
+    students = database.get_all("students")
+    opportunities = database.get_all("opportunities")
+
+    database.delete_all("students")
+    database.delete_all("opportunities")
+
+    database.insert("modules", sample_module)
+
+    student1 = {
+        "_id": uuid.uuid4().hex,
+        "student_id": "S101",
+        "student_name": "Alice",
+        "modules": ["CS101"],
+    }
+    opportunity1 = {
+        "_id": uuid.uuid4().hex,
+        "opportunity_id": "O101",
+        "opportunity_name": "Internship",
+        "modules_required": ["CS101"],
+    }
+
+    database.insert("students", student1)
+    database.insert("opportunities", opportunity1)
+    
     with app.app_context():
         with app.test_request_context():
             response = module_model.delete_all_modules()[0]
             assert response.status_code == 200
             assert database.get_all("modules") == []
+            assert database.get_one_by_id("students", student1["_id"]) is not None
+            assert database.get_one_by_id("opportunities", opportunity1["_id"]) is not None
+            assert database.get_one_by_id("students", student1["_id"])["modules"] == []
+            assert database.get_one_by_id("opportunities", opportunity1["_id"])["modules_required"] == []
+
+    database.delete_all("students")
+    database.delete_all("opportunities")
+
+    database.insert_many("students", students)
+    database.insert_many("opportunities", opportunities)
 
 
 def test_download_all_modules(database, module_model, app):

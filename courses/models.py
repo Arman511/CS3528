@@ -160,6 +160,18 @@ class Course:
             if "course" in student and original["course_id"] == student["course"]:
                 student["course"] = updated_course["course_id"]
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        for opportunity in opportunities:
+            if (
+                "courses_required" in opportunity
+                and original["course_id"] in opportunity["courses_required"]
+            ):
+                opportunity["courses_required"].remove(original["course_id"])
+                opportunity["courses_required"].append(updated_course["course_id"])
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
         self.reset_cache()
         return jsonify({"message": "Course was updated"}), 200
 

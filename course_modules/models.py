@@ -93,8 +93,8 @@ class Module:
 
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
-            if "modules" in student and uuid in student["modules"]:
-                student["modules"].remove(uuid)
+            if "modules" in student and module["module_id"] in student["modules"]:
+                student["modules"].remove(module["module_id"])
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
@@ -103,7 +103,7 @@ class Module:
                 "modules_required" in opportunity
                 and uuid in opportunity["modules_required"]
             ):
-                opportunity["modules_required"].remove(uuid)
+                opportunity["modules_required"].remove(module["module_id"])
                 DATABASE_MANAGER.update_one_by_id(
                     "opportunities", opportunity["_id"], opportunity
                 )
@@ -135,7 +135,7 @@ class Module:
         if module:
             return module
 
-        return
+        return None
 
     def get_module_name_by_id(self, module_id):
         """Get module name by id"""
@@ -240,7 +240,7 @@ class Module:
         DATABASE_MANAGER.delete_all("students")
         updated_students = []
         for student in students:
-            if "module" in student:
+            if "modules" in student:
                 student["modules"] = []
             updated_students.append(student)
 
