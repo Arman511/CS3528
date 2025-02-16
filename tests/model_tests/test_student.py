@@ -718,16 +718,16 @@ def test_student_login(app, database):
 
     with app.app_context():
         with app.test_request_context():
-            response = Student().student_login(student1["student_id"], student1["_id"])
+            response = Student().student_login(student1["student_id"])
             json_response = response[0].get_json()
             assert response[1] == 200
-            assert json_response["message"] == "Login successful"
+            assert json_response["message"] == "OTP sent"
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("students", "_id", "123")
 
 
-def test_student_login_invalid(app, database):
+def test_student_login_non_existant(app, database):
 
     from students.models import Student
 
@@ -740,15 +740,12 @@ def test_student_login_invalid(app, database):
         "email": "dummy@dummy.com",
         "student_id": "123",
     }
-
-    database.insert("students", student1)
-
     with app.app_context():
         with app.test_request_context():
-            response = Student().student_login(student1["student_id"], "124")
+            response = Student().student_login(student1["student_id"])
             json_response = response[0].get_json()
-            assert response[1] == 401
-            assert json_response["error"] == "Invalid id or password"
+            assert response[1] == 200
+            assert json_response["message"] == "OTP sent"
 
 
 def test_rank_preferences(app, database):

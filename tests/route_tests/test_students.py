@@ -11,6 +11,7 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from itsdangerous import URLSafeSerializer
 import pytest
 from unittest.mock import patch
 from dotenv import load_dotenv
@@ -113,15 +114,27 @@ def student_logged_in_client(client, database: DatabaseMongoManager):
         "last_name": "Student",
         "email": "dummy@dummy.com",
         "student_id": "11111111",
+        "modules": [],
     }
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 
@@ -215,12 +228,23 @@ def student_logged_in_client_after_details(client, database: DatabaseMongoManage
     database.insert("attempted_skills", attempted_skill)
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 
@@ -412,14 +436,27 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
     database.insert("opportunities", opportunity4)
 
     database.insert("students", student)
-    data = {"student_id": "11111111", "password": student["_id"]}
-
     url = "/students/login"
+
     client.post(
         url,
-        data=data,
+        data={
+            "student_id": "11111111",
+        },
         content_type="application/x-www-form-urlencoded",
     )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    yield client
 
     yield client
 
@@ -435,3 +472,194 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
     database.delete_all_by_field("opportunities", "title", "Opportunity 2")
     database.delete_all_by_field("opportunities", "title", "Opportunity 3")
     database.delete_all_by_field("opportunities", "title", "Opportunity 4")
+
+
+def test_student_update_successful(student_logged_in_client):
+    """Test student update success route."""
+    url = "/students/update_success"
+
+    response = student_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+
+def test_student_login_redirect_if_logged_in(student_logged_in_client):
+    """Test redirect to student details if student is logged in."""
+    url = "/students/login"
+
+    response = student_logged_in_client.get(url, follow_redirects=False)
+
+    assert response.status_code == 302
+
+
+def test_past_deadline(student_logged_in_client):
+    """Test student update route."""
+    url = "/students/passed_deadline"
+
+    response = student_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+
+def test_student_details_wrong_student_redirect(student_logged_in_client):
+    """Test redirect if student tries to access another student's details."""
+    url = "/students/details/123"  # Trying to access details for student 123
+
+    response = student_logged_in_client.get(url)
+
+    assert response.status_code == 302  # Redirect response
+
+
+def test_student_details_deadline_redirects(student_logged_in_client):
+    """Test redirects if deadlines have passed."""
+    url = "/students/details/11111111"
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=True
+    ):
+        response = student_logged_in_client.get(url, follow_redirects=False)
+        assert response.status_code == 302
+        assert response.headers["Location"].endswith("/students/passed_deadline")
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
+        response = student_logged_in_client.get(url, follow_redirects=False)
+        assert response.status_code == 302
+        assert response.headers["Location"].endswith(
+            "/students/rank_preferences/11111111"
+        )
+
+
+def test_student_details_update_post(student_logged_in_client):
+    """Test updating student details."""
+    url = "/students/details/11111111"
+
+    student_update_data = {
+        "comments": "Updated comment",
+        "skills": ["Python", "C++"],
+        "attempted_skills": ["Django"],
+        "has_car": True,
+        "placement_duration": ["6_months"],
+        "modules": ["AI"],
+        "course": "CS",
+    }
+
+    response = student_logged_in_client.post(
+        url,
+        data=student_update_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+
+
+def test_student_details_update_get(student_logged_in_client):
+    """Test updating student details."""
+    url = "/students/details/11111111"
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
+    ), patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = student_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+
+def test_rank_preference_different_student_id(student_logged_in_client):
+    """Test rank preferences route when student is not in session."""
+    url = "/students/rank_preferences/123"
+
+    response = student_logged_in_client.get(url)
+
+    assert response.status_code == 302
+
+
+def test_rank_preferences_deadline_redirects(student_logged_in_client):
+    """Test redirects if ranking deadline has passed."""
+    url = "/students/rank_preferences/11111111"
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=True
+    ):
+        response = student_logged_in_client.get(url, follow_redirects=False)
+        assert response.status_code == 302
+
+
+def test_rank_preferences_details_deadline_redirect(student_logged_in_client):
+    """Test redirect if student has not completed details."""
+    url = "/students/rank_preferences/11111111"
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = student_logged_in_client.get(url, follow_redirects=False)
+        assert response.status_code == 302
+
+
+def test_rank_preferences_update_post(student_logged_in_client, database):
+    """Test updating student rank preferences."""
+    url = "/students/rank_preferences/11111111"
+
+    database.insert(
+        "students",
+        {
+            "student_id": "11111111",
+            "preferences": [],
+            "modules": [],
+            "ranks": ["rank_opp1, rank_opp2, rank_opp3"],
+        },
+    )
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
+    ), patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
+        response = student_logged_in_client.post(
+            url,
+            data={"ranks": "rank_opp1, rank_opp2, rank_opp3"},
+            content_type="application/x-www-form-urlencoded",
+        )
+
+    assert response.status_code == 200
+    database.delete_all_by_field("students", "student_id", "11111111")
+
+
+def test_rank_preferences_update_post_one_ranking(student_logged_in_client, database):
+    """Test updating student rank preferences."""
+    url = "/students/rank_preferences/11111111"
+
+    mock_opportunities = [
+        {"_id": "opp1"},
+        {"_id": "opp2"},
+        {"_id": "opp3"},
+        {"_id": "opp4"},
+        {"_id": "opp5"},
+        {"_id": "opp6"},
+    ]
+
+    with patch(
+        "students.routes_student.Student.get_opportunities_by_student",
+        return_value=mock_opportunities,
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True
+    ):
+
+        response = student_logged_in_client.post(
+            url,
+            data={"ranks": "rank_opp1"},
+            content_type="application/x-www-form-urlencoded",
+        )
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Please rank at least 5 opportunities"}
+
+    database.delete_all_by_field("students", "student_id", "11111111")
+
+
+def test_rank_preferences_update_get(student_logged_in_client):
+    """Test updating student rank preferences."""
+    url = "/students/rank_preferences/11111111"
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
+    ), patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
+        response = student_logged_in_client.get(url)
+
+    assert response.status_code == 200

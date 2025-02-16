@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 import uuid
 from flask import jsonify, redirect, render_template, session, request
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 from algorithm.matching import Matching
 from core import handlers
 from employers.models import Employers
@@ -32,7 +32,7 @@ def add_user_routes(app, cache):
                 "_id": uuid.uuid1().hex,
                 "name": request.form.get("name").title(),
                 "email": request.form.get("email").lower(),
-                "password": pbkdf2_sha256.hash(password),  # Hash only the password
+                "password": pbkdf2_sha512.hash(password),  # Hash only the password
             }
             return User().register(user)
         return render_template("user/register.html", user_type="superuser")
