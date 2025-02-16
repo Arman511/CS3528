@@ -152,7 +152,6 @@ def test_delete_all_modules(database, module_model, app, sample_module):
     if students:
         database.insert_many("students", students)
 
-    database.insert_many("students", students)
     if opportunities:
         database.insert_many("opportunities", opportunities)
 
