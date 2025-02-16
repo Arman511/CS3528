@@ -172,6 +172,9 @@ def add_user_routes(app, cache):
 
         for opportunity in opportunities:
             if "preferences" not in opportunity:
+                if "title" not in opportunity:
+                    opportunity["title"] = "Opportunity without title"
+                    
                 problems.append(
                     {
                         "description": (

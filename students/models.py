@@ -258,8 +258,8 @@ class Student:
 
             if modules_required.issubset(student["modules"]):
                 if (
-                    student["course"] in opportunity["courses_required"]
-                    or opportunity["courses_required"] == ""
+                    student["course"] in opportunity.get("courses_required", "")
+                    or opportunity.get("courses_required", "") == ""
                 ):
                     if opportunity["duration"] in student["placement_duration"]:
                         valid_opportunities.append(opportunity)

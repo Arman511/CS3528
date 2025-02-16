@@ -130,8 +130,8 @@ def test_delete_all_modules(database, module_model, app, sample_module):
     }
     opportunity1 = {
         "_id": uuid.uuid4().hex,
-        "opportunity_id": "O101",
-        "opportunity_name": "Internship",
+        "title": "Internship",
+        "employer_id": "E101",
         "modules_required": ["CS101"],
     }
 
@@ -151,7 +151,7 @@ def test_delete_all_modules(database, module_model, app, sample_module):
     database.delete_all("students")
     if students:
         database.insert_many("students", students)
-
+    database.delete_all("opportunities")
     if opportunities:
         database.insert_many("opportunities", opportunities)
 
