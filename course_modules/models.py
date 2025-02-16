@@ -3,6 +3,7 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
+import os
 import uuid
 from flask import jsonify
 import pandas as pd
@@ -264,7 +265,11 @@ class Module:
         df = pd.DataFrame(modules)
 
         # Define the file path
-        file_path = "/tmp/modules.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = os.path.join("temp", "modules.xlsx")
+        else:  # For Unix-like systems
+            file_path = "/tmp/modules.xlsx"
 
         df.drop(columns=["_id"], inplace=True)
         # Save the DataFrame to an Excel file

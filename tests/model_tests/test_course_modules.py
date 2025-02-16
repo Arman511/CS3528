@@ -6,7 +6,13 @@ import uuid
 import pytest
 import pandas as pd
 from dotenv import load_dotenv
-from flask import send_file
+
+# flake8: noqa: F811
+
+# Add the root directory to the Python path
+sys.path.append(
+    os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+)
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -131,11 +137,9 @@ def test_download_all_modules(database, module_model, app):
             )
 
 
-import pandas as pd
-
 def test_upload_course_modules(database, module_model, app):
     """Test upload_course_modules method with the test spreadsheet."""
-    file_path = "tests/data/course_modules_test.xlsx"  
+    file_path = "tests/data/course_modules_test.xlsx"
 
     with open(file_path, "rb") as file:
         with app.app_context():
@@ -143,8 +147,8 @@ def test_upload_course_modules(database, module_model, app):
                 response = module_model.upload_course_modules(file)
                 json_response = response[0].get_json()
 
-                assert response[1] == 200  
-                assert json_response["message"] == "Uploaded"  
+                assert response[1] == 200
+                assert json_response["message"] == "Uploaded"
 
 
 def test_delete_module_by_id(database, module_model, app, sample_module):
