@@ -7,11 +7,14 @@ import os
 import sys
 import uuid
 
+from itsdangerous import URLSafeSerializer
+
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
+from flask import session
+from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
 
@@ -39,7 +42,17 @@ def database():
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
+    skills = DATABASE.get_all("skills")
+    attempted_skills = DATABASE.get_all("attempted_skills")
+
+    DATABASE.delete_all("skills")
+    DATABASE.delete_all("attempted_skills")
     yield DATABASE
+
+    for skill in skills:
+        DATABASE.insert("skills", skill)
+    for skill in attempted_skills:
+        DATABASE.insert("attempted_skills", skill)
 
     # Cleanup code
 
@@ -56,7 +69,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -101,8 +114,17 @@ def student_logged_in_client(client, database: DatabaseMongoManager):
         url,
         data={
             "student_id": "123456",
-            "password": student["_id"],
         },
+        content_type="application/x-www-form-urlencoded",
+    )
+    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+
+    with client.session_transaction() as session:
+        otp = otp_serializer.loads(session["OTP"])
+
+    client.post(
+        "/students/otp",
+        data={"otp": otp},
         content_type="application/x-www-form-urlencoded",
     )
 
@@ -448,6 +470,9 @@ def test_update_attempted_skill_post(user_logged_in_client, database):
     assert updated_skill["skill_description"] == "Updated description"
 
     database.delete_by_id("attempted_skills", attempt_skill_id)
+    database.delete_all_by_field("attempted_skills", "skill_name", "Updated Skill")
+    database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
+    database.delete_all_by_field("skills", "skill_name", "Updated Skill")
 
 
 def test_update_attempted_skill_post_missing_fields(user_logged_in_client, database):
@@ -475,23 +500,9 @@ def test_update_attempted_skill_get_nonexistent(user_logged_in_client):
 
 def test_search_attempt_skills(user_logged_in_client, database):
     """Test searching for attempted skills."""
-    database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
-
-    attempt_skill_id = uuid.uuid4().hex
-    database.insert(
-        "attempted_skills",
-        {
-            "_id": attempt_skill_id,
-            "skill_name": "Test Skill",
-            "skill_description": "Test description",
-        },
-    )
-
     url = "/skills/attempted_skill_search"
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
-
-    database.delete_by_id("attempted_skills", attempt_skill_id)
 
 
 def test_search_attempt_skills_empty(user_logged_in_client, database):

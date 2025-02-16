@@ -11,9 +11,10 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
+from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
+from unittest.mock import patch
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -60,7 +61,7 @@ def user_logged_in_client(client, database: DatabaseMongoManager):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -161,7 +162,7 @@ def test_add_course_page(user_logged_in_client):
 
 def test_search_employer_page(user_logged_in_client):
     """Test search employer page."""
-    url = "/employers/search_employers"
+    url = "/employers/search"
 
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
@@ -250,7 +251,7 @@ def test_email_already_in_use(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -307,7 +308,7 @@ def test_update_user(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -358,7 +359,7 @@ def test_update_user_get_request(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -382,7 +383,7 @@ def test_login_user(client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -411,7 +412,7 @@ def test_login_user_invalid_password(client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -505,7 +506,7 @@ def test_delete_user(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -529,7 +530,7 @@ def test_change_password(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -547,7 +548,7 @@ def test_change_password(superuser_logged_in_client, database):
     assert response.status_code == 200
     updated_user = database.get_by_email("users", "dummy@dummy.com")
     assert updated_user is not None
-    assert pbkdf2_sha256.verify("new_dummy_password", updated_user["password"])
+    assert pbkdf2_sha512.verify("new_dummy_password", updated_user["password"])
 
     database.delete_all_by_field("users", "email", "dummy@dummy.com")
 
@@ -561,7 +562,7 @@ def test_change_password_mismatch(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -591,7 +592,7 @@ def test_get_change_password_page(superuser_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "name": "dummy",
         "email": "dummy@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     database.insert("users", user)
@@ -621,7 +622,7 @@ def test_send_match_email(user_logged_in_client, database):
         "_id": uuid.uuid4().hex,
         "company_name": "dummy_employer",
         "email": "dummy_employer@dummy.com",
-        "password": pbkdf2_sha256.hash("dummy"),
+        "password": pbkdf2_sha512.hash("dummy"),
     }
 
     opportunity = {
@@ -667,3 +668,313 @@ def test_search_users_page(superuser_logged_in_client):
 
     response = superuser_logged_in_client.get(url)
     assert response.status_code == 200
+
+
+def test_delete_opportunity(user_logged_in_client, database):
+    """Test the delete opportunity."""
+    url = "/opportunities/employer_delete_opportunity?opportunity_id=123"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123"})
+
+    response = user_logged_in_client.get(url)
+
+    assert response.status_code == 302
+
+
+def test_add_employer_post(user_logged_in_client, database):
+    """Test POST request to add employer route."""
+    url = "/employers/add_employer"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    employer_data = {
+        "_id": uuid.uuid1().hex,
+        "company_name": "dummy",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=employer_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+    assert response.status_code == 200
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_post(user_logged_in_client, database):
+    """Test POST request to update employer route."""
+
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    updated_data = {
+        "employer_id": "123",
+        "company_name": "dummy1",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=updated_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_post_wrong_id(user_logged_in_client, database):
+    """Test POST request to update employer route."""
+
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    updated_data = {
+        "employer_id": "1234",
+        "company_name": "dummy1",
+        "email": "dummy@dummy.com",
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=updated_data,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 404
+    assert response.json == {"error": "Employer not found"}
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_update_employer_get_wrong_id(user_logged_in_client, database):
+    """Test GET request to update employer with a non-existent employer ID."""
+
+    url = "/employers/update_employer?employer_id=9999"  # Non-existent employer_id
+
+    response = user_logged_in_client.get(
+        url, follow_redirects=True
+    )  # Follow the redirect
+
+    assert (
+        response.status_code == 200
+    )  # Since it redirects, it should be 200 after landing
+
+
+def test_update_employer_get_method(user_logged_in_client, database):
+    """Test GET request to update employer route."""
+    url = "/employers/update_employer"
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    database.insert(
+        "employers", {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    )
+
+    response = user_logged_in_client.get(url, query_string={"employer_id": "123"})
+
+    assert response.status_code == 200
+
+
+def test_delete_employer_no_id(user_logged_in_client):
+    """Test POST request to delete employer route without providing an employer ID."""
+    url = "/employers/delete_employer"
+
+    response = user_logged_in_client.post(url, json={}, content_type="application/json")
+
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer ID is required"}
+
+
+def test_delete_employer(user_logged_in_client, database):
+    """Test POST request to delete employer route."""
+    url = "/employers/delete_employer"
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+    employer = {"_id": "123", "company_name": "dummy", "email": "dummy@dummy.com"}
+    database.insert("employers", employer)
+
+    response = user_logged_in_client.post(
+        url,
+        json={"employer_id": "123"},
+        content_type="application/json",
+    )
+
+    assert response.status_code == 200
+    assert response.json == {"message": "Employer deleted"}
+
+    database.delete_all_by_field("employers", "email", "dummy@dummy.com")
+
+
+def test_employer_add_opportunity_post(user_logged_in_client, database):
+    """Test the employer_update_opportunity page."""
+    url = "/opportunities/employer_add_update_opportunity"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("opportunities", "_id", "1234")
+    opportunity = {
+        "_id": "1234",
+        "title": "Software Internship",
+        "description": "A great opportunity to learn.",
+        "url": "https://example.com",
+        "location": "Remote",
+        "modules_required": '["CS101", "CS102"]',  # Matches how the request expects it
+        "courses_required": '["Computer_Science"]',
+        "spots_available": 3,
+        "duration": "6_months",
+    }
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = user_logged_in_client.post(
+            url, data=opportunity, content_type="application/x-www-form-urlencoded"
+        )
+
+    assert response.status_code == 200  # Adjust based on actual expected behavior
+    database.delete_by_id("opportunities", "1234")
+    database.delete_all_by_field("employers", "email", "dummy@dummy,com")
+
+
+def test_delete_student(user_logged_in_client, database):
+    """Test the delete student route."""
+
+    # Define student ID as an integer to match the route
+    student_id = 123
+
+    url = f"/students/delete_student/{student_id}"  # Format the URL correctly
+
+    # Ensure no existing student with this ID
+    database.delete_all_by_field("students", "_id", str(student_id))
+
+    # Insert a test student with an integer ID
+    student = {
+        "student_id": str(student_id),
+        "first_name": "dummy",
+        "email": "dummy@dummy.com",
+    }
+    database.insert("students", student)
+
+    # Send DELETE request
+    response = user_logged_in_client.delete(url)
+
+    # Check response
+    assert response.status_code == 200
+    assert response.json == {"message": "Student deleted"}
+
+
+def test_register_student(user_logged_in_client, database):
+    """Test the register student route."""
+    url = "/students/add_student"
+
+    database.delete_all_by_field(
+        "students", "student_id", "123"
+    )  # Ensure no existing student with this ID
+
+    student = {
+        "student_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "course": "Computer Science",
+        "modules": [],
+        "comments": "",
+    }
+
+    response = user_logged_in_client.post(
+        url, json=student, content_type="application/json"
+    )
+
+    assert response.status_code == 200
+
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up
+
+
+def test_update_student_post_no_uuid(user_logged_in_client, database):
+    """Test POST request to update student route."""
+    url = "/students/update_student"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    student = {
+        "_id": "123",
+        "student_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "course": "dummy",
+        "skills": ["dummy"],
+        "comments": "dummy",
+        "attempted_skills": ["dummy"],
+        "has_car": "dummy",
+        "placement_duration": "dummy",
+        "modules": ["dummy"],
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=student,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 404
+    assert response.json == {"error": "Invalid request"}
+
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up
+
+
+def test_update_student_post_with_uuid(user_logged_in_client, database):
+    """Test POST request to update student route."""
+    url = "/students/update_student?uuid=123"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    student = {
+        "_id": "123",
+        "student_id": "123",
+        "first_name": "dummy",
+        "last_name": "dummy",
+        "email": "dummy@dummy.com",
+        "course": "dummy",
+        "skills": ["dummy"],
+        "comments": "dummy",
+        "attempted_skills": ["dummy"],
+        "has_car": "dummy",
+        "placement_duration": ["1_day"],
+        "modules": ["dummy"],
+    }
+
+    response = user_logged_in_client.post(
+        url,
+        data=student,
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert response.status_code == 200
+    assert response.json == {"message": "Student updated"}
+    found_student = database.get_one_by_id("students", "123")
+    assert found_student is not None
+    assert found_student["first_name"] == "dummy"
+    database.delete_all_by_field("students", "student_id", "123")
+
+
+def test_update_student_get_method(user_logged_in_client, database):
+    """Test GET request to update student route."""
+    url = "/students/update_student"
+
+    database.delete_all_by_field("students", "student_id", "123")
+    database.insert("students", {"_id": "123", "student_id": "123"})
+    response = user_logged_in_client.get(url, query_string={"uuid": "123"})
+
+    assert response.status_code == 200
+    database.delete_all_by_field("students", "student_id", "123")  # Clean up

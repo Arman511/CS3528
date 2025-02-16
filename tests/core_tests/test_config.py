@@ -55,5 +55,8 @@ def test_config_initialization(database):
     config.set_num_of_skills(10)
     config.set_min_num_ranking_student_to_opportunities(5)
 
+    # Reset the database
+    database.delete_all("config")
+
     for entry in current_config:
         database.insert("config", entry)

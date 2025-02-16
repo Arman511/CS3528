@@ -1,7 +1,16 @@
 """Routes for opportunities"""
 
 import uuid
-from flask import flash, redirect, render_template, request, session, url_for
+from flask import (
+    flash,
+    jsonify,
+    redirect,
+    render_template,
+    request,
+    send_file,
+    session,
+    url_for,
+)
 from core import handlers
 from course_modules.models import Module
 from courses.models import Course
@@ -22,10 +31,6 @@ def add_opportunities_routes(app):
         # Fetch user session details
         user = session.get("user")
         employer = session.get("employer")
-
-        # Determine user_type based on session data
-        if not user and not employer:
-            return {"error": "Unauthorized access."}, 403
 
         user_type = "admin" if user else "employer"
         print(f"[DEBUG] User type: {user_type}")
@@ -53,6 +58,7 @@ def add_opportunities_routes(app):
                 employer["_id"]: employer for employer in Employers().get_employers()
             }
             context["employers_map"] = employers_map
+            context["page"] = "opportunities"
 
         return render_template("opportunities/search.html", **context)
 
@@ -77,33 +83,57 @@ def add_opportunities_routes(app):
             )
 
         if request.method == "POST":
-            opportunity = {
-                "_id": request.form.get("_id"),
-                "title": request.form.get("title"),
-                "description": request.form.get("description"),
-                "url": request.form.get("url"),
-                "employer_id": None,
-                "location": request.form.get("location"),
-                "modules_required": request.form.get("modules_required")[1:-1]
-                .replace('"', "")
-                .split(","),
-                "courses_required": request.form.get("courses_required")[1:-1]
-                .replace('"', "")
-                .split(","),
-                "spots_available": request.form.get("spots_available"),
-                "duration": request.form.get("duration"),
-            }
+            try:
+                opportunity = {
+                    "_id": request.form.get("_id"),
+                    "title": request.form.get("title"),
+                    "description": request.form.get("description"),
+                    "url": request.form.get("url"),
+                    "employer_id": None,
+                    "location": request.form.get("location"),
+                    "modules_required": [
+                        module.strip()
+                        for module in request.form.get("modules_required")[1:-1]
+                        .replace('"', "")
+                        .split(",")
+                    ],
+                    "courses_required": [
+                        course.strip()
+                        for course in request.form.get("courses_required")[1:-1]
+                        .replace('"', "")
+                        .split(",")
+                    ],
+                    "spots_available": int(request.form.get("spots_available")),
+                    "duration": request.form.get("duration"),
+                }
+
+                # Check if any required field is empty
+                for key, value in opportunity.items():
+                    if not value and key != "employer_id":
+                        raise ValueError(
+                            f"Field {key} is required and cannot be empty."
+                        )
+
+                if opportunity["spots_available"] < 1:
+                    raise ValueError("Spots available must be at least 1.")
+                elif opportunity["duration"] not in [
+                    "1_day",
+                    "1_week",
+                    "1_month",
+                    "3_months",
+                    "6_months",
+                    "12_months",
+                ]:
+                    raise ValueError("Invalid duration value.")
+            except Exception as e:
+                return jsonify({"error": str(e)}), 400
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
             else:
-                if (
-                    Opportunity().get_opportunity_by_id(opportunity["_id"])[
-                        "employer_id"
-                    ]
-                    != session["employer"]["_id"]
-                ):
-                    return {"error": "Unauthorized Access."}, 401
+                original = Opportunity().get_opportunity_by_id(opportunity["_id"])
+                if original and original["employer_id"] != session["employer"]["_id"]:
+                    return jsonify({"error": "Unauthorized Access."}), 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 
@@ -112,7 +142,7 @@ def add_opportunities_routes(app):
         if opportunity_id is not None:
             opportunity = Opportunity().get_opportunity_by_id(opportunity_id)
         else:
-            opportunity = {"_id": uuid.uuid1().hex}
+            opportunity = {"_id": uuid.uuid4().hex, "spots_available": 1}
 
         # Include employer in the context
         employer = session.get("employer", None)
@@ -124,6 +154,7 @@ def add_opportunities_routes(app):
             modules=Module().get_modules(),
             user_type="admin" if "logged_in" in session else "employer",
             employer=employer,  # Add employer to the template context
+            page="opportunities",
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
@@ -137,3 +168,57 @@ def add_opportunities_routes(app):
         Opportunity().delete_opportunity_by_id(opportunity_id)
         flash("Opportunity deleted successfully", "success")
         return redirect(url_for("search_opportunities"))
+
+    @app.route("/opportunities/upload", methods=["GET", "POST"])
+    @handlers.admin_or_employers_required
+    def upload_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+
+        if request.method == "POST":
+            file = request.files["file"]
+            if not file:
+                return jsonify({"error": "No file provided"}), 400
+            if not handlers.allowed_file(file.filename, ["xlsx", "xls"]):
+                return jsonify({"error": "Invalid file type"}), 400
+
+            if user_type == "admin":
+                return Opportunity().upload_opportunities(file, True)
+
+            return Opportunity().upload_opportunities(file, False)
+
+        return render_template(
+            "opportunities/upload.html",
+            user_type=user_type,
+            page="opportunities",
+        )
+
+    @app.route("/opportunities/download_all", methods=["GET"])
+    @handlers.admin_or_employers_required
+    def download_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+        if user_type == "admin":
+            return Opportunity().download_opportunities(True)
+        return Opportunity().download_opportunities(False)
+
+    @app.route("/opportunities/download_template", methods=["GET"])
+    @handlers.admin_or_employers_required
+    def download_opportunities_template():
+        user_type = "admin" if handlers.is_admin() else "employer"
+
+        if user_type == "admin":
+            return send_file(
+                "data_model_upload_template/admin_opportunities_template.xlsx",
+                as_attachment=True,
+            )
+        return send_file(
+            "data_model_upload_template/employer_opportunities_template.xlsx",
+            as_attachment=True,
+        )
+
+    @app.route("/opportunities/delete_all", methods=["DELETE"])
+    @handlers.admin_or_employers_required
+    def delete_all_opportunities():
+        user_type = "admin" if handlers.is_admin() else "employer"
+        if user_type == "admin":
+            return Opportunity().delete_all_opportunities(True)
+        return Opportunity().delete_all_opportunities(False)

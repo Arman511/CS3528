@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
+    {% include "/student/navbar.html" %}
     <div class="card-wrapper">
         <div class="card">
             <h1 class="center">Upload</h1>
@@ -8,7 +9,7 @@
                   class="upload_form"
                   enctype="multipart/form-data">
                 <label for="file">XLSX</label>
-                <input type="file" name="file" class="field" required />
+                <input type="file" name="file" class="field" required accept=".xlsx" />
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Upload" class="btn" />
             </form>

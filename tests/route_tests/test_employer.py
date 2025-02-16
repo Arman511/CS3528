@@ -1,4 +1,4 @@
-""" Test for the employer routes."""
+"""Test for the employer routes."""
 
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
@@ -7,6 +7,8 @@ import os
 import sys
 import uuid
 from unittest.mock import patch
+
+from core import handlers
 
 # Add the root directory to the Python path
 sys.path.append(
@@ -41,9 +43,9 @@ def database():
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
     deadlines = DATABASE.get_all("deadline")
-
     DATABASE.delete_all("deadline")
     yield DATABASE
+
     DATABASE.delete_all("deadline")
     for deadline in deadlines:
         DATABASE.insert("deadline", deadline)
@@ -91,6 +93,23 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
         session.clear()
 
 
+def test_employer_otp_no_login(client):
+    """Test OTP endpoint when employer is not logged in."""
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "Employer not logged in."}
+
+
+def test_employer_otp_no_otp(client):
+    """Test OTP endpoint when OTP is not in session."""
+    with client.session_transaction() as session:
+        session["employer"] = {"_id": "123"}
+
+    response = client.post("/employers/otp", data={"otp": "123456"})
+    assert response.status_code == 400
+    assert response.json == {"error": "OTP not sent."}
+
+
 def test_employer_login_page(client):
     """Test the employer login page."""
     url = "/employers/login"
@@ -115,7 +134,7 @@ def test_search_oppurtunities_page(employer_logged_in_client):
     assert response.status_code == 200
 
 
-def test_employer_delete_opportunity_page(employer_logged_in_client):
+def test_employer_delete_opportunity_page_no_opportunity_id(employer_logged_in_client):
     """Test the employer_delete_opportunity page."""
     url = "/opportunities/employer_delete_opportunity"
 
@@ -205,3 +224,122 @@ def test_employers_rank_students_past_student_ranking_deadline(
     )
 
     database.delete_all_by_field("opportunities", "_id", "123")
+
+
+def test_employer_update_opportunity(employer_logged_in_client, database):
+    """Test the employer_update_opportunity page."""
+    url = "/opportunities/employer_add_update_opportunity"
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+    assert b"Adding/Updating details deadline has passed as of " in response.data
+
+
+def test_employer_add_opportunity_post(employer_logged_in_client, database):
+    """Test the employer_update_opportunity page."""
+    url = "/opportunities/employer_add_update_opportunity"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("opportunities", "_id", "1234")
+    opportunity = {
+        "_id": "1234",
+        "title": "Software Internship",
+        "description": "A great opportunity to learn.",
+        "url": "https://example.com",
+        "location": "Remote",
+        "modules_required": '["CS101", "CS102"]',  # Matches how the request expects it
+        "courses_required": '["Computer_Science"]',
+        "spots_available": 3,
+        "duration": "6_months",
+    }
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = employer_logged_in_client.post(
+            url, data=opportunity, content_type="application/x-www-form-urlencoded"
+        )
+
+    assert response.status_code == 200  # Adjust based on actual expected behavior
+    database.delete_by_id("opportunities", "1234")
+    database.delete_all_by_field("employers", "email", "dummy@dummy,com")
+    
+
+def test_employer_add_opportunity_post_different_employer_id(employer_logged_in_client, database):
+    """Test the employer_update_opportunity page."""
+    url = "/opportunities/employer_add_update_opportunity"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("opportunities", "_id", "1234")
+    opportunity = {
+        "_id": "123",
+        "title": "Software Internship",
+        "description": "A great opportunity to learn.",
+        "url": "https://example.com",
+        "location": "Remote",
+        "modules_required": '["CS101", "CS102"]',  # Matches how the request expects it
+        "courses_required": '["Computer_Science"]',
+        "spots_available": 3,
+        "duration": "6_months",
+    }
+    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
+    
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = employer_logged_in_client.post(
+            url, data=opportunity, content_type="application/x-www-form-urlencoded"
+        )
+
+    assert response.status_code == 401
+    assert response.json == {"error": "Unauthorized Access."}
+    database.delete_by_id("opportunities", "123")
+    database.delete_all_by_field("employers", "email", "dummy@dummy,com")
+
+
+def test_get_opportunity_page_no_id(employer_logged_in_client):
+    """Test retrieving an opportunity without an ID, ensuring UUID is generated."""
+    url = "/opportunities/employer_add_update_opportunity"  # No opportunity_id
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+
+def test_get_oppotunity_page_with_id(employer_logged_in_client, database):
+    """Test retrieving an opportunity with an ID."""
+    url = "/opportunities/employer_add_update_opportunity?opportunity_id=123"  # Pass opportunity
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert(
+        "opportunities",
+        {"_id": "123", "employer_id": "test_employer_id", "spots_available": 1},
+    )
+
+    with patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=False):
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+
+def test_employers_rank_students_success(employer_logged_in_client, database):
+    """Test the rank_students page."""
+    url = "/employers/rank_students?opportunity_id=123"
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "test_employer_id"})
+
+    with employer_logged_in_client.session_transaction() as session:
+        session["employer"] = {"_id": "test_employer_id"}
+
+    with patch(
+        "app.DEADLINE_MANAGER.is_past_opportunities_ranking_deadline",
+        return_value=False,
+    ), patch(
+        "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=True
+    ):
+
+        response = employer_logged_in_client.get(url)
+
+    assert response.status_code == 200
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "test_employer_id")

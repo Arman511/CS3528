@@ -6,7 +6,7 @@
             <div class="col-12">
                 <h1>Rank Opportunities</h1>
                 <p id="rank-opportunities-info" data-min_ranked="{{ min_ranked }}">
-                    Rank the opportunities below in order of preference. You can only rank each opportunity once. 1 is most preferable {{ opportunities|length }} is least preferable. Do at least {{ min_ranked }} or as many as you can.
+                    Rank the opportunities below in order of preference. You can only rank each opportunity once. 1 is most preferable {{ (opportunities|length) }} is least preferable. Do at least {{ min_ranked }} or as many as you can.
                 </p>
             </div>
             <div class="col-12">
@@ -27,7 +27,7 @@
                                     name="rank-{{ opportunity._id }}"
                                     class="opportunity-rank form-select">
                                 <option value="">Select rank</option>
-                                {% for i in range(1, opportunities|length + 1) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+                                {% for i in range(1, (opportunities|length )+ 1) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
                             </select>
                         </div>
                     </div>

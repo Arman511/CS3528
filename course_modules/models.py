@@ -3,7 +3,11 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
+import uuid
 from flask import jsonify
+import pandas as pd
+from flask import send_file
+from tqdm import tqdm
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -222,3 +226,97 @@ class Module:
         modules_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Updated"}), 200
+
+    def delete_all_modules(self):
+        """Deletes all modules from the database."""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("modules")
+        modules_cache["data"] = []
+        modules_cache["last_updated"] = datetime.now()
+
+        students = DATABASE_MANAGER.get_all("students")
+        DATABASE_MANAGER.delete_all("students")
+        updated_students = []
+        for student in students:
+            if "module" in student:
+                student["modules"] = []
+            updated_students.append(student)
+
+        DATABASE_MANAGER.insert_many("students", updated_students)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        DATABASE_MANAGER.delete_all("opportunities")
+        for opp in opportunities:
+            opp["modules_required"] = []
+        DATABASE_MANAGER.insert_many("opportunities")
+
+        return jsonify({"message": "Deleted"}), 200
+
+    def download_all_modules(self):
+        """Download all modules"""
+        from app import DATABASE_MANAGER
+
+        modules = DATABASE_MANAGER.get_all("modules")
+        # Create a DataFrame from the modules
+        df = pd.DataFrame(modules)
+
+        # Define the file path
+        file_path = "/tmp/modules.xlsx"
+
+        df.drop(columns=["_id"], inplace=True)
+        # Save the DataFrame to an Excel file
+        df.to_excel(
+            file_path,
+            index=False,
+            header=["Module_id", "Module_name", "Module_description"],
+        )
+
+        # Send the file as an attachment
+        return send_file(file_path, download_name="modules.xlsx", as_attachment=True)
+
+    def upload_course_modules(self, file):
+        """Add course modules from an Excel file."""
+
+        from app import DATABASE_MANAGER
+
+        # Read the Excel file
+        df = pd.read_excel(file)
+
+        # Convert the DataFrame to a list of dictionaries
+        modules = df.to_dict(orient="records")
+
+        clean_data = []
+        current_ids = set(
+            module["module_id"] for module in DATABASE_MANAGER.get_all("modules")
+        )
+
+        ids = set()
+
+        for i, module in enumerate(tqdm(modules, desc="Uploading modules")):
+            temp = {
+                "_id": uuid.uuid4().hex,
+                "module_id": module.get("Module_id", ""),
+                "module_name": module.get("Module_name", ""),
+                "module_description": module.get("Module_description", ""),
+            }
+            if not temp["module_id"] or not temp["module_name"]:
+                return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
+            elif temp["module_id"] in ids:
+                return (
+                    jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
+                    400,
+                )
+            elif temp["module_id"] in current_ids:
+                return jsonify({"error": "Module already in database"}), 400
+            clean_data.append(temp)
+            ids.add(temp["module_id"])
+
+        DATABASE_MANAGER.insert_many("modules", clean_data)
+
+        # Update cache
+        modules = DATABASE_MANAGER.get_all("modules")
+        modules_cache["data"] = modules
+        modules_cache["last_updated"] = datetime.now()
+
+        return jsonify({"message": "Uploaded"}), 200

@@ -4,7 +4,7 @@
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Update your Details</h2>
-            <form class="update_form">
+            <form id="updateForm">
                 <label for="student_id">Student Number:</label>
                 <input name="student_id"
                        id="student_id"
@@ -38,7 +38,7 @@
                     <option value="" disabled selected>Select Course</option>
                     {% for course in courses %}
                         <option value="{{ course.course_id }}"
-                                {% if course.course_id == student.course_id %}selected{% endif %}>
+                                {% if course.course_id == student.course %}selected{% endif %}>
                             {{ course.course_id + ": " + course.course_name }}
                         </option>
                     {% endfor %}
@@ -48,9 +48,7 @@
                     {% for skill in skills %}
                         <option value="{{ skill._id }}"
                                 title="{{ skill.skill_description }}"
-                                {% if skill._id|string in student.skills %}selected{% endif %}>
-                            {{ skill.skill_name }}
-                        </option>
+                                {% if skill._id in student.skills %}selected{% endif %}>{{ skill.skill_name }}</option>
                     {% endfor %}
                     {% for skill in student.attempted_skills %}
                         <option value="{{ skill }}" selected>{{ attempted_skill_map[skill].skill_name|title }} (Attempted)</option>

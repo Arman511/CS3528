@@ -2,12 +2,12 @@
 This module defines the User class which handles user authentication and session management.
 """
 
-from email.mime.text import MIMEText
+import time
 import uuid
-from flask import jsonify, session
+from flask import jsonify, send_file, session
 import pandas as pd
+from core import email_handler
 from opportunities.models import Opportunity
-from core.email_handler import send_email
 
 
 class Student:
@@ -38,7 +38,7 @@ class Student:
         DATABASE_MANAGER.insert("students", student)
 
         if student:
-            return jsonify(student), 200
+            return jsonify({"message": "Student added"}), 200
 
         return jsonify({"error": "Student not added"}), 400
 
@@ -200,49 +200,27 @@ class Student:
                 data.append(temp_student)
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)
-                self.send_student_password_email(
-                    temp_student["first_name"],
-                    temp_student["email"],
-                    temp_student["_id"],
-                )
 
             return jsonify({"message": f"{len(students)} students imported"}), 200
-        except (
-            pd.errors.EmptyDataError,
-            pd.errors.ParserError,
-            FileNotFoundError,
-        ) as e:
+        except Exception as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
-    def send_student_password_email(self, name, email, password):
-        """Send email to student with their password."""
-
-        body = (
-            f"<p>Dear {name},</p>"
-            f"<p>Your login password is: <strong>{password}</strong>.</p>"
-            "<p>Please keep this information secure and do not share it with anyone.</p>"
-            "<p>Best,<br>Skillpoint</p>"
-        )
-
-        msg = MIMEText(body, "html")
-        msg["Subject"] = "Your Account Password"
-        msg["To"] = email
-        send_email(msg, [email])
-
-    def student_login(self, student_id, password):
+    def student_login(self, student_id):
         """Handle student login."""
         from app import DATABASE_MANAGER
 
         # Find the student by id which is their password
-        student = DATABASE_MANAGER.get_one_by_id("students", password)
+        student = DATABASE_MANAGER.get_one_by_field(
+            "students", "student_id", student_id
+        )
 
-        if student and str(student.get("student_id")) == student_id:
-            del student["_id"]
+        if student:
+            email_handler.send_otp(student["email"])
             session["student"] = student
-            session["student_logged_in"] = True
-            return jsonify({"message": "Login successful"}), 200
+        else:
+            time.sleep(1.5)
 
-        return jsonify({"error": "Invalid id or password"}), 401
+        return jsonify({"message": "OTP sent"}), 200
 
     def rank_preferences(self, student_id, preferences):
         """Sets a students preferences."""
@@ -286,3 +264,79 @@ class Student:
                         valid_opportunities.append(opportunity)
 
         return valid_opportunities
+
+    def download_students(self):
+        """Download all students as a XLSX file."""
+        from app import DATABASE_MANAGER
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        clean_data = []
+
+        skills_map = {
+            skill["_id"]: skill["skill_name"]
+            for skill in DATABASE_MANAGER.get_all("skills")
+        }
+
+        for student in students:
+            student_data = {
+                "First Name": student["first_name"],
+                "Last Name": student["last_name"],
+                "Email (Uni)": student["email"],
+                "Student Number": student["student_id"],
+            }
+            if "course" in student:
+                student_data["Course"] = student["course"]
+            else:
+                student_data["Course"] = ""
+
+            if "modules" in student:
+                student_data["Modules"] = ",".join(student["modules"])
+            else:
+                student_data["Modules"] = ""
+
+            if "skills" in student:
+                student_data["Skills"] = ",".join(
+                    [skills_map[skill] for skill in student["skills"]]
+                )
+            else:
+                student_data["Skills"] = ""
+
+            if "comments" in student:
+                student_data["Comments"] = student["comments"]
+            else:
+                student_data["Comments"] = ""
+
+            if "placement_duration" in student:
+                student_data["Placement Duration"] = ",".join(
+                    student["placement_duration"]
+                )
+            else:
+                student_data["Placement Duration"] = ""
+
+            clean_data.append(student_data)
+
+        df = pd.DataFrame(clean_data)
+
+        tmpFile = "/tmp/students.xlsx"
+
+        df.to_excel(tmpFile, index=False)
+
+        return send_file(tmpFile, as_attachment=True, download_name="students.xlsx")
+
+    def delete_all_students(self):
+        """Delete all students."""
+        from app import DATABASE_MANAGER
+
+        DATABASE_MANAGER.delete_all("students")
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+
+        for opportunity in opportunities:
+            if "preferences" in opportunity:
+                opportunity["preferences"] = []
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
+
+        return jsonify({"message": "All students deleted"}), 200

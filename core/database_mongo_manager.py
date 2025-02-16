@@ -21,7 +21,11 @@ class DatabaseMongoManager(DatabaseInterface):
     def connect(self, connection, database):
         load_dotenv()
         self.connection = pymongo.MongoClient()
-        if os.getenv("IS_GITHUB_ACTION") == "False":
+        if (
+            os.getenv("IS_GITHUB_ACTION") == "False"
+            and connection is not None
+            and os.getenv("OFFLINE") != "True"
+        ):
             self.connection = pymongo.MongoClient(connection)
 
         try:
@@ -109,3 +113,6 @@ class DatabaseMongoManager(DatabaseInterface):
 
     def delete_collection(self, table):
         return self.database[table].drop()
+
+    def insert_many(self, table, data):
+        return self.database[table].insert_many(data)
