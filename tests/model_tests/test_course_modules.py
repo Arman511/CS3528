@@ -31,8 +31,8 @@ def database():
     modules = DATABASE.get_all("modules")
     DATABASE.delete_all("modules")
     yield DATABASE
-    for module in modules:
-        DATABASE.insert("modules", module)
+    DATABASE.delete_all("modules")
+    DATABASE.insert_many("modules", modules)
     DATABASE.connection.close()
 
 
