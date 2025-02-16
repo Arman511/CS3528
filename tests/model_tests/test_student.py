@@ -805,7 +805,6 @@ def test_get_opportunities_by_student(app, database):
     database.delete_all_by_field("opportunities", "title", "dummy1")
     database.delete_all_by_field("opportunities", "title", "dummy2")
     database.delete_all_by_field("opportunities", "title", "dummy3")
-    
 
     module1 = {
         "_id": "123",
@@ -886,7 +885,6 @@ def test_get_opportunities_by_student(app, database):
     database.delete_all_by_field("opportunities", "title", "dummy1")
     database.delete_all_by_field("opportunities", "title", "dummy2")
     database.delete_all_by_field("opportunities", "title", "dummy3")
-
 
 
 def test_get_opportunities_by_student_invalid(app, database):

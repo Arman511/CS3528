@@ -156,8 +156,7 @@ def test_upload_invalid_file(user_logged_in_client):
         )
 
     assert response.status_code == 400
-    assert response.json["error"] == "Invalid file type"  
-
+    assert response.json["error"] == "Invalid file type"
 
 
 def test_download_template(user_logged_in_client):
@@ -181,6 +180,7 @@ def test_delete_all_modules(user_logged_in_client, database, sample_module):
     database.delete_all("students")
     if students:
         database.insert_many("students", students)
+
     database.delete_all("opportunities")
     if opportunities:
         database.insert_many("opportunities", opportunities)

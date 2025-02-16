@@ -243,7 +243,8 @@ class Module:
                 student["modules"] = []
             updated_students.append(student)
 
-        DATABASE_MANAGER.insert_many("students", updated_students)
+        if updated_students:
+            DATABASE_MANAGER.insert_many("students", updated_students)
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")

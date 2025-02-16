@@ -137,16 +137,23 @@ def test_delete_all_modules(database, module_model, app, sample_module):
 
     database.insert("students", student1)
     database.insert("opportunities", opportunity1)
-    
+
     with app.app_context():
         with app.test_request_context():
             response = module_model.delete_all_modules()[0]
             assert response.status_code == 200
             assert database.get_all("modules") == []
             assert database.get_one_by_id("students", student1["_id"]) is not None
-            assert database.get_one_by_id("opportunities", opportunity1["_id"]) is not None
+            assert (
+                database.get_one_by_id("opportunities", opportunity1["_id"]) is not None
+            )
             assert database.get_one_by_id("students", student1["_id"])["modules"] == []
-            assert database.get_one_by_id("opportunities", opportunity1["_id"])["modules_required"] == []
+            assert (
+                database.get_one_by_id("opportunities", opportunity1["_id"])[
+                    "modules_required"
+                ]
+                == []
+            )
 
     database.delete_all("students")
     if students:
