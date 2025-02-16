@@ -8,7 +8,6 @@ import uuid
 from flask import jsonify
 import pandas as pd
 from flask import send_file
-from tqdm import tqdm
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -300,7 +299,7 @@ class Module:
 
         ids = set()
 
-        for i, module in enumerate(tqdm(modules, desc="Uploading modules")):
+        for i, module in enumerate(modules):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "module_id": module.get("Module_id", ""),

@@ -2,6 +2,7 @@
 Skills model.
 """
 
+import os
 import uuid
 from flask import jsonify, send_file
 import pandas as pd
@@ -240,7 +241,11 @@ class Skill:
 
         df = pd.DataFrame(clean_data)
 
-        tmpFile = "/tmp/skills.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            tmpFile = "temp/skills.xlsx"
+        else:
+            tmpFile = "/tmp/skills.xlsx"
 
         df.to_excel(tmpFile, index=False)
 
