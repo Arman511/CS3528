@@ -39,7 +39,8 @@ def database():
 
     yield DATABASE
     DATABASE.delete_all("modules")
-    DATABASE.insert_many("modules", modules)
+    if modules:
+        DATABASE.insert_many("modules", modules)
     DATABASE.connection.close()
 
 
@@ -148,10 +149,12 @@ def test_delete_all_modules(database, module_model, app, sample_module):
             assert database.get_one_by_id("opportunities", opportunity1["_id"])["modules_required"] == []
 
     database.delete_all("students")
-    database.delete_all("opportunities")
+    if students:
+        database.insert_many("students", students)
 
     database.insert_many("students", students)
-    database.insert_many("opportunities", opportunities)
+    if opportunities:
+        database.insert_many("opportunities", opportunities)
 
 
 def test_download_all_modules(database, module_model, app):

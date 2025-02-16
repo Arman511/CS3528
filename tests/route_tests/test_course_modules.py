@@ -42,7 +42,8 @@ def database():
     DATABASE.delete_all("modules")
     yield DATABASE
     DATABASE.delete_all("modules")
-    DATABASE.insert_many("modules", modules)
+    if modules:
+        DATABASE.insert_many("modules", modules)
 
     DATABASE.connection.close()
 
@@ -178,9 +179,11 @@ def test_delete_all_modules(user_logged_in_client, database, sample_module):
 
     # Restore the students and opportunities
     database.delete_all("students")
-    database.insert_many("students", students)
+    if students:
+        database.insert_many("students", students)
     database.delete_all("opportunities")
-    database.insert_many("opportunities", opportunities)
+    if opportunities:
+        database.insert_many("opportunities", opportunities)
 
 
 def test_download_all_modules(user_logged_in_client, database, sample_module):
