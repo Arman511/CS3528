@@ -106,7 +106,9 @@ class Opportunity:
             query = {"title": {"$regex": title, "$options": "i"}}
             print(f"[DEBUG] Query for title: {query}")
 
-            opportunities = DATABASE_MANAGER.get_all_by_field("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_field(
+                    "opportunities", "title", {"$regex": title, "$options": "i"}
+                )
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:

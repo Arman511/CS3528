@@ -235,3 +235,62 @@ def test_search_opportunities_by_company(opportunity_model, database, app):
     # Clean up
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
+
+def test_get_opportunities_by_title_no_title(opportunity_model, app):
+    """Test getting opportunities by title."""
+    
+    with app.app_context():
+        opportunities = opportunity_model.get_opportunities_by_title("")
+        assert opportunities == []
+        
+def test_get_opportunities_by_title_exception(opportunity_model, app):
+    """Test getting opportunities by title."""
+    
+    with app.app_context():
+        opportunities = opportunity_model.get_opportunities_by_title("SE")
+        assert opportunities == []
+        
+def test_get_opportunities_by_title(opportunity_model, database, app):
+    """Test getting opportunities by title."""
+    
+    # Clear any existing data
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "456")
+
+    # Insert test data
+    database.insert(
+        "opportunities", {"_id": "123", "title": "SE", "employer_id": "456"}
+    )
+    database.insert("employers", {"_id": "456", "company_name": "Company1"})
+
+    with app.app_context():  # Set up Flask application context
+        # Call the function with only the title
+        opportunities = opportunity_model.get_opportunities_by_title("SE")
+
+        # Assert the results
+        assert len(opportunities) == 1
+        assert opportunities[0]["_id"] == "123"
+        assert opportunities[0]["title"] == "SE"
+        assert opportunities[0]["employer_id"] == "456"
+
+    # Clean up
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "456")
+    
+def test_get_opportunities_by_company_no_company(opportunity_model, app):
+    """Test getting opportunities by company."""
+    
+    with app.app_context():
+        opportunities = opportunity_model.get_opportunities_by_company("")
+        assert opportunities == []
+
+def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
+    """Test getting opportunities by company."""
+    
+    with app.app_context():
+        opportunities = opportunity_model.get_opportunities_by_company("Company1")
+        assert opportunities == []
+        
+def test_get_opportunities_by_company(opportunity_model, database, app):
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.delete_all_by_field("employers", "_id", "456")
