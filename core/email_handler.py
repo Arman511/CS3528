@@ -13,6 +13,7 @@ load_dotenv()
 
 SENDER: str = str(os.getenv("EMAIL"))
 PASSWORD: str = str(os.getenv("EMAIL_PASSWORD"))
+SMTP: str = str(os.getenv("SMTP"))
 
 
 def generate_otp():
@@ -39,7 +40,7 @@ def send_otp(recipient):
     msg["Subject"] = "Skillpoint: OTP"
     msg["From"] = SENDER
     msg["To"] = recipient
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
+    with smtplib.SMTP_SSL(SMTP, 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipient, msg.as_string())
 
@@ -51,7 +52,7 @@ def send_email(msg, recipients):
     if os.getenv("IS_TEST") == "True":
         return
     msg["From"] = SENDER
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp_server:
+    with smtplib.SMTP_SSL(SMTP, 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipients, msg.as_string())
 

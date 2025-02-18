@@ -3,6 +3,7 @@ Opportunity model.
 """
 
 from datetime import datetime, timedelta
+import os
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
@@ -107,8 +108,8 @@ class Opportunity:
             print(f"[DEBUG] Query for title: {query}")
 
             opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", "title", {"$regex": title, "$options": "i"}
-                )
+                "opportunities", "title", {"$regex": title, "$options": "i"}
+            )
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:
@@ -162,7 +163,9 @@ class Opportunity:
         """Getting opportunity."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(minutes=5):
+        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(
+            minutes=5
+        ):
             for opportunity in cache["data"]:
                 if opportunity["_id"] == _id:
                     return opportunity
@@ -188,7 +191,10 @@ class Opportunity:
     def get_opportunities(self):
         """Getting all opportunities."""
         from app import DATABASE_MANAGER
-        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(minutes=5):
+
+        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(
+            minutes=5
+        ):
             return jsonify(cache["data"]), 200
 
         cache["data"] = DATABASE_MANAGER.get_all("opportunities")
@@ -363,7 +369,11 @@ class Opportunity:
             opportunities_data.append(opportunity_data)
 
         df = pd.DataFrame(opportunities_data)
-        file_path = "/tmp/opportunities.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/opportunities.xlsx"
+        else:
+            file_path = "/tmp/opportunities.xlsx"
         df.to_excel(file_path, index=False)
 
         return send_file(

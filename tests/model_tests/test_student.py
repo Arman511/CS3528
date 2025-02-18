@@ -48,10 +48,15 @@ def database():
     )
     current_students = DATABASE.get_all("students")
     DATABASE.delete_all("students")
+    opportunities = DATABASE.get_all("opportunities")
+    DATABASE.delete_all("opportunities")
     yield DATABASE
     DATABASE.delete_all("students")
     for student in current_students:
         DATABASE.insert("students", student)
+    DATABASE.delete_all("opportunities")
+    for opportunity in opportunities:
+        DATABASE.insert("opportunities", opportunity)
 
     # Cleanup code
     DATABASE.connection.close()
@@ -476,7 +481,7 @@ def test_delete_student_by_id(app, database):
     database.delete_all_by_field("students", "_id", "123")
 
 
-def test_delete_student_by_Id_opportunities(app, database):
+def test_delete_student_by_id_opportunities(app, database):
 
     from students.models import Student
     from unittest.mock import patch
@@ -484,6 +489,8 @@ def test_delete_student_by_Id_opportunities(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("modules", "module_id", "123")
     database.delete_all_by_field("modules", "module_id", "124")
+    database.delete_all_by_field("oppotunities", "title", "dummy1")
+    database.delete_all_by_field("oppotunities", "title", "dummy2")
 
     student1 = {
         "_id": "123",
@@ -502,6 +509,7 @@ def test_delete_student_by_Id_opportunities(app, database):
         "modules_required": ["123"],
         "courses_required": ["123"],
         "duration": "1_day",
+        "preferences": ["123"],
     }
     database.insert("opportunities", opportunity1)
 

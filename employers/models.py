@@ -1,6 +1,7 @@
 """Employer model."""
 
 from datetime import datetime, timedelta
+import os
 import time
 from flask import redirect, jsonify, session
 from core import email_handler
@@ -190,7 +191,11 @@ class Employers:
         df = pd.DataFrame(employers)
 
         # Save DataFrame to Excel file
-        file_path = "/tmp/employers.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/employers.xlsx"
+        else:
+            file_path = "/tmp/employers.xlsx"
         df.to_excel(file_path, index=False)
 
         # Send the file
