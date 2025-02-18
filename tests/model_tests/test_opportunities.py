@@ -8,7 +8,7 @@ from passlib.hash import pbkdf2_sha256
 
 from flask import session, jsonify
 from unittest.mock import MagicMock, patch
-from datetime import datetime
+from datetime import datetime, timedelta
 import pandas as pd
 from io import BytesIO
 
@@ -294,3 +294,71 @@ def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
 def test_get_opportunities_by_company(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
+    
+    database.insert("opportunities", {"_id": "123", "title": "SE", "employer_id": "456"})
+    database.insert("employers", {"_id": "456", "company_name": "Company1"})
+    
+    with app.app_context():
+        opportunities = opportunity_model.get_opportunities_by_company("Company1")
+        
+        assert len(opportunities) == 1
+        assert opportunities[0]["_id"] == "123"
+        assert opportunities[0]["title"] == "SE"
+        assert opportunities[0]["employer_id"] == "456"
+
+def test_get_opportunities_by_company_id(opportunity_model, database, app):
+    database.delete_all_by_field("opportunities", "_id", "123")
+
+    database.insert("opportunities", {"_id": "123", "title": "SE", "employer_id": "456"})
+    
+    with app.app_context():
+        with app.test_request_context():
+            opportunites = opportunity_model.get_opportunity_by_company_id("456")
+            assert len(opportunites) == 1
+            assert opportunites[0]["_id"] == "123"
+
+    database.delete_all_by_field("opportunities", "_id", "123")
+    
+cache = {}
+
+def test_get_opportunity_by_id(opportunity_model, database, app):
+    # Set up the cache with predefined data
+    cache["data"] = [
+        {"_id": "1", "name": "Opportunity 1"},
+        {"_id": "2", "name": "Opportunity 2"},
+        {"_id": "3", "name": "Opportunity 3"},
+    ]
+    cache["last_updated"] = datetime.now() + timedelta(minutes=5)  # Future date to ensure cache is valid
+
+    with app.app_context():
+        with app.test_request_context():
+            # Test for an existing opportunity
+            opportunity = opportunity_model.get_opportunity_by_id("2")
+            assert opportunity is not None
+            assert opportunity["_id"] == "2"
+            assert opportunity["name"] == "Opportunity 2"
+
+            # Test for a non-existing opportunity
+            opportunity = opportunity_model.get_opportunity_by_id("999")
+            assert opportunity is None
+
+            # Clean up the cache
+            cache.clear()
+    
+def test_get_employer_by_id(opportunity_model, database, app):
+    database.delete_all_by_field("opportunities", "_id", "123")
+    database.insert("opportunities", {"_id": "123", "employer_id": "456"})
+    
+    with app.app_context():
+        with app.test_request_context():
+            employer = opportunity_model.get_employer_by_id("123")
+            assert employer == "456"
+            
+            database.delete_all_by_field("opportunities", "_id", "123")
+            employer = opportunity_model.get_employer_by_id("123")
+            assert employer == ""
+
+def test_get_opportunities(opportunity_model, database, app):
+    with app.app_context():
+        with app.test_request_context():
+            opportunities = opportunity_model.get_opportunities()

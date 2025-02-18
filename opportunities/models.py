@@ -2,7 +2,7 @@
 Opportunity model.
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
@@ -162,7 +162,7 @@ class Opportunity:
         """Getting opportunity."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now():
+        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(minutes=5):
             for opportunity in cache["data"]:
                 if opportunity["_id"] == _id:
                     return opportunity
@@ -188,8 +188,7 @@ class Opportunity:
     def get_opportunities(self):
         """Getting all opportunities."""
         from app import DATABASE_MANAGER
-
-        if cache["data"] and cache["last_updated"] > datetime.now():
+        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(minutes=5):
             return jsonify(cache["data"]), 200
 
         cache["data"] = DATABASE_MANAGER.get_all("opportunities")
