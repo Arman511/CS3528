@@ -64,7 +64,7 @@ class Opportunity:
                 )
             elif title:
                 opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", {"title": {"$regex": title, "$options": "i"}}
+                    "opportunities", "title", {"$regex": title, "$options": "i"}
                 )
             elif company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
