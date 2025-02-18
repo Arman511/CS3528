@@ -368,10 +368,13 @@ def test_get_employer_by_id(opportunity_model, database, app):
             employer = opportunity_model.get_employer_by_id("123")
             assert employer == "456"
 
-            database.delete_all_by_field("opportunities", "_id", "123")
+def test_get_employer_by_id_no_employer(opportunity_model, database, app):
+    database.delete_all_by_field("opportunities", "_id", "123")
+
+    with app.app_context():
+        with app.test_request_context():
             employer = opportunity_model.get_employer_by_id("123")
             assert employer == ""
-
 
 def test_get_opportunities(opportunity_model, database, app):
     opportunity = database.get_all("opportunities")
