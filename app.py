@@ -66,7 +66,7 @@ DEADLINE_MANAGER = DeadlineManager()
 
 if __name__ == "__main__":
     try:
-        app.run(debug=True, use_reloader=True)
+        app.run()
     except KeyboardInterrupt:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
