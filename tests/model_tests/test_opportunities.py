@@ -236,23 +236,26 @@ def test_search_opportunities_by_company(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
 
+
 def test_get_opportunities_by_title_no_title(opportunity_model, app):
     """Test getting opportunities by title."""
-    
+
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_title("")
         assert opportunities == []
-        
+
+
 def test_get_opportunities_by_title_exception(opportunity_model, app):
     """Test getting opportunities by title."""
-    
+
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_title("SE")
         assert opportunities == []
-        
+
+
 def test_get_opportunities_by_title(opportunity_model, database, app):
     """Test getting opportunities by title."""
-    
+
     # Clear any existing data
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
@@ -276,41 +279,49 @@ def test_get_opportunities_by_title(opportunity_model, database, app):
     # Clean up
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
-    
+
+
 def test_get_opportunities_by_company_no_company(opportunity_model, app):
     """Test getting opportunities by company."""
-    
+
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_company("")
         assert opportunities == []
 
+
 def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
     """Test getting opportunities by company."""
-    
+
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_company("Company1")
         assert opportunities == []
-        
+
+
 def test_get_opportunities_by_company(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
-    
-    database.insert("opportunities", {"_id": "123", "title": "SE", "employer_id": "456"})
+
+    database.insert(
+        "opportunities", {"_id": "123", "title": "SE", "employer_id": "456"}
+    )
     database.insert("employers", {"_id": "456", "company_name": "Company1"})
-    
+
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_company("Company1")
-        
+
         assert len(opportunities) == 1
         assert opportunities[0]["_id"] == "123"
         assert opportunities[0]["title"] == "SE"
         assert opportunities[0]["employer_id"] == "456"
 
+
 def test_get_opportunities_by_company_id(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
 
-    database.insert("opportunities", {"_id": "123", "title": "SE", "employer_id": "456"})
-    
+    database.insert(
+        "opportunities", {"_id": "123", "title": "SE", "employer_id": "456"}
+    )
+
     with app.app_context():
         with app.test_request_context():
             opportunites = opportunity_model.get_opportunity_by_company_id("456")
@@ -318,21 +329,22 @@ def test_get_opportunities_by_company_id(opportunity_model, database, app):
             assert opportunites[0]["_id"] == "123"
 
     database.delete_all_by_field("opportunities", "_id", "123")
-    
-cache = {}
+
 
 def test_get_opportunity_by_id(opportunity_model, database, app):
     # Set up the cache with predefined data
-    cache["data"] = [
-        {"_id": "1", "name": "Opportunity 1"},
-        {"_id": "2", "name": "Opportunity 2"},
-        {"_id": "3", "name": "Opportunity 3"},
-    ]
-    cache["last_updated"] = datetime.now() + timedelta(minutes=5)  # Future date to ensure cache is valid
+    opportunities = database.get_all("opportunities")
+    database.delete_all("opportunities")
 
+    op = {
+        "_id": "2",
+        "name": "Opportunity 2",
+    }
+    database.insert("opportunities", op)
     with app.app_context():
         with app.test_request_context():
             # Test for an existing opportunity
+            opportunity_model.get_opportunity_by_id("2")
             opportunity = opportunity_model.get_opportunity_by_id("2")
             assert opportunity is not None
             assert opportunity["_id"] == "2"
@@ -343,20 +355,24 @@ def test_get_opportunity_by_id(opportunity_model, database, app):
             assert opportunity is None
 
             # Clean up the cache
-            cache.clear()
-    
+    database.delete_all("opportunities")
+    for opportunity in opportunities:
+        database.insert("opportunities", opportunity)
+
+
 def test_get_employer_by_id(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
     database.insert("opportunities", {"_id": "123", "employer_id": "456"})
-    
+
     with app.app_context():
         with app.test_request_context():
             employer = opportunity_model.get_employer_by_id("123")
             assert employer == "456"
-            
+
             database.delete_all_by_field("opportunities", "_id", "123")
             employer = opportunity_model.get_employer_by_id("123")
             assert employer == ""
+
 
 def test_get_opportunities(opportunity_model, database, app):
     with app.app_context():
