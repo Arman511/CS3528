@@ -543,15 +543,6 @@ class Opportunity:
                         ),
                         400,
                     )
-                if not isinstance(temp["duration"], str):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Duration is required and cannot be empty in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
-                    )
 
                 temp["title"] = temp["title"].strip()
                 temp["description"] = temp["description"].strip()
