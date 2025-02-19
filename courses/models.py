@@ -3,9 +3,9 @@ Courses model."""
 
 from datetime import datetime, timedelta
 import os
+import uuid
 from flask import jsonify, send_file
 import pandas as pd
-import uuid
 
 
 # Cache to store courses and the last update time
@@ -258,12 +258,12 @@ class Course:
             }
             if not temp["course_id"] or not temp["course_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
-            elif temp["course_id"] in ids:
+            if temp["course_id"] in ids:
                 return (
                     jsonify({"error": "Duplicate course ID in row " + str(i + 1)}),
                     400,
                 )
-            elif temp["course_id"] in current_ids:
+            if temp["course_id"] in current_ids:
                 return jsonify({"error": "Course ID already exists"}), 400
             clean_data.append(temp)
             ids.add(temp["course_id"])
