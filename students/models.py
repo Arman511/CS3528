@@ -101,8 +101,8 @@ class Student:
         # Return True if the update was successful (i.e., a document was matched and modified)
         if result.matched_count > 0:
             return jsonify({"message": "Student updated"}), 200
-        else:
-            return jsonify({"error": "Student not found"}), 404
+
+        return jsonify({"error": "Student not found"}), 404
 
     def update_student_by_uuid(self, uuid, student_data):
         """Update student in the database by student_id."""
@@ -114,8 +114,7 @@ class Student:
         # Return True if the update was successful (i.e., a document was matched and modified)
         if result.matched_count > 0:
             return jsonify({"message": "Student updated"}), 200
-        else:
-            return jsonify({"error": "Student not found"}), 404
+        return jsonify({"error": "Student not found"}), 404
 
     def delete_student_by_id(self, student_id):
         """Deleting student."""
@@ -177,23 +176,23 @@ class Student:
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
                 if temp_student["email"].split("@")[1] != base_email:
-                    errorMSG = {
+                    error_msg = {
                         "error": (
                             f"Invalid student {temp_student['first_name']}, "
                             f"{temp_student['last_name']}"
                         )
                     }
-                    return jsonify(errorMSG), 400
+                    return jsonify(error_msg), 400
 
                 temp_student["student_id"] = str(student["Student Number"])
                 if len(str(temp_student["student_id"])) != 8:
-                    errorMSG = {
+                    error_msg = {
                         "error": (
                             f"Invalid student {temp_student['first_name']}, "
                             f"{temp_student['last_name']}"
                         )
                     }
-                    return jsonify(errorMSG), 400
+                    return jsonify(error_msg), 400
 
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
@@ -321,13 +320,13 @@ class Student:
 
         if os.name == "nt":  # For Windows
             os.makedirs("temp", exist_ok=True)
-            tmpFile = "temp/students.xlsx"
+            tmp_file = "temp/students.xlsx"
         else:
-            tmpFile = "/tmp/students.xlsx"
+            tmp_file = "/tmp/students.xlsx"
 
-        df.to_excel(tmpFile, index=False)
+        df.to_excel(tmp_file, index=False)
 
-        return send_file(tmpFile, as_attachment=True, download_name="students.xlsx")
+        return send_file(tmp_file, as_attachment=True, download_name="students.xlsx")
 
     def delete_all_students(self):
         """Delete all students."""

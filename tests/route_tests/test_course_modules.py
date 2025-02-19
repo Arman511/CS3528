@@ -6,14 +6,14 @@
 import os
 import sys
 import uuid
+from passlib.hash import pbkdf2_sha512
+import pytest
+from dotenv import load_dotenv
 
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha512
-import pytest
-from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
 

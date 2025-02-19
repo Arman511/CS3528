@@ -116,7 +116,7 @@ def add_opportunities_routes(app):
 
                 if opportunity["spots_available"] < 1:
                     raise ValueError("Spots available must be at least 1.")
-                elif opportunity["duration"] not in [
+                if opportunity["duration"] not in [
                     "1_day",
                     "1_week",
                     "1_month",
@@ -130,10 +130,10 @@ def add_opportunities_routes(app):
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
-            else:
-                original = Opportunity().get_opportunity_by_id(opportunity["_id"])
-                if original and original["employer_id"] != session["employer"]["_id"]:
-                    return jsonify({"error": "Unauthorized Access."}), 401
+
+            original = Opportunity().get_opportunity_by_id(opportunity["_id"])
+            if original and original["employer_id"] != session["employer"]["_id"]:
+                return jsonify({"error": "Unauthorized Access."}), 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 
