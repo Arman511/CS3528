@@ -3,11 +3,11 @@
 from datetime import datetime, timedelta
 import os
 import time
+import uuid
 from flask import redirect, jsonify, session
-from core import email_handler
 import pandas as pd
 from flask import send_file
-import uuid
+from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}
 

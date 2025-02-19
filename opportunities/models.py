@@ -21,9 +21,9 @@ class Opportunity:
         opportunity,
         is_admin=False,
     ):
+        """Adding new opportunity."""
         from app import DATABASE_MANAGER
 
-        """Adding new opportunity."""
         find_opportunity = DATABASE_MANAGER.get_one_by_id(
             "opportunities", opportunity["_id"]
         )
@@ -273,8 +273,8 @@ class Opportunity:
         """Deleting all opportunities."""
         if is_admin:
             return self.delete_all_opportunities_admin()
-        else:
-            return self.delete_all_opportunities_employer()
+
+        return self.delete_all_opportunities_employer()
 
     def delete_all_opportunities_employer(self):
         """Deleting all opportunities."""

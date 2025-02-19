@@ -2,6 +2,7 @@ import os
 import sys
 from unittest import mock
 from dotenv import load_dotenv
+import pytest
 
 
 # pylint: disable=redefined-outer-name
@@ -13,9 +14,6 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 from core.database_mongo_manager import DatabaseMongoManager
-
-
-import pytest
 
 
 @pytest.fixture()

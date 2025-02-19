@@ -5,9 +5,8 @@ Course module model.
 from datetime import datetime, timedelta
 import os
 import uuid
-from flask import jsonify
 import pandas as pd
-from flask import send_file
+from flask import send_file, jsonify
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -310,12 +309,12 @@ class Module:
             }
             if not temp["module_id"] or not temp["module_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
-            elif temp["module_id"] in ids:
+            if temp["module_id"] in ids:
                 return (
                     jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
                     400,
                 )
-            elif temp["module_id"] in current_ids:
+            if temp["module_id"] in current_ids:
                 return jsonify({"error": "Module already in database"}), 400
             clean_data.append(temp)
             ids.add(temp["module_id"])

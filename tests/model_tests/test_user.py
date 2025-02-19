@@ -126,7 +126,8 @@ def test_register_email_in_use(app, database, user_model):
 
 
 def test_register_failure(app, user_model):
-    """Tests the register method of the User model when the request is missing the email or password."""
+    """Tests the register method of the User model when
+    the request is missing the email or password."""
 
     with app.app_context():
         with app.test_request_context():
@@ -273,7 +274,8 @@ def test_update_deadlines_invalid_format(app, database, user_model):
 
 
 def test_update_deadlines_details_later_than_student_ranking(app, database, user_model):
-    """Tests the change_deadline method of the User model with the details deadline later than the student ranking deadline."""
+    """Tests the change_deadline method of the User model
+    with the details deadline later than the student ranking deadline."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -302,7 +304,8 @@ def test_update_deadlines_details_later_than_student_ranking(app, database, user
 def test_update_deadlines_student_ranking_later_than_opportunities_ranking(
     app, database, user_model
 ):
-    """Tests the change_deadline method of the User model with the student ranking deadline later than the opportunities ranking deadline."""
+    """Tests the change_deadline method of the User model
+    with the student ranking deadline later than the opportunities ranking deadline."""
     deadlines = database.get_all("deadline")
     if deadlines:
         database.delete_all("deadline")
@@ -398,7 +401,7 @@ def test_delete_user_success(app, database, user_model):
     database.delete_all_by_field("users", "email", "delete@dummy.com")
 
 
-def test_delete_user_not_found(app, database, user_model):
+def test_delete_user_not_found(app, user_model):
     """Tests the delete_user_by_uuid method of the User model when the user is not found."""
     user_uuid = "non-existent-uuid"
 
@@ -435,7 +438,7 @@ def test_get_user_by_uuid_success(app, database, user_model):
     database.delete_all_by_field("users", "email", "get@dummy.com")
 
 
-def test_get_user_by_uuid_not_found(app, database, user_model):
+def test_get_user_by_uuid_not_found(app, user_model):
     """Tests the get_user_by_uuid method of the User model when the user is not found."""
     user_uuid = "non-existent-uuid"
 

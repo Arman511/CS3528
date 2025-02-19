@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 class DatabaseInterface(ABC):
     def __init__(self):
+        """Initialize the database interface"""
         self.connection = None
         self.database = None
         self.table_list = []
@@ -12,83 +13,104 @@ class DatabaseInterface(ABC):
 
     @abstractmethod
     def connect(self, connection, database):
+        """Connect to the database"""
         pass
 
     @abstractmethod
     def get_all(self, table):
+        """Get all the data from the table"""
         pass
 
     @abstractmethod
     def get_one_by_id(self, table, id_val):
+        """Get one row by id"""
         pass
 
     @abstractmethod
     def insert(self, table, data):
+        """Insert data into the table"""
         pass
 
     @abstractmethod
     def update_one_by_id(self, table, id_val, data):
+        """Update one row by id"""
         pass
 
     @abstractmethod
     def update_one_by_field(self, table, field, value, data):
+        """Update one row by field"""
         pass
 
     @abstractmethod
     def delete_by_id(self, table, id_val):
+        """Delete one row by id"""
         pass
 
     @abstractmethod
     def delete_all(self, table):
+        """Delete all rows in the table"""
         pass
 
     @abstractmethod
     def increment(self, table, id_val, field, increment):
+        """Increment a field by a value"""
         pass
 
     @abstractmethod
     def delete_one_by_field(self, table, field, value):
+        """Delete one row by field"""
         pass
 
     @abstractmethod
     def get_by_email(self, table, email):
+        """Get one row by email"""
         pass
 
     @abstractmethod
     def get_one_by_field(self, table, field, value):
+        """Get one row by field"""
         pass
 
     @abstractmethod
     def is_table(self, table):
+        """Check if the table exists"""
         pass
 
     @abstractmethod
     def get_all_by_two_fields(self, table, field1, value1, field2, value2):
+        """Get all by two fields"""
         pass
 
     @abstractmethod
     def get_all_by_in_list(self, table, field, values_list):
+        """Get all by in list"""
         pass
 
     @abstractmethod
     def update_by_field(self, table, field, value, data):
+        """Update by field"""
         pass
 
     @abstractmethod
     def get_all_by_field(self, table, field, value):
+        """Get all by field"""
         pass
 
     @abstractmethod
     def create_index(self, table, field):
+        """Create an index"""
         pass
 
     @abstractmethod
     def get_all_by_text_search(self, table, search_text):
+        """Get all by text search"""
         pass
 
     def get_tables(self):
+        """Get the list of tables"""
         return self.table_list
 
     @abstractmethod
     def delete_all_by_field(self, table, field, value):
+        """Delete all by field"""
         pass
