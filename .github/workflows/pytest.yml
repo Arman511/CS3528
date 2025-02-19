@@ -57,6 +57,10 @@ jobs:
                   coverage run -m pytest
                   coverage xml -o coverage.xml
 
+            - name: Lint with pylint
+              run: |
+                  pylint --disable=R,C,W1203 .
+
             - name: Upload Coverage Report
               uses: orgoro/coverage@v3.2
               with:
