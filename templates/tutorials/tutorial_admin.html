@@ -6,7 +6,7 @@
     <div class="container-fluid">
       <div class="row">
         <!-- Sidebar: Lists sections of the tutorial -->
-        <nav class="col-md-3" id="section-nav">
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
           <div class="card">
             <h2 class="h4">Admin Tutorial</h2>
 
@@ -235,7 +235,7 @@
         
         <!-- Main Content: Single card wrapping all tutorial sections -->
         <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
-        <main class="col-md-9 offset-md-2"
+        <main class="col-12 col-md-9 offset-md-2"
               data-bs-spy="scroll"
               data-bs-target="#section-nav"
               data-bs-offset="100"
@@ -596,20 +596,179 @@
               <section id="section20" class="mb-4">
                 <h3>Add Course</h3>
                 <p>
-                  Enter the email and password associated with your account. After successful login you will be redirected to the homepage.
+                  Select this option to manually enter a given course into SkillPilot. 
                 </p>
+                <p>Here you will be welcomed by a card view, containing 3 text boxes:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>To successfully enter a course into SkillPilot, you must provide information into all 3 fields.
+                Once entered, press the 'Add Course' button to save the course to SkillPilot.</p>
+                <p>Please note: The course details should accurately follow the same format that the university provides. </p>
               </section>
               <hr>
               <section id="section21" class="mb-4">
                 <h3>Delete All Courses</h3>
-                <p>Follow these steps to create and configure your account.</p>
+                <p>Removes any & all saved courses and their information from the SkillPilot platform.</p>
+                <p class="text-danger">This is irreversible.</p>
               </section>
               <section id="section22" class="mb-4">
                 <h3>Download All Courses</h3>
-                <p>Follow these steps to create and configure your account.</p>
+                <p>Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the courses and their information in a spreadsheet format.</p>
               </section>
             </div>
           </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section18" class="mb-4">
+                <h3>Search Courses</h3>
+                <p>Presented to you will be a card view titled 'Search Course', the card will contain 3 input boxes.</p>
+                <ul class="listed-unstyled">
+                  <li>
+                    Search Course Name – e.g. <i>'Computer Science'</i>
+                  </li>
+                  <li>
+                    Search Course ID – e.g. <i>'F421'</i>
+                  </li>
+                  <li>
+                    Search Course Description – e.g. <i>'Artificial Intelligence'</i>
+                  </li>
+                </ul>
+                <p>
+                  After entering information in one of the input boxes, the below list of courses will dynamically change to find any matching criteria. From within this list, we can complete 2 actions.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The update button takes us to a new view, where you can change any details about the specific course:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  When entering course information, please note that information should follow the same format as the university provides.
+                </p>
+                <p>The delete button removes the given course and its information from the database.</p>
+              </section>
+              <hr>
+              <section id="section19" class="mb-4">
+                <h3>Upload Courses</h3>
+                <p>
+                  From here, you can upload a formatted spreadsheet to bulk upload courses to SkillPilot, by clicking the 'Choose File' and selecting an appropriate spreadsheet file then selecting the 'Upload' button, all courses in the
+                  spreadsheet will be uploaded to SkillPilot.
+                </p>
+                <p>
+                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                </p>
+              </section>
+              <section id="section20" class="mb-4">
+                <h3>Add Course</h3>
+                <p>
+                  Select this option to manually enter a given course into SkillPilot. 
+                </p>
+                <p>Here you will be welcomed by a card view, containing 3 text boxes:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>To successfully enter a course into SkillPilot, you must provide information into all 3 fields.
+                Once entered, press the 'Add Course' button to save the course to SkillPilot.</p>
+                <p>Please note: The course details should accurately follow the same format that the university provides. </p>
+              </section>
+              <hr>
+              <section id="section21" class="mb-4">
+                <h3>Delete All Courses</h3>
+                <p>Removes any & all saved courses and their information from the SkillPilot platform.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <section id="section22" class="mb-4">
+                <h3>Download All Courses</h3>
+                <p>Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the courses and their information in a spreadsheet format.</p>
+              </section>
+            </div>
+          </div>
+
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section23" class="mb-4">
+                <h3>Search Module</h3>
+                <p>When you select the 'Course Modules' from the main menu bar, you will be automatically taken to the Search Module section.</p>
+                <p>From here, there are 3 input fields.</p>
+                <ul class="listed-unstyled">
+                  <li>
+                    Search Module Name – e.g. <i>'Principles of Software Engineering'</i>
+                  </li>
+                  <li>
+                    Search Module ID – e.g. <i>'MS4536'</i>
+                  </li>
+                  <li>
+                    Search Module Description – e.g. <i>'Compulsory business course'</i>
+                  </li>
+                </ul>
+                <p>
+                  After entering information in one of the input boxes, the below list of courses will dynamically change to find any matching criteria. From within this list, we can complete 2 actions.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The update button takes us to a new view, where you can change any details about the specific course:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  When entering course information, please note that information should follow the same format as the university provides.
+                </p>
+                <p>The delete button removes the given course and its information from the database.</p>
+              </section>
+              <hr>
+              <section id="section24" class="mb-4">
+                <h3>Upload Modules</h3>
+                <p>
+                  From here, you can upload a formatted spreadsheet to bulk upload courses to SkillPilot, by clicking the 'Choose File' and selecting an appropriate spreadsheet file then selecting the 'Upload' button, all courses in the
+                  spreadsheet will be uploaded to SkillPilot.
+                </p>
+                <p>
+                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                </p>
+              </section>
+              <section id="section25" class="mb-4">
+                <h3>Add Module</h3>
+                <p>
+                  Select this option to manually enter a given course into SkillPilot. 
+                </p>
+                <p>Here you will be welcomed by a card view, containing 3 text boxes:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>To successfully enter a course into SkillPilot, you must provide information into all 3 fields.
+                Once entered, press the 'Add Course' button to save the course to SkillPilot.</p>
+                <p>Please note: The course details should accurately follow the same format that the university provides. </p>
+              </section>
+              <hr>
+              <section id="section26" class="mb-4">
+                <h3>Delete All Modules</h3>
+                <p>Removes any & all saved courses and their information from the SkillPilot platform.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <section id="section27" class="mb-4">
+                <h3>Download All Modules</h3>
+                <p>Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the courses and their information in a spreadsheet format.</p>
+              </section>
+            </div>
+          </div>
+
         </div>
       </main>
     </div>

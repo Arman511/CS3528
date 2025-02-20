@@ -17,7 +17,7 @@
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     padding: 20px;
     width: 100%;
-    max-width: 1200px;
+    max-width: 100%;
     /* Restrict overly wide cards */
     margin: 0 auto;
     box-sizing: border-box;
@@ -296,14 +296,16 @@ footer a:hover {
     box-shadow: 0 0 10px rgba(78, 142, 142, 0.5);
 }
 
+#section-nav {
+    margin-top: 60px;
+}
+
 #section-nav .card {
+    height: auto;
     position: fixed;
-    top: 13%;
-    bottom: 5%;
-    width: auto;
+    max-height: calc(100vh - 60px);
     overflow-y: auto;
-    padding: 2rem;
-    margin: 0;
+    width: auto;
 }
 
 .toggle-collapse {
@@ -326,3 +328,12 @@ footer a:hover {
 .toggle-collapse[aria-expanded="true"]::before {
     content: '\25BC'; /* Unicode for down-pointing arrow */
   }
+
+@media (max-width: 1750px) {
+    #section-nav {
+        display: none;
+    }
+    main {
+        margin-left: 0; /* Ensure main content takes full width */
+      }
+}
