@@ -2,7 +2,6 @@
 Opportunity model.
 """
 
-from datetime import datetime, timedelta
 import os
 import uuid
 from flask import jsonify, send_file, session
