@@ -100,7 +100,7 @@ jobs:
           SUPERUSER_EMAIL: "dummy@admin.com"
           SUPERUSER_PASSWORD: "dummy"
         run: |
-          coverage run -m pytest -n auto
+          coverage run -m pytest
           coverage xml -o coverage.xml
 
       - name: Upload Coverage Report
