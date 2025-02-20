@@ -733,10 +733,10 @@ def test_upload_opportunities(opportunity_model, database, app):
         with app.test_request_context():
             # Test successful upload (admin)
             response = opportunity_model.upload_opportunities(file, is_admin=True)
-            assert response[1] == 200
             assert response[0].json == {
                 "message": "Opportunities uploaded successfully"
             }
+            assert response[1] == 200
 
             result = database.get_one_by_field(
                 "opportunities", "title", "Opportunity 1"
@@ -759,8 +759,8 @@ def test_upload_opportunities_employer(
 ):
 
     employers = database.get_all("employers")
-
     database.delete_all("employers")
+    assert len(database.get_all("opportunities")) == 0
     data = {
         "Title": ["Opportunity 1", "Opportunity 2"],
         "Description": ["Description 1", "Description 2"],
@@ -787,10 +787,10 @@ def test_upload_opportunities_employer(
             employer_model.start_session()
             session["employer"] = {"_id": "456"}
             response = opportunity_model.upload_opportunities(file, is_admin=False)
-            assert response[1] == 200
             assert response[0].json == {
                 "message": "Opportunities uploaded successfully"
             }
+            assert response[1] == 200
 
             result = database.get_all_by_field("opportunities", "employer_id", "456")
             assert len(result) == 2
@@ -901,12 +901,8 @@ def test_upload_opportunities_no_employer(opportunity_model, database, app):
         database.insert("employers", employer)
 
 
-def test_upload_opportunities_failed_modules_and_courses(
-    opportunity_model, database, app
-):
-
+def test_upload_opportunities_failed_modules(opportunity_model, database, app):
     employers = database.get_all("employers")
-
     database.delete_all("employers")
     data = {
         "Title": ["Opportunity 1", "Opportunity 2"],
@@ -945,8 +941,32 @@ def test_upload_opportunities_failed_modules_and_courses(
             )
             assert len(result) == 0
 
+    database.delete_all_by_field("employers", "_id", "456")
+
+    for employer in employers:
+        database.insert("employers", employer)
+
+
+def test_upload_opportunities_failed_courses(opportunity_model, database, app):
+    employers = database.get_all("employers")
+    database.delete_all("employers")
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
+    database.insert(
+        "employers",
+        {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
+    )
+
     data["Courses_required"] = ["invalid", "course2"]
-    data["Modules_required"] = ["BI1012, BI1512", "AC1011"]
     df = pd.DataFrame(data)
     file = BytesIO()
     df.to_excel(file, index=False)
@@ -972,15 +992,11 @@ def test_upload_opportunities_failed_modules_and_courses(
         database.insert("employers", employer)
 
 
-def test_upload_opportunities_wrong_title_and_description_and_spots(
-    opportunity_model, database, app
-):
-
+def test_upload_opportunities_wrong_title(opportunity_model, database, app):
     employers = database.get_all("employers")
-
     database.delete_all("employers")
     data = {
-        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Title": ["", "Opportunity 2"],
         "Description": ["Description 1", "Description 2"],
         "URL": ["http://example.com/1", "http://example.com/2"],
         "Spots_available": [5, 10],
@@ -995,7 +1011,6 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
     )
 
-    data["Title"] = ["", "Opportunity 2"]
     df = pd.DataFrame(data)
     file = BytesIO()
     df.to_excel(file, index=False)
@@ -1009,8 +1024,30 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
                 in response[0].json["error"]
             )
 
-    data["Title"] = ["Opportunity 1", "Opportunity 2"]
-    data["Description"] = ["", "Description 2"]
+    database.delete_all_by_field("employers", "_id", "456")
+    for employer in employers:
+        database.insert("employers", employer)
+
+
+def test_upload_opportunities_wrong_description(opportunity_model, database, app):
+    employers = database.get_all("employers")
+    database.delete_all("employers")
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
+    database.insert(
+        "employers",
+        {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
+    )
+
     df = pd.DataFrame(data)
     file = BytesIO()
     df.to_excel(file, index=False)
@@ -1024,8 +1061,30 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
                 in response[0].json["error"]
             )
 
-    data["Description"] = ["Description 1", "Description 2"]
-    data["Spots_available"] = [0, 10]
+    database.delete_all_by_field("employers", "_id", "456")
+    for employer in employers:
+        database.insert("employers", employer)
+
+
+def test_upload_opportunities_wrong_spots(opportunity_model, database, app):
+    employers = database.get_all("employers")
+    database.delete_all("employers")
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [0, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
+    database.insert(
+        "employers",
+        {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
+    )
+
     df = pd.DataFrame(data)
     file = BytesIO()
     df.to_excel(file, index=False)
@@ -1040,7 +1099,6 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
             )
 
     database.delete_all_by_field("employers", "_id", "456")
-
     for employer in employers:
         database.insert("employers", employer)
 
