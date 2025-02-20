@@ -28,6 +28,6 @@ document.addEventListener("DOMContentLoaded", function () {
             error_paragraph.classList.remove("error--hidden"); // Ensure the error paragraph is visible
         }
 
-
     });
+    document.title = "SkillPilot - Placement Team Login";
 });
