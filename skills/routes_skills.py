@@ -119,13 +119,12 @@ def add_skills_routes(app):
             return render_template(
                 "/skills/update_attempt_skill.html", skill=skill, page="skills"
             )
-        else:
-            skill_id = request.form.get("skill_id")
-            skill_name = request.form.get("skill_name").lower()
-            skill_description = request.form.get("skill_description")
-            if not skill_name or not skill_description:
-                return jsonify({"error": "One of the inputs is blank"}), 400
-            return Skill().update_attempt_skill(skill_id, skill_name, skill_description)
+        skill_id = request.form.get("skill_id")
+        skill_name = request.form.get("skill_name").lower()
+        skill_description = request.form.get("skill_description")
+        if not skill_name or not skill_description:
+            return jsonify({"error": "One of the inputs is blank"}), 400
+        return Skill().update_attempt_skill(skill_id, skill_name, skill_description)
 
     @app.route("/skills/download_all", methods=["GET"])
     @handlers.login_required
@@ -147,13 +146,12 @@ def add_skills_routes(app):
             return render_template(
                 "/skills/upload.html", user_type="admin", page="skills"
             )
-        else:
-            file = request.files["file"]
-            if not file:
-                return jsonify({"error": "No file uploaded"}), 400
-            if not handlers.allowed_file(file.filename, ["xlsx"]):
-                return jsonify({"error": "Invalid file type"}), 400
-            return Skill().upload_skills(file)
+        file = request.files["file"]
+        if not file:
+            return jsonify({"error": "No file uploaded"}), 400
+        if not handlers.allowed_file(file.filename, ["xlsx"]):
+            return jsonify({"error": "Invalid file type"}), 400
+        return Skill().upload_skills(file)
 
     @app.route("/skills/download_template", methods=["GET"])
     @handlers.login_required

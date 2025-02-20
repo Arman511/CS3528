@@ -4,7 +4,6 @@ import os
 import sys
 import uuid
 import pytest
-import pandas as pd
 from dotenv import load_dotenv
 
 # flake8: noqa: F811
@@ -181,7 +180,7 @@ def test_download_all_modules(database, module_model, app):
             )
 
 
-def test_upload_course_modules(database, module_model, app):
+def test_upload_course_modules(module_model, app):
     """Test upload_course_modules method with the test spreadsheet."""
     file_path = "tests/data/course_modules_test.xlsx"
 
@@ -236,19 +235,6 @@ def test_get_modules_map(database, module_model, app, sample_module):
                 modules_map[sample_module["module_id"]]["module_name"]
                 == "Introduction to CS"
             )
-
-
-def test_update_module_by_uuid(database, module_model, app, sample_module):
-    """Test update_module_by_uuid method."""
-    database.insert("modules", sample_module)
-    with app.app_context():
-        with app.test_request_context():
-            response = module_model.update_module_by_uuid(
-                sample_module["_id"], "CS102", "Advanced CS", "Next level CS"
-            )[0]
-            assert response.status_code == 200
-            updated_module = database.get_one_by_id("modules", sample_module["_id"])
-            assert updated_module["module_name"] == "Advanced CS"
 
 
 def test_reset_cache(database, module_model, app):

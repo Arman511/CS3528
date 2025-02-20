@@ -6,15 +6,15 @@
 import os
 import sys
 import uuid
+from passlib.hash import pbkdf2_sha512
+import pytest
+from dotenv import load_dotenv
+from unittest.mock import patch
 
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha512
-import pytest
-from dotenv import load_dotenv
-from unittest.mock import patch
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -332,7 +332,7 @@ def test_update_user(superuser_logged_in_client, database):
     database.delete_all_by_field("users", "email", "dummy_updated@dummy.com")
 
 
-def test_update_user_not_found(superuser_logged_in_client, database):
+def test_update_user_not_found(superuser_logged_in_client):
     """Test update user not found."""
     url = "/user/update"
     non_existent_uuid = uuid.uuid4().hex
@@ -759,7 +759,7 @@ def test_update_employer_post_wrong_id(user_logged_in_client, database):
     database.delete_all_by_field("employers", "email", "dummy@dummy.com")
 
 
-def test_update_employer_get_wrong_id(user_logged_in_client, database):
+def test_update_employer_get_wrong_id(user_logged_in_client):
     """Test GET request to update employer with a non-existent employer ID."""
 
     url = "/employers/update_employer?employer_id=9999"  # Non-existent employer_id
