@@ -10,8 +10,6 @@ import pandas as pd
 from core import handlers
 from employers.models import Employers
 
-cache = {"data": [], "last_updated": datetime.now()}
-
 
 class Opportunity:
     """Opportunity class."""
@@ -33,9 +31,6 @@ class Opportunity:
         DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
 
         DATABASE_MANAGER.insert("opportunities", opportunity)
-
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
 
         if opportunity:
             return jsonify(opportunity), 200
@@ -163,17 +158,6 @@ class Opportunity:
         """Getting opportunity."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(
-            minutes=5
-        ):
-            for opportunity in cache["data"]:
-                if opportunity["_id"] == _id:
-                    return opportunity
-            return None
-
-        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
-        cache["last_updated"] = datetime.now()
-
         opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", _id)
 
         if opportunity:
@@ -192,15 +176,7 @@ class Opportunity:
         """Getting all opportunities."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now() - timedelta(
-            minutes=5
-        ):
-            return jsonify(cache["data"]), 200
-
-        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
-        cache["last_updated"] = datetime.now()
-
-        return cache["data"]
+        return DATABASE_MANAGER.get_all("opportunities")
 
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that match duration."""
@@ -228,8 +204,6 @@ class Opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
         DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -245,8 +219,7 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         DATABASE_MANAGER.delete_all("opportunities")
-        cache["data"] = []
-        cache["last_updated"] = datetime.now()
+
         return jsonify({"message": "All opportunities deleted"}), 200
 
     def get_valid_students(self, opportunity_id):
@@ -294,9 +267,6 @@ class Opportunity:
         for opportunity in opportunities:
             DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
 
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
-
         students = DATABASE_MANAGER.get_all("students")
 
         student_updates = []
@@ -329,8 +299,7 @@ class Opportunity:
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         DATABASE_MANAGER.delete_all("opportunities")
-        cache["data"] = []
-        cache["last_updated"] = datetime.now()
+
         return jsonify({"message": "All opportunities deleted"}), 200
 
     def download_opportunities(self, is_admin):
@@ -558,8 +527,6 @@ class Opportunity:
                 clean_data.append(temp)
 
             DATABASE_MANAGER.insert_many("opportunities", clean_data)
-            cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-            cache["last_updated"] = datetime.now()
 
             return jsonify({"message": "Opportunities uploaded successfully"}), 200
 

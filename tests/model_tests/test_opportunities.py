@@ -2,6 +2,7 @@
 
 import os
 import sys
+import uuid
 from dotenv import load_dotenv
 import pytest
 from passlib.hash import pbkdf2_sha256
@@ -245,9 +246,9 @@ def test_get_opportunities_by_title_no_title(opportunity_model, app):
         assert opportunities == []
 
 
-def test_get_opportunities_by_title_exception(opportunity_model, app):
+def test_get_opportunities_by_title_exception(opportunity_model, app, database):
     """Test getting opportunities by title."""
-
+    assert database.get_all("opportunities") == []
     with app.app_context():
         opportunities = opportunity_model.get_opportunities_by_title("SE")
         assert opportunities == []
@@ -317,6 +318,7 @@ def test_get_opportunities_by_company(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
 
+
 def test_get_opportunities_by_company_id(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
 
@@ -362,15 +364,19 @@ def test_get_opportunity_by_id(opportunity_model, database, app):
 
 
 def test_get_employer_by_id(opportunity_model, database, app):
-    database.delete_all_by_field("opportunities", "_id", "123")
-    database.insert("opportunities", {"_id": "123", "employer_id": "456"})
+    database.delete_all_by_field("opportunities", "employer_id", "456")
+    opportunity = {"_id": uuid.uuid4().hex, "employer_id": "456"}
+    database.insert("opportunities", opportunity)
+    database.insert("employers", {"_id": "456", "company_name": "Company1"})
 
     with app.app_context():
         with app.test_request_context():
-            employer = opportunity_model.get_employer_by_id("123")
+            employer = opportunity_model.get_employer_by_id(opportunity["_id"])
             assert employer == "456"
-            
-    database.delete_all_by_field("opportunities", "_id", "123")
+
+    database.delete_all("opportunities")
+    database.delete_all_by_field("employers", "_id", "456")
+
 
 def test_get_employer_by_id_no_employer(opportunity_model, database, app):
     database.delete_all_by_field("opportunities", "_id", "123")
@@ -379,6 +385,7 @@ def test_get_employer_by_id_no_employer(opportunity_model, database, app):
         with app.test_request_context():
             employer = opportunity_model.get_employer_by_id("123")
             assert employer == ""
+
 
 def test_get_opportunities(opportunity_model, database, app):
     opportunity = database.get_all("opportunities")
@@ -391,7 +398,7 @@ def test_get_opportunities(opportunity_model, database, app):
             opportunities = opportunity_model.get_opportunities()
             opportunities = opportunity_model.get_opportunities()
 
-            assert opportunities[1] == 200
+            assert len(opportunities) == 1
 
     database.delete_all_by_field("opportunities", "_id", "123")
 
@@ -443,7 +450,8 @@ def test_delete_opportunity_by_id(opportunity_model, database, app):
 
     for student in students:
         database.insert("students", student)
-        
+
+
 def test_delete_opportunity_by_id_no_opportunity(opportunity_model, database, app):
     opportunity = database.get_all("opportunities")
 
@@ -471,7 +479,7 @@ def test_delete_opportunities(opportunity_model, database, app):
 
             assert opportunities[1] == 200
             assert opportunities[0].json == {"message": "All opportunities deleted"}
-    
+
     database.delete_all_by_field("opportunities", "_id", "123")
 
     for op in opportunity:
@@ -519,7 +527,7 @@ def test_rank_preferences(opportunity_model, database, app):
             opportunities = opportunity_model.rank_preferences("1234", ["321"])
             assert opportunities[1] == 200
             assert opportunities[0].json == {"message": "Preferences updated"}
-            
+
             updated = database.get_one_by_id("opportunities", "1234")
             assert updated["preferences"] == ["321"]
 
@@ -589,7 +597,7 @@ def test_delete_all_opportunity_employer(
             opportunities = opportunity_model.delete_all_opportunities(False)
             assert opportunities[1] == 200
             assert opportunities[0].json == {"message": "All opportunities deleted"}
-            
+
             result = database.get_all("opportunities")
             assert len(result) == 0
 
@@ -691,23 +699,20 @@ def test_download_opportunities_employer(
         database.insert("employers", employer)
 
 
-data = {
-    "Title": ["Opportunity 1", "Opportunity 2"],
-    "Description": ["Description 1", "Description 2"],
-    "URL": ["http://example.com/1", "http://example.com/2"],
-    "Spots_available": [5, 10],
-    "Location": ["Location 1", "Location 2"],
-    "Duration": ["1_week", "1_month"],
-    "Employer_email": ["employer1@example.com", "employer2@example.com"],
-    "Modules_required": ["BI1012, BI1512", "AC1011"],
-    "Courses_required": ["G401", "N400"],
-}
-
-
 def test_upload_opportunities(opportunity_model, database, app):
 
     employers = database.get_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     database.delete_all("employers")
 
     database.insert(
@@ -732,12 +737,15 @@ def test_upload_opportunities(opportunity_model, database, app):
             assert response[0].json == {
                 "message": "Opportunities uploaded successfully"
             }
-            
-            result = database.get_one_by_field("opportunities", "title", "Opportunity 1")
+
+            result = database.get_one_by_field(
+                "opportunities", "title", "Opportunity 1"
+            )
             assert result["title"] == "Opportunity 1"
-            result = database.get_one_by_field("opportunities", "title", "Opportunity 2")
+            result = database.get_one_by_field(
+                "opportunities", "title", "Opportunity 2"
+            )
             assert result["title"] == "Opportunity 2"
-            
 
     database.delete_all_by_field("employers", "_id", "456")
     database.delete_all_by_field("employers", "_id", "457")
@@ -753,7 +761,17 @@ def test_upload_opportunities_employer(
     employers = database.get_all("employers")
 
     database.delete_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     database.insert(
         "employers",
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
@@ -773,7 +791,7 @@ def test_upload_opportunities_employer(
             assert response[0].json == {
                 "message": "Opportunities uploaded successfully"
             }
-            
+
             result = database.get_all_by_field("opportunities", "employer_id", "456")
             assert len(result) == 2
             assert result[0]["title"] == "Opportunity 1"
@@ -785,12 +803,24 @@ def test_upload_opportunities_employer(
         database.insert("employers", employer)
 
 
-def test_upload_opportunities_wrong_spot_available_and_duration(opportunity_model, database, app):
+def test_upload_opportunities_wrong_spot_available_and_duration(
+    opportunity_model, database, app
+):
 
     employers = database.get_all("employers")
 
     database.delete_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     database.insert(
         "employers",
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
@@ -831,7 +861,17 @@ def test_upload_opportunities_no_employer(opportunity_model, database, app):
     employers = database.get_all("employers")
 
     database.delete_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     data["Employer_email"] = ["dummy@dummy.com", "dummy1@dummy.com"]
 
     df = pd.DataFrame(data)
@@ -847,10 +887,14 @@ def test_upload_opportunities_no_employer(opportunity_model, database, app):
                 "Employer email dummy@dummy.com not found in database at row 2"
                 in response[0].json["error"]
             )
-            
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 1")
+
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 1"
+            )
             assert len(result) == 0
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 2")
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 2"
+            )
             assert len(result) == 0
 
     for employer in employers:
@@ -864,7 +908,17 @@ def test_upload_opportunities_failed_modules_and_courses(
     employers = database.get_all("employers")
 
     database.delete_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     database.insert(
         "employers",
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
@@ -881,10 +935,14 @@ def test_upload_opportunities_failed_modules_and_courses(
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
             assert "Invalid module(s)" in response[0].json["error"]
-            
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 1")
+
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 1"
+            )
             assert len(result) == 0
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 2")
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 2"
+            )
             assert len(result) == 0
 
     data["Courses_required"] = ["invalid", "course2"]
@@ -898,10 +956,14 @@ def test_upload_opportunities_failed_modules_and_courses(
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
             assert "Invalid course(s)" in response[0].json["error"]
-            
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 1")
+
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 1"
+            )
             assert len(result) == 0
-            result = database.get_all_by_field("opportunities", "title", "Opportunity 2")
+            result = database.get_all_by_field(
+                "opportunities", "title", "Opportunity 2"
+            )
             assert len(result) == 0
 
     database.delete_all_by_field("employers", "_id", "456")
@@ -917,12 +979,22 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
     employers = database.get_all("employers")
 
     database.delete_all("employers")
-
+    data = {
+        "Title": ["Opportunity 1", "Opportunity 2"],
+        "Description": ["Description 1", "Description 2"],
+        "URL": ["http://example.com/1", "http://example.com/2"],
+        "Spots_available": [5, 10],
+        "Location": ["Location 1", "Location 2"],
+        "Duration": ["1_week", "1_month"],
+        "Employer_email": ["employer1@example.com", "employer2@example.com"],
+        "Modules_required": ["BI1012,BI1512", "AC1011"],
+        "Courses_required": ["G401", "N400"],
+    }
     database.insert(
         "employers",
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
     )
-    
+
     data["Title"] = ["", "Opportunity 2"]
     df = pd.DataFrame(data)
     file = BytesIO()
@@ -932,8 +1004,11 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-            assert "Title is required and cannot be empty in opportunity at row" in response[0].json["error"]
-    
+            assert (
+                "Title is required and cannot be empty in opportunity at row"
+                in response[0].json["error"]
+            )
+
     data["Title"] = ["Opportunity 1", "Opportunity 2"]
     data["Description"] = ["", "Description 2"]
     df = pd.DataFrame(data)
@@ -944,8 +1019,11 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-            assert "Description is required and cannot be empty in opportunity at row" in response[0].json["error"]
-            
+            assert (
+                "Description is required and cannot be empty in opportunity at row"
+                in response[0].json["error"]
+            )
+
     data["Description"] = ["Description 1", "Description 2"]
     data["Spots_available"] = [0, 10]
     df = pd.DataFrame(data)
@@ -956,13 +1034,17 @@ def test_upload_opportunities_wrong_title_and_description_and_spots(
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-            assert "Spots available must be at least 1 in opportunity" in response[0].json["error"]
-            
+            assert (
+                "Spots available must be at least 1 in opportunity"
+                in response[0].json["error"]
+            )
+
     database.delete_all_by_field("employers", "_id", "456")
 
     for employer in employers:
         database.insert("employers", employer)
-    
+
+
 def test_upload_opportunities_wrong_duration(opportunity_model, database, app):
 
     employers = database.get_all("employers")
@@ -973,18 +1055,18 @@ def test_upload_opportunities_wrong_duration(opportunity_model, database, app):
         "employers",
         {"_id": "456", "company_name": "Company1", "email": "employer1@example.com"},
     )
-    
+
     local_data = {
-    "Title": ["Opportunity 1"],
-    "Description": ["Description 1"],
-    "URL": ["http://example.com/1"],
-    "Spots_available": [5],
-    "Location": ["Location 1"],
-    "Duration": [False],
-    "Employer_email": ["employer1@example.com"],
-    "Modules_required": ["BI1012, BI1512"],
-    "Courses_required": ["G401"],
-}
+        "Title": ["Opportunity 1"],
+        "Description": ["Description 1"],
+        "URL": ["http://example.com/1"],
+        "Spots_available": [5],
+        "Location": ["Location 1"],
+        "Duration": [False],
+        "Employer_email": ["employer1@example.com"],
+        "Modules_required": ["BI1012, BI1512"],
+        "Courses_required": ["G401"],
+    }
     df = pd.DataFrame(local_data)
     file = BytesIO()
     df.to_excel(file, index=False)
@@ -993,9 +1075,8 @@ def test_upload_opportunities_wrong_duration(opportunity_model, database, app):
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-    
+
     database.delete_all_by_field("employers", "_id", "456")
 
     for employer in employers:
         database.insert("employers", employer)
-    

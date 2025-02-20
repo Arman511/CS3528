@@ -458,8 +458,6 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
 
     yield client
 
-    yield client
-
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("modules", "module_id", "BI1012")
     database.delete_all_by_field("modules", "module_id", "BI1512")
@@ -593,29 +591,25 @@ def test_rank_preferences_details_deadline_redirect(student_logged_in_client):
         assert response.status_code == 302
 
 
-def test_rank_preferences_update_post(student_logged_in_client, database):
+def test_rank_preferences_update_post(
+    student_logged_in_client_after_preferences, database
+):
     """Test updating student rank preferences."""
     url = "/students/rank_preferences/11111111"
 
-    database.insert(
-        "students",
-        {
-            "student_id": "11111111",
-            "preferences": [],
-            "modules": [],
-            "ranks": ["rank_opp1, rank_opp2, rank_opp3"],
-        },
-    )
     with patch(
         "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
     ), patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
-        response = student_logged_in_client.post(
+        response = student_logged_in_client_after_preferences.post(
             url,
-            data={"ranks": "rank_opp1, rank_opp2, rank_opp3"},
+            data={"ranks": "rank_opp3,rank_opp2,rank_opp1"},
             content_type="application/x-www-form-urlencoded",
         )
 
     assert response.status_code == 200
+    assert database.get_one_by_field("students", "student_id", "11111111")[
+        "preferences"
+    ] == ["opp3", "opp2", "opp1"]
     database.delete_all_by_field("students", "student_id", "11111111")
 
 
@@ -653,13 +647,13 @@ def test_rank_preferences_update_post_one_ranking(student_logged_in_client, data
     database.delete_all_by_field("students", "student_id", "11111111")
 
 
-def test_rank_preferences_update_get(student_logged_in_client):
+def test_rank_preferences_update_get(student_logged_in_client_after_details):
     """Test updating student rank preferences."""
     url = "/students/rank_preferences/11111111"
 
     with patch(
         "app.DEADLINE_MANAGER.is_past_student_ranking_deadline", return_value=False
     ), patch("app.DEADLINE_MANAGER.is_past_details_deadline", return_value=True):
-        response = student_logged_in_client.get(url)
+        response = student_logged_in_client_after_details.get(url)
 
     assert response.status_code == 200
