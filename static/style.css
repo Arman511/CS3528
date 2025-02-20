@@ -296,11 +296,33 @@ footer a:hover {
     box-shadow: 0 0 10px rgba(78, 142, 142, 0.5);
 }
 
-#section-nav {
+#section-nav .card {
     position: fixed;
-    top: 130px;
-    bottom: 0;
-    width: 250px;
+    top: 13%;
+    bottom: 5%;
+    width: auto;
     overflow-y: auto;
-    padding: 0rem;
+    padding: 2rem;
+    margin: 0;
 }
+
+.toggle-collapse {
+    position: relative;
+    padding-left: 25px;
+    display: inline-block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.toggle-collapse::before {
+    content: "\25B6";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: transform 0.3s ease;
+}
+
+.toggle-collapse[aria-expanded="true"]::before {
+    content: '\25BC'; /* Unicode for down-pointing arrow */
+  }
