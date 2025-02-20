@@ -180,9 +180,10 @@ def test_download_all_modules(database, module_model, app):
             )
 
 
-def test_upload_course_modules(module_model, app):
+def test_upload_course_modules(module_model, app, database):
     """Test upload_course_modules method with the test spreadsheet."""
     file_path = "tests/data/course_modules_test.xlsx"
+    assert database.get_all("modules") == []
 
     with open(file_path, "rb") as file:
         with app.app_context():
