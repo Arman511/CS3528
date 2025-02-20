@@ -228,3 +228,36 @@ def configure_routes(app, cache):
             str: Rendered 500.html template.
         """
         return render_template("500.html", user_type=get_user_type()), 500
+
+    @app.route("/sitemap")
+    @app.route("/sitemap/")
+    @app.route("/sitemap.xml")
+    def sitemap():
+        """
+        Route to dynamically generate a sitemap of your website/application.
+        lastmod and priority tags omitted on static pages.
+        lastmod included on dynamic content such as blog posts.
+        """
+        from flask import make_response, request, render_template
+        from urllib.parse import urlparse
+
+        host_components = urlparse(request.host_url)
+        host_base = host_components.scheme + "://" + host_components.netloc
+
+        # Static routes with static content
+        static_urls = list()
+        for rule in app.url_map.iter_rules():
+            if not str(rule).startswith("/admin") and not str(rule).startswith("/user"):
+                if "GET" in rule.methods and len(rule.arguments) == 0:
+                    url = {"loc": f"{host_base}{str(rule)}"}
+                    static_urls.append(url)
+
+        xml_sitemap = render_template(
+            "sitemap.xml",
+            static_urls=static_urls,
+            host_base=host_base,
+        )
+        response = make_response(xml_sitemap)
+        response.headers["Content-Type"] = "application/xml"
+
+        return response

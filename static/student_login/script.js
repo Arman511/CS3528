@@ -78,4 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function hideOtpModal() {
         otpModal.style.display = "none";
     }
+
+    document.title = "SkillPilot - Student Login";
 });

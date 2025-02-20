@@ -1,8 +1,21 @@
 User-agent: *
-Disallow: /
+Disallow: /admin/
+Disallow: /students/
+Disallow: /employers/
+Disallow: /superuser/
+Disallow: /api/
+Disallow: /signout
+Disallow: /404
+Disallow: /500
+
+Allow: /students/login
+Allow: /employers/login
+Allow: /user/login
 
 User-agent: Googlebot
-Disallow:
+Allow: /
 
 User-agent: Bingbot
-Disallow:
+Allow: /
+
+Sitemap: http://127.0.0.1:5000/sitemap.xml
