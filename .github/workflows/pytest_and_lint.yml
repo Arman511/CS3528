@@ -39,7 +39,7 @@ jobs:
           pylint --disable=W1203,W0621,C0415 --exit-zero .
 
   test:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
 
     steps:
       - name: Git checkout
