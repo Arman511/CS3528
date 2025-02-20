@@ -54,9 +54,9 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          key: ${{ runner.os }}-node-mongodb-8.0
           restore-keys: |
-            ${{ runner.os }}-node-
+            ${{ runner.os }}-node-mongodb-
 
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.11.0
