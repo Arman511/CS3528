@@ -3,7 +3,6 @@ name: CI and Coverage and Lint
 on:
   pull_request:
     branches: ["main", "master"]
-
 permissions:
   contents: read
   pull-requests: write
