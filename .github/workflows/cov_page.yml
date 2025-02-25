@@ -42,6 +42,15 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Set up ChromeDriver
+        uses: nanasess/setup-chromedriver@v2
+
+      - name: Start virtual display for headless tests
+        run: |
+          export DISPLAY=:99
+          chromedriver --url-base=/wd/hub &
+          sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+
       - name: Run tests with coverage
         env:
           SECRET_KEY: "psZsPEYjcq9@?(!6w=dK"
