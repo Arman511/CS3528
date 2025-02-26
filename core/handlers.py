@@ -5,6 +5,7 @@ to enforce user access levels.
 
 from functools import wraps
 from flask import jsonify, render_template, session, redirect
+from core import routes_debug
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -152,6 +153,7 @@ def configure_routes(app, cache):
     routes_modules.add_module_routes(app)
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
+    routes_debug.add_debug_routes(app)
 
     @app.route("/")
     @login_required
