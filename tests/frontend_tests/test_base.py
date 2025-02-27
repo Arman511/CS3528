@@ -1,6 +1,4 @@
 import os
-import subprocess
-import threading
 import uuid
 from dotenv import load_dotenv
 import pytest
@@ -12,12 +10,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from itsdangerous import URLSafeSerializer
 
-
 # from selenium.webdriver.chrome.service import Service as ChromeService
 # from webdriver_manager.chrome import ChromeDriverManager
 from core.database_mongo_manager import DatabaseMongoManager
-import sys
-import logging
 
 # sys.path.append(
 #     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -44,34 +39,6 @@ def chrome_browser():
     driver.implicitly_wait(10)
     yield driver
     driver.quit()
-
-
-@pytest.fixture(scope="module")
-def flask_server():
-    """Start the Flask app in a separate thread."""
-    from app import app
-
-    # Set up logging to print to console
-    logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
-
-    kill_process_at_5000()
-
-    server_thread = threading.Thread(
-        target=lambda: app.run(port=5000, debug=False, use_reloader=False)
-    )
-    server_thread.daemon = True
-    server_thread.start()
-    yield
-    # After the yield, kill the app
-    if server_thread.is_alive():
-        server_thread.join(timeout=1)
-        server_thread._stop()
-    server_thread.join()
-
-
-def kill_process_at_5000():
-    if os.name != "nt":
-        os.system("fuser -k 5000/tcp")
 
 
 @pytest.fixture()

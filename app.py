@@ -9,6 +9,8 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask
 from flask_caching import Cache
+import signal
+import threading
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -64,7 +66,17 @@ from core.deadline_manager import DeadlineManager  # noqa: E402
 
 DEADLINE_MANAGER = DeadlineManager()
 
-if __name__ == "__main__":
+
+def handle_kill_signal(signum, frame):
+    print("Kill signal received. Shutting down the server...")
+    DATABASE_MANAGER.close_connection()
+    exit(0)
+
+
+signal.signal(signal.SIGTERM, handle_kill_signal)
+
+
+def run_app():
     try:
         app.run()
     except KeyboardInterrupt:
@@ -78,3 +90,9 @@ if __name__ == "__main__":
     finally:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
+
+
+if __name__ == "__main__":
+    app_thread = threading.Thread(target=run_app)
+    app_thread.start()
+    app_thread.join()
