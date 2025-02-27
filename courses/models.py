@@ -207,9 +207,9 @@ class Course:
         courses = DATABASE_MANAGER.get_all("courses")
 
         for course in courses:
-            course_data = course.pop("course_name").rsplit(", ", 1)
+            course_data = course["course_name"].rsplit(", ", 1)
             course["Course_name"] = course_data[0]
-            course["Qualification"] = course_data[1]
+            course["Qualification"] = course_data[1] if len(course_data) > 1 else ""
             course["UCAS_code"] = course.pop("course_id")
             course["Course_description"] = course.pop("course_description")
 
@@ -222,7 +222,9 @@ class Course:
             os.makedirs("temp", exist_ok=True)
             file_path = "temp/courses.xlsx"
         else:
+            os.makedirs("/tmp", exist_ok=True)
             file_path = "/tmp/courses.xlsx"
+
         # Save the DataFrame to an Excel file
         df.to_excel(
             file_path,
