@@ -70,3 +70,11 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
+    except OSError:
+        DATABASE_MANAGER.close_connection()
+        print("Shutting down the server...")
+    except Exception as e:
+        print(e)
+    finally:
+        DATABASE_MANAGER.close_connection()
+        print("Shutting down the server...")

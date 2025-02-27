@@ -1,6 +1,5 @@
 import os
-
-# import sys
+import subprocess
 import threading
 import uuid
 from dotenv import load_dotenv
@@ -55,13 +54,7 @@ def flask_server():
     # Set up logging to print to console
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    # Kill any process running on port 5000
-    if os.name == "nt":
-        os.system(
-            "taskkill /F /PID (Get-NetTCPConnection -LocalPort 5000).OwningProcess"
-        )
-    else:
-        os.system("fuser -k 5000/tcp")
+    kill_process_at_5000()
 
     server_thread = threading.Thread(
         target=lambda: app.run(port=5000, debug=False, use_reloader=False)
@@ -71,19 +64,13 @@ def flask_server():
     yield
     # After the yield, kill the app
     if server_thread.is_alive():
-        import signal
-
-        try:
-            os.kill(os.getpid(), signal.SIGINT)
-        except Exception as e:
-            print(e)
+        server_thread.join(timeout=1)
+        server_thread._stop()
     server_thread.join()
 
-    if os.name == "nt":
-        os.system(
-            "taskkill /F /PID (Get-NetTCPConnection -LocalPort 5000).OwningProcess"
-        )
-    else:
+
+def kill_process_at_5000():
+    if os.name != "nt":
         os.system("fuser -k 5000/tcp")
 
 
@@ -311,7 +298,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     assert chrome_browser.current_url != "http://localhost:5000/students/login"
 
 
-def test_employer_login(chrome_browser, flask_server, database, employer_member):
+def test_employer_login(chrome_browser, database, employer_member, flask_server):
     chrome_browser.get("http://localhost:5000/employers/login")
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
@@ -331,7 +318,7 @@ def test_employer_login(chrome_browser, flask_server, database, employer_member)
     chrome_browser.find_element(By.ID, "optSubmit").click()
 
     WebDriverWait(chrome_browser, 10).until(
-        EC.invisibility_of_element_located((By.ID, "otpModal"))
+        EC.url_to_be("http://localhost:5000/employers/home")
     )
 
     assert chrome_browser.current_url == "http://localhost:5000/employers/home"
