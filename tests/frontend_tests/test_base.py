@@ -58,7 +58,7 @@ def flask_server():
     # Kill any process running on port 5000
     if os.name == "nt":
         os.system(
-            "netstat -ano | findstr :5000 | findstr LISTENING | for /F \"tokens=5\" %P in ('more') do TaskKill /F /PID %P"
+            "taskkill /F /PID (Get-NetTCPConnection -LocalPort 5000).OwningProcess"
         )
     else:
         os.system("fuser -k 5000/tcp")
@@ -81,7 +81,7 @@ def flask_server():
 
     if os.name == "nt":
         os.system(
-            "netstat -ano | findstr :5000 | findstr LISTENING | for /F \"tokens=5\" %P in ('more') do TaskKill /F /PID %P"
+            "taskkill /F /PID (Get-NetTCPConnection -LocalPort 5000).OwningProcess"
         )
     else:
         os.system("fuser -k 5000/tcp")
