@@ -179,26 +179,33 @@ class Course:
         """Deletes all courses from the database."""
         from app import DATABASE_MANAGER
 
-        students = DATABASE_MANAGER.get_all("students")
-        for student in students:
-            if "modules" in student:
-                return jsonify({"error": "Students have modules assigned"}), 400
-
         DATABASE_MANAGER.delete_all("courses")
         courses_cache["data"] = []
         courses_cache["last_updated"] = datetime.now()
 
+        students = DATABASE_MANAGER.get_all("students")
+        DATABASE_MANAGER.delete_all("students")
+        updated_students = []
+        for student in students:
+            if "course" in student:
+                student["course"] = None
+            updated_students.append(student)
+
+        if updated_students:
+            DATABASE_MANAGER.insert_many("students", updated_students)
+
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")
         updated_opportunities = []
-        for opportunity in opportunities:
-            if "courses_required" in opportunity:
-                opportunity["courses_required"] = []
-            updated_opportunities.append(opportunity)
+        for opp in opportunities:
+            if "courses_required" in opp:
+                opp["courses_required"] = []
+            updated_opportunities.append(opp)
 
-        DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
+        if updated_opportunities:
+            DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
 
-        return jsonify({"message": "Deleted"}), 200
+        return jsonify({"message": "All courses deleted"}), 200
 
     def download_all_courses(self):
         """Download all courses"""
