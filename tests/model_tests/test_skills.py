@@ -663,10 +663,14 @@ def test_update_attempt_skill_invalid_id(skill_model, app):
             assert response[1] == 404
             assert response[0].json["error"] == "Skill not found"
 
+
 def test_delete_all_attempted_skills(database, skill_model, app):
     """Test delete_all_attempted_skill method."""
-    database.insert("attempted_skills", {"_id": uuid.uuid4().hex, "skill_name": "Test Attempted Skill"})
-    
+    database.insert(
+        "attempted_skills",
+        {"_id": uuid.uuid4().hex, "skill_name": "Test Attempted Skill"},
+    )
+
     with app.app_context():
         with app.test_request_context():
             response = skill_model.delete_all_attempted_skill()[0]
@@ -681,7 +685,7 @@ def test_upload_skills(database, skill_model, app):
 
     data = {
         "Skill_Name": ["Uploaded Skill 1", "Uploaded Skill 2"],
-        "Skill_Description": ["Desc 1", "Desc 2"]
+        "Skill_Description": ["Desc 1", "Desc 2"],
     }
     df = pd.DataFrame(data)
     file = BytesIO()
@@ -692,8 +696,14 @@ def test_upload_skills(database, skill_model, app):
         with app.test_request_context():
             response = skill_model.upload_skills(file)[0]
             assert response.status_code == 200
-            assert database.get_one_by_field("skills", "skill_name", "Uploaded Skill 1") is not None
-            assert database.get_one_by_field("skills", "skill_name", "Uploaded Skill 2") is not None
+            assert (
+                database.get_one_by_field("skills", "skill_name", "Uploaded Skill 1")
+                is not None
+            )
+            assert (
+                database.get_one_by_field("skills", "skill_name", "Uploaded Skill 2")
+                is not None
+            )
 
     database.delete_all_by_field("skills", "skill_name", "Uploaded Skill 1")
     database.delete_all_by_field("skills", "skill_name", "Uploaded Skill 2")
@@ -701,13 +711,23 @@ def test_upload_skills(database, skill_model, app):
 
 def test_download_all(database, skill_model, app):
     """Test download_all method."""
-    database.insert("skills", {"_id": uuid.uuid4().hex, "skill_name": "Downloadable Skill", "skill_description": "Desc"})
+    database.insert(
+        "skills",
+        {
+            "_id": uuid.uuid4().hex,
+            "skill_name": "Downloadable Skill",
+            "skill_description": "Desc",
+        },
+    )
 
     with app.app_context():
         with app.test_request_context():
             response = skill_model.download_all()
             assert response.status_code == 200
-            assert response.mimetype == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            assert (
+                response.mimetype
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
 
     database.delete_all_by_field("skills", "skill_name", "Downloadable Skill")
 

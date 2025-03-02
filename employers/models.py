@@ -24,31 +24,31 @@ class Employers:
         """Adding new employer."""
         from app import DATABASE_MANAGER
 
-        if DATABASE_MANAGER.get_one_by_field_strict("employers", "email", employer["email"].lower()):
+        if DATABASE_MANAGER.get_one_by_field_strict(
+            "employers", "email", employer["email"].lower()
+        ):
             return jsonify({"error": "Email already in use"}), 400
 
         existing_employer = DATABASE_MANAGER.get_one_by_field_strict(
             "employers", "company_name", employer["company_name"]
         )
         employer["email"] = employer["email"].lower()
-        
+
         if existing_employer:
             return jsonify({"error": "Company name already exists"}), 400
 
         DATABASE_MANAGER.insert("employers", employer)
 
         if employer:
-            # **Fix: Initialize cache if None before appending**
-            if employers_cache["data"] is None:
-                employers_cache["data"] = []  # Initialize as an empty list
+            if DATABASE_MANAGER.get_all("employers"):
+                if employers_cache["data"] is None:
+                    employers_cache["data"] = []
+                employers_cache["data"].append(employer)
+                employers_cache["last_updated"] = datetime.now()
 
-            employers_cache["data"].append(employer)
-            employers_cache["last_updated"] = datetime.now()
-            
             return jsonify(employer), 200
 
         return jsonify({"error": "Employer not added"}), 400
-
 
     def get_company_name(self, _id):
         """Get company name"""
@@ -87,7 +87,6 @@ class Employers:
         employers_cache["data"] = employers
         employers_cache["last_updated"] = datetime.now()
         return employers
-
 
     def get_employer_by_id(self, employer_id):
         """Retrieves an employer by its ID."""
