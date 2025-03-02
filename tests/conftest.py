@@ -15,8 +15,6 @@ def flask_server():
     # Set up logging to print to console
     logging.basicConfig(stream=sys.stdout, level=logging.DEBUG)
 
-    if os.name != "nt":
-        os.system("fuser -k 5000/tcp")
     global server_thread
     server_thread = threading.Thread(
         target=lambda: app.run(port=5000, debug=False, use_reloader=False)
