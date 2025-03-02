@@ -316,7 +316,6 @@ def test_download_all_courses(database, course_model, sample_course, app):
                 os.makedirs("/tmp", exist_ok=True)
             response = course_model.download_all_courses()
             assert response.status_code == 200
-            # TODO: if it was done on a mac it would be different. look at the file header and full stop to check if it is .xls type
             assert (
                 response.mimetype
                 == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
