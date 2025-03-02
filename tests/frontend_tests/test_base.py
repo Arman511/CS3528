@@ -54,12 +54,12 @@ def database():
 
 
 def test_base_page(chrome_browser, flask_server):
-    chrome_browser.get("http://localhost:5000/students/login")
+    chrome_browser.get("http://127.0.0.1:5000/students/login")
     assert chrome_browser.title == "SkillPilot - Student Login"
 
 
 def test_student_login_page(chrome_browser, flask_server):
-    chrome_browser.get("http://localhost:5000/students/login")
+    chrome_browser.get("http://127.0.0.1:5000/students/login")
     assert chrome_browser.title == "SkillPilot - Student Login"
 
 
@@ -227,18 +227,18 @@ def employer_member(database):
 
 
 def test_placement_team_login(chrome_browser, flask_server, database, placement_member):
-    chrome_browser.get("http://localhost:5000/user/login")
+    chrome_browser.get("http://127.0.0.1:5000/user/login")
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.NAME, "password").send_keys("dummy")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
 
-    WebDriverWait(chrome_browser, 10).until(EC.url_to_be("http://localhost:5000/"))
+    WebDriverWait(chrome_browser, 10).until(EC.url_to_be("http://127.0.0.1:5000/"))
 
-    assert chrome_browser.current_url == "http://localhost:5000/"
+    assert chrome_browser.current_url == "http://127.0.0.1:5000/"
 
 
 def test_student_login(chrome_browser, flask_server, database, student_member):
-    chrome_browser.get("http://localhost:5000/students/login")
+    chrome_browser.get("http://127.0.0.1:5000/students/login")
     chrome_browser.find_element(By.NAME, "student_id").send_keys(
         student_member["student_id"]
     )
@@ -259,14 +259,14 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     chrome_browser.find_element(By.ID, "optSubmit").click()
 
     WebDriverWait(chrome_browser, 10).until(
-        EC.url_changes("http://localhost:5000/students/login")
+        EC.url_changes("http://127.0.0.1:5000/students/login")
     )
 
-    assert chrome_browser.current_url != "http://localhost:5000/students/login"
+    assert chrome_browser.current_url != "http://127.0.0.1:5000/students/login"
 
 
 def test_employer_login(chrome_browser, database, employer_member, flask_server):
-    chrome_browser.get("http://localhost:5000/employers/login")
+    chrome_browser.get("http://127.0.0.1:5000/employers/login")
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
     WebDriverWait(chrome_browser, 10).until(
@@ -285,7 +285,7 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     chrome_browser.find_element(By.ID, "optSubmit").click()
 
     WebDriverWait(chrome_browser, 10).until(
-        EC.url_to_be("http://localhost:5000/employers/home")
+        EC.url_to_be("http://127.0.0.1:5000/employers/home")
     )
 
-    assert chrome_browser.current_url == "http://localhost:5000/employers/home"
+    assert chrome_browser.current_url == "http://127.0.0.1:5000/employers/home"
