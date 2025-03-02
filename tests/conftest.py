@@ -1,5 +1,4 @@
 import logging
-import os
 import sys
 import threading
 from selenium import webdriver
@@ -17,7 +16,9 @@ def flask_server():
 
     global server_thread
     server_thread = threading.Thread(
-        target=lambda: app.run(port=5000, debug=False, use_reloader=False)
+        target=lambda: app.run(
+            port=5000, host="localhost", debug=False, use_reloader=False
+        )
     )
     server_thread.daemon = True
     server_thread.start()
