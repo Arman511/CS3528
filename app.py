@@ -54,6 +54,7 @@ for table in tables:
 CONFIG_MANAGER = Config(DATABASE_MANAGER)
 
 app = Flask(__name__)
+PORT = int(os.getenv("PORT", 5000))
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["CACHE_TYPE"] = "SimpleCache"
@@ -78,7 +79,7 @@ signal.signal(signal.SIGTERM, handle_kill_signal)
 
 def run_app():
     try:
-        app.run()
+        app.run(port=PORT)
     except KeyboardInterrupt:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")

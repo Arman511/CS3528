@@ -30,6 +30,7 @@ def send_otp(recipient):
     """Sends an OTP"""
     otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
     otp = generate_otp()
+    print(f"Generated OTP: {otp}")
     session["OTP"] = otp_serializer.dumps(otp)
 
     if os.getenv("IS_TEST") == "True":
