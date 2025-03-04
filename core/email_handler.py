@@ -38,7 +38,7 @@ def send_otp(recipient):
 
     body = f"HERE IS YOUR OTP {otp}"
     msg = MIMEText(body)
-    msg["Subject"] = "Skillpoint: OTP"
+    msg["Subject"] = "Skillpilot: OTP"
     msg["From"] = SENDER
     msg["To"] = recipient
     with smtplib.SMTP_SSL(SMTP, 465) as smtp_server:
