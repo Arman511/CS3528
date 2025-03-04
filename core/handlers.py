@@ -157,6 +157,7 @@ def configure_routes(app, cache):
 
     @app.route("/")
     def index():
+        """The home route which renders the 'landing_page.html' template."""
         user = get_user_type()
         if user == "student":
             return redirect("/students/login")
