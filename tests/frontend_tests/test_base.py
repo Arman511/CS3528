@@ -232,9 +232,11 @@ def test_placement_team_login(chrome_browser, flask_server, database, placement_
     chrome_browser.find_element(By.NAME, "password").send_keys("dummy")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
 
-    WebDriverWait(chrome_browser, 10).until(EC.url_to_be("http://127.0.0.1:5000/"))
+    WebDriverWait(chrome_browser, 10).until(
+        EC.url_to_be("http://127.0.0.1:5000/user/home")
+    )
 
-    assert chrome_browser.current_url == "http://127.0.0.1:5000/"
+    assert chrome_browser.current_url == "http://127.0.0.1:5000/user/home"
 
 
 def test_student_login(chrome_browser, flask_server, database, student_member):

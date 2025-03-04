@@ -76,7 +76,7 @@ def test_start_session(app, user_model):
             response = user_model.start_session(user)
             json_data = response[0].get_json()
             assert response[1] == 200
-            assert json_data["message"] == "/"
+            assert json_data["message"] == "/user/home"
             assert "password" not in json_data
 
 
@@ -161,7 +161,7 @@ def test_login_success(app, database, user_model):
             json_data = response[0].get_json()
             assert "logged_in" in session
             assert response[1] == 200
-            assert json_data["message"] == "/"
+            assert json_data["message"] == "/user/home"
             assert "password" not in json_data
             session.clear()
 
