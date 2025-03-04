@@ -72,20 +72,6 @@ https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 -   Email : admin@example.com
 -   Password: admin
 
-## Student Login Details
-
--   Student 1:
-    Username : 12345678
-    Password : 54d37f9c96a711ef93523388226f7343
-
--   Student 2:
-    Username : 52207669
-    Password : 649fe83e96a711ef93523388226f7343
-
--   Student 3:
-    Username : 45327347
-    Password : 6b31741a96a711ef93523388226f7343
-
 ## Employer Login
 
 To sign in as an employer, the employers email address should be in the database which can only be added by the admin team. once completed, the employer fill in their email address and receive an OTP (check spam folder).
