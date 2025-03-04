@@ -11,6 +11,7 @@ Disallow: /500
 Allow: /students/login
 Allow: /employers/login
 Allow: /user/login
+Allow: /
 
 User-agent: Googlebot
 Allow: /
