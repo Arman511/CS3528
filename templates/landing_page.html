@@ -13,18 +13,19 @@
         <h1 class="text-center">Welcome to the SkillPilot</h1>
         <p class="text-center">Please select your role to proceed:</p>
         <div class="row justify-content-center mt-4">
-            <div class="col-md-3">
-                <a href="{{ url_for("login") }}"
-                   class="btn btn-primary btn-block">Placement Team</a>
+            <div class="col-md-3 py-3">
+                <a href="{{ url_for('login') }}"
+                    class="btn btn-primary btn-block">Placement Team</a>
             </div>
-            <div class="col-md-3">
-                <a href="{{ url_for("employer_login")}}"
-                   class="btn btn-secondary btn-block">Employer</a>
+            <div class="col-md-3 py-3">
+                <a href="{{ url_for('employer_login') }}"
+                    class="btn btn-secondary btn-block">Employer</a>
             </div>
-            <div class="col-md-3">
-                <a href="{{ url_for("login_student") }}"
-                   class="btn btn-success btn-block">Student</a>
+            <div class="col-md-3 py-3">
+                <a href="{{ url_for('login_student') }}"
+                    class="btn btn-success btn-block">Student</a>
             </div>
+
         </div>
     </div>
 {% endblock content %}
