@@ -35,7 +35,7 @@ def login_required(f):
             return redirect("/user/search")
         elif "employer_logged_in" in session:
             return redirect("/employers/home")
-        return redirect("/students/login")
+        return redirect("/")
 
     return wrap
 
@@ -58,8 +58,8 @@ def student_login_required(f):
         elif "superuser" in session:
             return redirect("/user/search")
         elif "logged_in" in session:
-            return redirect("/")
-        return redirect("/students/login")
+            return redirect("/user/home")
+        return redirect("/")
 
     return wrap
 
@@ -77,7 +77,7 @@ def employers_login_required(f):
         elif "superuser" in session:
             return redirect("/user/search")
         elif "logged_in" in session:
-            return redirect("/")
+            return redirect("/user/home")
 
         return redirect("/employers/login")
 
@@ -95,7 +95,7 @@ def admin_or_employers_required(f):
             return f(*args, **kwargs)
         elif "superuser" in session:
             return redirect("/user/search")
-        return redirect("/students/login")
+        return redirect("/")
 
     return wrap
 
@@ -156,14 +156,17 @@ def configure_routes(app, cache):
     routes_debug.add_debug_routes(app)
 
     @app.route("/")
-    @login_required
     def index():
-        """The home route which needs the user to be logged in and renders the 'home.html' template.
-
-        Returns:
-            str: Rendered HTML template for the home page.
-        """
-        return render_template("/user/home.html", user_type="admin")
+        user = get_user_type()
+        if user == "student":
+            return redirect("/students/login")
+        elif user == "employer":
+            return redirect("/employers/home")
+        elif user == "admin":
+            return redirect("/user/search")
+        elif user == "superuser":
+            return redirect("/superuser/home")
+        return render_template("landing_page.html")
 
     @app.route("/api/session", methods=["GET"])
     @admin_or_employers_required
