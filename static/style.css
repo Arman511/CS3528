@@ -11,6 +11,7 @@
     gap: 1.5rem;
 }
 
+
 .card {
     background-color: #fff;
     border-radius: 12px;
@@ -178,12 +179,10 @@ a {
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
-    text-decoration: underline;
 }
 
 a:hover {
     color: #142859;
-    text-decoration: underline;
 }
 
 html,
@@ -193,6 +192,7 @@ body {
     display: flex;
     flex-direction: column;
 }
+
 .page-wrapper {
     background-color: #fff;
     display: flex;
@@ -202,27 +202,6 @@ body {
 
 .content {
     flex: 1;
-}
-
-/* Footer Styling */
-footer {
-    background-color: #22699a;
-    color: #fff;
-    text-align: center;
-    padding: 20px;
-    width: 100%;
-    font-size: 14px;
-}
-
-footer a {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-footer a:hover {
-    color: #c8c8c8;
-    text-decoration: underline;
 }
 
 /* Modal Styling */
@@ -294,4 +273,14 @@ footer a:hover {
     font-weight: bold;
     border: 2px solid #22699a;
     box-shadow: 0 0 10px rgba(78, 142, 142, 0.5);
+}
+
+h1.center::after {
+    content: none !important;
+    display: none !important;
+}
+
+h1::after {
+    content: none !important;
+    display: none !important;
 }
