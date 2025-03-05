@@ -20,7 +20,7 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 ## Website
 
-[Deployment Official](https://www.skillpilot.co.uk/)
+[Deployment Official](https://www.abdn.skillpilot.co.uk/)
 
 [Deployment Vercel](https://cs-3528.vercel.app/)
 
