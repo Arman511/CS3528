@@ -164,7 +164,7 @@ def configure_routes(app, cache):
         elif user == "employer":
             return redirect("/employers/home")
         elif user == "admin":
-            return redirect("/user/search")
+            return redirect("/user/home")
         elif user == "superuser":
             return redirect("/superuser/home")
         return render_template("landing_page.html")
