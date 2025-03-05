@@ -179,12 +179,10 @@ a {
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
-    text-decoration: underline;
 }
 
 a:hover {
     color: #142859;
-    text-decoration: underline;
 }
 
 html,
