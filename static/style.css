@@ -67,6 +67,19 @@
     background-color: #f4f4f4;
 }
 
+.hidden-fields {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.hidden-fields.active {
+    display: block;
+}
+
+#toggleMore {
+    margin-bottom: 10px;
+}
+
 /* Ensure card dynamically resizes based on content */
 .card.dynamic-height {
     height: auto;
@@ -193,6 +206,7 @@ body {
     display: flex;
     flex-direction: column;
 }
+
 .page-wrapper {
     background-color: #fff;
     display: flex;
