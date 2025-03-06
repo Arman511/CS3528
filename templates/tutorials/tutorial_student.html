@@ -1,28 +1,163 @@
 {% extends "base.html" %}
 {% block content %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorial</h1>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
-            <h2>User Management</h2>
-            <ul>
-                <li>
-                    <a href="#login-card">Login</a>
-                </li>
+    <div class="p-5">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Student Tutorial</h2>
+
+            <h2 class="h5 mt-4">  
+              <a class="toggle-collapse" data-bs-toggle="collapse" href="#adminCollapse1" role="button">
+              Login
+              </a>
+            </h2>
+
+            <div class="collapse hidden" id="adminCollapse1">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="#section1">Logging In</a>
+              </li>
+              </ul>
+            </div>
+            
+            <h2 class="h5 mt-4">
+              <a class="toggle-collapse" data-bs-toggle="collapse" href="#adminCollapse2" role="button">
+                Student Management
+              </a>
+            </h2>
+
+            <div class="collapse hidden" id="adminCollapse2">
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link" href="#section3">Search Student</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section4">Upload Students</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section5">Add Student</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section6">Delete All Students</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="#section7">Download All Students</a>
+              </li>
             </ul>
+            </div>
+          </nav>
         </div>
-        <div class="card" id="login-card">
-            <h1 class="center">Login Tutorial</h1>
-            <p>
-                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
-                <br>
-                Once you click on the "Login" button, you will be redirected to the login for placement teams.
-                <br>
-                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
-                <br>
-                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
-            </p>
+        
+        <!-- Main Content: Single card wrapping all tutorial sections -->
+        <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+        <main class="col-12 col-md-9 offset-md-2"
+              data-bs-spy="scroll"
+              data-bs-target="#section-nav"
+              data-bs-offset="100"
+              tabindex="0">
+          
+          <div class="card">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section1" class="mb-4">
+                <h3>Logging In</h3>
+                <p>
+                  The university placement team manage all student accounts. They will create an account on your behalf.
+                </p>
+                <p>Once you have been notified by the university that your accound has been created, at the student login section of the webpage
+                please enter your university student identifier number in the corresponding input box.</p>
+                <p>After which a unique numerical 'one-time passcode' will be sent to your student email address.</p>
+                <p>A card view will then appear, with an input box where you enter the code.</p>
+                <p>If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.</p>
+              </section>
+            </div>
+          </div>
+
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section3" class="mb-4">
+                <h3>Search Student</h3>
+                <p>
+                  Upon selecting search student in the below subcard we can use information such student names, ID numbers and course information to locate group of specific students.
+                  By locating students we are able to change their SkillsPilot details by selecting the 'Update' button next to the corresponding student.
+                </p>
+                <p>
+                  Within the update card we can view and edit their personal and university information. Ensure that the 'Update' button is pressed to ensure changes made persist.
+                </p>
+              </section>
+              <hr>
+              <section id="section4" class="mb-4">
+                <h3>Upload Students</h3>
+                <p>
+                  By selecting the 'Upload Students' subheading under the navigation bar, you can upload an excel formatted spreadsheet. Once uploaded the student information and details present will be uploaded and saved to the database.
+                  Providing a more efficient method than manually entering student information.
+                </p>
+              </section>
+              <hr>
+              <section id="section5" class="mb-4">
+                <h3>Add Student</h3>
+                <p>
+                  Conversely, instead of bulk adding students details in bulk. We can individually enter information on a per student basis.
+                </p>
+                On selection, you'll be presended with a card view. Within this view we can enter details about specific students.
+                <ul class="listed-unstyled">
+                  <li>Student Number</li>
+                  <li>First Name</li>
+                  <li>Last Name</li>
+                  <li>Email Address</li>
+                  <li>Student Subscribed Courses</li>
+                  <li>Student Modules Undertaken</li>
+                  <li>Additional Comments</li>
+                </ul>
+                <p>
+                  Upon entering student details, by selecting the 'Update' button, all details entered will be saved to the database, as a new student.
+                </p>
+              </section>
+              <hr>
+              <section id="section6" class="mb-4">
+                <h3>Delete All Students</h3>
+                <p>This will remove all saved student details within the database.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section7" class="mb-4">
+                <h3>Download All Student</h3>
+                <p>
+                  By selecting this section, an excel file will download containing the information of all saved students. In the format of:
+                </p>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <ul>
+                        <li>First Name</li>
+                        <li>Last Name</li>
+                        <li>Email Address</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Student Number</li>
+                        <li>Course Code</li>
+                        <li>Selected Skills</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Additional Comments</li>
+                        <li>Placement Duration</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </main>
         </div>
-    </div>
+        </div>
+        </div>
     <script>document.title = "Tutorial";</script>
 {% endblock content %}

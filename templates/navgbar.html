@@ -1,0 +1,31 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a href="{{ url_for('index') }}">
+            <h1>SkillPilot</h1>
+        </a>
+        <div class="d-flex ms-auto align-items-center">
+            <button class="btn btn-light dropdown-toggle"
+                    type="button"
+                    id="userGreetingButton"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <span id="userGreetingText">
+                    {% if user_type == "admin" %}
+                    Hello, {{ session['user']['name'] }}
+                    {% elif user_type == "employer" %}
+                    Hello, {{ session['employer']['company_name'] }}
+                    {% elif user_type == "student" %}
+                    Hello, {{ session['student']['first_name'] }}
+                    {% else %}
+                    Didn't work
+                    {% endif %}
+                </span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userGreetingButton">
+                <li>
+                    <a class="dropdown-item" href="{{ url_for('signout') }}">Sign Out</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
