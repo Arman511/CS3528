@@ -337,3 +337,25 @@ footer a:hover {
         margin-left: 0; /* Ensure main content takes full width */
       }
 }
+
+.nav-pills .nav-link {
+    font-weight: bold;
+    color: #555;
+    border-radius: 50px;
+    transition: background 0.3s ease-in-out, color 0.3s ease-in-out;
+}
+
+.nav-pills .nav-link:hover,
+.nav-pills .nav-link:focus {
+    background: linear-gradient(90deg, #007bff, #00c6ff);
+    color: white;
+}
+
+.nav-pills .nav-link.active {
+    background: linear-gradient(90deg, #0056b3, #0096c7);
+    color: white;
+}
+
+.nav-item {
+    padding-right: 1rem;
+}
