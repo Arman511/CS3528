@@ -143,15 +143,19 @@
 function enableDropdownHover(dropdownId, menuId) {
     const dropdown = document.getElementById(dropdownId);
     const menu = document.getElementById(menuId);
+    let hoverTimeout;
 
     if (dropdown && menu) {
         // Show dropdown on hover
         dropdown.addEventListener("mouseenter", function() {
-            menu.classList.add("show");
+            hoverTimeout = setTimeout(() => {
+                menu.classList.add("show");
+            }, 500);
         });
 
         // Hide dropdown when mouse leaves "Dropdown" or the menu, with slight delay for smooth exit
         dropdown.addEventListener("mouseleave", function() {
+            clearTimeout(hoverTimeout);
             setTimeout(() => {
                 if (!menu.matches(":hover")) { // Ensure the menu isn't still hovered
                     menu.classList.remove("show");
@@ -161,6 +165,7 @@ function enableDropdownHover(dropdownId, menuId) {
 
         // Prevent menu from closing when mouse enters the dropdown menu
         menu.addEventListener("mouseenter", function() {
+            clearTimeout(hoverTimeout);
             this.classList.add("show");
         });
 
