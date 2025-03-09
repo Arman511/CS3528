@@ -37,3 +37,6 @@ htmlcov/
 tests/data/~$valid_students.xlsx
 temp/
 temp/modules.xlsx
+package-lock.json
+package.json
+node_modules/
