@@ -3,8 +3,9 @@ Handles the base routes, adds the module routes, and includes decorators
 to enforce user access levels.
 """
 
+from datetime import datetime, timezone
 from functools import wraps
-from flask import jsonify, render_template, session, redirect
+from flask import jsonify, render_template, session, redirect,make_response, request
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -140,9 +141,6 @@ def configure_routes(app, cache):
     route configuration functions. It also defines the home route and the privacy policy route.
     Args:
         app (Flask): The Flask application instance.
-    Routes:
-        /: The home route which needs the user to be logged in and renders the 'home.html' template.
-        /privacy-policy: The privacy policy route which renders the 'privacy_policy.html' template.
     """
 
     routes_user.add_user_routes(app, cache)
@@ -192,6 +190,16 @@ def configure_routes(app, cache):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template("privacy_policy.html")
+    
+
+    @app.route("/cookies_policy")
+    def cookies_policy():
+        """The cookies policy route which renders the 'cookies_policy.html' template.
+
+        Returns:
+            str: Rendered HTML template for the cookies policy page.
+        """
+        return render_template("cookies.html")
 
     @app.route("/robots.txt")
     def robots():
@@ -238,20 +246,27 @@ def configure_routes(app, cache):
     @app.route("/sitemap")
     @app.route("/sitemap/")
     @app.route("/sitemap.xml")
+    @cache.cached(timeout=300)
     def sitemap():
         """
         Route to dynamically generate a sitemap of your website/application.
-        lastmod and priority tags omitted on static pages.
-        lastmod included on dynamic content such as blog posts.
         """
-        from flask import make_response, request, render_template
-        from urllib.parse import urlparse
 
         host_base = f"{request.scheme}://{request.host}"
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
 
-        # Static routes with static content
-        static_urls = [
-            {"loc": f"{host_base}{str(rule)}"}
+        priority_mapping = {
+            "/": "1.0",
+            "/privacy_policy": "0.8",
+            "/sitemap": "0.5",
+        }
+
+        urls = [
+            {
+                "loc": f"{host_base}{str(rule)}",
+                "lastmod": now,
+                "priority": priority_mapping.get(str(rule), "0.5")
+            }
             for rule in app.url_map.iter_rules()
             if "GET" in rule.methods and not rule.arguments and not any(
                 str(rule).startswith(prefix) for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
@@ -260,7 +275,7 @@ def configure_routes(app, cache):
 
         xml_sitemap = render_template(
             "sitemap.xml",
-            static_urls=static_urls,
+            urls=urls,
             host_base=host_base,
         )
         response = make_response(xml_sitemap)

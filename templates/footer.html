@@ -87,7 +87,9 @@
           <a href="https://www.abdn.ac.uk" class="uni_logo_footer">
             <img src="https://www.abdn.ac.uk/media/university-of-aberdeen/site-assets/images/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg"
                  srcset="https://www.abdn.ac.uk/media/university-of-aberdeen/site-assets/images/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg"
-                 alt="University of Aberdeen">
+                 alt="University of Aberdeen"
+                 width="200"
+                 height="100">
           </a>
           <dl>
             <dt>Address</dt>
@@ -138,13 +140,10 @@
             <a href="https://www.abdn.ac.uk/about/our-website/terms-and-conditions-of-use/">Terms and Conditions of Use</a>
           </li>
           <li>
-            <a href="https://www.abdn.ac.uk/about/your-privacy/">Your Privacy</a>
-          </li>
-          <li>
             <a href="https://www.abdn.ac.uk/about/our-website/accessibility/">Accessibility</a>
           </li>
           <li>
-            <a href="https://www.abdn.ac.uk/about/our-website/cookies/">Cookies</a>
+            <a href="{{ url_for("cookies_policy") }}">Cookies</a>
           </li>
           <li>
             <a href="https://www.abdn.ac.uk/about/our-website/slavery--human-trafficking-statement/">Slavery &amp; Human Trafficking Statement</a>
@@ -160,6 +159,9 @@
         <p>
           This website uses cookies to ensure you get the best experience. By logging in, you agree to our
           <a href="{{ url_for("privacy_policy") }}">Privacy Policy</a>.
+        </p>
+        <p>
+          <strong>This is a student project and should not be used in the real world. It does not reflect the views or policies of the University of Aberdeen.</strong>
         </p>
       </div>
     </div>
