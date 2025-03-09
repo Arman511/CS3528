@@ -5,7 +5,16 @@ to enforce user access levels.
 
 from datetime import datetime, timezone
 from functools import wraps
-from flask import jsonify, render_template, session, redirect, make_response, request
+import os
+from flask import (
+    jsonify,
+    render_template,
+    send_from_directory,
+    session,
+    redirect,
+    make_response,
+    request,
+)
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -284,3 +293,29 @@ def configure_routes(app, cache):
         response.headers["Content-Type"] = "application/xml"
 
         return response
+
+    @app.after_request
+    def add_cache_control_and_headers(response):
+        if (
+            response.content_type == "text/css"
+            or response.content_type == "application/javascript"
+            or response.content_type == "application/font-woff2"
+        ):
+            response.cache_control.max_age = 3600
+        elif "image" in response.content_type:
+            response.cache_control.max_age = 31536000
+            response.cache_control.public = True
+        else:
+            response.cache_control.max_age = 86400
+        response.cache_control.stale_while_revalidate = 2592000
+        response.cache_control.immutable = True
+
+        if response.content_type == "application/json":
+            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+            response.headers["Pragma"] = "no-cache"
+            response.headers["Expires"] = "0"
+        return response
+
+    @app.route("/static/<path:filename>")
+    def serve_static(filename):
+        return send_from_directory(os.path.join(app.root_path, "static"), filename)
