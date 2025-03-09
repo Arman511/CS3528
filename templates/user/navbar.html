@@ -95,6 +95,7 @@
                        data-bs-toggle="dropdown"
                        aria-expanded="false">Course Modules</a>
                     <div class="dropdown-menu" id="modulesMenu">
+                        <a class="dropdown-item" href="{{ url_for("search_modules") }}">Search</a>
                         <a class="dropdown-item" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
                         <a class="dropdown-item" href="{{ url_for("add_course_module") }}">Add Module</a>
                         <a class="dropdown-item"
