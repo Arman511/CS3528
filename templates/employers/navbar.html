@@ -39,24 +39,38 @@
     </div>
 </nav>
 <script>
-    document.getElementById("delete-all-opportunities").addEventListener("click", async () => {
-        if (confirm("Are you sure you want to delete all opportunities? This action cannot be undone.")) {
-            if (confirm("This is your last warning. Do you really want to delete all opportunities?")) {
-                try {
-                    const response = await fetch("{{ url_for('delete_all_opportunities' )}}", {
-                        method: "DELETE",
-                    });
+    function getCurrentDate() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const currentDate = new Date().toLocaleDateString('en-GB', options);
+        return currentDate;
+    }
 
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        const errorData = await response.json();
-                        alert(errorData.error || "Failed to delete employers.");
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("An error occurred while trying to delete employers.");
+    function promptDelete(itemName) {
+        const currentDate = getCurrentDate();
+        const confirmation = confirm(`Are you sure you want to DELETE ALL ${itemName} on ${currentDate}?`);
+        if (confirmation) {
+            const deleteConfirmation = prompt(`To confirm, please type 'DELETE ALL ${itemName}' to proceed.`);
+            return deleteConfirmation === `DELETE ALL ${itemName}`;
+        }
+        return false;
+    }
+
+    document.getElementById("delete-all-opportunities").addEventListener("click", async () => {
+        if (promptDelete("opportunities")) {
+            try {
+                const response = await fetch("{{ url_for('delete_all_opportunities' )}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete opportunities.");
                 }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete opportunities.");
             }
         }
     });
