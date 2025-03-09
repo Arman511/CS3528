@@ -128,15 +128,12 @@
                            href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
                     </div>
                 </li>
-                <li class="nav-item {{ 'active' if page == 'matching' }}">
-                    <a class="nav-link text-white" href="{{ url_for("matching") }}">Matching</a>
-                </li>
-                <li class="nav-item {{ 'active' if page == 'problems' }}">
-                    <a class="nav-link text-white" href="{{ url_for("problems") }}">Problems</a>
-                </li>
-                <li class="nav-item {{ 'active' if page == 'deadline' }}">
-                    <a class="nav-link text-white" href="{{ url_for("deadline") }}">Change Deadline</a>
-                </li>
+                <li class="nav-item"></li>
+                <a class="nav-link text-white" href="{{ url_for("matching") }}">Matching</a>
+                <li class="nav-item"></li>
+                <a class="nav-link text-white" href="{{ url_for("problems") }}">Problems</a>
+                <li class="nav-item"></li>
+                <a class="nav-link text-white" href="{{ url_for("deadline") }}">Change Deadline</a>
             </ul>
         </div>
     </nav>
