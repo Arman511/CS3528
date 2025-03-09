@@ -146,15 +146,17 @@ def add_opportunities_routes(app):
 
         # Include employer in the context
         employer = session.get("employer", None)
-
+        user_type = "admin" if handlers.is_admin() else "employer"
+        employers = Employers().get_employers()
         return render_template(
             "opportunities/employer_add_update_opportunity.html",
             opportunity=opportunity,
             courses=Course().get_courses(),
             modules=Module().get_modules(),
-            user_type="admin" if "logged_in" in session else "employer",
+            user_type=user_type,
             employer=employer,  # Add employer to the template context
             page="opportunities",
+            employers=employers,
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])

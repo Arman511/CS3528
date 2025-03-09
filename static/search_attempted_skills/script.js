@@ -5,6 +5,20 @@ document.addEventListener('DOMContentLoaded', function () {
     const updateButtons = document.querySelectorAll(".update-btn");
     const rejectButtons = document.querySelectorAll(".reject-btn");
     const skills = [];
+    const toggleButton = document.getElementById("toggleMore");
+    const hiddenFields = document.querySelector(".hidden-fields");
+
+    hiddenFields.style.display = "none";
+
+    toggleButton.addEventListener("click", function () {
+        if (hiddenFields.style.display === "none") {
+            hiddenFields.style.display = "block";
+            toggleButton.textContent = "Show Less";
+        } else {
+            hiddenFields.style.display = "none";
+            toggleButton.textContent = "Show More";
+        }
+    });
 
     for (const row of skillsTable.rows) {
         skills.push({

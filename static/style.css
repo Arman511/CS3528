@@ -68,6 +68,19 @@
     background-color: #f4f4f4;
 }
 
+.hidden-fields {
+    display: none;
+    transition: all 0.3s ease;
+}
+
+.hidden-fields.active {
+    display: block;
+}
+
+#toggleMore {
+    margin-bottom: 10px;
+}
+
 /* Ensure card dynamically resizes based on content */
 .card.dynamic-height {
     height: auto;
@@ -198,6 +211,44 @@ body {
     display: flex;
     flex-direction: column;
     min-height: 100%;
+}
+
+.navbar {
+    background-color: #22699a;
+    width: 100%;
+}
+
+.delete-button-employers {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block
+}
+
+
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    padding: 8px 15px;
+    color: black;
+    text-decoration: none;
+}
+
+.dropdown-item:hover {
+    background-color: #22699a;
+    color: white;
 }
 
 .content {

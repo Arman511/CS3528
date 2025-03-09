@@ -3,6 +3,20 @@ document.addEventListener("DOMContentLoaded", () => {
     const studentTable = document.getElementById("student-table");
     const deleteButtons = document.querySelectorAll(".delete-button");
     const students = [];
+    const toggleButton = document.getElementById("toggleMore");
+    const hiddenFields = document.querySelector(".hidden-fields");
+
+    hiddenFields.style.display = "none";
+
+    toggleButton.addEventListener("click", function () {
+        if (hiddenFields.style.display === "none") {
+            hiddenFields.style.display = "block";
+            toggleButton.textContent = "Show Less";
+        } else {
+            hiddenFields.style.display = "none";
+            toggleButton.textContent = "Show More";
+        }
+    });
 
     for (const row of studentTable.rows) {
         students.push({
