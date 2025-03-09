@@ -214,6 +214,11 @@ body {
     min-height: 100%;
 }
 
+.navbar {
+    background-color: #22699a;
+    width: 100%;
+}
+
 .content {
     flex: 1;
 }
