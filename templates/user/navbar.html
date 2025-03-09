@@ -139,75 +139,87 @@
     </nav>
 </div>
 <script>
-function enableDropdownHover(dropdownId, menuId) {
-    const dropdown = document.getElementById(dropdownId);
-    const menu = document.getElementById(menuId);
-    let hoverTimeout;
 
-    if (dropdown && menu) {
-        dropdown.addEventListener("mouseenter", function() {
-            hoverTimeout = setTimeout(() => {
-                menu.classList.add("show");
-            }, 500);
-        });
+    function enableDropdownHover(dropdownId, menuId) {
+        const dropdown = document.getElementById(dropdownId);
+        const menu = document.getElementById(menuId);
+        let hoverTimeout;
 
-        dropdown.addEventListener("mouseleave", function() {
-            clearTimeout(hoverTimeout);
-            hoverTimeout = setTimeout(() => {
-                if (!menu.matches(":hover")) { 
-                    menu.classList.remove("show");
-                }
-            }, 500); 
-        });
+        if (dropdown && menu) {
+            dropdown.addEventListener("mouseenter", function() {
+                hoverTimeout = setTimeout(() => {
+                    menu.classList.add("show");
+                }, 500);
+            });
 
-        menu.addEventListener("mouseenter", function() {
-            clearTimeout(hoverTimeout);
-            this.classList.add("show");
-        });
+            dropdown.addEventListener("mouseleave", function() {
+                clearTimeout(hoverTimeout);
+                hoverTimeout = setTimeout(() => {
+                    if (!menu.matches(":hover")) { 
+                        menu.classList.remove("show");
+                    }
+                }, 500); 
+            });
 
-        menu.addEventListener("mouseleave", function() {
-            hoverTimeout = setTimeout(() => {
-                this.classList.remove("show");
-            }, 500); 
-        });
+            menu.addEventListener("mouseenter", function() {
+                clearTimeout(hoverTimeout);
+                this.classList.add("show");
+            });
+
+            menu.addEventListener("mouseleave", function() {
+                hoverTimeout = setTimeout(() => {
+                    this.classList.remove("show");
+                }, 500); 
+            });
+        }
     }
-}
 
-enableDropdownHover("studentsDropdown", "studentsMenu");
-enableDropdownHover("opportunitiesDropdown", "opportunitiesMenu");
-enableDropdownHover("employersDropdown", "employersMenu");
-enableDropdownHover("coursesDropdown", "coursesMenu");
-enableDropdownHover("modulesDropdown", "modulesMenu");
-enableDropdownHover("skillsDropdown", "skillsMenu");
+    enableDropdownHover("studentsDropdown", "studentsMenu");
+    enableDropdownHover("opportunitiesDropdown", "opportunitiesMenu");
+    enableDropdownHover("employersDropdown", "employersMenu");
+    enableDropdownHover("coursesDropdown", "coursesMenu");
+    enableDropdownHover("modulesDropdown", "modulesMenu");
+    enableDropdownHover("skillsDropdown", "skillsMenu");
 
+    function getCurrentDate() {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        const currentDate = new Date().toLocaleDateString('en-GB', options);
+        return currentDate;
+    }
 
-// Delete all students script
-document.getElementById("delete-all-students").addEventListener("click", async () => {
-    if (confirm("Are you sure you want to delete all attempted students? This action cannot be undone.")) {
-        if (confirm("This is your final warning. Do you really want to delete all attempted students?")) {
+    function promptDelete(itemName) {
+        const currentDate = getCurrentDate();
+        const confirmation = confirm(`Are you sure you want to DELETE ALL ${itemName} on ${currentDate}?`);
+        if (confirmation) {
+            const deleteConfirmation = prompt(`To confirm, please type 'DELETE ALL ${itemName}' to proceed.`);
+            return deleteConfirmation === `DELETE ALL ${itemName}`;
+        }
+        return false;
+    }
+
+    document.getElementById("delete-all-students").addEventListener("click", async () => {
+        if (promptDelete("students")) {
             try {
                 const response = await fetch("{{url_for('delete_all_students')}}", {
                     method: "DELETE",
                 });
 
                 if (response.ok) {
-                    alert("All attempted students have been deleted successfully.");
+                    alert("All students have been deleted successfully.");
                     window.location.reload();
                 } else {
                     const errorData = await response.json();
-                    alert(errorData.error || "Failed to delete attempted students.");
+                    alert(errorData.error || "Failed to delete students.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("An error occurred while trying to delete attempted students.");
+                alert("An error occurred while trying to delete students.");
             }
         }
-    }
-});
+    });
 
-document.getElementById("delete-all-opportunities").addEventListener("click", async () => {
-    if (confirm("Are you sure you want to delete all opportunities? This action cannot be undone.")) {
-        if (confirm("This is your last warning. Do you really want to delete all opportunities?")) {
+    document.getElementById("delete-all-opportunities").addEventListener("click", async () => {
+        if (promptDelete("opportunities")) {
             try {
                 const response = await fetch("{{ url_for('delete_all_opportunities' )}}", {
                     method: "DELETE",
@@ -217,19 +229,17 @@ document.getElementById("delete-all-opportunities").addEventListener("click", as
                     window.location.reload();
                 } else {
                     const errorData = await response.json();
-                    alert(errorData.error || "Failed to delete employers.");
+                    alert(errorData.error || "Failed to delete opportunities.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("An error occurred while trying to delete employers.");
+                alert("An error occurred while trying to delete opportunities.");
             }
         }
-    }
-});
+    });
 
-document.getElementById("delete-all-courses").addEventListener("click", async () => {
-    if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
-        if (confirm("This is your final warning. Do you really want to delete all courses?")) {
+    document.getElementById("delete-all-courses").addEventListener("click", async () => {
+        if (promptDelete("courses")) {
             try {
                 const response = await fetch("{{url_for('delete_all_courses')}}", {
                     method: "DELETE",
@@ -247,29 +257,52 @@ document.getElementById("delete-all-courses").addEventListener("click", async ()
                 alert("An error occurred while trying to delete courses.");
             }
         }
-    }
-});
+    });
 
-document.getElementById('delete-all-modules').addEventListener('click', function(event) {
-    event.preventDefault();
-    if (confirm('Are you sure you want to delete all modules?')) {
-        if (confirm('This action cannot be undone. Are you absolutely sure?')) {
-            fetch("{{url_for('delete_all_course_modules')}}", {
-                method: 'DELETE',
-            }).then(response => {
+    document.getElementById("delete-all-modules").addEventListener("click", async () => {
+        if (promptDelete("modules")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_course_modules')}}", {
+                    method: "DELETE",
+                });
+
                 if (response.ok) {
-                    location.reload();
+                    alert("All modules have been deleted successfully.");
+                    window.location.reload();
                 } else {
-                    alert('Failed to delete all modules.');
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete modules.");
                 }
-            });
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete modules.");
+            }
         }
-    }
-});
+    });
 
-document.getElementById("delete-all-attempted-skills").addEventListener("click", async () => {
-    if (confirm("Are you sure you want to delete all attempted skills? This action cannot be undone.")) {
-        if (confirm("This is your final warning. Do you really want to delete all attempted skills?")) {
+    document.getElementById("delete-all-skills").addEventListener("click", async () => {
+        if (promptDelete("skills")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_skills')}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All skills have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete skills.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete skills.");
+            }
+        }
+    });
+
+    document.getElementById("delete-all-attempted-skills").addEventListener("click", async () => {
+        if (promptDelete("attempted skills")) {
             try {
                 const response = await fetch("{{url_for('delete_all_attempted_skills')}}", {
                     method: "DELETE",
@@ -287,28 +320,25 @@ document.getElementById("delete-all-attempted-skills").addEventListener("click",
                 alert("An error occurred while trying to delete attempted skills.");
             }
         }
-    }
-});
-document.getElementById("delete-all-skills").addEventListener("click", async () => {
-    if (confirm("Are you sure you want to delete all skills? This action cannot be undone.")) {
-        if (confirm("This is your final warning. Do you really want to delete all skills?")) {
+    });
+
+    document.getElementById("delete-all-employers").addEventListener("click", async () => {
+        if (promptDelete("employers")) {
             try {
-                const response = await fetch("{{url_for('delete_all_skills')}}", {
+                const response = await fetch("{{ url_for('delete_all_employers' )}}", {
                     method: "DELETE",
                 });
 
                 if (response.ok) {
-                    alert("All courses have been deleted successfully.");
                     window.location.reload();
                 } else {
                     const errorData = await response.json();
-                    alert(errorData.error || "Failed to delete skills.");
+                    alert(errorData.error || "Failed to delete employers.");
                 }
             } catch (error) {
                 console.error(error);
-                alert("An error occurred while trying to delete skills.");
+                alert("An error occurred while trying to delete employers.");
             }
         }
-    }
-});
+    });
 </script>
