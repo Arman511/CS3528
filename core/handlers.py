@@ -253,7 +253,7 @@ def configure_routes(app, cache):
         # Static routes with static content
         static_urls = list()
         for rule in app.url_map.iter_rules():
-            if not str(rule).startswith("/admin") and not str(rule).startswith("/user"):
+            if not str(rule).startswith("/admin") and not str(rule).startswith("/user") and not str(rule).startswith("/debug"):
                 if "GET" in rule.methods and len(rule.arguments) == 0:
                     url = {"loc": f"{host_base}{str(rule)}"}
                     static_urls.append(url)
