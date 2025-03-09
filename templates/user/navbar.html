@@ -31,24 +31,102 @@
                         <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
                     </div>
                 </li>
-                <!-- <li class="nav-item {{ 'active' if page == 'students' }}">
-                    <a class="nav-link text-white" href="{{ url_for("search_page") }}">Students</a>
-                </li> -->
-                <li class="nav-item {{ 'active' if page == 'opportunities' }}">
-                    <a class="nav-link text-white"
-                       href="{{ url_for("search_opportunities") }}">Opportunities</a>
+                <!-- Opportunities Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white dropdown-toggle"
+                       href="#"
+                       id="opportunitiesDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Opportunities</a>
+                    <div class="dropdown-menu" id="opportunitiesMenu">
+                        <a class="dropdown-item" href="{{ url_for("search_opportunities") }}">Search</a>
+                        <a class="dropdown-item" href="{{ url_for("upload_opportunities") }}">Upload Opportunities</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("employer_add_update_opportunity") }}">Add Opportunity</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-opportunities">Delete All Opportunities</a>
+                        <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
+                    </div>
                 </li>
-                <li class="nav-item {{ 'active' if page == 'employers' }}">
-                    <a class="nav-link text-white" href="{{ url_for("search_employers") }}">Employers</a>
+                <!-- Employers Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white dropdown-toggle"
+                       href="#"
+                       id="employersDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Employers</a>
+                    <div class="dropdown-menu" id="employersMenu">
+                        <a class="dropdown-item" href="{{ url_for("search_employers") }}">Search</a>
+                        <a class="dropdown-item" href="{{ url_for("upload_employers") }}">Upload Employers</a>
+                        <a class="dropdown-item" href="{{ url_for("add_employer") }}">Add Employer</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-employers">Delete All Employers</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_employers") }}">Download All Employers</a>
+                    </div>
                 </li>
-                <li class="nav-item {{ 'active' if page == 'courses' }}">
-                    <a class="nav-link text-white" href="{{ url_for("search_course") }}">Courses</a>
+                <!-- Courses Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white dropdown-toggle"
+                       href="#"
+                       id="coursesDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Courses</a>
+                    <div class="dropdown-menu" id="coursesMenu">
+                        <a class="dropdown-item" href="{{ url_for("search_course") }}">Search</a>
+                        <a class="dropdown-item" href="{{ url_for("upload_courses") }}">Upload Courses</a>
+                        <a class="dropdown-item" href="{{ url_for("add_course") }}">Add Course</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-courses">Delete All Courses</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_courses") }}">Download All Courses</a>
+                    </div>
                 </li>
-                <li class="nav-item {{ 'active' if page == 'modules' }}">
-                    <a class="nav-link text-white" href="{{ url_for("search_modules") }}">Course Modules</a>
+                <!-- Course Modules Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white dropdown-toggle"
+                       href="#"
+                       id="modulesDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Course Modules</a>
+                    <div class="dropdown-menu" id="modulesMenu">
+                        <a class="dropdown-item" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
+                        <a class="dropdown-item" href="{{ url_for("add_course_module") }}">Add Module</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-modules">Delete All Modules</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
+                    </div>
                 </li>
-                <li class="nav-item {{ 'active' if page == 'skills' }}">
-                    <a class="nav-link text-white" href="{{ url_for("list_skills") }}">Skills</a>
+                <!-- Skills Dropdown -->
+                <li class="nav-item dropdown">
+                    <a class="nav-link text-white dropdown-toggle"
+                       href="#"
+                       id="skillsDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Skills</a>
+                    <div class="dropdown-menu" id="skillsMenu">
+                        <a class="dropdown-item" href="{{ url_for("list_skills") }}">Search</a>
+                        <a class="dropdown-item" href="{{ url_for("search_attempt_skills") }}">Search Attempted</a>
+                        <a class="dropdown-item" href="{{ url_for("upload_skills") }}">Upload Skills</a>
+                        <a class="dropdown-item" href="{{ url_for("add_skill") }}">Add Skill</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-skills">Delete All Skills</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-attempted-skills">Delete All Attempted Skills</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
+                    </div>
                 </li>
                 <li class="nav-item {{ 'active' if page == 'matching' }}">
                     <a class="nav-link text-white" href="{{ url_for("matching") }}">Matching</a>
@@ -64,81 +142,175 @@
     </nav>
 </div>
 <script>
-    // Show dropdown on hover
-    const studentsDropdown = document.getElementById("studentsDropdown");
-    const studentsMenu = document.getElementById("studentsMenu");
+// Function to enable hover dropdowns
+function enableDropdownHover(dropdownId, menuId) {
+    const dropdown = document.getElementById(dropdownId);
+    const menu = document.getElementById(menuId);
 
-    // Show dropdown on hover over "Students"
-    studentsDropdown.addEventListener("mouseenter", function () {
-        studentsMenu.classList.add("show");
-    });
+    if (dropdown && menu) {
+        // Show dropdown on hover
+        dropdown.addEventListener("mouseenter", function() {
+            menu.classList.add("show");
+        });
 
-    // Hide dropdown when mouse leaves "Students" or the menu, with slight delay for smooth exit
-    studentsDropdown.addEventListener("mouseleave", function () {
-        setTimeout(() => {
-            if (!studentsMenu.matches(":hover")) { // Ensure the menu isn't still hovered
-                studentsMenu.classList.remove("show");
-            }
-        }, 10); // Slight delay to prevent flickering
-    });
-
-    // Prevent menu from closing when mouse enters the dropdown menu
-    studentsMenu.addEventListener("mouseenter", function () {
-        this.classList.add("show");
-    });
-
-    // Hide dropdown when mouse leaves the menu
-    studentsMenu.addEventListener("mouseleave", function () {
-        this.classList.remove("show");
-    });
-
-    // Delete all students script
-    document.getElementById("delete-all-students").addEventListener("click", async () => {
-        if (confirm("Are you sure you want to delete all attempted students? This action cannot be undone.")) {
-            if (confirm("This is your final warning. Do you really want to delete all attempted students?")) {
-                try {
-                    const response = await fetch("{{url_for('delete_all_students')}}", {
-                        method: "DELETE",
-                    });
-
-                    if (response.ok) {
-                        alert("All attempted students have been deleted successfully.");
-                        window.location.reload();
-                    } else {
-                        const errorData = await response.json();
-                        alert(errorData.error || "Failed to delete attempted students.");
-                    }
-                } catch (error) {
-                    console.error(error);
-                    alert("An error occurred while trying to delete attempted students.");
+        // Hide dropdown when mouse leaves "Dropdown" or the menu, with slight delay for smooth exit
+        dropdown.addEventListener("mouseleave", function() {
+            setTimeout(() => {
+                if (!menu.matches(":hover")) { // Ensure the menu isn't still hovered
+                    menu.classList.remove("show");
                 }
+            }, 10); // Slight delay to prevent flickering
+        });
+
+        // Prevent menu from closing when mouse enters the dropdown menu
+        menu.addEventListener("mouseenter", function() {
+            this.classList.add("show");
+        });
+
+        // Hide dropdown when mouse leaves the menu
+        menu.addEventListener("mouseleave", function() {
+            this.classList.remove("show");
+        });
+    }
+}
+
+// Apply hover functionality to all dropdowns
+enableDropdownHover("studentsDropdown", "studentsMenu");
+enableDropdownHover("opportunitiesDropdown", "opportunitiesMenu");
+enableDropdownHover("employersDropdown", "employersMenu");
+enableDropdownHover("coursesDropdown", "coursesMenu");
+enableDropdownHover("modulesDropdown", "modulesMenu");
+enableDropdownHover("skillsDropdown", "skillsMenu");
+
+
+// Delete all students script
+document.getElementById("delete-all-students").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to delete all attempted students? This action cannot be undone.")) {
+        if (confirm("This is your final warning. Do you really want to delete all attempted students?")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_students')}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All attempted students have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete attempted students.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete attempted students.");
             }
         }
-    });
+    }
+});
+
+document.getElementById("delete-all-opportunities").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to delete all opportunities? This action cannot be undone.")) {
+        if (confirm("This is your last warning. Do you really want to delete all opportunities?")) {
+            try {
+                const response = await fetch("{{ url_for('delete_all_opportunities' )}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete employers.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete employers.");
+            }
+        }
+    }
+});
+
+document.getElementById("delete-all-courses").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to delete all courses? This action cannot be undone.")) {
+        if (confirm("This is your final warning. Do you really want to delete all courses?")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_courses')}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All courses have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete courses.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete courses.");
+            }
+        }
+    }
+});
+
+document.getElementById('delete-all-modules').addEventListener('click', function(event) {
+    event.preventDefault();
+    if (confirm('Are you sure you want to delete all modules?')) {
+        if (confirm('This action cannot be undone. Are you absolutely sure?')) {
+            fetch("{{url_for('delete_all_course_modules')}}", {
+                method: 'DELETE',
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert('Failed to delete all modules.');
+                }
+            });
+        }
+    }
+});
+
+document.getElementById("delete-all-attempted-skills").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to delete all attempted skills? This action cannot be undone.")) {
+        if (confirm("This is your final warning. Do you really want to delete all attempted skills?")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_attempted_skills')}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All attempted skills have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete attempted skills.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete attempted skills.");
+            }
+        }
+    }
+});
+document.getElementById("delete-all-skills").addEventListener("click", async () => {
+    if (confirm("Are you sure you want to delete all skills? This action cannot be undone.")) {
+        if (confirm("This is your final warning. Do you really want to delete all skills?")) {
+            try {
+                const response = await fetch("{{url_for('delete_all_skills')}}", {
+                    method: "DELETE",
+                });
+
+                if (response.ok) {
+                    alert("All courses have been deleted successfully.");
+                    window.location.reload();
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || "Failed to delete skills.");
+                }
+            } catch (error) {
+                console.error(error);
+                alert("An error occurred while trying to delete skills.");
+            }
+        }
+    }
+});
 </script>
-<style>
-    .dropdown-menu {
-        display: none;
-        position: absolute;
-        background-color: #fff;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        padding: 10px;
-        z-index: 1000;
-    }
-
-    .dropdown-menu.show {
-        display: block;
-    }
-
-    .dropdown-item {
-        padding: 8px 15px;
-        color: black;
-        text-decoration: none;
-    }
-
-    .dropdown-item:hover {
-        background-color: #22699a;
-        color: white;
-    }
-</style>
