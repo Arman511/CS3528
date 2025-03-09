@@ -25,10 +25,10 @@
                         <a class="dropdown-item" href="{{ url_for("upload_page") }}">Upload Students</a>
                         <a class="dropdown-item"
                            href="{{ url_for("register_student_attempt") }}">Add Student</a>
-                        <a class="dropdown-item text-danger font-weight-bold"
+                           <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
+                           <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-students">Delete All Students</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
                     </div>
                 </li>
                 <!-- Opportunities Dropdown -->
@@ -44,11 +44,11 @@
                         <a class="dropdown-item" href="{{ url_for("upload_opportunities") }}">Upload Opportunities</a>
                         <a class="dropdown-item"
                            href="{{ url_for("employer_add_update_opportunity") }}">Add Opportunity</a>
-                        <a class="dropdown-item text-danger font-weight-bold"
-                           href="#"
-                           id="delete-all-opportunities">Delete All Opportunities</a>
-                        <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
-                    </div>
+                           <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
+                           <a class="dropdown-item text-danger font-weight-bold"
+                              href="#"
+                              id="delete-all-opportunities">Delete All Opportunities</a>
+                        </div>
                 </li>
                 <!-- Employers Dropdown -->
                 <li class="nav-item dropdown">
@@ -62,10 +62,10 @@
                         <a class="dropdown-item" href="{{ url_for("search_employers") }}">Search</a>
                         <a class="dropdown-item" href="{{ url_for("upload_employers") }}">Upload Employers</a>
                         <a class="dropdown-item" href="{{ url_for("add_employer") }}">Add Employer</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_employers") }}">Download All Employers</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-employers">Delete All Employers</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_employers") }}">Download All Employers</a>
                     </div>
                 </li>
                 <!-- Courses Dropdown -->
@@ -80,10 +80,10 @@
                         <a class="dropdown-item" href="{{ url_for("search_course") }}">Search</a>
                         <a class="dropdown-item" href="{{ url_for("upload_courses") }}">Upload Courses</a>
                         <a class="dropdown-item" href="{{ url_for("add_course") }}">Add Course</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_courses") }}">Download All Courses</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-courses">Delete All Courses</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_courses") }}">Download All Courses</a>
                     </div>
                 </li>
                 <!-- Course Modules Dropdown -->
@@ -97,11 +97,11 @@
                     <div class="dropdown-menu" id="modulesMenu">
                         <a class="dropdown-item" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
                         <a class="dropdown-item" href="{{ url_for("add_course_module") }}">Add Module</a>
+                        <a class="dropdown-item"
+                        href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-modules">Delete All Modules</a>
-                        <a class="dropdown-item"
-                           href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
                     </div>
                 </li>
                 <!-- Skills Dropdown -->
@@ -117,15 +117,15 @@
                         <a class="dropdown-item" href="{{ url_for("search_attempt_skills") }}">Search Attempted</a>
                         <a class="dropdown-item" href="{{ url_for("upload_skills") }}">Upload Skills</a>
                         <a class="dropdown-item" href="{{ url_for("add_skill") }}">Add Skill</a>
+                        <a class="dropdown-item" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-skills">Delete All Skills</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-attempted-skills">Delete All Attempted Skills</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
-                        <a class="dropdown-item"
-                           href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
                     </div>
                 </li>
                 <li class="nav-item"></li>
