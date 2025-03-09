@@ -70,7 +70,7 @@ def add_user_routes(app, cache):
             return User().login(attempt_user)
         if "logged_in" in session:
             return redirect("/user/home")
-        return render_template("user/login.html", user_type="admin")
+        return render_template("user/login.html")
 
     @app.route("/user/delete", methods=["DELETE"])
     @handlers.superuser_required
