@@ -16,7 +16,10 @@
                 <li class="nav-item dropdown">
                     <a class="nav-link text-white dropdown-toggle"
                        href="#"
-                       id="studentsDropdown">Students</a>
+                       id="studentsDropdown"
+                       role="button"
+                       data-bs-toggle="dropdown"
+                       aria-expanded="false">Students</a>
                     <div class="dropdown-menu" id="studentsMenu">
                         <a class="dropdown-item" href="{{ url_for("search_page") }}">Search</a>
                         <a class="dropdown-item" href="{{ url_for("upload_page") }}">Upload Students</a>
