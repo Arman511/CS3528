@@ -5,7 +5,7 @@ to enforce user access levels.
 
 from datetime import datetime, timezone
 from functools import wraps
-from flask import jsonify, render_template, session, redirect,make_response, request
+from flask import jsonify, render_template, session, redirect, make_response, request
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -190,7 +190,6 @@ def configure_routes(app, cache):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template("privacy_policy.html")
-    
 
     @app.route("/cookies_policy")
     def cookies_policy():
@@ -265,11 +264,14 @@ def configure_routes(app, cache):
             {
                 "loc": f"{host_base}{str(rule)}",
                 "lastmod": now,
-                "priority": priority_mapping.get(str(rule), "0.5")
+                "priority": priority_mapping.get(str(rule), "0.5"),
             }
             for rule in app.url_map.iter_rules()
-            if "GET" in rule.methods and not rule.arguments and not any(
-                str(rule).startswith(prefix) for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
+            if "GET" in rule.methods
+            and not rule.arguments
+            and not any(
+                str(rule).startswith(prefix)
+                for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
             )
         ]
 
