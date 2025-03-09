@@ -247,16 +247,16 @@ def configure_routes(app, cache):
         from flask import make_response, request, render_template
         from urllib.parse import urlparse
 
-        host_components = urlparse(request.host_url)
-        host_base = host_components.scheme + "://" + host_components.netloc
+        host_base = f"{request.scheme}://{request.host}"
 
         # Static routes with static content
-        static_urls = list()
-        for rule in app.url_map.iter_rules():
-            if not str(rule).startswith("/admin") and not str(rule).startswith("/user") and not str(rule).startswith("/debug"):
-                if "GET" in rule.methods and len(rule.arguments) == 0:
-                    url = {"loc": f"{host_base}{str(rule)}"}
-                    static_urls.append(url)
+        static_urls = [
+            {"loc": f"{host_base}{str(rule)}"}
+            for rule in app.url_map.iter_rules()
+            if "GET" in rule.methods and not rule.arguments and not any(
+                str(rule).startswith(prefix) for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
+            )
+        ]
 
         xml_sitemap = render_template(
             "sitemap.xml",
