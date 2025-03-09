@@ -218,6 +218,13 @@ body {
     width: 100%;
 }
 
+.delete-button-employers {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block
+}
+
 
 .dropdown-menu {
     display: none;
