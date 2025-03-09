@@ -54,3 +54,9 @@ offline_run.sh
 .mypy_cache/
 .pytest_cache/
 .vscode/
+package-lock.json
+package.json
+node_modules/
+tests/data/~$valid_students.xlsx
+temp/
+temp/modules.xlsx
