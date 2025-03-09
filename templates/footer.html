@@ -85,8 +85,9 @@
              itemtype="https://schema.org/CollegeOrUniversity">
           <h2 class="offscreen">Contact Us</h2>
           <a href="https://www.abdn.ac.uk" class="uni_logo_footer">
-            <img src="https://www.abdn.ac.uk/media/university-of-aberdeen/site-assets/images/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg"
-                 srcset="https://www.abdn.ac.uk/media/university-of-aberdeen/site-assets/images/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg"
+            <img src="{{ url_for('static', filename='imgs/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg') }}"
+                 srcset="{{ url_for('static', filename='imgs/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg') }} 1x,
+                         {{ url_for('static', filename='imgs/UoA_Landscape_Logo_CMYK_REVERSE_2018.svg') }} 2x"
                  alt="University of Aberdeen"
                  width="200"
                  height="100">
