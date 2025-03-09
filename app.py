@@ -11,7 +11,6 @@ from flask import Flask
 from flask_caching import Cache
 import signal
 import threading
-from flask_compress import Compress
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -67,7 +66,6 @@ app.permanent_session_lifetime = timedelta(minutes=30)
 
 cache = Cache(app)
 handlers.configure_routes(app, cache)
-Compress(app)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 
