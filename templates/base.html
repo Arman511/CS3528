@@ -7,6 +7,8 @@
     <link rel="icon"
           href="{{ url_for('static', filename='favicon.ico') }}"
           type="image/x-icon" />
+          <link rel="stylesheet" href="https://www.abdn.ac.uk/abdn-design-system/releases/2.1.0/dist/css/abdn-design-system-site.css">
+          <link rel="stylesheet" href="https://abdn-search.funnelback.squiz.cloud/s/resources-global/css/funnelback.autocompletion-2.6.0.css">
     <meta name="description"
           content="SkillPilot - Enhance your learning with our platform." />
     <meta name="keywords"
@@ -34,6 +36,8 @@
     <link rel="stylesheet"
           href="{{ url_for('static', filename='style.css') }}"
           charset="UTF-8" />
+
+      
     <script rel="preconnect" src="{{ url_for('static', filename='script.js') }}"></script>
   </head>
   <body>
@@ -42,12 +46,6 @@
         {# Template inserted here #}
       {% endblock content %}
     </main>
-    <footer class="text-center py-3">
-      <p>© 2025 SkillPilot. All rights reserved.</p>
-      <p>
-        This website uses cookies to ensure you get the best experience. By logging in, you agree to our
-        <a href="{{ url_for("privacy_policy") }}">Privacy Policy</a>.
-      </p>
-    </footer>
+    {% include "footer.html" %}
   </body>
 </html>

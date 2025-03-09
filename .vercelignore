@@ -1,22 +1,26 @@
 # Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+
+**pycache**/
+_.py[cod]
+_$py.class
 
 # Installer logs
+
 pip-log.txt
 pip-delete-this-directory.txt
 
 # Flask stuff:
+
 instance/
 .webassets-cache
 
-__pypackages__/
+**pypackages**/
 .vs/
 .vs
-*.pyc
+\*.pyc
 
 # Environments
+
 .venv
 env/
 venv/
@@ -34,3 +38,19 @@ not_full_courses.json
 .coverage
 htmlcov/
 tests/
+licenses/
+.coveragerc
+.flake8
+CODINGGUIDE.md
+Dockerfile
+.pylintrc
+coverage_report
+gunicorn_run
+offline_run.ps1
+run.ps1
+run.sh
+offline_run.sh
+.github/
+.mypy_cache/
+.pytest_cache/
+.vscode/

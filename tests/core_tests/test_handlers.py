@@ -40,16 +40,16 @@ def test_allowed_file():
 
 def test_login_required_redirect(client):
     """Test login_required decorator redirects when not logged in."""
-    response = client.get("/")
+    response = client.get("/user/home")
     assert response.status_code == 302
-    assert response.headers["Location"] == "/students/login"
+    assert response.headers["Location"] == "/"
 
 
 def test_student_login_required_redirect(client):
     """Test student_login_required decorator redirects when student is not logged in."""
     response = client.get("/students/details/12345678")
     assert response.status_code == 302
-    assert response.headers["Location"] == "/students/login"
+    assert response.headers["Location"] == "/"
 
 
 def test_employers_login_required_redirect(client):
@@ -63,7 +63,7 @@ def test_admin_or_employers_required_redirect(client):
     """Test admin_or_employers_required decorator redirects when neither admin nor employer is logged in."""
     response = client.get("/opportunities/search")
     assert response.status_code == 302
-    assert response.headers["Location"] == "/students/login"
+    assert response.headers["Location"] == "/"
 
 
 def test_get_user_type(app):
@@ -87,11 +87,6 @@ def test_get_user_type(app):
 
 def test_index_route(client):
     """Test home page route."""
-
-    with client.session_transaction() as session:
-        session["user"] = {"name": "AdminUser"}
-        session["logged_in"] = True
-
     response = client.get("/")
     assert response.status_code == 200
 
