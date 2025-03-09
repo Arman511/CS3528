@@ -25,8 +25,8 @@
                         <a class="dropdown-item" href="{{ url_for("upload_page") }}">Upload Students</a>
                         <a class="dropdown-item"
                            href="{{ url_for("register_student_attempt") }}">Add Student</a>
-                           <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
-                           <a class="dropdown-item text-danger font-weight-bold"
+                        <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-students">Delete All Students</a>
                     </div>
@@ -44,11 +44,11 @@
                         <a class="dropdown-item" href="{{ url_for("upload_opportunities") }}">Upload Opportunities</a>
                         <a class="dropdown-item"
                            href="{{ url_for("employer_add_update_opportunity") }}">Add Opportunity</a>
-                           <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
-                           <a class="dropdown-item text-danger font-weight-bold"
-                              href="#"
-                              id="delete-all-opportunities">Delete All Opportunities</a>
-                        </div>
+                        <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
+                        <a class="dropdown-item text-danger font-weight-bold"
+                           href="#"
+                           id="delete-all-opportunities">Delete All Opportunities</a>
+                    </div>
                 </li>
                 <!-- Employers Dropdown -->
                 <li class="nav-item dropdown">
@@ -98,7 +98,7 @@
                         <a class="dropdown-item" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
                         <a class="dropdown-item" href="{{ url_for("add_course_module") }}">Add Module</a>
                         <a class="dropdown-item"
-                        href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
+                           href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
                            id="delete-all-modules">Delete All Modules</a>
@@ -139,44 +139,40 @@
     </nav>
 </div>
 <script>
-// Function to enable hover dropdowns
 function enableDropdownHover(dropdownId, menuId) {
     const dropdown = document.getElementById(dropdownId);
     const menu = document.getElementById(menuId);
     let hoverTimeout;
 
     if (dropdown && menu) {
-        // Show dropdown on hover
         dropdown.addEventListener("mouseenter", function() {
             hoverTimeout = setTimeout(() => {
                 menu.classList.add("show");
             }, 500);
         });
 
-        // Hide dropdown when mouse leaves "Dropdown" or the menu, with slight delay for smooth exit
         dropdown.addEventListener("mouseleave", function() {
             clearTimeout(hoverTimeout);
-            setTimeout(() => {
-                if (!menu.matches(":hover")) { // Ensure the menu isn't still hovered
+            hoverTimeout = setTimeout(() => {
+                if (!menu.matches(":hover")) { 
                     menu.classList.remove("show");
                 }
-            }, 10); // Slight delay to prevent flickering
+            }, 500); 
         });
 
-        // Prevent menu from closing when mouse enters the dropdown menu
         menu.addEventListener("mouseenter", function() {
             clearTimeout(hoverTimeout);
             this.classList.add("show");
         });
 
-        // Hide dropdown when mouse leaves the menu
         menu.addEventListener("mouseleave", function() {
-            this.classList.remove("show");
+            hoverTimeout = setTimeout(() => {
+                this.classList.remove("show");
+            }, 500); 
         });
     }
 }
 
-// Apply hover functionality to all dropdowns
 enableDropdownHover("studentsDropdown", "studentsMenu");
 enableDropdownHover("opportunitiesDropdown", "opportunitiesMenu");
 enableDropdownHover("employersDropdown", "employersMenu");

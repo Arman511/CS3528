@@ -11,13 +11,13 @@
               aria-expanded="false">
         <span id="userGreetingText">
           {% if user_type == 'admin' %}
-            Hello, {{ session.user.name }}
+            Account, {{ session.user.name }}
           {% elif user_type == 'employer' %}
-            Hello, {{ session.employer.company_name }}
+            Account, {{ session.employer.company_name }}
           {% elif user_type == 'student' %}
-            Hello, {{ session.student.first_name }}
+            Account, {{ session.student.first_name }}
           {% elif user_type == 'superuser' %}
-            Hello, Superuser
+            Account, Superuser
           {% else %}
             Didn't work
           {% endif %}
