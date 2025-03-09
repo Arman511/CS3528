@@ -103,7 +103,7 @@
                                 <td>{{ opportunity.description }}</td>
                                 <td>{{ opportunity.company_name }}</td>
                                 <td>
-                                    <a href="{{ opportunity.url }}">{{ opportunity.url }}</a>
+                                    <a href="https://{{ opportunity.url }}" target="_blank">{{ opportunity.url }}</a>
                                 </td>
                                 <td>{{ opportunity.location }}</td>
                                 <td data-courses="{% for course in opportunity.courses_required %}{{ course }}, {% endfor %}">
