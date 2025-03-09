@@ -9,7 +9,13 @@
                   class="upload_form"
                   enctype="multipart/form-data">
                 <label for="file">XLSX</label>
-                <input type="file" name="file" class="field" required accept=".xlsx" />
+                <input type="file"
+                       name="file"
+                       class="field"
+                       required
+                       accept=".xlsx"
+                       title="Choose an XLSX file to upload"
+                       placeholder="Choose file" />
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Upload" class="btn" />
             </form>
