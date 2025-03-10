@@ -96,6 +96,8 @@ def run_app():
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
 
+print(os.getenv("MONGO_URI"))
+
 
 if __name__ == "__main__":
     app_thread = threading.Thread(target=run_app)
