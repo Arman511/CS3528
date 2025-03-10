@@ -24,12 +24,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy application files
 COPY . /app
 
-# Create a non-root user
-RUN adduser --disabled-login --no-create-home appuser && chown -R appuser:appuser /app
-
-# Switch to the non-root user
-USER appuser
-
 # Expose the application port
 EXPOSE 8080
 
