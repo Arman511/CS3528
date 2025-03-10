@@ -162,6 +162,7 @@ def configure_routes(app, cache):
     routes_superuser.add_superuser_routes(app)
     routes_debug.add_debug_routes(app)
 
+    @app.route("/landing_page")
     @app.route("/")
     def index():
         """The home route which renders the 'landing_page.html' template."""
