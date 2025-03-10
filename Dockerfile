@@ -7,8 +7,12 @@ WORKDIR /app
 # Copy requirements and install dependencies
 COPY requirements.txt /app/requirements.txt
 
-RUN pip3 install --no-cache-dir --upgrade pip && \
-    pip3 install --no-cache-dir -r requirements.txt
+RUN python -m venv .venv && \
+    . .venv/bin/activate && \
+    pip install --no-cache-dir --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
+
+ENV PATH=".venv/bin:$PATH"
 
 # Copy the entire application code
 COPY . /app
