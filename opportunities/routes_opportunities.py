@@ -116,7 +116,7 @@ def add_opportunities_routes(app):
 
                 if opportunity["spots_available"] < 1:
                     raise ValueError("Spots available must be at least 1.")
-                elif opportunity["duration"] not in [
+                if opportunity["duration"] not in [
                     "1_day",
                     "1_week",
                     "1_month",
@@ -130,10 +130,10 @@ def add_opportunities_routes(app):
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)
-            else:
-                original = Opportunity().get_opportunity_by_id(opportunity["_id"])
-                if original and original["employer_id"] != session["employer"]["_id"]:
-                    return jsonify({"error": "Unauthorized Access."}), 401
+
+            original = Opportunity().get_opportunity_by_id(opportunity["_id"])
+            if original and original["employer_id"] != session["employer"]["_id"]:
+                return jsonify({"error": "Unauthorized Access."}), 401
             opportunity["employer_id"] = session["employer"]["_id"]
             return Opportunity().add_update_opportunity(opportunity, False)
 
@@ -146,15 +146,17 @@ def add_opportunities_routes(app):
 
         # Include employer in the context
         employer = session.get("employer", None)
-
+        user_type = "admin" if handlers.is_admin() else "employer"
+        employers = Employers().get_employers()
         return render_template(
             "opportunities/employer_add_update_opportunity.html",
             opportunity=opportunity,
             courses=Course().get_courses(),
             modules=Module().get_modules(),
-            user_type="admin" if "logged_in" in session else "employer",
+            user_type=user_type,
             employer=employer,  # Add employer to the template context
             page="opportunities",
+            employers=employers,
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])

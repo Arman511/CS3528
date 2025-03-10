@@ -9,6 +9,8 @@ import sys
 from dotenv import load_dotenv
 from flask import Flask
 from flask_caching import Cache
+import signal
+import threading
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -52,11 +54,16 @@ for table in tables:
 CONFIG_MANAGER = Config(DATABASE_MANAGER)
 
 app = Flask(__name__)
+PORT = int(os.getenv("PORT", 5000))
 app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["CACHE_TYPE"] = "SimpleCache"
 app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
+
 cache = Cache(app)
 handlers.configure_routes(app, cache)
 
@@ -64,9 +71,32 @@ from core.deadline_manager import DeadlineManager  # noqa: E402
 
 DEADLINE_MANAGER = DeadlineManager()
 
-if __name__ == "__main__":
+
+def handle_kill_signal(signum, frame):
+    print("Kill signal received. Shutting down the server...")
+    DATABASE_MANAGER.close_connection()
+    exit(0)
+
+
+signal.signal(signal.SIGTERM, handle_kill_signal)
+
+
+def run_app():
     try:
-        app.run()
+        app.run(port=PORT)
     except KeyboardInterrupt:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
+    except OSError:
+        DATABASE_MANAGER.close_connection()
+        print("Shutting down the server...")
+    except Exception as e:
+        print(e)
+    finally:
+        DATABASE_MANAGER.close_connection()
+        print("Shutting down the server...")
+
+if __name__ == "__main__":
+    app_thread = threading.Thread(target=run_app)
+    app_thread.start()
+    app_thread.join()

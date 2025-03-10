@@ -69,8 +69,8 @@ def add_user_routes(app, cache):
                 return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
-            return redirect("/")
-        return render_template("user/login.html", user_type="admin")
+            return redirect("/user/home")
+        return render_template("user/login.html")
 
     @app.route("/user/delete", methods=["DELETE"])
     @handlers.superuser_required
@@ -172,6 +172,9 @@ def add_user_routes(app, cache):
 
         for opportunity in opportunities:
             if "preferences" not in opportunity:
+                if "title" not in opportunity:
+                    opportunity["title"] = "Opportunity without title"
+
                 problems.append(
                     {
                         "description": (

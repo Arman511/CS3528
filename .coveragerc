@@ -9,3 +9,5 @@ omit =
     */static/*
     *.html
     gunicorn_config.py
+    *__init__.py
+    database_interface.py

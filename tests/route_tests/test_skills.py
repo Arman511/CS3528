@@ -13,7 +13,6 @@ from itsdangerous import URLSafeSerializer
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from flask import session
 from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
@@ -269,7 +268,7 @@ def test_add_skill_duplicate(user_logged_in_client, database, sample_skill):
     database.delete_all_by_field("skills", "_id", "123")
 
 
-def test_update_skill_nonexistent(user_logged_in_client, database):
+def test_update_skill_nonexistent(user_logged_in_client):
     """Test updating a nonexistent skill."""
     url = "/skills/update"
     response = user_logged_in_client.post(
@@ -293,7 +292,7 @@ def test_list_skills_empty(user_logged_in_client, database):
     assert response.status_code == 200
 
 
-def test_approve_skill_nonexistent(user_logged_in_client, database):
+def test_approve_skill_nonexistent(user_logged_in_client):
     """Test approving a nonexistent skill."""
     url = "/skills/approve_skill?attempt_skill_id=nonexistent_id"
     response = user_logged_in_client.post(
@@ -305,7 +304,7 @@ def test_approve_skill_nonexistent(user_logged_in_client, database):
     assert response.json["error"] == "Attempted skill not found"
 
 
-def test_reject_skill_nonexistent(user_logged_in_client, database):
+def test_reject_skill_nonexistent(user_logged_in_client):
     """Test rejecting a nonexistent skill."""
     url = "/skills/reject_skill?attempt_skill_id=nonexistent_id"
     response = user_logged_in_client.post(url)
@@ -475,7 +474,7 @@ def test_update_attempted_skill_post(user_logged_in_client, database):
     database.delete_all_by_field("skills", "skill_name", "Updated Skill")
 
 
-def test_update_attempted_skill_post_missing_fields(user_logged_in_client, database):
+def test_update_attempted_skill_post_missing_fields(user_logged_in_client):
     """Test updating an attempted skill with missing fields."""
     url = "/skills/update_attempted_skill"
     response = user_logged_in_client.post(
@@ -498,7 +497,7 @@ def test_update_attempted_skill_get_nonexistent(user_logged_in_client):
     assert response.status_code == 404
 
 
-def test_search_attempt_skills(user_logged_in_client, database):
+def test_search_attempt_skills(user_logged_in_client):
     """Test searching for attempted skills."""
     url = "/skills/attempted_skill_search"
     response = user_logged_in_client.get(url)
@@ -542,11 +541,16 @@ def test_search_attempt_skills(user_logged_in_client, database):
 
 def test_search_attempt_skills_empty(user_logged_in_client, database):
     """Test searching for attempted skills when none exist."""
+    skills = database.get_all("attempted_skills")
+    database.delete_all("attempted_skills")
     database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
 
     url = "/skills/attempted_skill_search"
     response = user_logged_in_client.get(url)
     assert response.status_code == 200
+
+    for skill in skills:
+        database.insert("attempted_skills", skill)
 
 
 def test_update_skill_get(user_logged_in_client, database):

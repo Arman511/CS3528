@@ -11,12 +11,10 @@ import uuid
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha256
 import pytest
 from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
-import uuid
 
 os.environ["IS_TEST"] = "True"
 
@@ -75,7 +73,6 @@ def sample_skill(database):
 
 def test_find_skill_by_id(database, sample_skill, app, skill_model):
     """Test find_skill method by ID."""
-    from skills.models import Skill
 
     database.insert("skills", sample_skill)
 
@@ -299,7 +296,7 @@ def test_update_invalid_skill(database, skill_model, app, sample_skill):
     database.delete_all_by_field("skills", "skill_name", "Invalid Skill")
 
 
-def test_find_skill_return_none(database, skill_model, app):
+def test_find_skill_return_none(skill_model, app):
     """Test find_skill method returns None for non-existent skill."""
     with app.app_context():
         with app.test_request_context():
@@ -361,7 +358,7 @@ def test_delete_skill_with_students(database, skill_model, app):
     database.delete_all_by_field("students", "email", "student@example.com")
 
 
-def test_delete_nonexistent_skill(database, skill_model, app):
+def test_delete_nonexistent_skill(skill_model, app):
     """Test delete_skill method with non-existent skill."""
     with app.app_context():
         with app.test_request_context():
@@ -370,38 +367,7 @@ def test_delete_nonexistent_skill(database, skill_model, app):
             assert response[0].json["error"] == "Skill not found"
 
 
-def test_delete_skill_with_students(database, skill_model, app):
-    """Test delete_skill method with students having the skill."""
-    database.delete_all_by_field("skills", "skill_name", "Skill to Delete")
-    database.delete_all_by_field("students", "email", "student@example.com")
-
-    sample_skill = {
-        "_id": uuid.uuid4().hex,
-        "skill_name": "Skill to Delete",
-        "skill_description": "Skill to be deleted",
-    }
-    database.insert("skills", sample_skill)
-
-    sample_student = {
-        "_id": uuid.uuid4().hex,
-        "email": "student@example.com",
-        "skills": [sample_skill["_id"]],
-    }
-    database.insert("students", sample_student)
-
-    with app.app_context():
-        with app.test_request_context():
-            response = skill_model.delete_skill(sample_skill["_id"])[0]
-            assert response.status_code == 200
-            assert database.get_one_by_id("skills", sample_skill["_id"]) is None
-            updated_student = database.get_one_by_id("students", sample_student["_id"])
-            assert sample_skill["_id"] not in updated_student["skills"]
-
-    database.delete_all_by_field("skills", "skill_name", "Skill to Delete")
-    database.delete_all_by_field("students", "email", "student@example.com")
-
-
-def test_get_skill_by_id_returns_none(database, skill_model, app):
+def test_get_skill_by_id_returns_none(skill_model, app):
     """Test get_skill_by_id method returns None for non-existent skill."""
     with app.app_context():
         with app.test_request_context():
@@ -608,7 +574,7 @@ def test_approve_skill_empty_description(database, skill_model, app):
     database.delete_all_by_field("attempted_skills", "skill_name", "Approve Skill")
 
 
-def test_approve_nonexistent_skill(database, skill_model, app):
+def test_approve_nonexistent_skill(skill_model, app):
     """Test approve_skill method with non-existent skill."""
     with app.app_context():
         with app.test_request_context():
@@ -653,7 +619,7 @@ def test_reject_skill_updates_students(database, skill_model, app):
     database.delete_all_by_field("students", "email", "student@example.com")
 
 
-def test_reject_nonexistent_skill(database, skill_model, app):
+def test_reject_nonexistent_skill(skill_model, app):
     """Test reject_skill method with non-existent skill."""
     with app.app_context():
         with app.test_request_context():
@@ -687,7 +653,7 @@ def test_update_attempt_skill(database, skill_model, app):
     database.delete_all_by_field("attempted_skills", "skill_name", "Updated Skill")
 
 
-def test_update_attempt_skill_invalid_id(database, skill_model, app):
+def test_update_attempt_skill_invalid_id(skill_model, app):
     """Test update_attempt_skill method with invalid skill ID."""
     with app.app_context():
         with app.test_request_context():
@@ -696,3 +662,88 @@ def test_update_attempt_skill_invalid_id(database, skill_model, app):
             )
             assert response[1] == 404
             assert response[0].json["error"] == "Skill not found"
+
+
+def test_delete_all_attempted_skills(database, skill_model, app):
+    """Test delete_all_attempted_skill method."""
+    database.insert(
+        "attempted_skills",
+        {"_id": uuid.uuid4().hex, "skill_name": "Test Attempted Skill"},
+    )
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.delete_all_attempted_skill()[0]
+            assert response.status_code == 200
+            assert database.get_all("attempted_skills") == []
+
+
+def test_upload_skills(database, skill_model, app):
+    """Test upload_skills method with a valid file."""
+    import pandas as pd
+    from io import BytesIO
+
+    data = {
+        "Skill_Name": ["Uploaded Skill 1", "Uploaded Skill 2"],
+        "Skill_Description": ["Desc 1", "Desc 2"],
+    }
+    df = pd.DataFrame(data)
+    file = BytesIO()
+    df.to_excel(file, index=False)
+    file.seek(0)
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.upload_skills(file)[0]
+            assert response.status_code == 200
+            assert (
+                database.get_one_by_field("skills", "skill_name", "Uploaded Skill 1")
+                is not None
+            )
+            assert (
+                database.get_one_by_field("skills", "skill_name", "Uploaded Skill 2")
+                is not None
+            )
+
+    database.delete_all_by_field("skills", "skill_name", "Uploaded Skill 1")
+    database.delete_all_by_field("skills", "skill_name", "Uploaded Skill 2")
+
+
+def test_download_all(database, skill_model, app):
+    """Test download_all method."""
+    database.insert(
+        "skills",
+        {
+            "_id": uuid.uuid4().hex,
+            "skill_name": "Downloadable Skill",
+            "skill_description": "Desc",
+        },
+    )
+
+    with app.app_context():
+        with app.test_request_context():
+            response = skill_model.download_all()
+            assert response.status_code == 200
+            assert (
+                response.mimetype
+                == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+    database.delete_all_by_field("skills", "skill_name", "Downloadable Skill")
+
+
+def test_find_skill_returns_none(database, skill_model, app):
+    """Test find_skill method returns None for non-existent skill."""
+    with app.app_context():
+        with app.test_request_context():
+            assert skill_model.find_skill(skill_name="NonExistent") is None
+            assert skill_model.find_skill(skill_id="nonexistentid") is None
+
+
+def test_get_list_attempted_skills_empty(database, skill_model, app):
+    """Test get_list_attempted_skills returns an empty list when no attempted skills exist."""
+    database.delete_all("attempted_skills")
+
+    with app.app_context():
+        with app.test_request_context():
+            assert skill_model.get_list_attempted_skills() == []

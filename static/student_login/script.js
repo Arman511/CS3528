@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 // Show OTP modal
                 otpModal.style.display = "flex";
             } else {
-                error_paragraph.textContent = "Email was invalid";
+                error_paragraph.textContent = "ID was invalid";
                 error_paragraph.classList.remove("error--hidden");
             }
         } catch (error) {
@@ -78,4 +78,6 @@ document.addEventListener("DOMContentLoaded", () => {
     function hideOtpModal() {
         otpModal.style.display = "none";
     }
+
+    document.title = "SkillPilot - Student Login";
 });

@@ -75,14 +75,7 @@ def test_base(client):
     url = "/"
 
     response = client.get(url)
-    expected = (
-        b"<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n"
-        b"<h1>Redirecting...</h1>\n<p>You should be redirected automatically "
-        b'to the target URL: <a href="/students/login">/students/login</a>. '
-        b"If not, click the link.\n"
-    )
-    assert response.status_code == 302
-    assert response.get_data() == expected
+    assert response.status_code == 200
 
 
 def test_user_login_page(client):
@@ -112,7 +105,7 @@ def test_employers_login_page(client):
 def test_login(user_logged_in_client):
     """Test login."""
 
-    url = "/"
+    url = "/user/home"
     response = user_logged_in_client.get(url)
 
     assert response.status_code == 200
@@ -124,12 +117,4 @@ def test_signout(user_logged_in_client):
     response = user_logged_in_client.get(url)
 
     response = user_logged_in_client.get("/")
-    assert response.status_code == 302
-    expected = (
-        b"<!doctype html>\n<html lang=en>\n<title>Redirecting...</title>\n"
-        b"<h1>Redirecting...</h1>\n<p>You should be redirected automatically "
-        b'to the target URL: <a href="/students/login">/students/login</a>. '
-        b"If not, click the link.\n"
-    )
-    assert response.status_code == 302
-    assert response.get_data() == expected
+    assert response.status_code == 200

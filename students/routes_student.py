@@ -140,9 +140,12 @@ def add_student_routes(app):
             return redirect("/students/login")
 
         # Handle deadlines (applicable to students only)
-        if DEADLINE_MANAGER.is_past_student_ranking_deadline():
+        if (
+            DEADLINE_MANAGER.is_past_student_ranking_deadline()
+            and request.method == "GET"
+        ):
             return redirect("/students/passed_deadline")
-        if DEADLINE_MANAGER.is_past_details_deadline():
+        if DEADLINE_MANAGER.is_past_details_deadline() and request.method == "GET":
             return redirect(f"/students/rank_preferences/{student_id}")
 
         # Handle POST request for updating details
@@ -272,7 +275,10 @@ def add_student_routes(app):
             session.clear()
             return redirect("/students/login")
 
-        if DEADLINE_MANAGER.is_past_student_ranking_deadline():
+        if (
+            DEADLINE_MANAGER.is_past_student_ranking_deadline()
+            and request.method == "GET"
+        ):
             session.clear()
             render_template("student/past_deadline.html")
 

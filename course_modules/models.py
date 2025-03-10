@@ -3,11 +3,10 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
+import os
 import uuid
-from flask import jsonify
 import pandas as pd
-from flask import send_file
-from tqdm import tqdm
+from flask import send_file, jsonify
 
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
@@ -52,7 +51,7 @@ class Module:
         if not module:
             return jsonify({"error": "module not found"}), 404
 
-        DATABASE_MANAGER.delete("modules", module["_id"])
+        DATABASE_MANAGER.delete_by_id("modules", module["_id"])
 
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
@@ -92,8 +91,8 @@ class Module:
 
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
-            if "modules" in student and uuid in student["modules"]:
-                student["modules"].remove(uuid)
+            if "modules" in student and module["module_id"] in student["modules"]:
+                student["modules"].remove(module["module_id"])
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
@@ -102,7 +101,7 @@ class Module:
                 "modules_required" in opportunity
                 and uuid in opportunity["modules_required"]
             ):
-                opportunity["modules_required"].remove(uuid)
+                opportunity["modules_required"].remove(module["module_id"])
                 DATABASE_MANAGER.update_one_by_id(
                     "opportunities", opportunity["_id"], opportunity
                 )
@@ -134,7 +133,7 @@ class Module:
         if module:
             return module
 
-        return
+        return None
 
     def get_module_name_by_id(self, module_id):
         """Get module name by id"""
@@ -239,17 +238,21 @@ class Module:
         DATABASE_MANAGER.delete_all("students")
         updated_students = []
         for student in students:
-            if "module" in student:
+            if "modules" in student:
                 student["modules"] = []
             updated_students.append(student)
 
-        DATABASE_MANAGER.insert_many("students", updated_students)
+        if updated_students:
+            DATABASE_MANAGER.insert_many("students", updated_students)
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")
+        updated_opportunities = []
         for opp in opportunities:
             opp["modules_required"] = []
-        DATABASE_MANAGER.insert_many("opportunities")
+            updated_opportunities.append(opp)
+        if updated_opportunities:
+            DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
 
         return jsonify({"message": "Deleted"}), 200
 
@@ -262,7 +265,11 @@ class Module:
         df = pd.DataFrame(modules)
 
         # Define the file path
-        file_path = "/tmp/modules.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = os.path.join("temp", "modules.xlsx")
+        else:  # For Unix-like systems
+            file_path = "/tmp/modules.xlsx"
 
         df.drop(columns=["_id"], inplace=True)
         # Save the DataFrame to an Excel file
@@ -293,7 +300,7 @@ class Module:
 
         ids = set()
 
-        for i, module in enumerate(tqdm(modules, desc="Uploading modules")):
+        for i, module in enumerate(modules):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "module_id": module.get("Module_id", ""),
@@ -302,12 +309,12 @@ class Module:
             }
             if not temp["module_id"] or not temp["module_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
-            elif temp["module_id"] in ids:
+            if temp["module_id"] in ids:
                 return (
                     jsonify({"error": "Duplicate module ID in row " + str(i + 1)}),
                     400,
                 )
-            elif temp["module_id"] in current_ids:
+            if temp["module_id"] in current_ids:
                 return jsonify({"error": "Module already in database"}), 400
             clean_data.append(temp)
             ids.add(temp["module_id"])

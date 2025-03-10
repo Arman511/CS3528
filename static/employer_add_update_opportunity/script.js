@@ -32,6 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
         formData.append("title", title);
         formData.append("description", description);
         formData.append("courses_required", JSON.stringify(selectedCourses));
+        url = url.replace("https://", "");
+        url = url.replace("http://", "");
         formData.append("url", url);
         formData.append("location", location);
         formData.append("duration", placement_duration);

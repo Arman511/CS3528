@@ -20,7 +20,7 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 ## Website
 
-[Deployment Official](https://www.skillpilot.co.uk/)
+[Deployment Official](https://www.abdn.skillpilot.co.uk/)
 
 [Deployment Vercel](https://cs-3528.vercel.app/)
 
@@ -71,20 +71,6 @@ https://dev.to/andrewbaisden/how-to-deploy-a-python-flask-app-to-vercel-2o5k
 
 -   Email : admin@example.com
 -   Password: admin
-
-## Student Login Details
-
--   Student 1:
-    Username : 12345678
-    Password : 54d37f9c96a711ef93523388226f7343
-
--   Student 2:
-    Username : 52207669
-    Password : 649fe83e96a711ef93523388226f7343
-
--   Student 3:
-    Username : 45327347
-    Password : 6b31741a96a711ef93523388226f7343
 
 ## Employer Login
 

@@ -2,14 +2,12 @@
 Opportunity model.
 """
 
-from datetime import datetime
+import os
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
 from core import handlers
 from employers.models import Employers
-
-cache = {"data": [], "last_updated": datetime.now()}
 
 
 class Opportunity:
@@ -20,9 +18,9 @@ class Opportunity:
         opportunity,
         is_admin=False,
     ):
+        """Adding new opportunity."""
         from app import DATABASE_MANAGER
 
-        """Adding new opportunity."""
         find_opportunity = DATABASE_MANAGER.get_one_by_id(
             "opportunities", opportunity["_id"]
         )
@@ -32,9 +30,6 @@ class Opportunity:
         DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
 
         DATABASE_MANAGER.insert("opportunities", opportunity)
-
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
 
         if opportunity:
             return jsonify(opportunity), 200
@@ -64,7 +59,7 @@ class Opportunity:
                 )
             elif title:
                 opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", {"title": {"$regex": title, "$options": "i"}}
+                    "opportunities", "title", {"$regex": title, "$options": "i"}
                 )
             elif company_name:
                 company = DATABASE_MANAGER.get_one_by_field(
@@ -106,7 +101,9 @@ class Opportunity:
             query = {"title": {"$regex": title, "$options": "i"}}
             print(f"[DEBUG] Query for title: {query}")
 
-            opportunities = DATABASE_MANAGER.get_all_by_field("opportunities", query)
+            opportunities = DATABASE_MANAGER.get_all_by_field(
+                "opportunities", "title", {"$regex": title, "$options": "i"}
+            )
             print(f"[DEBUG] Opportunities found: {len(opportunities)}")
             return opportunities
         except Exception as e:
@@ -160,15 +157,6 @@ class Opportunity:
         """Getting opportunity."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now():
-            for opportunity in cache["data"]:
-                if opportunity["_id"] == _id:
-                    return opportunity
-            return None
-
-        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
-        cache["last_updated"] = datetime.now()
-
         opportunity = DATABASE_MANAGER.get_one_by_id("opportunities", _id)
 
         if opportunity:
@@ -187,13 +175,7 @@ class Opportunity:
         """Getting all opportunities."""
         from app import DATABASE_MANAGER
 
-        if cache["data"] and cache["last_updated"] > datetime.now():
-            return jsonify(cache["data"]), 200
-
-        cache["data"] = DATABASE_MANAGER.get_all("opportunities")
-        cache["last_updated"] = datetime.now()
-
-        return cache["data"]
+        return DATABASE_MANAGER.get_all("opportunities")
 
     def get_opportunities_by_duration(self, duration):
         """Getting all opportunities that match duration."""
@@ -221,8 +203,6 @@ class Opportunity:
             return jsonify({"error": "Opportunity not found"}), 404
 
         DATABASE_MANAGER.delete_by_id("opportunities", opportunity_id)
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -238,8 +218,7 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         DATABASE_MANAGER.delete_all("opportunities")
-        cache["data"] = []
-        cache["last_updated"] = datetime.now()
+
         return jsonify({"message": "All opportunities deleted"}), 200
 
     def get_valid_students(self, opportunity_id):
@@ -272,8 +251,8 @@ class Opportunity:
         """Deleting all opportunities."""
         if is_admin:
             return self.delete_all_opportunities_admin()
-        else:
-            return self.delete_all_opportunities_employer()
+
+        return self.delete_all_opportunities_employer()
 
     def delete_all_opportunities_employer(self):
         """Deleting all opportunities."""
@@ -286,9 +265,6 @@ class Opportunity:
 
         for opportunity in opportunities:
             DATABASE_MANAGER.delete_by_id("opportunities", opportunity["_id"])
-
-        cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-        cache["last_updated"] = datetime.now()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -322,8 +298,7 @@ class Opportunity:
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
 
         DATABASE_MANAGER.delete_all("opportunities")
-        cache["data"] = []
-        cache["last_updated"] = datetime.now()
+
         return jsonify({"message": "All opportunities deleted"}), 200
 
     def download_opportunities(self, is_admin):
@@ -362,7 +337,11 @@ class Opportunity:
             opportunities_data.append(opportunity_data)
 
         df = pd.DataFrame(opportunities_data)
-        file_path = "/tmp/opportunities.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/opportunities.xlsx"
+        else:
+            file_path = "/tmp/opportunities.xlsx"
         df.to_excel(file_path, index=False)
 
         return send_file(
@@ -532,15 +511,6 @@ class Opportunity:
                         ),
                         400,
                     )
-                if not isinstance(temp["duration"], str):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Duration is required and cannot be empty in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
-                    )
 
                 temp["title"] = temp["title"].strip()
                 temp["description"] = temp["description"].strip()
@@ -556,8 +526,6 @@ class Opportunity:
                 clean_data.append(temp)
 
             DATABASE_MANAGER.insert_many("opportunities", clean_data)
-            cache["data"] = list(DATABASE_MANAGER.get_all("opportunities"))
-            cache["last_updated"] = datetime.now()
 
             return jsonify({"message": "Opportunities uploaded successfully"}), 200
 

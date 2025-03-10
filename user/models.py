@@ -22,7 +22,7 @@ class User:
         del user["password"]
         session["logged_in"] = True
         session["user"] = {"_id": user["_id"], "name": user["name"]}
-        return jsonify({"message": "/"}), 200
+        return jsonify({"message": "/user/home"}), 200
 
     def register(self, user):
         """Registers a new user by creating a user dictionary with a unique ID,
@@ -96,17 +96,30 @@ class User:
             employer_email,
         ]
 
-        body = (
-            f"<p>Dear {student['first_name']},</p>"
-            f"<p>Congratulations! You have been matched with <strong>{employer_name}</strong> for "
-            f"the opportunity: <strong>{opportunity['title']}</strong>. Please contact them at "
-            f"<a href='mailto:{employer_email}'>{employer_email}</a> "
-            f"to discuss further details.</p>"
-            "<p>Best,<br>Skillpoint</p>"
-        )
+        body = f"""
+        <html>
+        <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <p style="font-size: 16px;">Dear {student['first_name']},</p>
+            
+            <p style="font-size: 16px;"><strong>Congratulations!<strong> We’re thrilled to inform you that you have been <strong>matched</strong> with <strong>{employer_name}</strong> for an exciting opportunity!</p>
+
+            <p style="font-size: 20px; font-weight: bold; color: #2c3e50;">{opportunity['title']}</p>
+            
+            <p style="font-size: 16px;">This is a great chance to connect and explore potential collaboration. We encourage you to reach out to <strong>{employer_name}</strong> at <a href='mailto:{employer_email}' style="color: #3498db; text-decoration: none;">{employer_email}</a> to discuss the next steps.</p>
+            
+            <p style="font-size: 16px;">If you have any questions or need any assistance, feel free to get in touch with our support team.</p>
+
+            <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
+
+            <p style="font-size: 16px;"><strong>Wishing you all the best on this exciting journey!</strong></p>
+
+            <p style="font-size: 16px;"><strong>Best Regards,</strong><br> The Skillpilot Team</p>
+        </body>
+        </html>
+        """
 
         msg = MIMEText(body, "html")
-        msg["Subject"] = "Skillpoint: Matched with an opportunity"
+        msg["Subject"] = "🎯 Skillpilot: You Have Been Matched!"
         msg["To"] = ", ".join(recipients)
         email_handler.send_email(msg, recipients)
         return jsonify({"message": "Email Sent"}), 200

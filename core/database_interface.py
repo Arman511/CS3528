@@ -3,6 +3,7 @@ from abc import ABC, abstractmethod
 
 class DatabaseInterface(ABC):
     def __init__(self):
+        """Initialize the database interface"""
         self.connection = None
         self.database = None
         self.table_list = []
@@ -12,83 +13,104 @@ class DatabaseInterface(ABC):
 
     @abstractmethod
     def connect(self, connection, database):
-        pass
+        """Connect to the database"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_all(self, table):
-        pass
+        """Get all the data from the table"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_one_by_id(self, table, id_val):
-        pass
+        """Get one row by id"""
+        raise NotImplementedError
 
     @abstractmethod
     def insert(self, table, data):
-        pass
+        """Insert data into the table"""
+        raise NotImplementedError
 
     @abstractmethod
     def update_one_by_id(self, table, id_val, data):
-        pass
+        """Update one row by id"""
+        raise NotImplementedError
 
     @abstractmethod
     def update_one_by_field(self, table, field, value, data):
-        pass
+        """Update one row by field"""
+        raise NotImplementedError
 
     @abstractmethod
     def delete_by_id(self, table, id_val):
-        pass
+        """Delete one row by id"""
+        raise NotImplementedError
 
     @abstractmethod
     def delete_all(self, table):
-        pass
+        """Delete all rows in the table"""
+        raise NotImplementedError
 
     @abstractmethod
     def increment(self, table, id_val, field, increment):
-        pass
+        """Increment a field by a value"""
+        raise NotImplementedError
 
     @abstractmethod
     def delete_one_by_field(self, table, field, value):
-        pass
+        """Delete one row by field"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_by_email(self, table, email):
-        pass
+        """Get one row by email"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_one_by_field(self, table, field, value):
-        pass
+        """Get one row by field"""
+        raise NotImplementedError
 
     @abstractmethod
     def is_table(self, table):
-        pass
+        """Check if the table exists"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_all_by_two_fields(self, table, field1, value1, field2, value2):
-        pass
+        """Get all by two fields"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_all_by_in_list(self, table, field, values_list):
-        pass
+        """Get all by in list"""
+        raise NotImplementedError
 
     @abstractmethod
     def update_by_field(self, table, field, value, data):
-        pass
+        """Update by field"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_all_by_field(self, table, field, value):
-        pass
+        """Get all by field"""
+        raise NotImplementedError
 
     @abstractmethod
     def create_index(self, table, field):
-        pass
+        """Create an index"""
+        raise NotImplementedError
 
     @abstractmethod
     def get_all_by_text_search(self, table, search_text):
-        pass
+        """Get all by text search"""
+        raise NotImplementedError
 
     def get_tables(self):
+        """Get the list of tables"""
         return self.table_list
 
     @abstractmethod
     def delete_all_by_field(self, table, field, value):
-        pass
+        """Delete all by field"""
+        raise NotImplementedError

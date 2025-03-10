@@ -1,12 +1,13 @@
 """Employer model."""
 
 from datetime import datetime, timedelta
+import os
 import time
+import uuid
 from flask import redirect, jsonify, session
-from core import email_handler
 import pandas as pd
 from flask import send_file
-import uuid
+from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}
 
@@ -23,30 +24,28 @@ class Employers:
         """Adding new employer."""
         from app import DATABASE_MANAGER
 
-        # employer = {
-        #     "_id": uuid.uuid1().hex,
-        #     "company_name": request.form.get("company_name"),
-        #     "email": request.form.get("email"),
-        # }
-
         if DATABASE_MANAGER.get_one_by_field_strict(
             "employers", "email", employer["email"].lower()
         ):
             return jsonify({"error": "Email already in use"}), 400
 
         existing_employer = DATABASE_MANAGER.get_one_by_field_strict(
-            "employers",
-            "company_name",
-            employer["company_name"],
+            "employers", "company_name", employer["company_name"]
         )
         employer["email"] = employer["email"].lower()
+
         if existing_employer:
             return jsonify({"error": "Company name already exists"}), 400
 
         DATABASE_MANAGER.insert("employers", employer)
+
         if employer:
-            employers_cache["data"].append(employer)
-            employers_cache["last_updated"] = datetime.now()
+            if DATABASE_MANAGER.get_all("employers"):
+                if employers_cache["data"] is None:
+                    employers_cache["data"] = []
+                employers_cache["data"].append(employer)
+                employers_cache["last_updated"] = datetime.now()
+
             return jsonify(employer), 200
 
         return jsonify({"error": "Employer not added"}), 400
@@ -90,13 +89,12 @@ class Employers:
         return employers
 
     def get_employer_by_id(self, employer_id):
-        """Gets an employer by ID."""
-        employers = self.get_employers()
+        """Retrieves an employer by its ID."""
+        from app import DATABASE_MANAGER
 
-        for employer in employers:
-            if employer["_id"] == employer_id:
-                return employer
-
+        employer = DATABASE_MANAGER.get_one_by_id("employers", employer_id)
+        if employer:
+            return employer
         return None
 
     def delete_employer_by_id(self, _id):
@@ -190,7 +188,11 @@ class Employers:
         df = pd.DataFrame(employers)
 
         # Save DataFrame to Excel file
-        file_path = "/tmp/employers.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/employers.xlsx"
+        else:
+            file_path = "/tmp/employers.xlsx"
         df.to_excel(file_path, index=False)
 
         # Send the file

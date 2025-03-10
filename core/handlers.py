@@ -3,8 +3,19 @@ Handles the base routes, adds the module routes, and includes decorators
 to enforce user access levels.
 """
 
+from datetime import datetime, timezone
 from functools import wraps
-from flask import jsonify, render_template, session, redirect
+import os
+from flask import (
+    jsonify,
+    render_template,
+    send_from_directory,
+    session,
+    redirect,
+    make_response,
+    request,
+)
+from core import routes_debug
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -34,7 +45,7 @@ def login_required(f):
             return redirect("/user/search")
         elif "employer_logged_in" in session:
             return redirect("/employers/home")
-        return redirect("/students/login")
+        return redirect("/")
 
     return wrap
 
@@ -57,8 +68,8 @@ def student_login_required(f):
         elif "superuser" in session:
             return redirect("/user/search")
         elif "logged_in" in session:
-            return redirect("/")
-        return redirect("/students/login")
+            return redirect("/user/home")
+        return redirect("/")
 
     return wrap
 
@@ -76,7 +87,7 @@ def employers_login_required(f):
         elif "superuser" in session:
             return redirect("/user/search")
         elif "logged_in" in session:
-            return redirect("/")
+            return redirect("/user/home")
 
         return redirect("/employers/login")
 
@@ -94,7 +105,7 @@ def admin_or_employers_required(f):
             return f(*args, **kwargs)
         elif "superuser" in session:
             return redirect("/user/search")
-        return redirect("/students/login")
+        return redirect("/")
 
     return wrap
 
@@ -139,9 +150,6 @@ def configure_routes(app, cache):
     route configuration functions. It also defines the home route and the privacy policy route.
     Args:
         app (Flask): The Flask application instance.
-    Routes:
-        /: The home route which needs the user to be logged in and renders the 'home.html' template.
-        /privacy-policy: The privacy policy route which renders the 'privacy_policy.html' template.
     """
 
     routes_user.add_user_routes(app, cache)
@@ -152,16 +160,21 @@ def configure_routes(app, cache):
     routes_modules.add_module_routes(app)
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
-
+    routes_debug.add_debug_routes(app)
+    
     @app.route("/")
-    @login_required
     def index():
-        """The home route which needs the user to be logged in and renders the 'home.html' template.
-
-        Returns:
-            str: Rendered HTML template for the home page.
-        """
-        return render_template("/user/home.html", user_type="admin")
+        """The home route which renders the 'landing_page.html' template."""
+        user = get_user_type()
+        if user == "student":
+            return redirect("/students/login")
+        elif user == "employer":
+            return redirect("/employers/home")
+        elif user == "admin":
+            return redirect("/user/home")
+        elif user == "superuser":
+            return redirect("/superuser/home")
+        return render_template("landing_page.html")
 
     @app.route("/api/session", methods=["GET"])
     @admin_or_employers_required
@@ -186,6 +199,15 @@ def configure_routes(app, cache):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template("privacy_policy.html")
+
+    @app.route("/cookies_policy")
+    def cookies_policy():
+        """The cookies policy route which renders the 'cookies_policy.html' template.
+
+        Returns:
+            str: Rendered HTML template for the cookies policy page.
+        """
+        return render_template("cookies.html")
 
     @app.route("/robots.txt")
     def robots():
@@ -249,3 +271,66 @@ def configure_routes(app, cache):
             )
 
         return render_template("tutorials/tutorial_login.html")
+    @app.route("/sitemap")
+    @app.route("/sitemap/")
+    @app.route("/sitemap.xml")
+    @cache.cached(timeout=300)
+    def sitemap():
+        """
+        Route to dynamically generate a sitemap of your website/application.
+        """
+
+        host_base = f"{request.scheme}://{request.host}"
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
+
+        priority_mapping = {
+            "/": "1.0",
+            "/privacy_policy": "0.8",
+            "/sitemap": "0.5",
+        }
+
+        urls = [
+            {
+                "loc": f"{host_base}{str(rule)}",
+                "lastmod": now,
+                "priority": priority_mapping.get(str(rule), "0.5"),
+            }
+            for rule in app.url_map.iter_rules()
+            if "GET" in rule.methods
+            and not rule.arguments
+            and not any(
+                str(rule).startswith(prefix)
+                for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
+            )
+        ]
+
+        xml_sitemap = render_template(
+            "sitemap.xml",
+            urls=urls,
+            host_base=host_base,
+        )
+        response = make_response(xml_sitemap)
+        response.headers["Content-Type"] = "application/xml"
+
+        return response
+
+    @app.after_request
+    def add_cache_control_and_headers(response):
+        if (
+            response.content_type == "text/css"
+            or response.content_type == "application/javascript"
+            or response.content_type == "application/font-woff2"
+        ):
+            response.cache_control.max_age = 3600
+        elif "image" in response.content_type:
+            response.cache_control.max_age = 31536000
+            response.cache_control.public = True
+        else:
+            response.cache_control.max_age = 86400
+        response.cache_control.stale_while_revalidate = 2592000
+        response.cache_control.immutable = True
+        return response
+
+    @app.route("/static/<path:filename>")
+    def serve_static(filename):
+        return send_from_directory(os.path.join(app.root_path, "static"), filename)

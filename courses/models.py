@@ -2,11 +2,11 @@
 Courses model."""
 
 from datetime import datetime, timedelta
+import os
+import uuid
 from flask import jsonify, send_file
 import pandas as pd
-import uuid
 
-from tqdm import tqdm
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -160,6 +160,18 @@ class Course:
             if "course" in student and original["course_id"] == student["course"]:
                 student["course"] = updated_course["course_id"]
                 DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        for opportunity in opportunities:
+            if (
+                "courses_required" in opportunity
+                and original["course_id"] in opportunity["courses_required"]
+            ):
+                opportunity["courses_required"].remove(original["course_id"])
+                opportunity["courses_required"].append(updated_course["course_id"])
+                DATABASE_MANAGER.update_one_by_id(
+                    "opportunities", opportunity["_id"], opportunity
+                )
         self.reset_cache()
         return jsonify({"message": "Course was updated"}), 200
 
@@ -167,26 +179,33 @@ class Course:
         """Deletes all courses from the database."""
         from app import DATABASE_MANAGER
 
-        students = DATABASE_MANAGER.get_all("students")
-        for student in students:
-            if "modules" in student:
-                return jsonify({"error": "Students have modules assigned"}), 400
-
         DATABASE_MANAGER.delete_all("courses")
         courses_cache["data"] = []
         courses_cache["last_updated"] = datetime.now()
 
+        students = DATABASE_MANAGER.get_all("students")
+        DATABASE_MANAGER.delete_all("students")
+        updated_students = []
+        for student in students:
+            if "course" in student:
+                student["course"] = None
+            updated_students.append(student)
+
+        if updated_students:
+            DATABASE_MANAGER.insert_many("students", updated_students)
+
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")
         updated_opportunities = []
-        for opportunity in opportunities:
-            if "courses_required" in opportunity:
-                opportunity["courses_required"] = []
-            updated_opportunities.append(opportunity)
+        for opp in opportunities:
+            if "courses_required" in opp:
+                opp["courses_required"] = []
+            updated_opportunities.append(opp)
 
-        DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
+        if updated_opportunities:
+            DATABASE_MANAGER.insert_many("opportunities", updated_opportunities)
 
-        return jsonify({"message": "Deleted"}), 200
+        return jsonify({"message": "All courses deleted"}), 200
 
     def download_all_courses(self):
         """Download all courses"""
@@ -195,9 +214,9 @@ class Course:
         courses = DATABASE_MANAGER.get_all("courses")
 
         for course in courses:
-            course_data = course.pop("course_name").rsplit(", ", 1)
+            course_data = course["course_name"].rsplit(", ", 1)
             course["Course_name"] = course_data[0]
-            course["Qualification"] = course_data[1]
+            course["Qualification"] = course_data[1] if len(course_data) > 1 else ""
             course["UCAS_code"] = course.pop("course_id")
             course["Course_description"] = course.pop("course_description")
 
@@ -206,7 +225,13 @@ class Course:
         df = pd.DataFrame(courses)
 
         # Define the file path
-        file_path = "/tmp/courses.xlsx"
+        if os.name == "nt":  # For Windows
+            os.makedirs("temp", exist_ok=True)
+            file_path = "temp/courses.xlsx"
+        else:
+            os.makedirs("/tmp", exist_ok=True)
+            file_path = "/tmp/courses.xlsx"
+
         # Save the DataFrame to an Excel file
         df.to_excel(
             file_path,
@@ -233,7 +258,7 @@ class Course:
         )
         ids = set()
 
-        for i, course in tqdm(enumerate(courses), desc="Uploading courses"):
+        for i, course in enumerate(courses):
             temp = {
                 "_id": uuid.uuid4().hex,
                 "course_id": course.get("UCAS_code", ""),
@@ -242,12 +267,12 @@ class Course:
             }
             if not temp["course_id"] or not temp["course_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
-            elif temp["course_id"] in ids:
+            if temp["course_id"] in ids:
                 return (
                     jsonify({"error": "Duplicate course ID in row " + str(i + 1)}),
                     400,
                 )
-            elif temp["course_id"] in current_ids:
+            if temp["course_id"] in current_ids:
                 return jsonify({"error": "Course ID already exists"}), 400
             clean_data.append(temp)
             ids.add(temp["course_id"])

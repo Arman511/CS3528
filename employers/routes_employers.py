@@ -30,7 +30,7 @@ def add_employer_routes(app):
             email = request.form.get("email")
             return Employers().employer_login(email)
 
-        return render_template("employers/employer_login.html", user_type="employer")
+        return render_template("employers/employer_login.html")
 
     @app.route("/employers/home", methods=["GET"])
     @handlers.employers_login_required
