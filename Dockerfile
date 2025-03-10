@@ -9,9 +9,6 @@ RUN pip3 install --upgrade pip && \
 
 COPY . /app
 
-# Copy the .env file
-COPY .env /app/.env
-
 EXPOSE 8080
 
-CMD ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
+CMD gunicorn --config gunicorn_config.py app:app
