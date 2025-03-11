@@ -54,7 +54,7 @@ def superuser_logged_in_browser(chrome_browser, flask_server, database, superuse
     assert chrome_browser.current_url == "http://127.0.0.1:5000/admin/dashboard"
     yield chrome_browser
 
-def test_superuser_config(superuser_logged_in_browser):
+def test_superuser_manage_config(superuser_logged_in_browser):
     superuser_logged_in_browser.get("http://127.0.0.1:5000/admin/config")
     
     config_input = superuser_logged_in_browser.find_element(By.NAME, "max_users")
