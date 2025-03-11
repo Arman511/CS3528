@@ -7,7 +7,7 @@
         <!-- Sidebar: Lists sections of the tutorial -->
         <nav class="col-12 col-md-3 order-1" id="section-nav">
           <div class="card">
-            <h2 class="h4">Superuesr Tutorial</h2>
+            <h2 class="h4">Superuser Tutorial</h2>
             <h2 class="h5">
               <a class="toggle-collapse"
                  data-bs-toggle="collapse"
@@ -33,16 +33,7 @@
               </ul>
             </div>
             <h2 class="h5 ">
-              <a class="nav-link" href="#section1">User Management</a>
-            </h2>
-            <h2 class="h5 ">
-              <a class="nav-link" href="#section2">Details</a>
-            </h2>
-            <h2 class="h5 ">
-              <a class="nav-link" href="#section3">Ranking</a>
-            </h2>
-            <h2 class="h5 ">
-              <a class="nav-link" href="#section4">Matching</a>
+              <a class="nav-link" href="#section5">Config</a>
             </h2>
           </div>
         </nav>
@@ -58,63 +49,53 @@
           <div class="card-body">
             <!-- Each section has its own id -->
             <section id="section1" class="mb-4">
-              <h3>Logging In</h3>
-              <p>The university placement team manage all student accounts. They will create an account on your behalf.</p>
-              <p>
-                Once you have been notified by the university that your account has been created, at the student login section of the webpage
-                please enter your university student identifier number in the corresponding input box.
-              </p>
-              <p>After which a unique numerical 'one-time passcode' will be sent to your student email address.</p>
-              <p>A card view will then appear, with an input box where you enter the code.</p>
-              <p>
-                If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.
-              </p>
+              <h3>Add User</h3>
+              <p>To add a user, you need to provide the following details:</p>
+              <ul>
+                <li>Name</li>
+                <li>Email</li>
+                <li>Password</li>
+                <li>Confirm Password</li>
+              </ul>
+              There can not be 2 users with the same email address.
             </section>
-          </div>
-        </div>
-        <div class="card mt-5">
-          <div class="card-body">
-            <!-- Each section has its own id -->
+            <hr>
             <section id="section2" class="mb-4">
-              <h3>Details</h3>
+              <h3>Delete User</h3>
+              <p>To delete a user, navigate to the user management section and select the user you wish to delete.</p>
+            </section>
+            <hr>
+            <section id="section3" class="mb-4">
+              <h3>Update User</h3>
+              <p>To update user details, navigate to the user management section and select the user you wish to update.</p>
+              <p>There can not be 2 users with the same email address.</p>
+            </section>
+            <hr>
+            <section id="section4" class="mb-4">
+              <h3>Change Password</h3>
               <p>
-                Before the the Details Deadline, when you sign in you will sea form to add and update your university details. The are your degree details, what courses you have, what skills you have, if you have a car, what placement slots size you can do and any comments you have.
+                To change a user's password, navigate to the user management section and select the user whose password you wish to change.
               </p>
-              <p>
-                After the Details Deadline, you will not be able to update your details. You can ask the placement team to update your details for you.
-              </p>
+              <p>You will be asked for their new password and confirm password</p>
             </section>
           </div>
         </div>
         <div class="card mt-5">
           <div class="card-body">
             <!-- Each section has its own id -->
-            <section id="section3" class="mb-4">
-              <h3>Ranking</h3>
-              <p>
-                After the the Details Deadline, when you sign in you will seea a list of placements that you are eligible for, this eligiblity is based on the details you have provided (Course and Modules). You are supposed to rank these placements in order of preference. You can edit your ranking until the Ranking Deadline is met.
-              </p>
-              <p>The more placements that you rank the more likely you are to get a placement that you prefer.</p>
-              <p>After the Ranking Deadline, you will not be able to update your preference.</p>
-            </section>
-          </div>
-        </div>
-        <div class="card mt-5">
-          <div class="card-body">
-            <!-- Each section has its own id -->
-            <section id="section3" class="mb-4">
-              <h3>Matching</h3>
-              <p>
-                After the Matching Deadline, you will be assigned a placement based on your preferences and the employer's preferences. You will be notified of your placement via email.
-              </p>
-              <p>
-                If you are not happy with your placement or have any firther queries, you can contact the placement team to discuss your options.
-              </p>
+            <section id="section5" class="mb-4">
+              <h3>Config</h3>
+              <p>The configuration options include:</p>
+              <ul>
+                <li>Max number of skills a student can input</li>
+                <li>Min number of rankings a student must provide for opportunities</li>
+              </ul>
+              <p>Change the details and press submit to save the changes.</p>
             </section>
           </div>
         </div>
       </main>
     </div>
   </div>
-  <script>document.title = "Tutorial - Students";</script>
+  <script>document.title = "Tutorial - Superuser";</script>
 {% endblock content %}
