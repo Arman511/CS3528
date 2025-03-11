@@ -169,3 +169,55 @@ class User:
         update_data = {"name": name, "email": email}
         DATABASE_MANAGER.update_one_by_id("users", user_uuid, update_data)
         return jsonify({"message": "User updated successfully"}), 200
+
+    def get_nearest_deadline_for_dashboard(self):
+        """Retrieves the nearest deadline for the dashboard."""
+        from app import DEADLINE_MANAGER, DATABASE_MANAGER
+
+        number_of_students = 0
+        number_of_opportunities = 0
+        if not DEADLINE_MANAGER.is_past_details_deadline():
+            students = DATABASE_MANAGER.get_all("students")
+
+            for student in students:
+                if student["courses"]:
+                    number_of_students += 1
+
+            number_of_opportunities = len(DATABASE_MANAGER.get_all("opportunities"))
+
+            return (
+                "Student and Employers Add Details/Opportunites Deadline",
+                DEADLINE_MANAGER.get_details_deadline(),
+                number_of_students,
+                number_of_opportunities,
+            )
+
+        if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
+
+            students = DATABASE_MANAGER.get_all("students")
+
+            for student in students:
+                if student["preferences"]:
+                    number_of_students += 1
+
+            return (
+                "Students Ranking Opportunities Deadline",
+                DEADLINE_MANAGER.get_student_ranking_deadline(),
+                number_of_students,
+            )
+
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
+
+            opportunties = DATABASE_MANAGER.get_all("opportunities")
+
+            for opportunity in opportunties:
+                if opportunity["preferences"]:
+                    number_of_opportunities += 1
+
+            return (
+                "Employers Ranking Students Deadline",
+                DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
+                number_of_opportunities,
+            )
+
+        return "No Upcoming Deadlines", None

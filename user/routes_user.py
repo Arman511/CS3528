@@ -300,15 +300,46 @@ def add_user_routes(app, cache):
             page="matching",
         )
 
+
     @app.route("/user/home")
     @handlers.login_required
     def user_home():
-        """The home route which needs the user to be logged in and renders the 'home.html' template.
+        """Handles both the home page rendering and API request for nearest deadline and counts."""
 
-        Returns:
-            str: Rendered HTML template for the home page.
-        """
-        return render_template("/user/home.html", user_type="admin", page="")
+        result = User().get_nearest_deadline_for_dashboard()
+        
+        deadline_name, deadline_date, *counts = result  # Extract extra data dynamically
+
+        number_of_students = counts[0] if len(counts) > 0 else 0
+        number_of_opportunities = counts[1] if len(counts) > 1 else 0
+
+        # Format the date if available
+        formatted_date = (
+            datetime.strptime(deadline_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+            if deadline_date
+            else None
+        )
+
+        # If the request is AJAX/Fetch (API request), return JSON
+        if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+            return jsonify({
+                "deadline_name": deadline_name,
+                "deadline_date": formatted_date if formatted_date else "No upcoming deadlines 🎉",
+                "number_of_students": number_of_students,
+                "number_of_opportunities": number_of_opportunities
+            })
+
+        # Otherwise, render the HTML page
+        return render_template(
+            "/user/home.html",
+            user_type="admin",
+            page="",
+            deadline_name=deadline_name,
+            deadline_date=formatted_date,
+            number_of_students=number_of_students,
+            number_of_opportunities=number_of_opportunities,
+        )
+
 
     @app.route("/user/search", methods=["GET"])
     @handlers.superuser_required

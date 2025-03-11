@@ -96,6 +96,7 @@ def run_app():
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
 
+
 if __name__ == "__main__":
     app_thread = threading.Thread(target=run_app)
     app_thread.start()
