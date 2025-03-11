@@ -20,7 +20,7 @@ errorlog = os.getenv("GUNICORN_ERROR_LOG", "-")  # "-" means stderr
 logger = logging.getLogger("gunicorn.error")
 logger.setLevel(loglevel.upper())
 handler = logging.StreamHandler()
-formatter = logging.Formatter('%(asctime)s [%(levelname)s] %(message)s')
+formatter = logging.Formatter("%(asctime)s [%(levelname)s] %(message)s")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 logger.info("Gunicorn configuration loaded with logging enabled.")

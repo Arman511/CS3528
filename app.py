@@ -77,11 +77,13 @@ DEADLINE_MANAGER = DeadlineManager()
 def get_cache_key(request):
     return request.url
 
+
 compress = Compress()
 compress.init_app(app)
 
 compress.cache = cache
 compress.cache_key = get_cache_key
+
 
 def handle_kill_signal(signum, frame):
     print("Kill signal received. Shutting down the server...")
@@ -106,6 +108,7 @@ def run_app():
     finally:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
+
 
 if __name__ == "__main__":
     app_thread = threading.Thread(target=run_app)
