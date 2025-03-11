@@ -133,14 +133,14 @@ def get_user_type():
     superuser = session.get("superuser")
 
     # Determine user_type based on session data
-    if user:
+    if superuser:
+        user_type = "superuser"
+    elif user:
         user_type = "admin"
     elif employer:
         user_type = "employer"
     elif student:
         user_type = "student"
-    elif superuser:
-        user_type = "superuser"
     else:
         user_type = None
     return user_type
@@ -269,7 +269,7 @@ def configure_routes(app, cache: Cache, compress: Compress):
             )
         elif user_type == "student":
             return render_template("tutorials/tutorial_student.html")
-        elif user_type == "superuser":
+        if user_type == "superuser":
             return render_template(
                 "tutorials/tutorial_superuser.html", user_type="superuser"
             )
