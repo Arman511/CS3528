@@ -1,0 +1,864 @@
+{% extends "base.html" %}
+{% block content %}
+  {% include "user/navbar.html" %}
+  <!-- Central Padding -->
+  <div>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Admin Tutorial</h2>
+            <h2 class="h5">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse1"
+                 role="button"
+                 aria-expanded="false"
+                 aria-controls="adminCollapse1">User Management</a>
+            </h2>
+            <div class="collapse" id="adminCollapse1">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section1">Login</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section2">Navigation</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse2"
+                 role="button">Student Management</a>
+            </h2>
+            <div class="collapse" id="adminCollapse2">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section3">Search Student</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section4">Upload Students</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section5">Add Student</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section6">Delete All Students</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section7">Download All Students</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse3"
+                 role="button">Opportunities</a>
+            </h2>
+            <div class="collapse" id="adminCollapse3">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section8">Search Opportunities</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section9">Upload Opportunities</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section10">Add Opportunity</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section11">Delete All Opportunities</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section12">Download All Opportunities</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse4"
+                 role="button">Employers</a>
+            </h2>
+            <div class="collapse" id="adminCollapse4">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section13">Search Employers</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section14">Upload Employer</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section15">Add Employer</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section16">Delete All Employers</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section17">Download All Employers</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse5"
+                 role="button">Courses</a>
+            </h2>
+            <div class="collapse" id="adminCollapse5">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section18">Search Course</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section19">Upload Course</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section20">Add Course</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section21">Delete All Courses</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section22">Download All Courses</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse6"
+                 role="button">Course Modules</a>
+            </h2>
+            <div class="collapse" id="adminCollapse6">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section23">Search Module</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section24">Upload Module</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section25">Add Module</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section26">Delete All Modules</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section27">Download All Modules</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse7"
+                 role="button">Skills</a>
+            </h2>
+            <div class="collapse " id="adminCollapse7">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section28">Search</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section29">Search Attempted</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section30">Upload Skills</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section31">Add Skills</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section32">Delete All Skills</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section33">Delete All Attempted Skills</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section34">Download All Skills</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section35">Download All Attempted Skills</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section36">Problems</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section37">Matching</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section38">Updating Deadlines</a>
+            </h2>
+          </nav>
+        </div>
+        <!-- Main Content: Single card wrapping all tutorial sections -->
+        <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+        <main class="col-12 col-md-9 offset-md-3"
+              data-bs-spy="scroll"
+              data-bs-target="#section-nav"
+              data-bs-offset="100"
+              tabindex="0">
+          <div class="card">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section1" class="mb-4">
+                <h3>Login</h3>
+                <p>
+                  Enter the email and password associated with your account. After successful login you will be redirected to the homepage.
+                </p>
+              </section>
+              <hr>
+              <section id="section2" class="mb-4">
+                <h3>Navigation</h3>
+                <p>
+                  Moving between features is achieved by using the navigation bar found just below the website title. By selecting elements within this bar you will be redirected to other components of the website.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section3" class="mb-4">
+                <h3>Search Student</h3>
+                <p>
+                  Upon selecting search student in the below subcard we can use information such student names, ID numbers and course information to locate group of specific students.
+                  By locating students we are able to change their SkillsPilot details by selecting the 'Update' button next to the corresponding student.
+                </p>
+                <p>
+                  Within the update card we can view and edit their personal and university information. Ensure that the 'Update' button is pressed to ensure changes made persist.
+                </p>
+              </section>
+              <hr>
+              <section id="section4" class="mb-4">
+                <h3>Upload Students</h3>
+                <p>
+                  By selecting the 'Upload Students' subheading under the navigation bar, you can upload an excel formatted spreadsheet. Once uploaded the student information and details present will be uploaded and saved to the database.
+                  Providing a more efficient method than manually entering student information.
+                </p>
+              </section>
+              <hr>
+              <section id="section5" class="mb-4">
+                <h3>Add Student</h3>
+                <p>
+                  Conversely, instead of bulk adding students details in bulk. We can individually enter information on a per student basis.
+                </p>
+                On selection, you'll be presended with a card view. Within this view we can enter details about specific students.
+                <ul class="listed-unstyled">
+                  <li>Student Number</li>
+                  <li>First Name</li>
+                  <li>Last Name</li>
+                  <li>Email Address</li>
+                  <li>Student Subscribed Courses</li>
+                  <li>Student Modules Undertaken</li>
+                  <li>Additional Comments</li>
+                </ul>
+                <p>
+                  Upon entering student details, by selecting the 'Update' button, all details entered will be saved to the database, as a new student.
+                </p>
+              </section>
+              <hr>
+              <section id="section6" class="mb-4">
+                <h3>Delete All Students</h3>
+                <p>This will remove all saved student details within the database.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section7" class="mb-4">
+                <h3>Download All Student</h3>
+                <p>
+                  By selecting this section, an excel file will download containing the information of all saved students. In the format of:
+                </p>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <ul>
+                        <li>First Name</li>
+                        <li>Last Name</li>
+                        <li>Email Address</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Student Number</li>
+                        <li>Course Code</li>
+                        <li>Selected Skills</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Additional Comments</li>
+                        <li>Placement Duration</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section8" class="mb-4">
+                <h3>Search Opportunities</h3>
+                <p>
+                  This section is used to locate specific placement opportunities via placement information. Placements can be located by using any of the following information:
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Title</li>
+                          <li>Company Name</li>
+                          <li>Description</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Location</li>
+                          <li>Placement Description</li>
+                          <li>Course Prerequisites</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Required Modules</li>
+                          <li>Minimum Placement Positions</li>
+                          <li>Maximum Placement Positions</li>
+                          <li>Placement Duration</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  After entering any information in the card view, below will be a grid of all the placements matching the criteria.
+                  Each placement opportunity is displayed in the format of:
+                </p>
+                <p>
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Placement Title</li>
+                          <li>Description</li>
+                          <li>Company Name of Placement Provider</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>URL to Placement Provider</li>
+                          <li>Placement Location</li>
+                          <li>Prerequisite Course Codes</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Required Modules</li>
+                          <li>Amount of Available Placements</li>
+                          <li>Duration of Placement</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  To the right of each individual placement are two buttons:
+                  <ul class="listed-unstyled">
+                    <li>Update</li>
+                    <li>Delete</li>
+                  </ul>
+                  Update: Upon selection, you will be forwarded to a card view containing the information of the given placement. From here you can update relevent details, such as:
+                  <div class="container">
+                    <div class="row">
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Unique ID of Placement</li>
+                          <li>Placement Title</li>
+                          <li>Description</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Required Course Codes</li>
+                          <li>Placement Provider Website</li>
+                          <li>Placement Location</li>
+                        </ul>
+                      </div>
+                      <div class="col-md-4">
+                        <ul>
+                          <li>Available Placement Positions</li>
+                          <li>Duration</li>
+                          <li>Required Modules</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                  All of the above information is editable, except the unique ID of the placement. Ensure after changes to select the 'Add/Update' button to save any changes.
+                </p>
+              </section>
+              <hr>
+              <section id="section9" class="mb-4">
+                <h3>Upload Opportunities</h3>
+                <p>
+                  From here instead of manually adding each placement, we can upload a spreadsheet that contains the information required to add a placement.
+                  <br>
+                  Select a spreadsheet file, from the choose file button. Upon selection, press the 'Upload' button to add the information to the database.
+                  <br>
+                  Additionally, you can download a template of the spreadsheet file to get started with.
+                </p>
+              </section>
+              <hr>
+              <section id="section10" class="mb-4">
+                <h3>Add Student</h3>
+                <p>
+                  Conversely, instead of bulk adding students details in bulk. We can individually enter information on a per student basis.
+                </p>
+                On selection, you'll be presended with a card view. Within this view we can enter details about specific students.
+                <ul class="listed-unstyled">
+                  <li>Student Number</li>
+                  <li>First Name</li>
+                  <li>Last Name</li>
+                  <li>Email Address</li>
+                  <li>Student Subscribed Courses</li>
+                  <li>Student Modules Undertaken</li>
+                  <li>Additional Comments</li>
+                </ul>
+                <p>
+                  Upon entering student details, by selecting the 'Update' button, all details entered will be saved to the database, as a new student.
+                </p>
+              </section>
+              <hr>
+              <section id="section11" class="mb-4">
+                <h3>Delete All Opportunities</h3>
+                <p>This will remove all stored opportunities.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section12" class="mb-4">
+                <h3>Download All Opportunities</h3>
+                <p>
+                  By selecting this section, an excel file will download containing the information of all saved students. In the format of:
+                </p>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Placement Title</li>
+                        <li>Placement Description</li>
+                        <li>Placement Provider URL</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Required Modules</li>
+                        <li>Prerequisite Courses</li>
+                        <li>Placement Positions Available</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-4">
+                      <ul>
+                        <li>Placement Location</li>
+                        <li>Duration</li>
+                        <li>Placement Contact</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section13" class="mb-4">
+                <h3>Search Employers</h3>
+                <p>The search card for employers offers two mechanisms to filter:</p>
+                <ul class="listed-unstyled">
+                  <li>Company Name</li>
+                  <li>Company Email</li>
+                </ul>
+                <p>Upon entering this information, below the search card will contain matches of the query.</p>
+              </section>
+              <hr>
+              <section id="section14" class="mb-4">
+                <h3>Upload Employer</h3>
+                <p>
+                  By selecting the 'Choose File' button, you can select an excel spreadsheet containing information of multiple employers, instead of manual entry.
+                  After a file has been chosen, select the 'Upload' button to upload the spreadsheet data.
+                </p>
+                <p>Additionally, a template spreadsheet can be downloaded by selecting the 'Download Template' button.</p>
+              </section>
+              <hr>
+              <section id="section15" class="mb-4">
+                <h3>Add Employer</h3>
+                <p>
+                  To add single employers at a time. Enter the company name and corresponding email address, once entered press the 'Add Employer' box to save details. For the employer to login to the SkillPilot portal, they will use these details.
+                  The login process for employers is by employers entering their email address in the employers login portal, where a one time passcode will be sent to their address, where upon entering this code access is granted.
+                  To receive the code ensure employers have checked their spam folder, adding the address as a contact if so.
+                </p>
+              </section>
+              <hr>
+              <section id="section16" class="mb-4">
+                <h3>Delete Employer</h3>
+                <p>Removes all saved employers and their details</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <section id="section17" class="mb-4">
+                <h3>Download All Employer</h3>
+                <p>
+                  Upon selection, it will automatically download a spreadsheet containing infortmation stored of all saved employers.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section18" class="mb-4">
+                <h3>Search Courses</h3>
+                <p>Presented to you will be a card view titled 'Search Course', the card will contain 3 input boxes.</p>
+                <ul class="listed-unstyled">
+                  <li>
+                    Search Course Name – e.g. <i>'Computer Science'</i>
+                  </li>
+                  <li>
+                    Search Course ID – e.g. <i>'F421'</i>
+                  </li>
+                  <li>
+                    Search Course Description – e.g. <i>'Artificial Intelligence'</i>
+                  </li>
+                </ul>
+                <p>
+                  After entering information in one of the input boxes, the below list of courses will dynamically change to find any matching criteria. From within this list, we can complete 2 actions.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The update button takes us to a new view, where you can change any details about the specific course:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  When entering course information, please note that information should follow the same format as the university provides.
+                </p>
+                <p>The delete button removes the given course and its information from the database.</p>
+              </section>
+              <hr>
+              <section id="section19" class="mb-4">
+                <h3>Upload Courses</h3>
+                <p>
+                  From here, you can upload a formatted spreadsheet to bulk upload courses to SkillPilot, by clicking the 'Choose File' and selecting an appropriate spreadsheet file then selecting the 'Upload' button, all courses in the
+                  spreadsheet will be uploaded to SkillPilot.
+                </p>
+                <p>
+                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                </p>
+              </section>
+              <hr>
+              <section id="section20" class="mb-4">
+                <h3>Add Course</h3>
+                <p>Select this option to manually enter a given course into SkillPilot.</p>
+                <p>Here you will be welcomed by a card view, containing 3 text boxes:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  To successfully enter a course into SkillPilot, you must provide information into all 3 fields.
+                  Once entered, press the 'Add Course' button to save the course to SkillPilot.
+                </p>
+                <p>Please note: The course details should accurately follow the same format that the university provides.</p>
+              </section>
+              <hr>
+              <section id="section21" class="mb-4">
+                <h3>Delete All Courses</h3>
+                <p>Removes any & all saved courses and their information from the SkillPilot platform.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section22" class="mb-4">
+                <h3>Download All Courses</h3>
+                <p>
+                  Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the courses and their information in a spreadsheet format.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section23" class="mb-4">
+                <h3>Search Module</h3>
+                <p>
+                  When you select the 'Course Modules' from the main menu bar, you will be automatically taken to the Search Module section.
+                </p>
+                <p>From here, there are 3 input fields.</p>
+                <ul class="listed-unstyled">
+                  <li>
+                    Search Module Name – e.g. <i>'Principles of Software Engineering'</i>
+                  </li>
+                  <li>
+                    Search Module ID – e.g. <i>'MS4536'</i>
+                  </li>
+                  <li>
+                    Search Module Description – e.g. <i>'Compulsory business course'</i>
+                  </li>
+                </ul>
+                <p>
+                  After entering information in one of the input boxes, the below list of courses will dynamically change to find any matching criteria. From within this list, we can complete 2 actions.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The update button takes us to a new view, where you can change any details about the specific course:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  When entering course information, please note that information should follow the same format as the university provides.
+                </p>
+                <p>The delete button removes the given course and its information from the database.</p>
+              </section>
+              <hr>
+              <section id="section24" class="mb-4">
+                <h3>Upload Modules</h3>
+                <p>
+                  From here, you can upload a formatted spreadsheet to bulk upload courses to SkillPilot, by clicking the 'Choose File' and selecting an appropriate spreadsheet file then selecting the 'Upload' button, all courses in the
+                  spreadsheet will be uploaded to SkillPilot.
+                </p>
+                <p>
+                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                </p>
+              </section>
+              <section id="section25" class="mb-4">
+                <h3>Add Module</h3>
+                <p>Select this option to manually enter a given course into SkillPilot.</p>
+                <p>Here you will be welcomed by a card view, containing 3 text boxes:</p>
+                <ul class="listed-unstyled">
+                  <li>Course ID</li>
+                  <li>Course Name</li>
+                  <li>Course Description</li>
+                </ul>
+                <p>
+                  To successfully enter a course into SkillPilot, you must provide information into all 3 fields.
+                  Once entered, press the 'Add Course' button to save the course to SkillPilot.
+                </p>
+                <p>Please note: The course details should accurately follow the same format that the university provides.</p>
+              </section>
+              <hr>
+              <section id="section26" class="mb-4">
+                <h3>Delete All Modules</h3>
+                <p>Removes any & all saved courses and their information from the SkillPilot platform.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <section id="section27" class="mb-4">
+                <h3>Download All Modules</h3>
+                <p>
+                  Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the courses and their information in a spreadsheet format.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section28" class="mb-4">
+                <h3>Search Skill</h3>
+                <p>
+                  Upon selecting the 'Skills' section of the menu bar, you will be taken to the seach skills screen. From here you will see two input boxes
+                  contained within a card view. By entering information in the corresponding input boxes, it allows us to locate specific skills.
+                </p>
+                <p>
+                  If you are trying to locate a specific skill that is not showing during search, remember skills not present must be entered in the 'Upload Skills'
+                  section of the skills page.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>
+                    Search Skill – e.g. <i>'Python'</i>
+                  </li>
+                  <li>
+                    Search Skill Description – e.g. <i>'Programming with python'</i>
+                  </li>
+                </ul>
+                <p>
+                  After entering information in one of the input boxes, the below list of courses will dynamically change to find any matching criteria. From within this list, we can complete 2 actions.
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The update button takes us to a new view, where you can change any details about the specific course:</p>
+                <ul class="listed-unstyled">
+                  <li>Skill Name</li>
+                  <li>Skill Description</li>
+                </ul>
+                <p>Please note, that when altering or adding new courses, please ensure that a consistent format is followed.</p>
+                <p>The delete button removes the given course and its information from the database.</p>
+              </section>
+              <hr>
+              <section id="section29" class="mb-4">
+                <h3>Search Attempted</h3>
+                <p>
+                  When students apply via the SkillsPilot platform, during the application process they will have the opportunity to add their
+                  applicable skills. During this process, students can add skills that are not found within the current list of skills.
+                </p>
+                <p>
+                  When this occurs, all requested skills will be viewable from this page. A list of all requested skills is viewable in the card view
+                  titled 'Attempted Skills'
+                </p>
+                <p>
+                  New skills can be added at the discretion of the placement team, where they have the option to approve or reject requested skills,
+                  or with the 'Update' button, alter either the skill name or description of the requested skill.
+                </p>
+                <p>
+                  In the card above, titled 'Search Opportunities' we can search and filter the attempted skills, by either entering the:
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Skill Name</li>
+                  <li>Skill Description</li>
+                  <li>Min Usage - (How little skill is found in other applications)</li>
+                  <li>Max Usage - (How often skill is found in other applications)</li>
+                </ul>
+                <p>The below list will dynamically adjust, showing any matching skills in the below 'Attempted Skills' card.</p>
+                <p>
+                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                </p>
+              </section>
+              <hr>
+              <section id="section30" class="mb-4">
+                <h3>Upload Skills</h3>
+                <p>
+                  This option will allow the placement team to upload a spreadsheet containing bulk skills, instead of manual entry to the SkillsPilot platform.
+                  To upload a spreadsheet, select the 'Choose File' button, select the appropriate file, then press the 'Upload' button.
+                </p>
+                <p>A template is available to download that is predefined in the required format for upload.</p>
+              </section>
+              <hr>
+              <section id="section31" class="mb-4">
+                <h3>Add Skill</h3>
+                <p>Used for single entry of skills.</p>
+                <p>
+                  In the webpage, presented to you will be a card view titled 'Add Skill' within the card will contain 2 input boxes:
+                </p>
+                <ul class="listed-unstyled">
+                  <li>Skill Name</li>
+                  <li>Skill Description</li>
+                </ul>
+                <p>
+                  To enter a skill to the SkillsPilot platform, enter the corresponding information into each text box, then selecting the 'Add Skill'
+                  button. For the skill to be saved to SKillsPilot.
+                </p>
+              </section>
+              <hr>
+              <section id="section32" class="mb-4">
+                <h3>Delete All Skills</h3>
+                <p>By selecting this button, all skills saved on the SkillsPilot platform will be permenantly deleted.</p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section33" class="mb-4">
+                <h3>Delete All Attempted Skills</h3>
+                <p>
+                  By selecting this button, all skills requested to be added to the SkillsPilot platform, but applying students, will be permenantly deleted.
+                </p>
+                <p class="text-danger">This is irreversible.</p>
+              </section>
+              <hr>
+              <section id="section34" class="mb-4">
+                <h3>Download All Skills</h3>
+                <p>
+                  Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the skills and their information in a spreadsheet format.
+                </p>
+              </section>
+              <hr>
+              <section id="section35" class="mb-4">
+                <h3>Download All Attempted Skills</h3>
+                <p>
+                  Upon pressing this button, a download will automatically start. This is a copy of the database contents of all the requested skills by applying students, and each skills information in a spreadsheet format.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section36" class="mb-4">
+                <h3>Problems</h3>
+                <p>This section provides an overview of any current issues, such as:</p>
+                <ul class="listed-unstyled">
+                  <li>Students failure to action requests.</li>
+                  <li>Failure to meet deadlines.</li>
+                </ul>
+                <p>
+                  From this view, we can see the specific issues corresponding to each student identifier, and their email address.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section37" class="mb-4">
+                <h3>Matching</h3>
+                <p>
+                  The matching process employed by the SkillsPilot platform is used to ensure that all applicants are paired with employers based off of preference.
+                  with minimal matched pairs.
+                </p>
+                <p>
+                  This process works behind the scenes in the SkillsPilot platform, requiring no input from the university placement team.
+                </p>
+                <p>
+                  Students may not be matched with employers for reasons of spaces, and/or ranking criteria, whereby student or employer ranked one another lower
+                  than other potential students. In the case of unmatched students, a card section on the matching page is viewable, containing all unmatched students
+                  and its corresponding reason, when this occurs, students can be deleted from the SkillsPilot platform.
+                </p>
+                <p>
+                  When students have successfully matched with a placement provider, under the matching section, contains a list of all students
+                  and their matched placement providers. After matching email notification can be provided informing applicants of success, by selecting the
+                  'Send All Emails' at the top of the webpage. Conversely, individual emails can be sent by selecting the 'Send Email' button next to the
+                  given student.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section38" class="mb-4">
+                <h3>Change Deadline</h3>
+                <p>
+                  The matching process employed by the SkillsPilot platform is used to ensure that all applicants are paired with employers based off of preference.
+                  with minimal matched pairs.
+                </p>
+                <p>
+                  This process works behind the scenes in the SkillsPilot platform, requiring no input from the university placement team.
+                </p>
+                <p>
+                  Students may not be matched with employers for reasons of spaces, and/or ranking criteria, whereby student or employer ranked one another lower
+                  than other potential students. In the case of unmatched students, a card section on the matching page is viewable, containing all unmatched students
+                  and its corresponding reason, when this occurs, students can be deleted from the SkillsPilot platform.
+                </p>
+                <p>
+                  When students have successfully matched with a placement provider, under the matching section, contains a list of all students
+                  and their matched placement providers. After matching email notification can be provided informing applicants of success, by selecting the
+                  'Send All Emails' at the top of the webpage. Conversely, individual emails can be sent by selecting the 'Send Email' button next to the
+                  given student.
+                </p>
+              </section>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+  <script>document.title = "Tutorial";</script>
+{% endblock content %}
