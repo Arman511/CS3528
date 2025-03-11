@@ -66,23 +66,17 @@ app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
 
+
 cache = Cache(app)
-handlers.configure_routes(app, cache)
+compress = Compress()
+compress.init_app(app)
+
+
+handlers.configure_routes(app, cache, compress)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 
 DEADLINE_MANAGER = DeadlineManager()
-
-
-def get_cache_key(request):
-    return request.url
-
-
-compress = Compress()
-compress.init_app(app)
-
-compress.cache = cache
-compress.cache_key = get_cache_key
 
 
 def handle_kill_signal(signum, frame):
