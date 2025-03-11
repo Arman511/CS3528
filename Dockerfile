@@ -1,21 +1,32 @@
+# Use Python slim image
 FROM python:3.10.12-slim
 
-COPY requirements.txt /
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    VENV_PATH="/app/.venv" \
+    PATH="/app/.venv/bin:$PATH"
 
-RUN pip3 install --upgrade pip
-
-RUN pip3 install -r /requirements.txt
-
-
-
-COPY . /app
-
+# Set the working directory
 WORKDIR /app
 
+# Install dependencies and create virtual environment in one step
+RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && \
+    python -m venv $VENV_PATH && \
+    $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip && \
+    rm -rf /var/lib/apt/lists/*
 
+# Copy dependency file first to leverage Docker cache
+COPY requirements.txt /app/
 
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy application files
+COPY . /app
+
+# Expose the application port
 EXPOSE 8080
 
-
-
-CMD ["gunicorn","--config", "gunicorn_config.py", "app:app"]
+# Use Gunicorn with a configuration file
+ENTRYPOINT ["gunicorn"]
+CMD ["--config", "gunicorn_config.py", "app:app"]

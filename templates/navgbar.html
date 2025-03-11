@@ -4,31 +4,31 @@
       <h1>SkillPilot</h1>
     </a>
     <div class="d-flex ms-auto align-items-center">
-      <button class="btn btn-light dropdown-toggle"
-              type="button"
-              id="userGreetingButton"
-              data-bs-toggle="dropdown"
-              aria-expanded="false">
-        <span id="userGreetingText">
-          {% if user_type == 'admin' %}
-            Hello, {{ session.user.name }}
-          {% elif user_type == 'employer' %}
-            Hello, {{ session.employer.company_name }}
-          {% elif user_type == 'student' %}
-            Hello, {{ session.student.first_name }}
-          {% elif user_type == 'superuser' %}
-            Hello, Superuser
-          {% else %}
-            Didn't work
-          {% endif %}
-        </span>
-      </button>
-      <ul class="dropdown-menu dropdown-menu-end"
-          aria-labelledby="userGreetingButton">
-        <li>
-          <a class="dropdown-item" href="{{ url_for("signout") }}">Sign Out</a>
-        </li>
-      </ul>
+      {% if user_type in ['admin', 'employer', 'student', 'superuser'] %}
+        <button class="btn btn-light dropdown-toggle"
+                type="button"
+                id="userGreetingButton"
+                data-bs-toggle="dropdown"
+                aria-expanded="false">
+          <span id="userGreetingText">
+            {% if user_type == 'admin' %}
+              Account, {{ session.user.name }}
+            {% elif user_type == 'employer' %}
+              Account, {{ session.employer.company_name }}
+            {% elif user_type == 'student' %}
+              Account, {{ session.student.first_name }}
+            {% elif user_type == 'superuser' %}
+              Account, Superuser
+            {% endif %}
+          </span>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end"
+            aria-labelledby="userGreetingButton">
+          <li>
+            <a class="dropdown-item" href="{{ url_for("signout") }}">Sign Out</a>
+          </li>
+        </ul>
+      {% endif %}
     </div>
   </div>
 </nav>

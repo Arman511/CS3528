@@ -3,8 +3,18 @@ Handles the base routes, adds the module routes, and includes decorators
 to enforce user access levels.
 """
 
+from datetime import datetime, timezone
 from functools import wraps
-from flask import jsonify, render_template, session, redirect
+import os
+from flask import (
+    jsonify,
+    render_template,
+    send_from_directory,
+    session,
+    redirect,
+    make_response,
+    request,
+)
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -140,9 +150,6 @@ def configure_routes(app, cache):
     route configuration functions. It also defines the home route and the privacy policy route.
     Args:
         app (Flask): The Flask application instance.
-    Routes:
-        /: The home route which needs the user to be logged in and renders the 'home.html' template.
-        /privacy-policy: The privacy policy route which renders the 'privacy_policy.html' template.
     """
 
     routes_user.add_user_routes(app, cache)
@@ -155,6 +162,7 @@ def configure_routes(app, cache):
     routes_superuser.add_superuser_routes(app)
     routes_debug.add_debug_routes(app)
 
+    @app.route("/landing_page")
     @app.route("/")
     def index():
         """The home route which renders the 'landing_page.html' template."""
@@ -192,6 +200,15 @@ def configure_routes(app, cache):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template("privacy_policy.html")
+
+    @app.route("/cookies_policy")
+    def cookies_policy():
+        """The cookies policy route which renders the 'cookies_policy.html' template.
+
+        Returns:
+            str: Rendered HTML template for the cookies policy page.
+        """
+        return render_template("cookies.html")
 
     @app.route("/robots.txt")
     def robots():
@@ -238,32 +255,63 @@ def configure_routes(app, cache):
     @app.route("/sitemap")
     @app.route("/sitemap/")
     @app.route("/sitemap.xml")
+    @cache.cached(timeout=300)
     def sitemap():
         """
         Route to dynamically generate a sitemap of your website/application.
-        lastmod and priority tags omitted on static pages.
-        lastmod included on dynamic content such as blog posts.
         """
-        from flask import make_response, request, render_template
-        from urllib.parse import urlparse
 
-        host_components = urlparse(request.host_url)
-        host_base = host_components.scheme + "://" + host_components.netloc
+        host_base = f"{request.scheme}://{request.host}"
+        now = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S%z")
 
-        # Static routes with static content
-        static_urls = list()
-        for rule in app.url_map.iter_rules():
-            if not str(rule).startswith("/admin") and not str(rule).startswith("/user"):
-                if "GET" in rule.methods and len(rule.arguments) == 0:
-                    url = {"loc": f"{host_base}{str(rule)}"}
-                    static_urls.append(url)
+        priority_mapping = {
+            "/": "1.0",
+            "/privacy_policy": "0.8",
+            "/sitemap": "0.5",
+        }
+
+        urls = [
+            {
+                "loc": f"{host_base}{str(rule)}",
+                "lastmod": now,
+                "priority": priority_mapping.get(str(rule), "0.5"),
+            }
+            for rule in app.url_map.iter_rules()
+            if "GET" in rule.methods
+            and not rule.arguments
+            and not any(
+                str(rule).startswith(prefix)
+                for prefix in ["/admin", "/user", "/debug", "/superuser", "/api"]
+            )
+        ]
 
         xml_sitemap = render_template(
             "sitemap.xml",
-            static_urls=static_urls,
+            urls=urls,
             host_base=host_base,
         )
         response = make_response(xml_sitemap)
         response.headers["Content-Type"] = "application/xml"
 
         return response
+
+    @app.after_request
+    def add_cache_control_and_headers(response):
+        if (
+            response.content_type == "text/css"
+            or response.content_type == "application/javascript"
+            or response.content_type == "application/font-woff2"
+        ):
+            response.cache_control.max_age = 3600
+        elif "image" in response.content_type:
+            response.cache_control.max_age = 31536000
+            response.cache_control.public = True
+        else:
+            response.cache_control.max_age = 86400
+        response.cache_control.stale_while_revalidate = 2592000
+        response.cache_control.immutable = True
+        return response
+
+    @app.route("/static/<path:filename>")
+    def serve_static(filename):
+        return send_from_directory(os.path.join(app.root_path, "static"), filename)

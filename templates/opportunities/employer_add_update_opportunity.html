@@ -4,13 +4,13 @@
         {% include "employers/navbar.html" %}
     {% elif user_type == "admin" %}
         {% include "user/navbar.html" %}
-        {% include "opportunities/navbar.html" %}
+        <!-- {% include "opportunities/navbar.html" %} -->
     {% endif %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Add/Update placement</h2>
             <form class="update_add_form">
-                <label for="id">ID:</label>
+                <label for="_id">ID:</label>
                 <input name="_id"
                        id="_id"
                        class="form-control"
@@ -22,7 +22,8 @@
                        id="title"
                        class="form-control"
                        type="text"
-                       value="{{ opportunity.title }}" />
+                       value="{{ opportunity.title }}"
+                       required />
                 <label for="description">Description:</label>
                 <input type="textarea"
                        id="description"
@@ -31,7 +32,12 @@
                        value="{{ opportunity.description }}" />
                 {% if user_type == "admin" %}
                     <label for="company">Company:</label>
-                    <select id="company" name="company" class="form-control">
+                    <select id="company"
+                            name="company"
+                            class="form-control"
+                            required
+                            data-placeholder="Select Company"
+                            title="Select Company">
                         {% for employer in employers %}
                             <option value="{{ employer._id }}"
                                     {% if employer._id == opportunity.employer_id %}selected{% endif %}>
@@ -45,7 +51,8 @@
                         name="course"
                         class="form-control"
                         data-placeholder="Select Course Titles"
-                        multiple>
+                        multiple
+                        title="Select Courses">
                     {% for course in courses %}
                         <option value="{{ course.course_id }}" {% if course.course_id in opportunity.courses_required
                             %}selected{% endif %}>{{ course.course_id+": "+ course.course_name }}</option>
@@ -73,7 +80,8 @@
                 <select id="placement_duration"
                         name="placement_duration"
                         class="form-control"
-                        required>
+                        required
+                        title="Select Placement Duration">
                     <option value="1_day"
                             {% if "1_day"==opportunity.duration %}selected{% endif %}>1 Day</option>
                     <option value="1_week"
@@ -88,7 +96,11 @@
                             {% if "12_months"==opportunity.duration %}selected{% endif %}>12 Months</option>
                 </select>
                 <label for="modules">Modules:</label>
-                <select id="modules" name="modules" class="form-control" multiple>
+                <select id="modules"
+                        name="modules"
+                        class="form-control"
+                        multiple
+                        title="Select Modules">
                     {% for module in modules %}
                         <option value="{{ module.module_id }}" {% if module.module_id in opportunity.modules_required
                             %}selected{% endif %}>{{ module.module_id + ": " + module.module_name }}</option>
@@ -118,7 +130,7 @@
                         sortField: 'text',
                         dropdownParent: 'body'
                     });
-                    {% if user_type == "admin" %}
+                    {% if (user_type == "admin") %}
                     $('#company').selectize({
                         sortField: 'text',
                         dropdownParent: 'body'

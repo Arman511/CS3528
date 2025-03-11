@@ -12,6 +12,8 @@ from flask_caching import Cache
 import signal
 import threading
 
+from flask_compress import Compress
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
 from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
@@ -59,7 +61,11 @@ app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["CACHE_TYPE"] = "SimpleCache"
 app.config["CACHE_DEFAULT_TIMEOUT"] = 300
+app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
+app.config["SESSION_COOKIE_SECURE"] = True
+app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
+
 cache = Cache(app)
 handlers.configure_routes(app, cache)
 
@@ -67,6 +73,15 @@ from core.deadline_manager import DeadlineManager  # noqa: E402
 
 DEADLINE_MANAGER = DeadlineManager()
 
+
+def get_cache_key(request):
+    return request.url
+
+compress = Compress()
+compress.init_app(app)
+
+compress.cache = cache
+compress.cache_key = get_cache_key
 
 def handle_kill_signal(signum, frame):
     print("Kill signal received. Shutting down the server...")
@@ -91,7 +106,6 @@ def run_app():
     finally:
         DATABASE_MANAGER.close_connection()
         print("Shutting down the server...")
-
 
 if __name__ == "__main__":
     app_thread = threading.Thread(target=run_app)

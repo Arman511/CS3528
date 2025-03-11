@@ -1,6 +1,20 @@
 document.addEventListener("DOMContentLoaded", function () {
     const searchForm = document.getElementById("searchForm");
     const opportunityTable = document.getElementById("opportunity-table");
+    const toggleButton = document.getElementById("toggleMore");
+    const hiddenFields = document.querySelector(".hidden-fields");
+
+    hiddenFields.style.display = "none";
+
+    toggleButton.addEventListener("click", function () {
+        if (hiddenFields.style.display === "none") {
+            hiddenFields.style.display = "block";
+            toggleButton.textContent = "Show Less";
+        } else {
+            hiddenFields.style.display = "none";
+            toggleButton.textContent = "Show More";
+        }
+    });
 
     const opportunities = [];
     for (row of opportunityTable.rows) {
