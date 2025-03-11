@@ -4,31 +4,36 @@
       <h1>SkillPilot</h1>
     </a>
     <div class="d-flex ms-auto align-items-center">
-      {% if user_type in ['admin', 'employer', 'student', 'superuser'] %}
-        <button class="btn btn-light dropdown-toggle"
-                type="button"
-                id="userGreetingButton"
-                data-bs-toggle="dropdown"
-                aria-expanded="false">
-          <span id="userGreetingText">
-            {% if user_type == 'admin' %}
-              Account, {{ session.user.name }}
-            {% elif user_type == 'employer' %}
-              Account, {{ session.employer.company_name }}
-            {% elif user_type == 'student' %}
-              Account, {{ session.student.first_name }}
-            {% elif user_type == 'superuser' %}
-              Account, Superuser
-            {% endif %}
-          </span>
-        </button>
-        <ul class="dropdown-menu dropdown-menu-end"
-            aria-labelledby="userGreetingButton">
+      <button class="btn btn-light dropdown-toggle"
+              type="button"
+              id="userGreetingButton"
+              data-bs-toggle="dropdown"
+              aria-expanded="false">
+        <span id="userGreetingText">
+          {% if user_type == 'admin' %}
+            Account, {{ session.user.name }}
+          {% elif user_type == 'employer' %}
+            Account, {{ session.employer.company_name }}
+          {% elif user_type == 'student' %}
+            Account, {{ session.student.first_name }}
+          {% elif user_type == 'superuser' %}
+            Account, Superuser
+          {% else %}
+            Account
+          {% endif %}
+        </span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end"
+          aria-labelledby="userGreetingButton">
+        <li>
+          <a class="dropdown-item" href="{{ url_for("tutorial") }}">Tutorial</a>
+        </li>
+        {% if user_type in ['admin', 'employer', 'student', 'superuser'] %}
           <li>
             <a class="dropdown-item" href="{{ url_for("signout") }}">Sign Out</a>
           </li>
-        </ul>
-      {% endif %}
+        {% endif %}
+      </ul>
     </div>
   </div>
 </nav>
