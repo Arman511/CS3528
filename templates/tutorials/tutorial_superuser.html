@@ -1,29 +1,120 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "superuser/navbar.html" %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorial</h1>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
-            <h2>User Management</h2>
-            <ul>
-                <li>
-                    <a href="#login-card">Login</a>
+  {% include "superuser/navbar.html" %}
+  <div>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Superuesr Tutorial</h2>
+            <h2 class="h5">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse1"
+                 role="button"
+                 aria-expanded="false"
+                 aria-controls="adminCollapse1">User Management</a>
+            </h2>
+            <div class="collapse" id="adminCollapse1">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section1">Add User</a>
                 </li>
-            </ul>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section2">Delete User</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section3">Update User</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section4">Change Password</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section1">User Management</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section2">Details</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section3">Ranking</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section4">Matching</a>
+            </h2>
+          </div>
+        </nav>
+      </div>
+      <!-- Main Content: Single card wrapping all tutorial sections -->
+      <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+      <main class="col-12 col-md-9 offset-md-2"
+            data-bs-spy="scroll"
+            data-bs-target="#section-nav"
+            data-bs-offset="100"
+            tabindex="0">
+        <div class="card">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section1" class="mb-4">
+              <h3>Logging In</h3>
+              <p>The university placement team manage all student accounts. They will create an account on your behalf.</p>
+              <p>
+                Once you have been notified by the university that your account has been created, at the student login section of the webpage
+                please enter your university student identifier number in the corresponding input box.
+              </p>
+              <p>After which a unique numerical 'one-time passcode' will be sent to your student email address.</p>
+              <p>A card view will then appear, with an input box where you enter the code.</p>
+              <p>
+                If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.
+              </p>
+            </section>
+          </div>
         </div>
-        <div class="card" id="login-card">
-            <h1 class="center">Login Tutorial</h1>
-            <p>
-                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
-                <br>
-                Once you click on the "Login" button, you will be redirected to the login for placement teams.
-                <br>
-                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
-                <br>
-                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
-            </p>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section2" class="mb-4">
+              <h3>Details</h3>
+              <p>
+                Before the the Details Deadline, when you sign in you will sea form to add and update your university details. The are your degree details, what courses you have, what skills you have, if you have a car, what placement slots size you can do and any comments you have.
+              </p>
+              <p>
+                After the Details Deadline, you will not be able to update your details. You can ask the placement team to update your details for you.
+              </p>
+            </section>
+          </div>
         </div>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section3" class="mb-4">
+              <h3>Ranking</h3>
+              <p>
+                After the the Details Deadline, when you sign in you will seea a list of placements that you are eligible for, this eligiblity is based on the details you have provided (Course and Modules). You are supposed to rank these placements in order of preference. You can edit your ranking until the Ranking Deadline is met.
+              </p>
+              <p>The more placements that you rank the more likely you are to get a placement that you prefer.</p>
+              <p>After the Ranking Deadline, you will not be able to update your preference.</p>
+            </section>
+          </div>
+        </div>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section3" class="mb-4">
+              <h3>Matching</h3>
+              <p>
+                After the Matching Deadline, you will be assigned a placement based on your preferences and the employer's preferences. You will be notified of your placement via email.
+              </p>
+              <p>
+                If you are not happy with your placement or have any firther queries, you can contact the placement team to discuss your options.
+              </p>
+            </section>
+          </div>
+        </div>
+      </main>
     </div>
-    <script>document.title = "Tutorial";</script>
+  </div>
+  <script>document.title = "Tutorial - Students";</script>
 {% endblock content %}
