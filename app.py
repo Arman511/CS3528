@@ -12,6 +12,8 @@ from flask_caching import Cache
 import signal
 import threading
 
+from flask_compress import Compress
+
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
 from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
@@ -64,8 +66,13 @@ app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
 
+
 cache = Cache(app)
-handlers.configure_routes(app, cache)
+compress = Compress()
+compress.init_app(app)
+
+
+handlers.configure_routes(app, cache, compress)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 

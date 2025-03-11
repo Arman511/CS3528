@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+    {% include "superuser/navbar.html" %}
+    <div class="card-wrapper">
+        <div class="card">
+            <h1 class="center">Tutorial</h1>
+            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
+            <h2>User Management</h2>
+            <ul>
+                <li>
+                    <a href="#login-card">Login</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card" id="login-card">
+            <h1 class="center">Login Tutorial</h1>
+            <p>
+                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
+                <br>
+                Once you click on the "Login" button, you will be redirected to the login for placement teams.
+                <br>
+                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
+                <br>
+                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
+            </p>
+        </div>
+    </div>
+    <script>document.title = "Tutorial";</script>
+{% endblock content %}

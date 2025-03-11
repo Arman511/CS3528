@@ -15,6 +15,8 @@ from flask import (
     make_response,
     request,
 )
+from flask_caching import Cache
+from flask_compress import Compress
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -144,7 +146,7 @@ def get_user_type():
     return user_type
 
 
-def configure_routes(app, cache):
+def configure_routes(app, cache: Cache, compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -164,6 +166,7 @@ def configure_routes(app, cache):
 
     @app.route("/landing_page")
     @app.route("/")
+    @cache.cached(timeout=0)
     def index():
         """The home route which renders the 'landing_page.html' template."""
         user = get_user_type()
@@ -251,6 +254,27 @@ def configure_routes(app, cache):
             str: Rendered 500.html template.
         """
         return render_template("500.html", user_type=get_user_type()), 500
+
+    @app.route("/tutorial")
+    def tutorial():
+        """The tutorial route which renders the page specific to a user type."""
+
+        user_type = get_user_type()
+
+        if user_type == "admin":
+            return render_template("tutorials/tutorial_admin.html", user_type="admin")
+        elif user_type == "employer":
+            return render_template(
+                "tutorials/tutorial_employer.html", user_type="employer"
+            )
+        elif user_type == "student":
+            return render_template("tutorials/tutorial_student.html")
+        elif user_type == "superuser":
+            return render_template(
+                "tutorials/tutorial_superuser.html", user_type="superuser"
+            )
+
+        return render_template("tutorials/tutorial_login.html")
 
     @app.route("/sitemap")
     @app.route("/sitemap/")
