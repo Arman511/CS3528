@@ -301,7 +301,7 @@ body {
 }
 
 /* Responsive Styling for Smaller Screens */
-@media (max-width: 768px) {
+@media (max-width: 780px) {
     .card {
         padding: 30px;
         max-width: 100%;
@@ -333,6 +333,8 @@ body {
     overflow-y: auto;
     width: auto;
 }
+
+
 
 @media (max-width: 1750px) {
     main {
@@ -383,4 +385,11 @@ body {
 
 .nav-item {
     padding-right: 1rem;
+}
+
+footer {
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    position: relative;
 }
