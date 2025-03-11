@@ -161,7 +161,8 @@ def configure_routes(app, cache):
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
     routes_debug.add_debug_routes(app)
-    
+
+    @app.route("/landing_page")
     @app.route("/")
     def index():
         """The home route which renders the 'landing_page.html' template."""
@@ -271,6 +272,7 @@ def configure_routes(app, cache):
             )
 
         return render_template("tutorials/tutorial_login.html")
+
     @app.route("/sitemap")
     @app.route("/sitemap/")
     @app.route("/sitemap.xml")
