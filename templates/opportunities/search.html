@@ -1,170 +1,172 @@
 {% extends "base.html" %}
 {% block content %}
-    {% if user_type == "employer" %}
-        {% include "employers/navbar.html" %}
-    {% elif user_type == "admin" %}
-        {% include "user/navbar.html" %}
-        <!-- {% include "opportunities/navbar.html" %} -->
-    {% endif %}
-    <div class="card-wrapper card-dynamic-width">
-        <!-- First Card: Search Form -->
-        <div class="card search-card">
-            <h1 class="center">Search Opportunities</h1>
-            <form id="searchForm">
-                <div class="form-group visible-fields">
-                    <div>
-                        <label for="title">Title:</label>
-                        <input type="text" id="title" name="title" class="field" />
-                    </div>
-                    {% if user_type == "admin" %}
-                        <div>
-                            <label for="company">Company:</label>
-                            <input type="text" id="company" name="company" class="field" />
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="form-group hidden-fields">
-                    <div>
-                        <label for="description">Description:</label>
-                        <input type="text" id="description" name="description" class="field" />
-                    </div>
-                    <div>
-                        <label for="location">Location:</label>
-                        <input type="text" id="location" name="location" class="field" />
-                    </div>
-                    <div>
-                        <label for="course">Course:</label>
-                        <select id="course" name="course" class="field" select="course">
-                            <option value="">Select Course</option>
-                            {% for course in courses %}
-                                <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="modules">Modules:</label>
-                        <select id="modules" name="modules" class="field" title="modules" multiple>
-                            <option value="">Select Modules</option>
-                            {% for module in modules %}
-                                <option value="{{ module.module_id }}">{{ module.module_id }}: {{ module.module_name }}</option>
-                            {% endfor %}
-                        </select>
-                    </div>
-                    <div>
-                        <label for="spots_min">Spots (Min):</label>
-                        <input type="number" id="spots_min" name="spots_min" class="field" />
-                    </div>
-                    <div>
-                        <label for="spots_max">Spots (Max):</label>
-                        <input type="number" id="spots_max" name="spots_max" class="field" />
-                    </div>
-                    <div>
-                        <label for="placement_duration">Placement Duration:</label>
-                        <select id="placement_duration" name="placement_duration">
-                            <option value="">Select Duration</option>
-                            <option value="1_day">1 Day</option>
-                            <option value="1_week">1 Week</option>
-                            <option value="1_month">1 Month</option>
-                            <option value="3_months">3 Months</option>
-                            <option value="6_months">6 Months</option>
-                            <option value="12_months">12 Months</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-group">
-                    <button type="button" id="toggleMore" class="btn btn-secondary">Show More</button>
-                    <p class="error error--hidden"></p>
-                </div>
-            </form>
-        </div>
-        <!-- Second Card: Table -->
-        <div class="card card-dynamic-width">
-            <h2 class="center">Opportunities</h2>
-            <div class="table-wrapper">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Title</th>
-                            <th>Description</th>
-                            <th>Company Name</th>
-                            <!-- Display Company Name for Both Admin and Employer -->
-                            <th>URL</th>
-                            <th>Location</th>
-                            <th>Courses Required</th>
-                            <th>Modules Required</th>
-                            <th>Spots Available</th>
-                            <th>Duration</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="opportunity-table">
-                        {% for opportunity in opportunities %}
-                            <tr>
-                                <td>{{ opportunity.title }}</td>
-                                <td>{{ opportunity.description }}</td>
-                                <td>{{ opportunity.company_name }}</td>
-                                <td>
-                                    <a href="https://{{ opportunity.url }}" target="_blank">{{ opportunity.url }}</a>
-                                </td>
-                                <td>{{ opportunity.location }}</td>
-                                <td data-courses="{% for course in opportunity.courses_required %}{{ course }}, {% endfor %}">
-                                    <div class="collapsible-content">
-                                        {% for course in opportunity.courses_required[:2] %}
-                                            {{ course }}
-                                            <br />
-                                        {% endfor %}
-                                        {% if opportunity.courses_required|length > 2 %}
-                                            <div class="collapse" id="courses-{{ opportunity._id }}">
-                                                {% for course in opportunity.courses_required[2:] %}
-                                                    {{ course }}
-                                                    <br />
-                                                {% endfor %}
-                                            </div>
-                                            <a href="#"
-                                               class="toggle-btn text-primary small"
-                                               data-bs-toggle="collapse"
-                                               data-bs-target="#courses-{{ opportunity._id }}">Show More</a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td data-modules="{% for module in opportunity.modules_required %}{{ module }}, {% endfor %}">
-                                    <div class="collapsible-content">
-                                        {% for module in opportunity.modules_required[:2] %}
-                                            {{ module }}
-                                            <br />
-                                        {% endfor %}
-                                        {% if opportunity.modules_required|length > 2 %}
-                                            <div class="collapse" id="modules-{{ opportunity._id }}">
-                                                {% for module in opportunity.modules_required[2:] %}
-                                                    {{ module }}
-                                                    <br />
-                                                {% endfor %}
-                                            </div>
-                                            <a href="#"
-                                               class="toggle-btn text-primary small"
-                                               data-bs-toggle="collapse"
-                                               data-bs-target="#modules-{{ opportunity.id }}">Show More</a>
-                                        {% endif %}
-                                    </div>
-                                </td>
-                                <td>{{ opportunity.spots_available }}</td>
-                                <td>{{ opportunity.duration.replace('_', ' ').title() }}</td>
-                                <td>
-                                    {% if user_type == "employer" %}
-                                        <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
-                                           class="btn btn-info btn-sm mb-2">Rank</a>
-                                    {% endif %}
-                                    <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Update</a>
-                                    <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
-                                       class="btn btn-danger btn-sm">Delete</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+  {% if user_type == "employer" %}
+    {% include "employers/navbar.html" %}
+  {% elif user_type == "admin" %}
+    {% include "user/navbar.html" %}
+    <!-- {% include "opportunities/navbar.html" %} -->
+  {% endif %}
+  <div class="card-wrapper card-dynamic-width">
+    <!-- First Card: Search Form -->
+    <div class="card search-card">
+      <h1 class="center">Search Opportunities</h1>
+      <form id="searchForm">
+        <div class="form-group visible-fields">
+          <div>
+            <label for="title">Title:</label>
+            <input type="text" id="title" name="title" class="field" />
+          </div>
+          {% if user_type == "admin" %}
+            <div>
+              <label for="company">Company:</label>
+              <input type="text" id="company" name="company" class="field" />
             </div>
+          {% endif %}
         </div>
+        <div class="form-group hidden-fields">
+          <div>
+            <label for="description">Description:</label>
+            <input type="text" id="description" name="description" class="field" />
+          </div>
+          <div>
+            <label for="location">Location:</label>
+            <input type="text" id="location" name="location" class="field" />
+          </div>
+          <div>
+            <label for="course">Course:</label>
+            <select id="course" name="course" class="field" select="course">
+              <option value="">Select Course</option>
+              {% for course in courses %}
+                <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="modules">Modules:</label>
+            <select id="modules" name="modules" class="field" title="modules" multiple>
+              <option value="">Select Modules</option>
+              {% for module in modules %}
+                <option value="{{ module.module_id }}">{{ module.module_id }}: {{ module.module_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div>
+            <label for="spots_min">Spots (Min):</label>
+            <input type="number" id="spots_min" name="spots_min" class="field" />
+          </div>
+          <div>
+            <label for="spots_max">Spots (Max):</label>
+            <input type="number" id="spots_max" name="spots_max" class="field" />
+          </div>
+          <div>
+            <label for="placement_duration">Placement Duration:</label>
+            <select id="placement_duration" name="placement_duration">
+              <option value="">Select Duration</option>
+              <option value="1_day">1 Day</option>
+              <option value="1_week">1 Week</option>
+              <option value="1_month">1 Month</option>
+              <option value="3_months">3 Months</option>
+              <option value="6_months">6 Months</option>
+              <option value="12_months">12 Months</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <button type="button" id="toggleMore" class="btn btn-secondary">Show More</button>
+          <p class="error error--hidden"></p>
+        </div>
+      </form>
     </div>
-    <script src="/static/search_opportunities/script.js"></script>
+    <!-- Second Card: Table -->
+    <div class="card card-dynamic-width">
+      <h2 class="center">Opportunities</h2>
+      <div class="table-wrapper">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Title</th>
+              <th>Description</th>
+              <th>Company Name</th>
+              <!-- Display Company Name for Both Admin and Employer -->
+              <th>URL</th>
+              <th>Location</th>
+              <th>Courses Required</th>
+              <th>Modules Required</th>
+              <th>Spots Available</th>
+              <th>Duration</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="opportunity-table">
+            {% for opportunity in opportunities %}
+              <tr>
+                <td>{{ opportunity.title }}</td>
+                <td>{{ opportunity.description }}</td>
+                <td>{{ opportunity.company_name }}</td>
+                <td>
+                  <a href="https://{{ opportunity.url }}" target="_blank">{{ opportunity.url }}</a>
+                </td>
+                <td>{{ opportunity.location }}</td>
+                <td data-courses="{% for course in opportunity.courses_required %}{{ course }}, {% endfor %}">
+                  <div class="collapsible-content">
+                    {% for course in opportunity.courses_required[:2] %}
+                      {{ course }}
+                      <br />
+                    {% endfor %}
+                    {% if opportunity.courses_required|length > 2 %}
+                      <div class="collapse" id="courses-{{ opportunity._id }}">
+                        {% for course in opportunity.courses_required[2:] %}
+                          {{ course }}
+                          <br />
+                        {% endfor %}
+                      </div>
+                      <a href="#"
+                         class="toggle-btn text-primary small"
+                         data-bs-toggle="collapse"
+                         data-bs-target="#courses-{{ opportunity._id }}"
+                         onclick="toggleText(this, '#courses-{{ opportunity._id }}')">Show More</a>
+                    {% endif %}
+                  </div>
+                </td>
+                <td data-modules="{% for module in opportunity.modules_required %}{{ module }}, {% endfor %}">
+                  <div class="collapsible-content">
+                    {% for module in opportunity.modules_required[:2] %}
+                      {{ module }}
+                      <br />
+                    {% endfor %}
+                    {% if opportunity.modules_required|length > 2 %}
+                      <div class="collapse" id="modules-{{ opportunity._id }}">
+                        {% for module in opportunity.modules_required[2:] %}
+                          {{ module }}
+                          <br />
+                        {% endfor %}
+                      </div>
+                      <a href="#"
+                         class="toggle-btn text-primary small"
+                         data-bs-toggle="collapse"
+                         data-bs-target="#modules-{{ opportunity._id }}"
+                         onclick="toggleText(this, '#modules-{{ opportunity._id }}')">Show More</a>
+                    {% endif %}
+                  </div>
+                </td>
+                <td>{{ opportunity.spots_available }}</td>
+                <td>{{ opportunity.duration.replace('_', ' ').title() }}</td>
+                <td>
+                  {% if user_type == "employer" %}
+                    <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
+                       class="btn btn-info btn-sm mb-2">Rank</a>
+                  {% endif %}
+                  <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
+                     class="btn btn-info btn-sm mb-2">Update</a>
+                  <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
+                     class="btn btn-danger btn-sm">Delete</a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+  <script src="/static/search_opportunities/script.js"></script>
 {% endblock content %}

@@ -102,3 +102,12 @@ document.addEventListener("DOMContentLoaded", function () {
         onChange: filterOpportunities
     });
 });
+
+function toggleText(btn, target) {
+    const element = document.querySelector(target);
+    if (element.classList.contains('show')) {
+        btn.textContent = 'Show More';
+    } else {
+        btn.textContent = 'Show Less';
+    }
+}
