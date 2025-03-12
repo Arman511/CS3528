@@ -16,7 +16,7 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-from flask_compress import Compress
+from flask_compress import Compress  # type: ignore
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -146,7 +146,7 @@ def get_user_type():
     return user_type
 
 
-def configure_routes(app, cache: Cache, compress: Compress):
+def configure_routes(app, cache: Cache, _compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
