@@ -99,12 +99,6 @@
     overflow: visible;
 }
 
-/* Card Hover Effect */
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
-}
-
 /* Title Styling */
 .center {
     text-align: center;
@@ -332,8 +326,12 @@ body {
     max-height: calc(100vh - 60px);
     overflow-y: auto;
     width: auto;
+
 }
 
+#section-nav a {
+    color: blue;
+}
 
 
 @media (max-width: 1750px) {

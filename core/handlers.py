@@ -16,7 +16,7 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-from flask_compress import Compress
+from flask_compress import Compress  # type: ignore
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -133,20 +133,20 @@ def get_user_type():
     superuser = session.get("superuser")
 
     # Determine user_type based on session data
-    if user:
+    if superuser:
+        user_type = "superuser"
+    elif user:
         user_type = "admin"
     elif employer:
         user_type = "employer"
     elif student:
         user_type = "student"
-    elif superuser:
-        user_type = "superuser"
     else:
         user_type = None
     return user_type
 
 
-def configure_routes(app, cache: Cache, compress: Compress):
+def configure_routes(app, cache: Cache, _compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -269,7 +269,7 @@ def configure_routes(app, cache: Cache, compress: Compress):
             )
         elif user_type == "student":
             return render_template("tutorials/tutorial_student.html")
-        elif user_type == "superuser":
+        if user_type == "superuser":
             return render_template(
                 "tutorials/tutorial_superuser.html", user_type="superuser"
             )

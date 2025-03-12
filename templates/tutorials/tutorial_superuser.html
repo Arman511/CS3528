@@ -1,29 +1,101 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "superuser/navbar.html" %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorial</h1>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
-            <h2>User Management</h2>
-            <ul>
-                <li>
-                    <a href="#login-card">Login</a>
+  {% include "superuser/navbar.html" %}
+  <div>
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Superuser Tutorial</h2>
+            <h2 class="h5">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse1"
+                 role="button"
+                 aria-expanded="false"
+                 aria-controls="adminCollapse1">User Management</a>
+            </h2>
+            <div class="collapse" id="adminCollapse1">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section1">Add User</a>
                 </li>
-            </ul>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section2">Delete User</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section3">Update User</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section4">Change Password</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section5">Config</a>
+            </h2>
+          </div>
+        </nav>
+      </div>
+      <!-- Main Content: Single card wrapping all tutorial sections -->
+      <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+      <main class="col-12 col-md-9 offset-md-2"
+            data-bs-spy="scroll"
+            data-bs-target="#section-nav"
+            data-bs-offset="100"
+            tabindex="0">
+        <div class="card">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section1" class="mb-4">
+              <h3>Add User</h3>
+              <p>To add a user, you need to provide the following details:</p>
+              <ul>
+                <li>Name</li>
+                <li>Email</li>
+                <li>Password</li>
+                <li>Confirm Password</li>
+              </ul>
+              There can not be 2 users with the same email address.
+            </section>
+            <hr>
+            <section id="section2" class="mb-4">
+              <h3>Delete User</h3>
+              <p>To delete a user, navigate to the user management section and select the user you wish to delete.</p>
+            </section>
+            <hr>
+            <section id="section3" class="mb-4">
+              <h3>Update User</h3>
+              <p>To update user details, navigate to the user management section and select the user you wish to update.</p>
+              <p>There can not be 2 users with the same email address.</p>
+            </section>
+            <hr>
+            <section id="section4" class="mb-4">
+              <h3>Change Password</h3>
+              <p>
+                To change a user's password, navigate to the user management section and select the user whose password you wish to change.
+              </p>
+              <p>You will be asked for their new password and confirm password</p>
+            </section>
+          </div>
         </div>
-        <div class="card" id="login-card">
-            <h1 class="center">Login Tutorial</h1>
-            <p>
-                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
-                <br>
-                Once you click on the "Login" button, you will be redirected to the login for placement teams.
-                <br>
-                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
-                <br>
-                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
-            </p>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section5" class="mb-4">
+              <h3>Config</h3>
+              <p>The configuration options include:</p>
+              <ul>
+                <li>Max number of skills a student can input</li>
+                <li>Min number of rankings a student must provide for opportunities</li>
+              </ul>
+              <p>Change the details and press submit to save the changes.</p>
+            </section>
+          </div>
         </div>
+      </main>
     </div>
-    <script>document.title = "Tutorial";</script>
+  </div>
+  <script>document.title = "Tutorial - Superuser";</script>
 {% endblock content %}
