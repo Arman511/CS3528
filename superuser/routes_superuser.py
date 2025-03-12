@@ -11,9 +11,9 @@ def add_superuser_routes(app):
     @app.route("/superuser/configure", methods=["GET", "POST"])
     @handlers.superuser_required
     def configure_settings():
+        """Configure settings page"""
         from app import CONFIG_MANAGER
 
-        """Configure settings page"""
         if request.method == "GET":
             return render_template(
                 "superuser/config.html",

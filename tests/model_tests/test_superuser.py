@@ -1,3 +1,5 @@
+"""Tests for the superuser model."""
+
 import os
 import sys
 from unittest import mock
@@ -28,14 +30,14 @@ def app():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    yield DATABASE
+    yield database
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()

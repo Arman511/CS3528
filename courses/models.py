@@ -2,7 +2,6 @@
 Courses model."""
 
 from datetime import datetime, timedelta
-import os
 import tempfile
 import uuid
 from flask import jsonify, send_file

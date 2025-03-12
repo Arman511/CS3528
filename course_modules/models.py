@@ -3,7 +3,6 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
-import os
 import tempfile
 import uuid
 import pandas as pd

@@ -2,7 +2,6 @@
 This module defines the User class which handles user authentication and session management.
 """
 
-import os
 import tempfile
 import time
 import uuid
@@ -130,9 +129,9 @@ class Student:
 
         DATABASE_MANAGER.delete_by_id("students", student["_id"])
 
-        opportunies = Opportunity().get_opportunities()
+        opportunities = Opportunity().get_opportunities()
 
-        for opportunity in opportunies:
+        for opportunity in opportunities:
             if (
                 "preferences" in opportunity
                 and student["_id"] in opportunity["preferences"]

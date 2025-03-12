@@ -1,9 +1,10 @@
+"""This module contains tests for the Employers model."""
+
 import os
 import uuid
-import pytest
 import sys
-from flask import Flask, send_file
 from io import BytesIO
+import pytest
 import pandas as pd
 from dotenv import load_dotenv
 from core.database_mongo_manager import DatabaseMongoManager
@@ -28,20 +29,20 @@ def app():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    employers = DATABASE.get_all("employers")
-    DATABASE.delete_all("employers")
-    yield DATABASE
+    employers = database.get_all("employers")
+    database.delete_all("employers")
+    yield database
 
-    DATABASE.delete_all("employers")
+    database.delete_all("employers")
 
     for employer in employers:
-        DATABASE.insert("employers", employer)
-    DATABASE.delete_all_by_field("_id", "company_name", "email")
+        database.insert("employers", employer)
+    database.delete_all_by_field("_id", "company_name", "email")
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()

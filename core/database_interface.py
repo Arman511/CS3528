@@ -1,7 +1,11 @@
+"""Database Interface Module"""
+
 from abc import ABC, abstractmethod
 
 
 class DatabaseInterface(ABC):
+    """Database Interface Class"""
+
     def __init__(self):
         """Initialize the database interface"""
         self.connection = None
@@ -9,6 +13,7 @@ class DatabaseInterface(ABC):
         self.table_list = []
 
     def add_table(self, table):
+        """Add a table to the list"""
         self.table_list.append(table)
 
     @abstractmethod

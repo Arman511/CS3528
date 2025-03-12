@@ -31,11 +31,11 @@ class User:
 
         if "email" not in user or "password" not in user:
             return jsonify({"error": "Missing email or password"}), 400
-        elif "name" not in user:
+        if "name" not in user:
             return jsonify({"error": "Missing name"}), 400
-        elif DATABASE_MANAGER.get_by_email("users", user["email"]):
+        if DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
-        elif user["email"] == os.getenv("SUPERUSER_EMAIL"):
+        if user["email"] == os.getenv("SUPERUSER_EMAIL"):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database

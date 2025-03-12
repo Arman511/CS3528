@@ -6,9 +6,9 @@
 import os
 import sys
 import uuid
+from unittest.mock import patch
 from itsdangerous import URLSafeSerializer
 import pytest
-from unittest.mock import patch
 from dotenv import load_dotenv
 
 # Add the root directory to the Python path
@@ -36,70 +36,33 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    deadlines = DATABASE.get_all("deadline")
-    DATABASE.delete_all("deadline")
+    collections = {
+        "deadline": database.get_all("deadline"),
+        "students": database.get_all("students"),
+        "courses": database.get_all("courses"),
+        "modules": database.get_all("modules"),
+        "skills": database.get_all("skills"),
+        "attempted_skills": database.get_all("attempted_skills"),
+        "employers": database.get_all("employers"),
+        "opportunities": database.get_all("opportunities"),
+    }
 
-    students = DATABASE.get_all("students")
-    DATABASE.delete_all("students")
+    for collection in collections:
+        database.delete_all(collection)
 
-    courses = DATABASE.get_all("courses")
-    DATABASE.delete_all("courses")
+    yield database
 
-    modules = DATABASE.get_all("modules")
-    DATABASE.delete_all("modules")
-
-    skills = DATABASE.get_all("skills")
-    DATABASE.delete_all("skills")
-
-    attempted_skills = DATABASE.get_all("attempted_skills")
-    DATABASE.delete_all("attempted_skills")
-
-    employers = DATABASE.get_all("employers")
-    DATABASE.delete_all("employers")
-
-    opportunities = DATABASE.get_all("opportunities")
-    DATABASE.delete_all("opportunities")
-
-    yield DATABASE
-
-    DATABASE.delete_all("deadline")
-    for deadline in deadlines:
-        DATABASE.insert("deadline", deadline)
-    DATABASE.delete_all("students")
-
-    for student in students:
-        DATABASE.insert("students", student)
-
-    DATABASE.delete_all("courses")
-    for course in courses:
-        DATABASE.insert("courses", course)
-
-    DATABASE.delete_all("modules")
-    for module in modules:
-        DATABASE.insert("modules", module)
-
-    DATABASE.delete_all("skills")
-    for skill in skills:
-        DATABASE.insert("skills", skill)
-
-    DATABASE.delete_all("attempted_skills")
-    for attempted_skill in attempted_skills:
-        DATABASE.insert("attempted_skills", attempted_skill)
-
-    DATABASE.delete_all("employers")
-    for employer in employers:
-        DATABASE.insert("employers", employer)
-
-    DATABASE.delete_all("opportunities")
-    for opportunity in opportunities:
-        DATABASE.insert("opportunities", opportunity)
+    for collection, items in collections.items():
+        database.delete_all(collection)
+        for item in items:
+            database.insert(collection, item)
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -299,55 +262,51 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
         ],
     }
 
-    module1 = {
-        "_id": "BI1012",
-        "module_id": "BI1012",
-        "module_name": "Module 1",
-        "module_description": "Module 1 description",
-    }
+    modules = [
+        {
+            "_id": "BI1012",
+            "module_id": "BI1012",
+            "module_name": "Module 1",
+            "module_description": "Module 1 description",
+        },
+        {
+            "_id": "BI1512",
+            "module_id": "BI1512",
+            "module_name": "Module 2",
+            "module_description": "Module 2 description",
+        },
+    ]
 
-    module2 = {
-        "_id": "BI1512",
-        "module_id": "BI1512",
-        "module_name": "Module 2",
-        "module_description": "Module 2 description",
-    }
+    courses = [
+        {
+            "_id": "G401",
+            "course_id": "G401",
+            "course_name": "Course 1",
+            "course_description": "Course 1 description",
+        }
+    ]
 
-    database.insert("modules", module1)
-    database.insert("modules", module2)
+    skills = [
+        {
+            "_id": "015d0008994611ef8360bec4b589d035",
+            "skill_name": "Skill 1",
+            "skill_description": "Skill 1 description",
+        },
+        {
+            "_id": "f087df2893d211ef84b1bbe7a6a5be1f",
+            "skill_name": "Skill 2",
+            "skill_description": "Skill 2 description",
+        },
+    ]
 
-    course = {
-        "_id": "G401",
-        "course_id": "G401",
-        "course_name": "Course 1",
-        "course_description": "Course 1 description",
-    }
-
-    database.insert("courses", course)
-
-    skill1 = {
-        "_id": "015d0008994611ef8360bec4b589d035",
-        "skill_name": "Skill 1",
-        "skill_description": "Skill 1 description",
-    }
-
-    skill2 = {
-        "_id": "f087df2893d211ef84b1bbe7a6a5be1f",
-        "skill_name": "Skill 2",
-        "skill_description": "Skill 2 description",
-    }
-
-    database.insert("skills", skill1)
-    database.insert("skills", skill2)
-
-    attempted_skill = {
-        "_id": "cc4e7ecc9a0e11ef8a1a43569002b932",
-        "skill_name": "Attempted Skill",
-        "skill_description": "Attempted Skill description",
-        "used": 5,
-    }
-
-    database.insert("attempted_skills", attempted_skill)
+    attempted_skills = [
+        {
+            "_id": "cc4e7ecc9a0e11ef8a1a43569002b932",
+            "skill_name": "Attempted Skill",
+            "skill_description": "Attempted Skill description",
+            "used": 5,
+        }
+    ]
 
     employer = {
         "_id": uuid.uuid4().hex,
@@ -355,85 +314,94 @@ def student_logged_in_client_after_preferences(client, database: DatabaseMongoMa
         "email": "dummy@dummy.com",
     }
 
+    opportunities = [
+        {
+            "_id": "a7f0c09bb90841f783836c6c9e369f6e",
+            "title": "Opportunity 1",
+            "description": "Assist customers with inquiries, complaints, and product information.",
+            "url": "www.anatomyassistant.com",
+            "employer_id": employer["_id"],
+            "location": "909 Health Sciences Blvd",
+            "modules_required": [],
+            "courses_required": [
+                "H205",
+                "WV63",
+                "G401",
+                "M1N4",
+                "C901",
+                "LL63",
+                "WX33",
+                "G403",
+            ],
+            "spots_available": 7,
+            "duration": "1_month",
+        },
+        {
+            "_id": "c9ac8f2a59224cfb95a043dcf4937f91",
+            "title": "Opportunity 2",
+            "description": "Assist customers with inquiries, complaints, and product information.",
+            "url": "www.anatomyassistant.com",
+            "employer_id": employer["_id"],
+            "location": "909 Health Sciences Blvd",
+            "modules_required": [],
+            "courses_required": [
+                "H205",
+                "WV63",
+                "G401",
+            ],
+            "spots_available": 7,
+            "duration": "1_month",
+        },
+        {
+            "_id": "8bf8ddf3383240bea1e78f7a3fec36cf",
+            "title": "Opportunity 3",
+            "description": "Assist customers with inquiries, complaints, and product information.",
+            "url": "www.anatomyassistant.com",
+            "employer_id": employer["_id"],
+            "location": "909 Health Sciences Blvd",
+            "modules_required": [],
+            "courses_required": [
+                "H205",
+                "WV63",
+                "G401",
+            ],
+            "spots_available": 7,
+            "duration": "1_month",
+        },
+        {
+            "_id": "f57b251588c8498cbb9ab3e0fe76846e",
+            "title": "Opportunity 4",
+            "description": "Assist customers with inquiries, complaints, and product information.",
+            "url": "www.anatomyassistant.com",
+            "employer_id": employer["_id"],
+            "location": "909 Health Sciences Blvd",
+            "modules_required": [],
+            "courses_required": [
+                "H205",
+                "WV63",
+                "G401",
+            ],
+            "spots_available": 7,
+            "duration": "1_month",
+        },
+    ]
+
+    for module in modules:
+        database.insert("modules", module)
+
+    for course in courses:
+        database.insert("courses", course)
+
+    for skill in skills:
+        database.insert("skills", skill)
+
+    for attempted_skill in attempted_skills:
+        database.insert("attempted_skills", attempted_skill)
+
     database.insert("employers", employer)
 
-    opportunity1 = {
-        "_id": "a7f0c09bb90841f783836c6c9e369f6e",
-        "title": "Opportunity 1",
-        "description": "Assist customers with inquiries, complaints, and product information.",
-        "url": "www.anatomyassistant.com",
-        "employer_id": employer["_id"],
-        "location": "909 Health Sciences Blvd",
-        "modules_required": [],
-        "courses_required": [
-            "H205",
-            "WV63",
-            "G401",
-            "M1N4",
-            "C901",
-            "LL63",
-            "WX33",
-            "G403",
-        ],
-        "spots_available": 7,
-        "duration": "1_month",
-    }
-
-    opportunity2 = {
-        "_id": "c9ac8f2a59224cfb95a043dcf4937f91",
-        "title": "Opportunity 2",
-        "description": "Assist customers with inquiries, complaints, and product information.",
-        "url": "www.anatomyassistant.com",
-        "employer_id": employer["_id"],
-        "location": "909 Health Sciences Blvd",
-        "modules_required": [],
-        "courses_required": [
-            "H205",
-            "WV63",
-            "G401",
-        ],
-        "spots_available": 7,
-        "duration": "1_month",
-    }
-
-    opportunity3 = {
-        "_id": "8bf8ddf3383240bea1e78f7a3fec36cf",
-        "title": "Opportunity 3",
-        "description": "Assist customers with inquiries, complaints, and product information.",
-        "url": "www.anatomyassistant.com",
-        "employer_id": employer["_id"],
-        "location": "909 Health Sciences Blvd",
-        "modules_required": [],
-        "courses_required": [
-            "H205",
-            "WV63",
-            "G401",
-        ],
-        "spots_available": 7,
-        "duration": "1_month",
-    }
-
-    opportunity4 = {
-        "_id": "f57b251588c8498cbb9ab3e0fe76846e",
-        "title": "Opportunity 4",
-        "description": "Assist customers with inquiries, complaints, and product information.",
-        "url": "www.anatomyassistant.com",
-        "employer_id": employer["_id"],
-        "location": "909 Health Sciences Blvd",
-        "modules_required": [],
-        "courses_required": [
-            "H205",
-            "WV63",
-            "G401",
-        ],
-        "spots_available": 7,
-        "duration": "1_month",
-    }
-
-    database.insert("opportunities", opportunity1)
-    database.insert("opportunities", opportunity2)
-    database.insert("opportunities", opportunity3)
-    database.insert("opportunities", opportunity4)
+    for opportunity in opportunities:
+        database.insert("opportunities", opportunity)
 
     database.insert("students", student)
     url = "/students/login"

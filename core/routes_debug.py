@@ -1,3 +1,5 @@
+"""Debug routes for the app."""
+
 from functools import wraps
 import os
 
@@ -11,13 +13,14 @@ def is_test_required(f):
     def wrap(*args, **kwargs):
         if os.getenv("IS_TEST") == "True":
             return f(*args, **kwargs)
-        else:
-            return redirect("/students/login")
+
+        return redirect("/students/login")
 
     return wrap
 
 
 def add_debug_routes(app):
+    """Add debug routes to the app."""
 
     @app.route("/debug/session")
     @is_test_required

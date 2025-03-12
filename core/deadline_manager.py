@@ -7,10 +7,12 @@ from flask import jsonify
 
 
 class DeadlineManager:
+    """Handles deadlines for the application."""
+
     def __init__(self):
         from app import DATABASE_MANAGER
 
-        self.DATABASE_MANAGER = DATABASE_MANAGER
+        self.database_manager = DATABASE_MANAGER
         details = self.get_details_deadline()
         student = self.get_student_ranking_deadline()
         opportunities = self.get_opportunities_ranking_deadline()
@@ -30,13 +32,13 @@ class DeadlineManager:
     def get_details_deadline(self):
         """Get the deadline from the database."""
 
-        find_deadline = self.DATABASE_MANAGER.get_one_by_field("deadline", "type", 0)
+        find_deadline = self.database_manager.get_one_by_field("deadline", "type", 0)
         deadline = None
         if not find_deadline:
             deadline = (datetime.datetime.now() + datetime.timedelta(weeks=1)).strftime(
                 "%Y-%m-%d"
             )
-            self.DATABASE_MANAGER.insert("deadline", {"type": 0, "deadline": deadline})
+            self.database_manager.insert("deadline", {"type": 0, "deadline": deadline})
         else:
             deadline = find_deadline["deadline"]
         return deadline
@@ -51,14 +53,14 @@ class DeadlineManager:
     def get_student_ranking_deadline(self):
         """Get the deadline from the database."""
 
-        find_deadline = self.DATABASE_MANAGER.get_one_by_field("deadline", "type", 1)
+        find_deadline = self.database_manager.get_one_by_field("deadline", "type", 1)
         deadline = None
         if not find_deadline:
             deadline = (
                 datetime.datetime.strptime(self.get_details_deadline(), "%Y-%m-%d")
                 + datetime.timedelta(weeks=1)
             ).strftime("%Y-%m-%d")
-            self.DATABASE_MANAGER.insert("deadline", {"type": 1, "deadline": deadline})
+            self.database_manager.insert("deadline", {"type": 1, "deadline": deadline})
         else:
             deadline = find_deadline["deadline"]
         return deadline
@@ -71,7 +73,7 @@ class DeadlineManager:
     def get_opportunities_ranking_deadline(self):
         """Get the deadline from the database."""
 
-        find_deadline = self.DATABASE_MANAGER.get_one_by_field("deadline", "type", 2)
+        find_deadline = self.database_manager.get_one_by_field("deadline", "type", 2)
         deadline = None
         if not find_deadline:
             deadline = (
@@ -80,7 +82,7 @@ class DeadlineManager:
                 )
                 + datetime.timedelta(weeks=1)
             ).strftime("%Y-%m-%d")
-            self.DATABASE_MANAGER.insert("deadline", {"type": 2, "deadline": deadline})
+            self.database_manager.insert("deadline", {"type": 2, "deadline": deadline})
         else:
             deadline = find_deadline["deadline"]
         return deadline
@@ -126,13 +128,13 @@ class DeadlineManager:
                 400,
             )
 
-        self.DATABASE_MANAGER.update_one_by_field(
+        self.database_manager.update_one_by_field(
             "deadline", "type", 0, {"deadline": details_deadline}
         )
-        self.DATABASE_MANAGER.update_one_by_field(
+        self.database_manager.update_one_by_field(
             "deadline", "type", 1, {"deadline": student_ranking_deadline}
         )
-        self.DATABASE_MANAGER.update_one_by_field(
+        self.database_manager.update_one_by_field(
             "deadline", "type", 2, {"deadline": opportunities_ranking_deadline}
         )
 
