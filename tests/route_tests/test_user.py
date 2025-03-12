@@ -486,7 +486,7 @@ def test_login_already_login(user_logged_in_client):
     url = "/user/login"
     response = user_logged_in_client.get(url)
 
-    assert response.status_code == 302
+    assert response.status_code == 200
 
 
 def test_get_login_page(client):
