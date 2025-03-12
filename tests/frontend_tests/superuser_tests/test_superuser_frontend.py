@@ -29,8 +29,8 @@ def superuser(database):
 
     user = {
         "_id": uuid.uuid4().hex,
-        "name": "superuser",
-        "email": "superuser@dummy.com",
+        "name": "dummy",
+        "email": "dummy@dummy.com",
         "password": pbkdf2_sha512.hash("dummy"),
         "role": "superuser"
     }
@@ -43,7 +43,7 @@ def superuser(database):
 @pytest.fixture
 def superuser_logged_in_browser(chrome_browser, flask_server, database, superuser):
     chrome_browser.get("http://127.0.0.1:5000/user/login")
-    chrome_browser.find_element(By.NAME, "email").send_keys("superuser@dummy.com")
+    chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.NAME, "password").send_keys("dummy")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
 
