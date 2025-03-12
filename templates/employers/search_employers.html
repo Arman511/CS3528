@@ -36,7 +36,9 @@
                             <tr>
                                 <td>{{ employer._id }}</td>
                                 <td>{{ employer.company_name }}</td>
-                                <td>{{ employer.email }}</td>
+                                <td>
+                                    <a href="mailto:{{ employer.email }}">{{ employer.email }}</a>
+                                </td>
                                 <td>
                                     <a href="{{ url_for("update_employer") }}?employer_id={{ employer._id }}"
                                        class="btn btn-info btn-sm mb-2">Update</a>
