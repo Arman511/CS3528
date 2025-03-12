@@ -56,6 +56,7 @@ def add_user_routes(app, cache):
     def login():
         """Gives login form to user."""
         if request.method == "POST":
+            session.clear()
             attempt_user = {
                 "email": request.form.get("email"),
                 "password": request.form.get("password"),
@@ -69,7 +70,7 @@ def add_user_routes(app, cache):
                 return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
-            return redirect("/user/home")
+            session.clear()
         return render_template("user/login.html")
 
     @app.route("/user/delete", methods=["DELETE"])
