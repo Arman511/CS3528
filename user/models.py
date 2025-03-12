@@ -198,7 +198,7 @@ class User:
         if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             for student in students:
                 student = student.get("preferences")
-                if student is not None and student[0] != " ": 
+                if student is not None: 
                     number_of_students += 1
 
             number_of_students = len(students) - number_of_students
