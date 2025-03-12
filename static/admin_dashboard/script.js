@@ -1,36 +1,46 @@
 document.addEventListener("DOMContentLoaded", function () {
-    fetch("/user/home", {
-        headers: { "X-Requested-With": "XMLHttpRequest" }  // Ensures JSON response
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log("Fetched Data:", data);
+    function fetchDeadlineData() {
+        fetch("/user/home", {
+            headers: { "Accept": "application/json" },
+        })
+            .then(response => response.json())
+            .then(data => {
+                updateDeadlineUI(data);
+            })
+            .catch(error => console.error("Error fetching deadline data:", error));
+    }
 
-        const deadlineContainer = document.getElementById("deadline-container");
-        deadlineContainer.innerHTML = ""; // Clear existing content
+    function updateDeadlineUI(data) {
+        // Update Deadline Tracker
+        document.getElementById("deadline-name").textContent = data.deadline_name;
+        document.getElementById("deadline-date").textContent = data.deadline_date || "🎉";
 
-        if (data.deadline_date) {
-            deadlineContainer.innerHTML = `
-                <div class="alert alert-info text-center" role="alert">
-                    <p class="lead mb-0"><strong>${data.deadline_name}</strong></p>
-                    <p class="display-4 mt-2 mb-0">${data.deadline_date}</p>
+        // Update Stats Card
+        let statsCard = document.getElementById("stats-card");
+        statsCard.innerHTML = ""; // Clear previous content
+
+        if (data.deadline_name.includes("Add Details")) {
+            statsCard.innerHTML = `
+                <h5>Students Completed</h5><p class="display-4">${data.num_students}</p>
+                <h5>Opportunities Added</h5><p class="display-4">${data.num_opportunities}</p>
+            `;
+
+        } else if (data.deadline_name.includes("Students Ranking")) {
+            statsCard.innerHTML = `
+                <div style="text-align: center;">
+                    <h5>Students Ranked</h5>
+                    <p class="display-4">${data.num_students}</p>
                 </div>
             `;
-        } else {
-            deadlineContainer.innerHTML = `
-                <div class="alert alert-success text-center" role="alert">
-                    <p class="lead mb-0">No upcoming deadlines</p>
-                    <p class="display-4 mt-2 mb-0">🎉</p>
+        } else if (data.deadline_name.includes("Employers Ranking")) {
+            statsCard.innerHTML = `
+                <div style="text-align: center;">
+                    <h5>Employers Ranked</h5>
+                    <p class="display-4">${data.num_opportunities}</p>
                 </div>
             `;
         }
-    })
-    .catch(error => {
-        console.error("Error fetching deadlines:", error);
-        document.getElementById("deadline-container").innerHTML = `
-            <div class="alert alert-danger text-center" role="alert">
-                <p class="lead mb-0">Error loading deadlines.</p>
-            </div>
-        `;
-    });
+    }
+
+    fetchDeadlineData(); // Initial load
 });
