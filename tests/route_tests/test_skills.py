@@ -6,16 +6,16 @@
 import os
 import sys
 import uuid
+from passlib.hash import pbkdf2_sha512
 
 from itsdangerous import URLSafeSerializer
+import pytest
+from dotenv import load_dotenv
 
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-from passlib.hash import pbkdf2_sha512
-import pytest
-from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -37,25 +37,25 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    skills = DATABASE.get_all("skills")
-    attempted_skills = DATABASE.get_all("attempted_skills")
+    skills = database.get_all("skills")
+    attempted_skills = database.get_all("attempted_skills")
 
-    DATABASE.delete_all("skills")
-    DATABASE.delete_all("attempted_skills")
-    yield DATABASE
+    database.delete_all("skills")
+    database.delete_all("attempted_skills")
+    yield database
 
     for skill in skills:
-        DATABASE.insert("skills", skill)
+        database.insert("skills", skill)
     for skill in attempted_skills:
-        DATABASE.insert("attempted_skills", skill)
+        database.insert("attempted_skills", skill)
 
     # Cleanup code
 
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -497,13 +497,6 @@ def test_update_attempted_skill_get_nonexistent(user_logged_in_client):
     assert response.status_code == 404
 
 
-def test_search_attempt_skills(user_logged_in_client):
-    """Test searching for attempted skills."""
-    url = "/skills/attempted_skill_search"
-    response = user_logged_in_client.get(url)
-    assert response.status_code == 200
-
-
 def test_search_attempt_skills_empty(user_logged_in_client, database):
     """Test searching for attempted skills when none exist."""
     current_attempted_skills = database.get_all("attempted_skills")
@@ -537,20 +530,6 @@ def test_search_attempt_skills(user_logged_in_client, database):
     assert b"Test Skill" in response.data
 
     database.delete_by_id("attempted_skills", attempt_skill_id)
-
-
-def test_search_attempt_skills_empty(user_logged_in_client, database):
-    """Test searching for attempted skills when none exist."""
-    skills = database.get_all("attempted_skills")
-    database.delete_all("attempted_skills")
-    database.delete_all_by_field("attempted_skills", "skill_name", "Test Skill")
-
-    url = "/skills/attempted_skill_search"
-    response = user_logged_in_client.get(url)
-    assert response.status_code == 200
-
-    for skill in skills:
-        database.insert("attempted_skills", skill)
 
 
 def test_update_skill_get(user_logged_in_client, database):

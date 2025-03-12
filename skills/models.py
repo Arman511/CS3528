@@ -2,7 +2,7 @@
 Skills model.
 """
 
-import os
+import tempfile
 import uuid
 from flask import jsonify, send_file
 import pandas as pd
@@ -241,15 +241,11 @@ class Skill:
 
         df = pd.DataFrame(clean_data)
 
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            tmpFile = "temp/skills.xlsx"
-        else:
-            tmpFile = "/tmp/skills.xlsx"
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmp_file = tmp.name
 
-        df.to_excel(tmpFile, index=False)
-
-        return send_file(tmpFile, as_attachment=True, download_name="skills.xlsx")
+            return send_file(tmp_file, as_attachment=True, download_name="skills.xlsx")
 
     def download_attempted(self):
         """Returns a xlsx file with all attempted skills"""
@@ -268,21 +264,20 @@ class Skill:
             clean_data.append(temp)
 
         df = pd.DataFrame(clean_data)
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmp_file = tmp.name
 
-        tmpFile = "/tmp/attempted_skills.xlsx"
-
-        df.to_excel(tmpFile, index=False)
-
-        return send_file(
-            tmpFile, as_attachment=True, download_name="attempted_skills.xlsx"
-        )
+            return send_file(
+                tmp_file, as_attachment=True, download_name="attempted_skills.xlsx"
+            )
 
     def upload_skills(self, file):
         """Upload skills"""
 
         try:
             df = pd.read_excel(file)
-        except Exception:
+        except (pd.errors.EmptyDataError, pd.errors.ParserError, FileNotFoundError):
             return jsonify({"error": "Invalid file"}), 400
 
         skills = df.to_dict(orient="records")
@@ -302,9 +297,10 @@ class Skill:
                     "skill_description": skill["Skill_Description"],
                 }
 
-                if temp["skill_name"].lower() in current_skills:
-                    continue
-                elif temp["skill_name"].lower() in skill_names:
+                if (
+                    temp["skill_name"].lower() in current_skills
+                    or temp["skill_name"].lower() in skill_names
+                ):
                     continue
                 skill_names.add(temp["skill_name"].lower())
 

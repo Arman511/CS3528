@@ -1,66 +1,75 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "/employers/navbar.html" %}
-    <div class="card-wrapper">
-        <div class="row">
-            <div class="col-12">
-                <h1>Rank Students</h1>
-                <p>
-                    Rank the students below in order of preference. You can only rank each student once. 1 is most
-                    preferable. {{ students|length }} is least preferable. Do at least 5 or as many as you can.
-                </p>
-                <button id="submit-students" class="btn btn-primary">Submit</button>
+  {% include "/employers/navbar.html" %}
+  <div class="card-wrapper">
+    <div class="row">
+      <div class="col-12">
+        <h1>Rank Students</h1>
+        <p>
+          Rank the students below in order of preference. You can only rank each student once. 1 is most
+          preferable. {{ students|length }} is least preferable. Do at least 5 or as many as you can.
+        </p>
+        <button id="submit-students" class="btn btn-primary">Submit</button>
+      </div>
+      <p class="d-none" id="opp_id">{{ opportunity_id }}</p>
+      {% for student in students %}
+        <div class="col-md-6 col-lg-4 mb-1 px-1">
+          <div class="student-item card h-100 p-2 bg-light">
+            <div class="card-body">
+              <p class="student-id d-none">{{ student._id }}</p>
+              <p class="student-course">Course: {{ student.course + ": "+get_course_name(student.course) }}</p>
+              <p>Modules:</p>
+              <ul class="student-modules">
+                {% for module in student.modules[:2] %}<li>{{ module + ": " + get_module_name(module) }}</li>{% endfor %}
+                {% if student.modules|length > 2 %}
+                  <div class="collapse" id="modules-{{ student._id }}">
+                    {% for module in student.modules[2:] %}<li>{{ module + ": " + get_module_name(module) }}</li>{% endfor %}
+                  </div>
+                  <a href="#"
+                     class="toggle-btn text-primary small"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#modules-{{ student._id }}"
+                     onclick="toggleText(this, '#modules-{{ student._id }}')">Show More</a>
+                {% endif %}
+              </ul>
+              <p>Skills:</p>
+              <ul class="student-skills">
+                {% for skill in student.skills[:2] %}<li>{{ get_skill_name(skill) }}</li>{% endfor %}
+                {% if student.skills|length > 2 %}
+                  <div class="collapse" id="skills-{{ student._id }}">
+                    {% for skill in student.skills[2:] %}<li>{{ get_skill_name(skill) }}</li>{% endfor %}
+                  </div>
+                  <a href="#"
+                     class="toggle-btn text-primary small"
+                     data-bs-toggle="collapse"
+                     data-bs-target="#skills-{{ student._id }}"
+                     onclick="toggleText(this, '#skills-{{ student._id }}')">Show More</a>
+                {% endif %}
+              </ul>
+              <p class="student-has_car">Has Car: {{ student.has_car }}</p>
+              <div class="student-comment">
+                <button class="btn btn-link"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#comment-{{ student._id }}"
+                        aria-expanded="false"
+                        aria-controls="comment-{{ student._id }}">View Comment</button>
+                <div class="collapse" id="comment-{{ student._id }}">
+                  <p>{{ student.comments }}</p>
+                </div>
+              </div>
+              <label for="rank-{{ student._id }}">Rank:</label>
+              <select id="rank-{{ student._id }}"
+                      name="rank-{{ student._id }}"
+                      class="student-rank form-select">
+                <option value="">Select rank</option>
+                {% for i in range(1, students|length + 1) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+              </select>
             </div>
-            <p class="d-none" id="opp_id">{{ opportunity_id }}</p>
-            {% for student in students %}
-                <div class="col-md-6 col-lg-4 mb-1 px-1">
-                    <div class="student-item card h-100 p-2 bg-light">
-                        <div class="card-body">
-                            <p class="student-id d-none">{{ student._id }}</p>
-                            <p class="student-comment">Comment: {{ student.comments }}</p>
-                            <p class="student-has_car">Has Car: {{ student.has_car }}</p>
-                            <p class="student-course">Course: {{ student.course + ": "+get_course_name(student.course) }}</p>
-                            <p>Modules:</p>
-                            <ul class="student-modules">
-                                {% for module in student.modules %}<li>{{ module + ": " + get_module_name(module) }}</li>{% endfor %}
-                            </ul>
-                            <p>Skills</p>
-                            <ul class="student-skills">
-                                {% for skill in student.skills %}<li>{{ get_skill_name(skill) }}</li>{% endfor %}
-                            </ul>
-                            <label for="rank-{{ student._id }}">Rank:</label>
-                            <select id="rank-{{ student._id }}"
-                                    name="rank-{{ student._id }}"
-                                    class="student-rank form-select">
-                                <option value="">Select rank</option>
-                                {% for i in range(1, students|length + 1) %}
-                                    <option value="{{ i }}">{{ i }}</option>
-                                    {%
-                                    endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-                <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const rankSelects = document.querySelectorAll('.student-rank');
-
-            rankSelects.forEach(select => {
-                select.addEventListener('change', function () {
-                    const selectedValue = this.value;
-
-                    rankSelects.forEach(otherSelect => {
-                        if (otherSelect !== this && otherSelect.value === selectedValue) {
-                            this.value = '';
-                            alert('You can only rank each student once');
-                        }
-                    });
-                });
-            });
-        });
-                </script>
-                <script src="/static/employers_rank_students/script.js"></script>
-            </div>
+          </div>
         </div>
-    {% endblock content %}
+      {% endfor %}
+      <script src="/static/employers_rank_students/script.js"></script>
+    </div>
+  </div>
+{% endblock content %}

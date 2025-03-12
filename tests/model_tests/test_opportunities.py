@@ -3,15 +3,12 @@
 import os
 import sys
 import uuid
+from unittest.mock import MagicMock, patch
+from io import BytesIO
 from dotenv import load_dotenv
 import pytest
-from passlib.hash import pbkdf2_sha256
-
-from flask import session, jsonify
-from unittest.mock import MagicMock, patch
-from datetime import datetime, timedelta
+from flask import session
 import pandas as pd
-from io import BytesIO
 
 
 # flake8: noqa: F811
@@ -58,17 +55,17 @@ def opportunity_model():
 def database():
     """Fixture to create a database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    current_opportunities = DATABASE.get_all("opportunities")
-    DATABASE.delete_all("opportunities")
-    yield DATABASE
-    DATABASE.delete_all("opportunities")
+    current_opportunities = database.get_all("opportunities")
+    database.delete_all("opportunities")
+    yield database
+    database.delete_all("opportunities")
     for opportunity in current_opportunities:
-        DATABASE.insert("opportunities", opportunity)
+        database.insert("opportunities", opportunity)
 
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -151,7 +148,7 @@ def test_start_session(app, employer_model):
         with app.test_request_context():
             response = employer_model.start_session()
             assert response.status_code == 302
-            assert session["employer_logged_in"] == True
+            assert session["employer_logged_in"] is True
 
 
 def test_add_update_opportunity_unauthorized(opportunity_model, database, app):
@@ -219,13 +216,13 @@ def test_rank_preferences_not_found(opportunity_model, database, app):
             assert response[0].json == {"error": "Opportunity not found"}
 
 
-def test_search_opportunities_exception(opportunity_model, database, app):
+def test_search_opportunities_exception(opportunity_model, app):
     """Test searching opportunities with an exception."""
 
     with app.app_context():  # Set up Flask application context
         with app.test_request_context():  # Set up request context for session
-            opportunites = opportunity_model.search_opportunities("Job 1", "Company1")
-            assert opportunites == []
+            opportunities = opportunity_model.search_opportunities("Job 1", "Company1")
+            assert opportunities == []
 
 
 def test_search_opportunities_both_title_and_company(opportunity_model, database, app):
@@ -364,7 +361,7 @@ def test_get_opportunities_by_company_no_company(opportunity_model, app):
         assert opportunities == []
 
 
-def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
+def test_get_opportunities_by_company_does_not_exist(opportunity_model, app):
     """Test getting opportunities by company."""
 
     with app.app_context():
@@ -373,6 +370,7 @@ def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
 
 
 def test_get_opportunities_by_company(opportunity_model, database, app):
+    """Test getting opportunities by company"""
     database.delete_all_by_field("opportunities", "_id", "123")
     database.delete_all_by_field("employers", "_id", "456")
 
@@ -394,6 +392,7 @@ def test_get_opportunities_by_company(opportunity_model, database, app):
 
 
 def test_get_opportunities_by_company_id(opportunity_model, database, app):
+    """Test getting opportunities by company id"""
     database.delete_all_by_field("opportunities", "_id", "123")
 
     database.insert(
@@ -402,15 +401,15 @@ def test_get_opportunities_by_company_id(opportunity_model, database, app):
 
     with app.app_context():
         with app.test_request_context():
-            opportunites = opportunity_model.get_opportunity_by_company_id("456")
-            assert len(opportunites) == 1
-            assert opportunites[0]["_id"] == "123"
+            opportunities = opportunity_model.get_opportunity_by_company_id("456")
+            assert len(opportunities) == 1
+            assert opportunities[0]["_id"] == "123"
 
     database.delete_all_by_field("opportunities", "_id", "123")
 
 
 def test_get_opportunity_by_id(opportunity_model, database, app):
-    # Set up the cache with predefined data
+    """Test getting an opportunity by id"""
     opportunities = database.get_all("opportunities")
     database.delete_all("opportunities")
 
@@ -438,6 +437,7 @@ def test_get_opportunity_by_id(opportunity_model, database, app):
 
 
 def test_get_employer_by_id(opportunity_model, database, app):
+    """Test getting an employer by id"""
     database.delete_all_by_field("opportunities", "employer_id", "456")
     opportunity = {"_id": uuid.uuid4().hex, "employer_id": "456"}
     database.insert("opportunities", opportunity)
@@ -453,6 +453,7 @@ def test_get_employer_by_id(opportunity_model, database, app):
 
 
 def test_get_employer_by_id_no_employer(opportunity_model, database, app):
+    """Test getting an employer by id"""
     database.delete_all_by_field("opportunities", "_id", "123")
 
     with app.app_context():
@@ -462,6 +463,7 @@ def test_get_employer_by_id_no_employer(opportunity_model, database, app):
 
 
 def test_get_opportunities(opportunity_model, database, app):
+    """Test getting all opportunities"""
     opportunity = database.get_all("opportunities")
     database.delete_all("opportunities")
 
@@ -481,6 +483,7 @@ def test_get_opportunities(opportunity_model, database, app):
 
 
 def test_get_opportunities_by_duration(opportunity_model, database, app):
+    """Test getting opportunities by duration"""
     opportunity = database.get_all("opportunities")
     database.delete_all("opportunities")
 
@@ -501,6 +504,7 @@ def test_get_opportunities_by_duration(opportunity_model, database, app):
 
 
 def test_delete_opportunity_by_id(opportunity_model, database, app):
+    """Test deleting an opportunity by id"""
     opportunity = database.get_all("opportunities")
     students = database.get_all("students")
 
@@ -527,6 +531,7 @@ def test_delete_opportunity_by_id(opportunity_model, database, app):
 
 
 def test_delete_opportunity_by_id_no_opportunity(opportunity_model, database, app):
+    """Test deleting an opportunity by id"""
     opportunity = database.get_all("opportunities")
 
     database.delete_all("opportunities")
@@ -542,6 +547,7 @@ def test_delete_opportunity_by_id_no_opportunity(opportunity_model, database, ap
 
 
 def test_delete_opportunities(opportunity_model, database, app):
+    """Test deleting all opportunities"""
     opportunity = database.get_all("opportunities")
     database.delete_all("opportunities")
 
@@ -561,6 +567,7 @@ def test_delete_opportunities(opportunity_model, database, app):
 
 
 def test_get_valid_students(opportunity_model, database, app):
+    """Test getting valid students"""
     opportunity = database.get_all("opportunities")
     students = database.get_all("students")
 
@@ -588,6 +595,7 @@ def test_get_valid_students(opportunity_model, database, app):
 
 
 def test_rank_preferences(opportunity_model, database, app):
+    """Test ranking preferences"""
     opportunity = database.get_all("opportunities")
 
     database.delete_all("opportunities")
@@ -612,6 +620,7 @@ def test_rank_preferences(opportunity_model, database, app):
 
 
 def test_rank_preferences_no_opportunity(opportunity_model, database, app):
+    """Test ranking preferences"""
     opportunity = database.get_all("opportunities")
 
     database.delete_all("opportunities")
@@ -627,6 +636,7 @@ def test_rank_preferences_no_opportunity(opportunity_model, database, app):
 
 
 def test_delete_all_opportunity_admin(opportunity_model, database, app):
+    """Test deleting all opportunities"""
     opportunity = database.get_all("opportunities")
     students = database.get_all("students")
 
@@ -655,6 +665,7 @@ def test_delete_all_opportunity_admin(opportunity_model, database, app):
 def test_delete_all_opportunity_employer(
     opportunity_model, employer_model, database, app
 ):
+    """Test deleting all opportunities"""
     opportunity = database.get_all("opportunities")
     students = database.get_all("students")
 
@@ -686,6 +697,7 @@ def test_delete_all_opportunity_employer(
 
 
 def test_download_opportunities_admin(opportunity_model, database, app):
+    """Test downloading opportunities"""
     opportunity = database.get_all("opportunities")
     employers = database.get_all("employers")
 
@@ -730,6 +742,7 @@ def test_download_opportunities_admin(opportunity_model, database, app):
 def test_download_opportunities_employer(
     opportunity_model, employer_model, database, app
 ):
+    """Test downloading opportunities"""
     opportunity = database.get_all("opportunities")
     employers = database.get_all("employers")
 
@@ -843,7 +856,10 @@ def test_upload_opportunities_wrong_spot_available(
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-            assert "Invalid spots available value" in response[0].json["error"]
+            assert (
+                "Failed to upload opportunities: invalid literal for int() with base 10: 'invalid'"
+                in response[0].json["error"]
+            )
 
 
 def test_upload_opportunities_wrong_duration(
@@ -1002,24 +1018,4 @@ def test_upload_opportunities_wrong_spots(opportunity_model, database, app, dumm
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
             assert response[1] == 400
-            assert (
-                "Spots available must be at least 1 in opportunity"
-                in response[0].json["error"]
-            )
-
-
-def test_upload_opportunities_wrong_duration(
-    opportunity_model, database, app, dummy_data
-):
-    """Test upload opportunities with wrong duration"""
-    assert len(database.get_all("opportunities")) == 0
-    dummy_data["Duration"] = ["1_week", "invalid"]
-
-    df = pd.DataFrame(dummy_data)
-    file = BytesIO()
-    df.to_excel(file, index=False)
-    file.seek(0)
-    with app.app_context():
-        with app.test_request_context():
-            response = opportunity_model.upload_opportunities(file, is_admin=True)
-            assert response[1] == 400
+            assert "Invalid spots available value" in response[0].json["error"]

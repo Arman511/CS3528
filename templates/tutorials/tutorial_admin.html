@@ -2,7 +2,7 @@
 {% block content %}
   {% include "user/navbar.html" %}
   <!-- Central Padding -->
-  <div>
+  <div class="card-wrapper">
     <div class="container-fluid">
       <div class="row">
         <!-- Sidebar: Lists sections of the tutorial -->
@@ -199,7 +199,7 @@
         </div>
         <!-- Main Content: Single card wrapping all tutorial sections -->
         <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
-        <main class="col-12 col-md-9 offset-md-3"
+        <main class="col-12 col-md-9 offset-md-3 tutorial-content"
               data-bs-spy="scroll"
               data-bs-target="#section-nav"
               data-bs-offset="100"
@@ -249,7 +249,7 @@
                 <p>
                   Conversely, instead of bulk adding students details in bulk. We can individually enter information on a per student basis.
                 </p>
-                On selection, you'll be presended with a card view. Within this view we can enter details about specific students.
+                On selection, you'll be presented with a card view. Within this view we can enter details about specific students.
                 <ul class="listed-unstyled">
                   <li>Student Number</li>
                   <li>First Name</li>
@@ -369,7 +369,7 @@
                     <li>Update</li>
                     <li>Delete</li>
                   </ul>
-                  Update: Upon selection, you will be forwarded to a card view containing the information of the given placement. From here you can update relevent details, such as:
+                  Update: Upon selection, you will be forwarded to a card view containing the information of the given placement. From here you can update relevant details, such as:
                   <div class="container">
                     <div class="row">
                       <div class="col-md-4">
@@ -415,7 +415,7 @@
                 <p>
                   Conversely, instead of bulk adding students details in bulk. We can individually enter information on a per student basis.
                 </p>
-                On selection, you'll be presended with a card view. Within this view we can enter details about specific students.
+                On selection, you'll be presented with a card view. Within this view we can enter details about specific students.
                 <ul class="listed-unstyled">
                   <li>Student Number</li>
                   <li>First Name</li>
@@ -508,7 +508,7 @@
               <section id="section17" class="mb-4">
                 <h3>Download All Employer</h3>
                 <p>
-                  Upon selection, it will automatically download a spreadsheet containing infortmation stored of all saved employers.
+                  Upon selection, it will automatically download a spreadsheet containing information stored of all saved employers.
                 </p>
               </section>
             </div>
@@ -556,7 +556,7 @@
                   spreadsheet will be uploaded to SkillPilot.
                 </p>
                 <p>
-                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                  A template is available to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
                 </p>
               </section>
               <hr>
@@ -636,7 +636,7 @@
                   spreadsheet will be uploaded to SkillPilot.
                 </p>
                 <p>
-                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                  A template is available to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
                 </p>
               </section>
               <section id="section25" class="mb-4">
@@ -674,7 +674,7 @@
               <section id="section28" class="mb-4">
                 <h3>Search Skill</h3>
                 <p>
-                  Upon selecting the 'Skills' section of the menu bar, you will be taken to the seach skills screen. From here you will see two input boxes
+                  Upon selecting the 'Skills' section of the menu bar, you will be taken to the search skills screen. From here you will see two input boxes
                   contained within a card view. By entering information in the corresponding input boxes, it allows us to locate specific skills.
                 </p>
                 <p>
@@ -730,7 +730,7 @@
                 </ul>
                 <p>The below list will dynamically adjust, showing any matching skills in the below 'Attempted Skills' card.</p>
                 <p>
-                  A template is availble to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
+                  A template is available to download by selecting the 'Download Template' button, that can be added with course information and later uploaded using the above process.
                 </p>
               </section>
               <hr>
@@ -761,14 +761,14 @@
               <hr>
               <section id="section32" class="mb-4">
                 <h3>Delete All Skills</h3>
-                <p>By selecting this button, all skills saved on the SkillsPilot platform will be permenantly deleted.</p>
+                <p>By selecting this button, all skills saved on the SkillsPilot platform will be permanently deleted.</p>
                 <p class="text-danger">This is irreversible.</p>
               </section>
               <hr>
               <section id="section33" class="mb-4">
                 <h3>Delete All Attempted Skills</h3>
                 <p>
-                  By selecting this button, all skills requested to be added to the SkillsPilot platform, but applying students, will be permenantly deleted.
+                  By selecting this button, all skills requested to be added to the SkillsPilot platform, but applying students, will be permanently deleted.
                 </p>
                 <p class="text-danger">This is irreversible.</p>
               </section>
@@ -860,5 +860,5 @@
       </main>
     </div>
   </div>
-  <script>document.title = "Tutorial";</script>
+  <script>document.title = "Tutorial - Admins";</script>
 {% endblock content %}

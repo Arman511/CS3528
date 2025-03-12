@@ -1,37 +1,62 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let submit_button = document.getElementById("submit-students");
-    let opportunity_id = document.getElementById("opp_id").textContent;
-    submit_button.addEventListener("click", async function () {
-        let all_ranks = document.getElementsByClassName("student-rank");
-        let ranks = [];
-        for (let i = 0; i < all_ranks.length; i++) {
-            if (all_ranks[i].value === "") {
-                continue;
-            }
-            ranks.push([all_ranks[i].value, all_ranks[i].id]);
-        }
-        ranks = ranks.sort((a, b) => a[0] - b[0]);
-        let actual_ranks = [];
-        for (let i = 0; i < ranks.length; i++) {
-            actual_ranks.push(ranks[i][1]);
-        }
+	const rankSelects = document.querySelectorAll('.student-rank');
 
-        let formData = new FormData();
-        formData.append("ranks", actual_ranks);
-        try {
-            const response = await fetch(
-                `/employers/rank_students?opportunity_id=${opportunity_id}`,
-                {
-                    method: "POST",
-                    body: formData,
-                }
-            );
-            if (!response.ok) {
-                throw new Error("An error occurred");
-            }
-            window.location.href = "/opportunities/search";
-        } catch (error) {
-            alert("An error occurred. Please try again later");
-        }
-    });
+	rankSelects.forEach(select => {
+		select.addEventListener('change', function () {
+			const selectedValue = this.value;
+
+			rankSelects.forEach(otherSelect => {
+				if (otherSelect !== this && otherSelect.value === selectedValue) {
+					this.value = '';
+					alert('You can only rank each student once');
+				}
+			});
+		});
+	});
+
+	// Handle form submission
+	const submitButton = document.getElementById("submit-students");
+	const opportunityId = document.getElementById("opp_id").textContent;
+
+	submitButton.addEventListener("click", async function () {
+		const allRanks = document.getElementsByClassName("student-rank");
+		let ranks = [];
+
+		for (let i = 0; i < allRanks.length; i++) {
+			if (allRanks[i].value !== "") {
+				ranks.push([allRanks[i].value, allRanks[i].id]);
+			}
+		}
+
+		ranks.sort((a, b) => a[0] - b[0]);
+		const actualRanks = ranks.map(rank => rank[1]);
+
+		const formData = new FormData();
+		formData.append("ranks", JSON.stringify(actualRanks));
+
+		try {
+			const response = await fetch(
+				`/employers/rank_students?opportunity_id=${opportunityId}`,
+				{
+					method: "POST",
+					body: formData,
+				}
+			);
+			if (!response.ok) {
+				throw new Error("An error occurred");
+			}
+			window.location.href = "/opportunities/search";
+		} catch (error) {
+			alert("An error occurred. Please try again later");
+		}
+	});
 });
+
+// ✅ Fix toggleText function
+function toggleText(btn, target) {
+	const element = document.querySelector(target);
+	if (element) {
+		element.classList.toggle('show');
+		btn.textContent = element.classList.contains('show') ? 'Show Less' : 'Show More';
+	}
+}

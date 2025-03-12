@@ -2,7 +2,7 @@
 Opportunity model.
 """
 
-import os
+import tempfile
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
@@ -337,16 +337,13 @@ class Opportunity:
             opportunities_data.append(opportunity_data)
 
         df = pd.DataFrame(opportunities_data)
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/opportunities.xlsx"
-        else:
-            file_path = "/tmp/opportunities.xlsx"
-        df.to_excel(file_path, index=False)
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as temp_file:
+            df.to_excel(temp_file.name, index=False)
+            temp_file_path = temp_file.name
 
-        return send_file(
-            file_path, as_attachment=True, download_name="opportunities.xlsx"
-        )
+            return send_file(
+                temp_file_path, as_attachment=True, download_name="opportunities.xlsx"
+            )
 
     def upload_opportunities(self, file, is_admin):
         """Upload opportunities from an Excel file."""
@@ -373,21 +370,17 @@ class Opportunity:
                     "title": opportunity["Title"],
                     "description": opportunity["Description"],
                     "url": opportunity["URL"],
-                    "spots_available": opportunity["Spots_available"],
+                    "spots_available": int(opportunity["Spots_available"]),
                     "location": opportunity["Location"],
                     "duration": opportunity["Duration"],
                 }
 
-                try:
-                    temp["spots_available"] = int(temp["spots_available"])
-                except Exception:
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Invalid spots available value in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
+                if (
+                    not isinstance(temp["spots_available"], int)
+                    or temp["spots_available"] < 1
+                ):
+                    raise ValueError(
+                        f"Invalid spots available value in opportunity: {temp['title']}, row {i+2}"
                     )
                 if is_admin:
                     employer_id = email_to_employers_map.get(
@@ -396,25 +389,17 @@ class Opportunity:
                     if employer_id:
                         temp["employer_id"] = employer_id
                     else:
-                        return (
-                            jsonify(
-                                {
-                                    "error": f"Employer email {opportunity['Employer_email']} not found in database at row {i+2}"
-                                }
-                            ),
-                            400,
+                        raise ValueError(
+                            f"Employer email {opportunity['Employer_email']} not found "
+                            f"in database at row {i+2}"
                         )
                 else:
                     temp["employer_id"] = session["employer"]["_id"]
 
                 if not temp["duration"]:
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Duration is required and cannot be empty in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Duration is required and cannot be empty in opportunity: "
+                        f"{temp['title']}, row {i+2}"
                     )
                 if temp["duration"] not in set(
                     [
@@ -426,13 +411,8 @@ class Opportunity:
                         "12_months",
                     ]
                 ):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Invalid duration value in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Invalid duration value in opportunity: {temp['title']}, row {i+2}"
                     )
                 modules_required_string = opportunity["Modules_required"]
                 if not isinstance(modules_required_string, str):
@@ -457,60 +437,28 @@ class Opportunity:
                     ]
 
                 if not set(temp["modules_required"]).issubset(modules):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Invalid module(s) in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Invalid module(s) in opportunity: {temp['title']}, row {i+2}"
                     )
                 if not set(temp["courses_required"]).issubset(courses):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Invalid course(s) in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Invalid course(s) in opportunity: {temp['title']}, row {i+2}"
                     )
                 if not isinstance(temp["title"], str) or not temp["title"].strip():
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Title is required and cannot be empty in opportunity at row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Title is required and cannot be empty in opportunity at row {i+2}"
                     )
                 if (
                     not isinstance(temp["description"], str)
                     or not temp["description"].strip()
                 ):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Description is required and cannot be empty in opportunity at row {i+2}"
-                            }
-                        ),
-                        400,
+                    raise ValueError(
+                        f"Description is required and cannot be empty in opportunity at row {i+2}"
                     )
                 if not isinstance(temp["location"], str):
                     temp["location"] = ""
                 if not isinstance(temp["url"], str):
                     temp["url"] = ""
-                if (
-                    not isinstance(temp["spots_available"], int)
-                    or temp["spots_available"] < 1
-                ):
-                    return (
-                        jsonify(
-                            {
-                                "error": f"Spots available must be at least 1 in opportunity: {temp['title']}, row {i+2}"
-                            }
-                        ),
-                        400,
-                    )
 
                 temp["title"] = temp["title"].strip()
                 temp["description"] = temp["description"].strip()
@@ -525,10 +473,11 @@ class Opportunity:
 
                 clean_data.append(temp)
 
-            DATABASE_MANAGER.insert_many("opportunities", clean_data)
+            if clean_data:
+                DATABASE_MANAGER.insert_many("opportunities", clean_data)
 
             return jsonify({"message": "Opportunities uploaded successfully"}), 200
 
         except Exception as e:
             print(f"[ERROR] Failed to upload opportunities: {e}")
-            return jsonify({"error": "Failed to upload opportunities"}), 500
+            return jsonify({"error": f"Failed to upload opportunities: {e}"}), 400

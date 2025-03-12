@@ -5,6 +5,7 @@ from flask import session, jsonify
 
 
 class Superuser:
+    """A class used to represent a Superuser and handle superuser-related"""
 
     def login(self, attempt_user):
         """Validates user credentials and returns a JSON response indicating

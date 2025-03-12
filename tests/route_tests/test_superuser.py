@@ -5,13 +5,13 @@
 
 import os
 import sys
+import pytest
+from dotenv import load_dotenv
 
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-import pytest
-from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -33,14 +33,14 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    yield DATABASE
+    yield database
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -65,7 +65,7 @@ def superuser_logged_in_client(client, database: DatabaseMongoManager):
     yield client
 
 
-def test_login(client, database):
+def test_login(client):
     """Test logging in a user."""
     attempt_user = {
         "email": os.getenv("SUPERUSER_EMAIL"),

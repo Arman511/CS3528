@@ -16,7 +16,7 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-from flask_compress import Compress
+from flask_compress import Compress  # type: ignore
 from core import routes_debug
 from user import routes_user
 from students import routes_student
@@ -43,9 +43,9 @@ def login_required(f):
     def wrap(*args, **kwargs):
         if "logged_in" in session:
             return f(*args, **kwargs)
-        elif "superuser" in session:
+        if "superuser" in session:
             return redirect("/user/search")
-        elif "employer_logged_in" in session:
+        if "employer_logged_in" in session:
             return redirect("/employers/home")
         return redirect("/")
 
@@ -53,6 +53,7 @@ def login_required(f):
 
 
 def is_admin():
+    """Check if the user is an admin."""
     return session.get("logged_in") is not None
 
 
@@ -65,11 +66,11 @@ def student_login_required(f):
     def wrap(*args, **kwargs):
         if "student_logged_in" in session:
             return f(*args, **kwargs)
-        elif "employer_logged_in" in session:
+        if "employer_logged_in" in session:
             return redirect("/employers/home")
-        elif "superuser" in session:
+        if "superuser" in session:
             return redirect("/user/search")
-        elif "logged_in" in session:
+        if "logged_in" in session:
             return redirect("/user/home")
         return redirect("/")
 
@@ -86,9 +87,9 @@ def employers_login_required(f):
         if "employer_logged_in" in session:
             employer = session.get("employer")
             return f(employer, *args, **kwargs)
-        elif "superuser" in session:
+        if "superuser" in session:
             return redirect("/user/search")
-        elif "logged_in" in session:
+        if "logged_in" in session:
             return redirect("/user/home")
 
         return redirect("/employers/login")
@@ -105,7 +106,7 @@ def admin_or_employers_required(f):
     def wrap(*args, **kwargs):
         if "employer_logged_in" in session or "logged_in" in session:
             return f(*args, **kwargs)
-        elif "superuser" in session:
+        if "superuser" in session:
             return redirect("/user/search")
         return redirect("/")
 
@@ -127,26 +128,26 @@ def superuser_required(f):
 
 
 def get_user_type():
+    """Get the user type from the session data."""
     user = session.get("user")
     employer = session.get("employer")
     student = session.get("student")
     superuser = session.get("superuser")
 
+    user_type = None
     # Determine user_type based on session data
-    if user:
+    if superuser:
+        user_type = "superuser"
+    elif user:
         user_type = "admin"
     elif employer:
         user_type = "employer"
     elif student:
         user_type = "student"
-    elif superuser:
-        user_type = "superuser"
-    else:
-        user_type = None
     return user_type
 
 
-def configure_routes(app, cache: Cache, compress: Compress):
+def configure_routes(app, cache: Cache, _compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -166,17 +167,16 @@ def configure_routes(app, cache: Cache, compress: Compress):
 
     @app.route("/landing_page")
     @app.route("/")
-    @cache.cached(timeout=0)
     def index():
         """The home route which renders the 'landing_page.html' template."""
         user = get_user_type()
         if user == "student":
             return redirect("/students/login")
-        elif user == "employer":
+        if user == "employer":
             return redirect("/employers/home")
-        elif user == "admin":
+        if user == "admin":
             return redirect("/user/home")
-        elif user == "superuser":
+        if user == "superuser":
             return redirect("/superuser/home")
         return render_template("landing_page.html")
 
@@ -263,13 +263,13 @@ def configure_routes(app, cache: Cache, compress: Compress):
 
         if user_type == "admin":
             return render_template("tutorials/tutorial_admin.html", user_type="admin")
-        elif user_type == "employer":
+        if user_type == "employer":
             return render_template(
                 "tutorials/tutorial_employer.html", user_type="employer"
             )
-        elif user_type == "student":
+        if user_type == "student":
             return render_template("tutorials/tutorial_student.html")
-        elif user_type == "superuser":
+        if user_type == "superuser":
             return render_template(
                 "tutorials/tutorial_superuser.html", user_type="superuser"
             )
@@ -321,11 +321,11 @@ def configure_routes(app, cache: Cache, compress: Compress):
 
     @app.after_request
     def add_cache_control_and_headers(response):
-        if (
-            response.content_type == "text/css"
-            or response.content_type == "application/javascript"
-            or response.content_type == "application/font-woff2"
-        ):
+        if response.content_type in {
+            "text/css",
+            "application/javascript",
+            "application/font-woff2",
+        }:
             response.cache_control.max_age = 3600
         elif "image" in response.content_type:
             response.cache_control.max_age = 31536000

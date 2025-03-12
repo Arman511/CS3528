@@ -1,29 +1,215 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "employer/navbar.html" %}
-    <div class="card-wrapper">
-        <div class="card">
-            <h1 class="center">Tutorial</h1>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
-            <h2>User Management</h2>
-            <ul>
-                <li>
-                    <a href="#login-card">Login</a>
+  {% include "employers/navbar.html" %}
+  <!-- Central Padding -->
+  <div class="card-wrapper">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Employer Tutorial</h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section1">Login</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="toggle-collapse"
+                 data-bs-toggle="collapse"
+                 href="#adminCollapse1"
+                 role="button">Placement Management</a>
+            </h2>
+            <div class="collapse" id="adminCollapse1">
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <a class="nav-link" href="#section2">Search Placement</a>
                 </li>
-            </ul>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section3">Adding Placement</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section4">Updating Placement</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section5">Rank Students</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section6">Download Placements</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#section7">Delete Placements</a>
+                </li>
+              </ul>
+            </div>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section8">Matching</a>
+            </h2>
+          </nav>
         </div>
-        <div class="card" id="login-card">
-            <h1 class="center">Login Tutorial</h1>
-            <p>
-                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
-                <br>
-                Once you click on the "Login" button, you will be redirected to the login for placement teams.
-                <br>
-                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
-                <br>
-                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
-            </p>
+        <!-- Main Content: Single card wrapping all tutorial sections -->
+        <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+        <main class="col-12 col-md-9 offset-md-3 tutorial-content"
+              data-bs-spy="scroll"
+              data-bs-target="#section-nav"
+              data-bs-offset="100"
+              tabindex="0">
+          <div class="card">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section1" class="mb-4">
+                <h3>Login</h3>
+                <p>The university placement team manage all employer accounts. They will create an account on your behalf.</p>
+                <p>
+                  Once you have been notified by the university that your account has been created, at the employer <a href="{{ url_for("employer_login") }}">login</a> section of the webpage please enter your email in the corresponding input box.
+                </p>
+                <p>After which a unique numerical 'one-time passcode' will be sent to your employer email address.</p>
+                <p>A modal will then appear, with an input box where you enter the code.</p>
+                <p>
+                  If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.
+                </p>
+              </section>
+            </div>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <section id="section2" class="mb-4">
+                <h3>Search Placement</h3>
+                <p>
+                  To access your placements, select the <a href="{{ url_for("search_opportunities") }}">'Search Opportunity'</a> button on the navbar.
+                </p>
+                <p>This will take you to a page that will list all your placements that are currently in the database.</p>
+                <p>You search by the placement title.</p>
+                <p>To the right of each individual placement are two buttons:</p>
+                <ul class="listed-unstyled">
+                  <li>Rank</li>
+                  <li>Update</li>
+                  <li>Delete</li>
+                </ul>
+                <p>The fields shown are:</p>
+                <ul>
+                  <li>Title</li>
+                  <li>Description</li>
+                  <li>Company Name</li>
+                  <li>URL</li>
+                  <li>Location</li>
+                  <li>Courses Required</li>
+                  <li>Modules Required</li>
+                  <li>Spots Available</li>
+                  <li>Duration</li>
+                  <li>Actions</li>
+                </ul>
+              </section>
+              <!-- Each section has its own id -->
+              <section id="section3" class="mb-4">
+                <h3>Placement Adding</h3>
+                <p>
+                  Before the Details deadline passing when you select the <a href="{{ url_for("employer_add_update_opportunity") }}">'Add Opportunity'</a> button on the navbar, you will be taken to a page that will ask for:
+                </p>
+                <ul>
+                  <li>Placement Title</li>
+                  <li>Placement Description</li>
+                  <li>Placement URL</li>
+                  <li>Placement Location</li>
+                  <li>Prerequisite Course Codes</li>
+                  <li>Available Placement Positions</li>
+                  <li>Duration of Placement</li>
+                  <li>Required Modules</li>
+                </ul>
+                <p>After entering the above information, press the 'Add/Update' button to save the placement to the database.</p>
+              </section>
+              <hr>
+              <section id="section4" class="mb-4">
+                <h3>Updating Placement</h3>
+                <p>
+                  Before the Details deadline passing when you select the <a href="{{ url_for("search_opportunities") }}">'Search Opportunity'</a> button on the navbar, you will be taken to a page that will list all your placements that are currently in the database.
+                </p>
+                <p>
+                  To update a placement, select the 'Update' button to the right of the placement you wish to update. You will be taken to a page that will ask for:
+                </p>
+                <p>The placement details will be displayed in the following format:</p>
+                <ul>
+                  <li>Placement Title</li>
+                  <li>Placement Description</li>
+                  <li>Placement URL</li>
+                  <li>Placement Location</li>
+                  <li>Prerequisite Course Codes</li>
+                  <li>Available Placement Positions</li>
+                  <li>Duration of Placement</li>
+                  <li>Required Modules</li>
+                </ul>
+                <p>After entering the above information, press the 'Add/Update' button to save the placement to the database.</p>
+                <p>
+                  All of the above information is editable, except the unique ID of the placement. Ensure after changes to select the 'Add/Update' button to save any changes.
+                </p>
+              </section>
+              <hr>
+              <section id="section5" class="mb-4">
+                <h3>Rank Students</h3>
+                <p>
+                  After the students have given their preferences then when you select the <a href="{{ url_for("search_opportunities") }}">'Search Opportunity'</a> button on the navbar, you will be taken to a page that will list all your placements that are currently in the database.
+                </p>
+                <p>
+                  To rank students for a placement, select the 'Rank' button to the right of the placement you wish to rank students for. You will be taken to a page that will show an anonymised list all students that have applied for the placement.
+                </p>
+                <p>
+                  To give your preference, read each students details and select their preference in the box at the bottom of the students card. After you have ranked the students that you want to rank, press the 'Submit' button to save the rankings to the database.
+                </p>
+              </section>
+              <hr>
+              <section id="section6" class="mb-4">
+                <h3>Download All Placements</h3>
+                <p>
+                  By selecting this section, an excel file will download containing the information of all your saved placements. In the format of:
+                </p>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-3">
+                      <ul>
+                        <li>Title</li>
+                        <li>Description</li>
+                        <li>URL</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-3">
+                      <ul>
+                        <li>Location</li>
+                        <li>Modules Required</li>
+                        <li>Courses Required</li>
+                      </ul>
+                    </div>
+                    <div class="col-md-3">
+                      <ul>
+                        <li>Spots Available</li>
+                        <li>Duration</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <hr>
+            <section id="section8" class="mb-4">
+              <h3>Delete All Placements</h3>
+              <p>This will remove all your stored placements.</p>
+              <p class="text-danger">This is irreversible.</p>
+            </section>
+          </div>
+          <div class="card mt-5">
+            <div class="card-body">
+              <!-- Each section has its own id -->
+              <section id="section8" class="mb-4">
+                <h3>Matching</h3>
+                <p>
+                  After the Matching Deadline, you will be sent an placement based on your preferences and the students' preferences. You will be notified of the placement via email.
+                </p>
+                <p>
+                  If you are not happy with your placement or have any further queries, you can contact the placement team to discuss your options.
+                </p>
+              </section>
+            </div>
+          </div>
         </div>
-    </div>
-    <script>document.title = "Tutorial";</script>
+      </div>
+    </main>
+  </div>
+  <script>document.title = "Tutorial - Employer";</script>
 {% endblock content %}

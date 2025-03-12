@@ -1,12 +1,11 @@
 """Employer model."""
 
 from datetime import datetime, timedelta
-import os
+import tempfile
 import time
 import uuid
-from flask import redirect, jsonify, session
+from flask import redirect, jsonify, session, send_file
 import pandas as pd
-from flask import send_file
 from core import email_handler
 
 employers_cache = {"data": None, "last_updated": None}
@@ -187,16 +186,13 @@ class Employers:
         # Convert employers to DataFrame
         df = pd.DataFrame(employers)
 
-        # Save DataFrame to Excel file
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/employers.xlsx"
-        else:
-            file_path = "/tmp/employers.xlsx"
-        df.to_excel(file_path, index=False)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmp_path = tmp.name
 
-        # Send the file
-        return send_file(file_path, as_attachment=True, download_name="employers.xlsx")
+            return send_file(
+                tmp_path, as_attachment=True, download_name="employers.xlsx"
+            )
 
     def upload_employers(self, file):
         """Uploads employers."""
@@ -239,21 +235,21 @@ class Employers:
                     ),
                     400,
                 )
-            elif temp["email"].lower() in current_employer_emails:
+            if temp["email"].lower() in current_employer_emails:
                 return (
                     jsonify(
                         {"error": f"Email {temp['email']} already exists as row {i+2}"}
                     ),
                     400,
                 )
-            elif temp["email"].lower() in emails:
+            if temp["email"].lower() in emails:
                 return (
                     jsonify(
                         {"error": f"Email {temp['email']} already exists as row {i+2}"}
                     ),
                     400,
                 )
-            elif temp["company_name"].lower() in company_names:
+            if temp["company_name"].lower() in company_names:
                 return (
                     jsonify(
                         {

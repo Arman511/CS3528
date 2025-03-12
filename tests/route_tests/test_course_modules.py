@@ -34,18 +34,18 @@ def client():
 @pytest.fixture()
 def database():
     """Fixture to create a test database."""
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    modules = DATABASE.get_all("modules")
-    DATABASE.delete_all("modules")
-    yield DATABASE
-    DATABASE.delete_all("modules")
+    modules = database.get_all("modules")
+    database.delete_all("modules")
+    yield database
+    database.delete_all("modules")
     if modules:
-        DATABASE.insert_many("modules", modules)
+        database.insert_many("modules", modules)
 
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
