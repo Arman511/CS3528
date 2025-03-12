@@ -6,10 +6,10 @@
 import os
 import sys
 import uuid
+from unittest.mock import patch
 from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
-from unittest.mock import patch
 
 # Add the root directory to the Python path
 sys.path.append(
@@ -36,19 +36,19 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    deadlines = DATABASE.get_all("deadline")
-    DATABASE.delete_all("deadline")
-    yield DATABASE
+    deadlines = database.get_all("deadline")
+    database.delete_all("deadline")
+    yield database
 
-    DATABASE.delete_all("deadline")
+    database.delete_all("deadline")
     for deadline in deadlines:
-        DATABASE.insert("deadline", deadline)
+        database.insert("deadline", deadline)
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()

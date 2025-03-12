@@ -35,17 +35,17 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    yield DATABASE
+    yield database
 
     # Cleanup code
-    DATABASE.delete_all_by_field("courses", "course_id", "CS101")
-    DATABASE.delete_all_by_field("courses", "course_id", "CS102")
+    database.delete_all_by_field("courses", "course_id", "CS101")
+    database.delete_all_by_field("courses", "course_id", "CS102")
 
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()

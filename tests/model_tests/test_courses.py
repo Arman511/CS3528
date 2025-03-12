@@ -6,9 +6,9 @@
 import os
 import sys
 import uuid
+from io import BytesIO
 import pytest
 from dotenv import load_dotenv
-from io import BytesIO
 import pandas as pd
 
 
@@ -36,20 +36,20 @@ def app():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    courses = DATABASE.get_all("courses")
-    DATABASE.delete_all("courses")
-    yield DATABASE
+    courses = database.get_all("courses")
+    database.delete_all("courses")
+    yield database
 
     for course in courses:
-        DATABASE.insert("courses", course)
-    DATABASE.delete_all_by_field("users", "email", "dummy@dummy.com")
-    DATABASE.delete_all_by_field("courses", "course_id", "CS101")
+        database.insert("courses", course)
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
+    database.delete_all_by_field("courses", "course_id", "CS101")
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -322,8 +322,8 @@ def test_download_all_courses(database, course_model, sample_course, app):
 
 
 def test_upload_course_data(database, course_model, app):
-    database.delete_all_by_field("courses", "course_id", "CS102")
     """Test uploading course data from an Excel file."""
+    database.delete_all_by_field("courses", "course_id", "CS102")
     df = pd.DataFrame(
         [
             {

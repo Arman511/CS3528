@@ -40,23 +40,23 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    current_students = DATABASE.get_all("students")
-    DATABASE.delete_all("students")
-    opportunities = DATABASE.get_all("opportunities")
-    DATABASE.delete_all("opportunities")
-    yield DATABASE
-    DATABASE.delete_all("students")
+    current_students = database.get_all("students")
+    database.delete_all("students")
+    opportunities = database.get_all("opportunities")
+    database.delete_all("opportunities")
+    yield database
+    database.delete_all("students")
     for student in current_students:
-        DATABASE.insert("students", student)
-    DATABASE.delete_all("opportunities")
+        database.insert("students", student)
+    database.delete_all("opportunities")
     for opportunity in opportunities:
-        DATABASE.insert("opportunities", opportunity)
+        database.insert("opportunities", opportunity)
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 def test_add_student_success(app, database):
@@ -85,7 +85,7 @@ def test_add_student_success(app, database):
 
 
 def test_add_student_no_id(app, database):
-
+    """Test adding a student with no id."""
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
@@ -522,7 +522,7 @@ def test_delete_student_by_id_opportunities(app, database):
     }
     database.insert("opportunities", opportunity2)
 
-    with patch("app.DATABASE_MANAGER.update_one_by_id") as mock_update:
+    with patch("app.DATABASE_MANAGER.update_one_by_id"):
         with app.app_context():
             response = Student().delete_student_by_id("123")
             json_response = response[0].get_json()
@@ -894,6 +894,7 @@ def test_get_opportunities_by_student(app, database):
 
 
 def test_get_opportunities_by_student_invalid(app, database):
+    """Test getting opportunities by student with an invalid student"""
     from students.models import Student
 
     database.delete_all_by_field("students", "email", "dummy@dummy.com")

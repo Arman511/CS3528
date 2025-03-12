@@ -43,11 +43,11 @@ def user_model():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
-    yield DATABASE
+    yield database
 
     tables = [
         "users",
@@ -56,10 +56,10 @@ def database():
     ]
 
     for table in tables:
-        DATABASE.delete_all_by_field(table, "email", "dummy@dummy.com")
+        database.delete_all_by_field(table, "email", "dummy@dummy.com")
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 def test_start_session(app, user_model):

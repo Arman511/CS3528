@@ -2,7 +2,6 @@
 This module defines the User class which handles user authentication and session management.
 """
 
-import os
 import tempfile
 import time
 import uuid

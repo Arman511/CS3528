@@ -37,7 +37,7 @@ jobs:
 
       - name: Lint with pylint
         run: |
-          pylint --disable=W1203,W0621,C0415 --exit-zero .
+          pylint --disable=W1203,W0621,C0415,R0801,C0413 --exit-zero .
 
   test:
     runs-on: ubuntu-latest

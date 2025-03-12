@@ -36,19 +36,19 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    deadlines = DATABASE.get_all("deadline")
-    DATABASE.delete_all("deadline")
-    yield DATABASE
+    deadlines = database.get_all("deadline")
+    database.delete_all("deadline")
+    yield database
 
-    DATABASE.delete_all("deadline")
+    database.delete_all("deadline")
     for deadline in deadlines:
-        DATABASE.insert("deadline", deadline)
+        database.insert("deadline", deadline)
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -223,7 +223,7 @@ def test_employers_rank_students_past_student_ranking_deadline(
     database.delete_all_by_field("opportunities", "_id", "123")
 
 
-def test_employer_update_opportunity(employer_logged_in_client, database):
+def test_employer_update_opportunity(employer_logged_in_client):
     """Test the employer_update_opportunity page."""
     url = "/opportunities/employer_add_update_opportunity"
 
