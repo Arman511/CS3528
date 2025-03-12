@@ -3,6 +3,7 @@ Courses model."""
 
 from datetime import datetime, timedelta
 import os
+import tempfile
 import uuid
 from flask import jsonify, send_file
 import pandas as pd
@@ -224,23 +225,25 @@ class Course:
         # Create a DataFrame from the courses
         df = pd.DataFrame(courses)
 
-        # Define the file path
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/courses.xlsx"
-        else:
-            os.makedirs("/tmp", exist_ok=True)
-            file_path = "/tmp/courses.xlsx"
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as temp_file:
+            file_path = temp_file.name
 
-        # Save the DataFrame to an Excel file
-        df.to_excel(
-            file_path,
-            index=False,
-            columns=["UCAS_code", "Course_name", "Qualification", "Course_description"],
-        )
+            # Save the DataFrame to the temporary Excel file
+            df.to_excel(
+                file_path,
+                index=False,
+                columns=[
+                    "UCAS_code",
+                    "Course_name",
+                    "Qualification",
+                    "Course_description",
+                ],
+            )
 
-        # Send the file as an attachment
-        return send_file(file_path, download_name="courses.xlsx", as_attachment=True)
+            # Send the file as an attachment
+            return send_file(
+                file_path, download_name="courses.xlsx", as_attachment=True
+            )
 
     def upload_course_data(self, file):
         """Add courses from an Excel file."""

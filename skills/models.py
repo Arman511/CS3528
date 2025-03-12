@@ -3,6 +3,7 @@ Skills model.
 """
 
 import os
+import tempfile
 import uuid
 from flask import jsonify, send_file
 import pandas as pd
@@ -241,15 +242,11 @@ class Skill:
 
         df = pd.DataFrame(clean_data)
 
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            tmpFile = "temp/skills.xlsx"
-        else:
-            tmpFile = "/tmp/skills.xlsx"
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmpFile = tmp.name
 
-        df.to_excel(tmpFile, index=False)
-
-        return send_file(tmpFile, as_attachment=True, download_name="skills.xlsx")
+            return send_file(tmpFile, as_attachment=True, download_name="skills.xlsx")
 
     def download_attempted(self):
         """Returns a xlsx file with all attempted skills"""
@@ -268,14 +265,13 @@ class Skill:
             clean_data.append(temp)
 
         df = pd.DataFrame(clean_data)
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmpFile = tmp.name
 
-        tmpFile = "/tmp/attempted_skills.xlsx"
-
-        df.to_excel(tmpFile, index=False)
-
-        return send_file(
-            tmpFile, as_attachment=True, download_name="attempted_skills.xlsx"
-        )
+            return send_file(
+                tmpFile, as_attachment=True, download_name="attempted_skills.xlsx"
+            )
 
     def upload_skills(self, file):
         """Upload skills"""

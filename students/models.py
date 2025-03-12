@@ -3,6 +3,7 @@ This module defines the User class which handles user authentication and session
 """
 
 import os
+import tempfile
 import time
 import uuid
 from flask import jsonify, send_file, session
@@ -318,15 +319,13 @@ class Student:
 
         df = pd.DataFrame(clean_data)
 
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            tmp_file = "temp/students.xlsx"
-        else:
-            tmp_file = "/tmp/students.xlsx"
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp_file:
+            df.to_excel(tmp_file.name, index=False)
+            tmp_file_path = tmp_file.name
 
-        df.to_excel(tmp_file, index=False)
-
-        return send_file(tmp_file, as_attachment=True, download_name="students.xlsx")
+            return send_file(
+                tmp_file_path, as_attachment=True, download_name="students.xlsx"
+            )
 
     def delete_all_students(self):
         """Delete all students."""

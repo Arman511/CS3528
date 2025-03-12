@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 import os
+import tempfile
 import time
 import uuid
 from flask import redirect, jsonify, session
@@ -187,16 +188,13 @@ class Employers:
         # Convert employers to DataFrame
         df = pd.DataFrame(employers)
 
-        # Save DataFrame to Excel file
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/employers.xlsx"
-        else:
-            file_path = "/tmp/employers.xlsx"
-        df.to_excel(file_path, index=False)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmp_path = tmp.name
 
-        # Send the file
-        return send_file(file_path, as_attachment=True, download_name="employers.xlsx")
+            return send_file(
+                tmp_path, as_attachment=True, download_name="employers.xlsx"
+            )
 
     def upload_employers(self, file):
         """Uploads employers."""

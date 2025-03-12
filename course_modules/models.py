@@ -4,6 +4,7 @@ Course module model.
 
 from datetime import datetime, timedelta
 import os
+import tempfile
 import uuid
 import pandas as pd
 from flask import send_file, jsonify
@@ -264,23 +265,20 @@ class Module:
         # Create a DataFrame from the modules
         df = pd.DataFrame(modules)
 
-        # Define the file path
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = os.path.join("temp", "modules.xlsx")
-        else:  # For Unix-like systems
-            file_path = "/tmp/modules.xlsx"
-
+        # Use tempfile to create a temporary file
         df.drop(columns=["_id"], inplace=True)
-        # Save the DataFrame to an Excel file
-        df.to_excel(
-            file_path,
-            index=False,
-            header=["Module_id", "Module_name", "Module_description"],
-        )
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as tmp:
+            file_path = tmp.name
+            # Save the DataFrame to an Excel file
+            df.to_excel(
+                file_path,
+                index=False,
+                header=["Module_id", "Module_name", "Module_description"],
+            )
 
-        # Send the file as an attachment
-        return send_file(file_path, download_name="modules.xlsx", as_attachment=True)
+            return send_file(
+                file_path, download_name="modules.xlsx", as_attachment=True
+            )
 
     def upload_course_modules(self, file):
         """Add course modules from an Excel file."""

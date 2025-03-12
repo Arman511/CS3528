@@ -3,6 +3,7 @@ Opportunity model.
 """
 
 import os
+import tempfile
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
@@ -337,16 +338,13 @@ class Opportunity:
             opportunities_data.append(opportunity_data)
 
         df = pd.DataFrame(opportunities_data)
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/opportunities.xlsx"
-        else:
-            file_path = "/tmp/opportunities.xlsx"
-        df.to_excel(file_path, index=False)
+        with tempfile.NamedTemporaryFile(suffix=".xlsx") as temp_file:
+            df.to_excel(temp_file.name, index=False)
+            temp_file_path = temp_file.name
 
-        return send_file(
-            file_path, as_attachment=True, download_name="opportunities.xlsx"
-        )
+            return send_file(
+                temp_file_path, as_attachment=True, download_name="opportunities.xlsx"
+            )
 
     def upload_opportunities(self, file, is_admin):
         """Upload opportunities from an Excel file."""
