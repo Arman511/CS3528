@@ -488,8 +488,8 @@ def test_delete_student_by_id_opportunities(app, database):
     database.delete_all_by_field("students", "email", "dummy@dummy.com")
     database.delete_all_by_field("modules", "module_id", "123")
     database.delete_all_by_field("modules", "module_id", "124")
-    database.delete_all_by_field("oppotunities", "title", "dummy1")
-    database.delete_all_by_field("oppotunities", "title", "dummy2")
+    database.delete_all_by_field("opportunities", "title", "dummy1")
+    database.delete_all_by_field("opportunities", "title", "dummy2")
 
     student1 = {
         "_id": "123",

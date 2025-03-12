@@ -123,8 +123,8 @@ def test_employer_home_page(employer_logged_in_client):
     assert response.status_code == 200
 
 
-def test_search_oppurtunities_page(employer_logged_in_client):
-    """Test the search_oppurtunities page."""
+def test_search_opportunities_page(employer_logged_in_client):
+    """Test the search_opportunities page."""
     url = "/opportunities/search"
 
     response = employer_logged_in_client.get(url)
@@ -154,7 +154,7 @@ def test_employers_rank_students_no_opportunity_id(employer_logged_in_client):
     assert response.json == {"error": "Need opportunity ID."}
 
 
-def test_employers_rank_students_past_oppotunities_deadline(
+def test_employers_rank_students_past_opportunities_deadline(
     employer_logged_in_client, database
 ):
     """Test the rank_students page."""
@@ -257,7 +257,7 @@ def test_employer_add_opportunity_post(employer_logged_in_client, database):
             url, data=opportunity, content_type="application/x-www-form-urlencoded"
         )
 
-    assert response.status_code == 200  # Adjust based on actual expected behavior
+    assert response.status_code == 200  # Adjust based on actual expected behaviour
     database.delete_by_id("opportunities", "1234")
     database.delete_all_by_field("employers", "email", "dummy@dummy,com")
 
@@ -304,7 +304,7 @@ def test_get_opportunity_page_no_id(employer_logged_in_client):
     assert response.status_code == 200
 
 
-def test_get_oppotunity_page_with_id(employer_logged_in_client, database):
+def test_get_opportunity_page_with_id(employer_logged_in_client, database):
     """Test retrieving an opportunity with an ID."""
     url = "/opportunities/employer_add_update_opportunity?opportunity_id=123"  # Pass opportunity
 

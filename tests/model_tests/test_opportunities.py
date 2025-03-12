@@ -224,8 +224,8 @@ def test_search_opportunities_exception(opportunity_model, database, app):
 
     with app.app_context():  # Set up Flask application context
         with app.test_request_context():  # Set up request context for session
-            opportunites = opportunity_model.search_opportunities("Job 1", "Company1")
-            assert opportunites == []
+            opportunities = opportunity_model.search_opportunities("Job 1", "Company1")
+            assert opportunities == []
 
 
 def test_search_opportunities_both_title_and_company(opportunity_model, database, app):
@@ -364,7 +364,7 @@ def test_get_opportunities_by_company_no_company(opportunity_model, app):
         assert opportunities == []
 
 
-def test_get_opportunities_by_company_doesnt_exist(opportunity_model, app):
+def test_get_opportunities_by_company_does_not_exist(opportunity_model, app):
     """Test getting opportunities by company."""
 
     with app.app_context():
@@ -402,9 +402,9 @@ def test_get_opportunities_by_company_id(opportunity_model, database, app):
 
     with app.app_context():
         with app.test_request_context():
-            opportunites = opportunity_model.get_opportunity_by_company_id("456")
-            assert len(opportunites) == 1
-            assert opportunites[0]["_id"] == "123"
+            opportunities = opportunity_model.get_opportunity_by_company_id("456")
+            assert len(opportunities) == 1
+            assert opportunities[0]["_id"] == "123"
 
     database.delete_all_by_field("opportunities", "_id", "123")
 

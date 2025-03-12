@@ -841,7 +841,7 @@ def test_employer_add_opportunity_post(user_logged_in_client, database):
             url, data=opportunity, content_type="application/x-www-form-urlencoded"
         )
 
-    assert response.status_code == 200  # Adjust based on actual expected behavior
+    assert response.status_code == 200
     database.delete_by_id("opportunities", "1234")
     database.delete_all_by_field("employers", "email", "dummy@dummy,com")
 
@@ -849,7 +849,6 @@ def test_employer_add_opportunity_post(user_logged_in_client, database):
 def test_delete_student(user_logged_in_client, database):
     """Test the delete student route."""
 
-    # Define student ID as an integer to match the route
     student_id = 123
 
     url = f"/students/delete_student/{student_id}"  # Format the URL correctly

@@ -311,10 +311,10 @@ def test_operation_failure(monkeypatch):
         "pymongo.MongoClient", MockClient
     )  # Correctly patch inside pymongo
 
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit) as exc_info:
         DatabaseMongoManager("invalid_connection_string", "cs3528_testing")
 
-    assert excinfo.value.code == 1
+    assert exc_info.value.code == 1
 
 
 def test_server_selection_timeout(monkeypatch):
@@ -332,10 +332,10 @@ def test_server_selection_timeout(monkeypatch):
         "pymongo.MongoClient", MockClient
     )  # Correctly mock inside pymongo
 
-    with pytest.raises(SystemExit) as excinfo:
+    with pytest.raises(SystemExit) as exc_info:
         DatabaseMongoManager("invalid_connection_string", "cs3528_testing")
 
-    assert excinfo.value.code == 1
+    assert exc_info.value.code == 1
 
 
 def test_default_database_if_empty():
