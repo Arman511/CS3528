@@ -167,7 +167,6 @@ def configure_routes(app, cache: Cache, _compress: Compress):
 
     @app.route("/landing_page")
     @app.route("/")
-    @cache.cached(timeout=0)
     def index():
         """The home route which renders the 'landing_page.html' template."""
         user = get_user_type()

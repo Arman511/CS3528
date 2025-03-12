@@ -29,7 +29,7 @@ def flask_server():
     yield
     # After the yield, kill the app
 
-    server_thread.join(timeout=1)
+    SERVER_THREAD.join(timeout=1)
 
 
 @pytest.fixture()
