@@ -162,6 +162,11 @@ select {
     display: none;
 }
 
+.admin-dashboard {
+    min-height: calc(100vh - 200px);
+    ;
+}
+
 /* Button Styling */
 .btn {
     background-color: #22699a;
