@@ -1,15 +1,12 @@
 """Employer model."""
 
 from datetime import datetime, timedelta
-import os
+import tempfile
 import time
 import uuid
-from flask import redirect, jsonify, session
+from flask import redirect, jsonify, session, send_file
 import pandas as pd
-from flask import send_file
 from core import email_handler
-
-employers_cache = {"data": None, "last_updated": None}
 
 
 class Employers:
@@ -40,12 +37,6 @@ class Employers:
         DATABASE_MANAGER.insert("employers", employer)
 
         if employer:
-            if DATABASE_MANAGER.get_all("employers"):
-                if employers_cache["data"] is None:
-                    employers_cache["data"] = []
-                employers_cache["data"].append(employer)
-                employers_cache["last_updated"] = datetime.now()
-
             return jsonify(employer), 200
 
         return jsonify({"error": "Employer not added"}), 400
@@ -78,14 +69,8 @@ class Employers:
         """Gets all employers."""
         from app import DATABASE_MANAGER
 
-        if employers_cache["data"] and datetime.now() - employers_cache[
-            "last_updated"
-        ] < timedelta(minutes=5):
-            return employers_cache["data"]
-
         employers = DATABASE_MANAGER.get_all("employers")
-        employers_cache["data"] = employers
-        employers_cache["last_updated"] = datetime.now()
+
         return employers
 
     def get_employer_by_id(self, employer_id):
@@ -106,8 +91,6 @@ class Employers:
         if not employer:
             return jsonify({"error": "Employer not found"}), 404
         DATABASE_MANAGER.delete_by_id("employers", _id)
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         for opportunity in opportunities:
@@ -125,10 +108,6 @@ class Employers:
             return jsonify({"error": "Employer not found"}), 404
 
         DATABASE_MANAGER.update_one_by_id("employers", employer_id, update_data)
-
-        # Update cache
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Employer updated successfully"}), 200
 
@@ -161,8 +140,6 @@ class Employers:
         from app import DATABASE_MANAGER
 
         DATABASE_MANAGER.delete_all("employers")
-        employers_cache["data"] = []
-        employers_cache["last_updated"] = datetime.now()
 
         DATABASE_MANAGER.delete_all("opportunities")
 
@@ -187,16 +164,13 @@ class Employers:
         # Convert employers to DataFrame
         df = pd.DataFrame(employers)
 
-        # Save DataFrame to Excel file
-        if os.name == "nt":  # For Windows
-            os.makedirs("temp", exist_ok=True)
-            file_path = "temp/employers.xlsx"
-        else:
-            file_path = "/tmp/employers.xlsx"
-        df.to_excel(file_path, index=False)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx") as tmp:
+            df.to_excel(tmp.name, index=False)
+            tmp_path = tmp.name
 
-        # Send the file
-        return send_file(file_path, as_attachment=True, download_name="employers.xlsx")
+            return send_file(
+                tmp_path, as_attachment=True, download_name="employers.xlsx"
+            )
 
     def upload_employers(self, file):
         """Uploads employers."""
@@ -239,21 +213,21 @@ class Employers:
                     ),
                     400,
                 )
-            elif temp["email"].lower() in current_employer_emails:
+            if temp["email"].lower() in current_employer_emails:
                 return (
                     jsonify(
                         {"error": f"Email {temp['email']} already exists as row {i+2}"}
                     ),
                     400,
                 )
-            elif temp["email"].lower() in emails:
+            if temp["email"].lower() in emails:
                 return (
                     jsonify(
                         {"error": f"Email {temp['email']} already exists as row {i+2}"}
                     ),
                     400,
                 )
-            elif temp["company_name"].lower() in company_names:
+            if temp["company_name"].lower() in company_names:
                 return (
                     jsonify(
                         {
@@ -270,8 +244,6 @@ class Employers:
         DATABASE_MANAGER.insert_many("employers", clean_data)
 
         # Update cache
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         return (
             jsonify({"message": f"{len(clean_data)} employers uploaded successfully"}),

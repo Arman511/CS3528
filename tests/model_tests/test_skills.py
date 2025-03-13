@@ -6,13 +6,13 @@
 import os
 import sys
 import uuid
+import pytest
+from dotenv import load_dotenv
 
 # Add the root directory to the Python path
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
-import pytest
-from dotenv import load_dotenv
 
 from core.database_mongo_manager import DatabaseMongoManager
 
@@ -33,23 +33,23 @@ def app():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    skills = DATABASE.get_all("skills")
-    attempted_skills = DATABASE.get_all("attempted_skills")
-    DATABASE.delete_all("skills")
-    DATABASE.delete_all("attempted_skills")
-    yield DATABASE
+    skills = database.get_all("skills")
+    attempted_skills = database.get_all("attempted_skills")
+    database.delete_all("skills")
+    database.delete_all("attempted_skills")
+    yield database
 
     for skill in skills:
-        DATABASE.insert("skills", skill)
+        database.insert("skills", skill)
     for skill in attempted_skills:
-        DATABASE.insert("attempted_skills", skill)
-    DATABASE.delete_all_by_field("users", "email", "dummy@dummy.com")
-    DATABASE.delete_all_by_field("courses", "course_id", "CS101")
+        database.insert("attempted_skills", skill)
+    database.delete_all_by_field("users", "email", "dummy@dummy.com")
+    database.delete_all_by_field("courses", "course_id", "CS101")
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -509,7 +509,7 @@ def test_get_attempted_skill_success(database, skill_model, app):
     database.delete_all_by_field("attempted_skills", "skill_name", "Attempted Skill")
 
 
-def test_get_attempted_skill_failure(database, skill_model, app):
+def test_get_attempted_skill_failure(skill_model, app):
     """Test get_attempted_skill method failure."""
     with app.app_context():
         with app.test_request_context():
@@ -732,7 +732,7 @@ def test_download_all(database, skill_model, app):
     database.delete_all_by_field("skills", "skill_name", "Downloadable Skill")
 
 
-def test_find_skill_returns_none(database, skill_model, app):
+def test_find_skill_returns_none(skill_model, app):
     """Test find_skill method returns None for non-existent skill."""
     with app.app_context():
         with app.test_request_context():

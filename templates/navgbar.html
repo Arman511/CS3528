@@ -28,6 +28,11 @@
         <li>
           <a class="dropdown-item" href="{{ url_for("tutorial") }}">Tutorial</a>
         </li>
+        {% if user_type == 'student' %}
+          <li>
+            <a class="dropdown-item" href="{{ url_for("login_student") }}">Task</a>
+          </li>
+        {% endif %}
         {% if user_type in ['admin', 'employer', 'student', 'superuser'] %}
           <li>
             <a class="dropdown-item" href="{{ url_for("signout") }}">Sign Out</a>

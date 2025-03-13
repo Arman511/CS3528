@@ -31,11 +31,11 @@ class User:
 
         if "email" not in user or "password" not in user:
             return jsonify({"error": "Missing email or password"}), 400
-        elif "name" not in user:
+        if "name" not in user:
             return jsonify({"error": "Missing name"}), 400
-        elif DATABASE_MANAGER.get_by_email("users", user["email"]):
+        if DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
-        elif user["email"] == os.getenv("SUPERUSER_EMAIL"):
+        if user["email"] == os.getenv("SUPERUSER_EMAIL"):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
@@ -169,3 +169,62 @@ class User:
         update_data = {"name": name, "email": email}
         DATABASE_MANAGER.update_one_by_id("users", user_uuid, update_data)
         return jsonify({"message": "User updated successfully"}), 200
+
+    def get_nearest_deadline_for_dashboard(self):
+        """Retrieves the nearest deadline for the dashboard."""
+        from app import DEADLINE_MANAGER, DATABASE_MANAGER
+        
+        students = DATABASE_MANAGER.get_all("students")
+        opportunities = DATABASE_MANAGER.get_all("opportunities") 
+
+        number_of_students = 0
+        number_of_opportunities = 0
+
+        if not DEADLINE_MANAGER.is_past_details_deadline():
+            for student in students:
+                student = student.get("course")
+                if len(student) > 0:  # Ensure student has added details
+                    number_of_students += 1
+            number_of_students = len(students) - number_of_students
+            number_of_opportunities = len(DATABASE_MANAGER.get_all("opportunities"))
+
+            return (
+                "Student and Employers Add Details/Opportunities Deadline",
+                DEADLINE_MANAGER.get_details_deadline(),
+                number_of_students,
+                number_of_opportunities,
+            )
+
+        if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
+            for student in students:
+                student = student.get("preferences")
+                if student is not None: 
+                    number_of_students += 1
+
+            number_of_students = len(students) - number_of_students
+            
+            return (
+                "Students Ranking Opportunities Deadline",
+                DEADLINE_MANAGER.get_student_ranking_deadline(),
+                number_of_students,
+                None,
+            )
+
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
+            for opportunity in opportunities:
+                if opportunity.get(
+                    "preferences"
+                ):  
+                    number_of_opportunities += 1
+
+            number_of_opportunities = len(opportunities) - number_of_opportunities    
+                
+            return (
+                "Employers Ranking Students Deadline",
+                DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
+                None, 
+                number_of_opportunities,
+            )
+
+        # 4️⃣ No upcoming deadlines
+        return "No Upcoming Deadlines", None, None, None 

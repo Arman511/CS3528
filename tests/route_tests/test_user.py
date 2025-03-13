@@ -6,10 +6,10 @@
 import os
 import sys
 import uuid
+from unittest.mock import patch
 from passlib.hash import pbkdf2_sha512
 import pytest
 from dotenv import load_dotenv
-from unittest.mock import patch
 
 # Add the root directory to the Python path
 sys.path.append(
@@ -36,19 +36,19 @@ def client():
 def database():
     """Fixture to create a test database."""
 
-    DATABASE = DatabaseMongoManager(
+    database = DatabaseMongoManager(
         os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
-    deadlines = DATABASE.get_all("deadline")
-    DATABASE.delete_all("deadline")
-    yield DATABASE
+    deadlines = database.get_all("deadline")
+    database.delete_all("deadline")
+    yield database
 
-    DATABASE.delete_all("deadline")
+    database.delete_all("deadline")
     for deadline in deadlines:
-        DATABASE.insert("deadline", deadline)
+        database.insert("deadline", deadline)
 
     # Cleanup code
-    DATABASE.connection.close()
+    database.connection.close()
 
 
 @pytest.fixture()
@@ -486,7 +486,7 @@ def test_login_already_login(user_logged_in_client):
     url = "/user/login"
     response = user_logged_in_client.get(url)
 
-    assert response.status_code == 302
+    assert response.status_code == 200
 
 
 def test_get_login_page(client):
@@ -841,7 +841,7 @@ def test_employer_add_opportunity_post(user_logged_in_client, database):
             url, data=opportunity, content_type="application/x-www-form-urlencoded"
         )
 
-    assert response.status_code == 200  # Adjust based on actual expected behavior
+    assert response.status_code == 200
     database.delete_by_id("opportunities", "1234")
     database.delete_all_by_field("employers", "email", "dummy@dummy,com")
 
@@ -849,7 +849,6 @@ def test_employer_add_opportunity_post(user_logged_in_client, database):
 def test_delete_student(user_logged_in_client, database):
     """Test the delete student route."""
 
-    # Define student ID as an integer to match the route
     student_id = 123
 
     url = f"/students/delete_student/{student_id}"  # Format the URL correctly

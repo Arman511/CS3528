@@ -21,6 +21,7 @@ class Config:
         return self.min_num_ranking_student_to_opportunities
 
     def update(self):
+        """Update the configuration settings"""
         temp_num_of_skills = self.database_manager.get_one_by_field(
             "config", "name", "num_of_skills"
         )
@@ -60,6 +61,7 @@ class Config:
     def set_min_num_ranking_student_to_opportunities(
         self, min_num_ranking_student_to_opportunities
     ):
+        """Set minimum number of ranking student to opportunities"""
         self.database_manager.update_one_by_field(
             "config",
             "name",

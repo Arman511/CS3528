@@ -56,6 +56,7 @@ def add_user_routes(app, cache):
     def login():
         """Gives login form to user."""
         if request.method == "POST":
+            session.clear()
             attempt_user = {
                 "email": request.form.get("email"),
                 "password": request.form.get("password"),
@@ -69,7 +70,7 @@ def add_user_routes(app, cache):
                 return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
-            return redirect("/user/home")
+            session.clear()
         return render_template("user/login.html")
 
     @app.route("/user/delete", methods=["DELETE"])
@@ -303,12 +304,55 @@ def add_user_routes(app, cache):
     @app.route("/user/home")
     @handlers.login_required
     def user_home():
-        """The home route which needs the user to be logged in and renders the 'home.html' template.
+        """Handles the user home route and provides nearest deadlines & stats."""
 
-        Returns:
-            str: Rendered HTML template for the home page.
-        """
-        return render_template("/user/home.html", user_type="admin", page="")
+        deadline_info = User().get_nearest_deadline_for_dashboard()
+        deadline_name, deadline_date, num_students, num_opportunities = deadline_info
+
+        formatted_date = (
+            datetime.strptime(deadline_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+            if deadline_date
+            else None
+        )
+
+        stats_data = {}
+        if "Add Details" in deadline_name:
+            stats_data = {
+                "title": "📊 Student & Employer Details Stats",
+                "label1": "Remaining Students To Fill In Their Details",
+                "label2": "Opportunities Added by Employers",
+                "count1": num_students,
+                "count2": num_opportunities,
+            }
+        elif "Students Ranking" in deadline_name:
+            stats_data = {
+                "title": "📊 Student Rankings",
+                "label1": "Remaining Students To Rank Their Opportunities",
+                "label2": None,
+                "count1": num_students,
+                "count2": None,
+            }
+        elif "Employers Ranking" in deadline_name:
+            stats_data = {
+                "title": "📊 Employer Rankings",
+                "label1": "Remaining Employers To Rank Students",
+                "label2": None,
+                "count1": num_opportunities,
+                "count2": None,
+            }
+        else:
+            stats_data = {
+                "title": "🎯 Matching Ready!",
+                "message": "✅ All deadlines have passed. The matchmaking is complete.",
+            }
+
+        return render_template(
+            "user/home.html",
+            user_type="admin",
+            deadline_name=deadline_name,
+            deadline_date=formatted_date,
+            stats_data=stats_data,
+        )
 
     @app.route("/user/search", methods=["GET"])
     @handlers.superuser_required

@@ -1,42 +1,82 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "navgbar.html" %}
-    <div class="card-wrapper">
+  {% include "navgbar.html" %}
+  <div class="card-wrapper">
+    <div class="container-fluid">
+      <div class="row">
+        <!-- Sidebar: Lists sections of the tutorial -->
+        <nav class="col-12 col-md-3 order-1" id="section-nav">
+          <div class="card">
+            <h2 class="h4">Login Tutorial</h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section1">Placement team</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section2">Students</a>
+            </h2>
+            <h2 class="h5 ">
+              <a class="nav-link" href="#section3">Employers</a>
+            </h2>
+          </div>
+        </nav>
+      </div>
+      <!-- Main Content: Single card wrapping all tutorial sections -->
+      <!-- Make sure the container is scrollable by either using the body scroll or a specific scrollable container -->
+      <main class="col-12 col-md-9 offset-md-2 tutorial-content"
+            data-bs-spy="scroll"
+            data-bs-target="#section-nav"
+            data-bs-offset="100"
+            tabindex="0">
         <div class="card">
-            <h1 class="center">Tutorial</h1>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
-            <ul>
-                <li>
-                    <a href="#login-card-student">Login as Student</a>
-                </li>
-                <li>
-                    <a href="#login-card-employer">Login as Employer</a>
-                </li>
-                <li>
-                    <a href="#login-card-admin">Login as Admin</a>
-                </li>
-            </ul>
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section1" class="mb-4">
+              <h3>Placement Team</h3>
+              <p>
+                Either go to the <a href="{{ url_for("login") }}">Placement team login page</a> or click the Placement team login  button in the landing page or press the "Are you part of the placement team? Login" link on the other login pages. You will be asked to enter your email and password and then press submit and you will login. If you have forgotten your password, asking your admin to reset it for you.
+              </p>
+              <p>
+                Account creation is handled by the admin team. If you are a new member of the placement team, please contact the admin team to create an account for you.
+              </p>
+            </section>
+          </div>
         </div>
-        <div class="card" id="login-card-student">
-            <h1 class="center">Login Tutorial</h1>
-            <p>placeholder</p>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section2" class="mb-4">
+              <h3>Student</h3>
+              <p>The university placement team manage all student accounts. They will create an account on your behalf.</p>
+              <p>
+                Once you have been notified by the university that your account has been created, at the student <a href="{{ url_for("login_student") }}">login</a> section of the webpage please enter your university student identifier number in the corresponding input box.
+              </p>
+              <p>After which a unique numerical 'one-time passcode' will be sent to your student email address.</p>
+              <p>A card modal will then appear, with an input box where you enter the code.</p>
+              <p>
+                If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.
+              </p>
+            </section>
+          </div>
         </div>
-        <div class="card" id="login-card-employer">
-            <h1 class="center">Login Tutorial</h1>
-            <p>placeholder</p>
+        <div class="card mt-5">
+          <div class="card-body">
+            <!-- Each section has its own id -->
+            <section id="section3" class="mb-4">
+              <h3>Employer</h3>
+              <p>The university placement team manage all employer accounts. They will create an account on your behalf.</p>
+              <p>
+                Once you have been notified by the university that your account has been created, at the employer <a href="{{ url_for("employer_login") }}">login</a> section of the webpage please enter your email in the corresponding input box.
+              </p>
+              <p>After which a unique numerical 'one-time passcode' will be sent to your employer email address.</p>
+              <p>A modal will then appear, with an input box where you enter the code.</p>
+              <p>
+                If a code has not arrived to your email firstly, please check your spam folder, if not please contact a member of the placement team.
+              </p>
+            </section>
+          </div>
         </div>
-        <div class="card" id="login-card-admin">
-            <h1 class="center">Login Tutorial</h1>
-            <p>
-                To login, click on the "Login" on the question "Are you part of the placement team? Login" on the student/employer login page.
-                <br>
-                Once you click on the "Login" button, you will be redirected to the login for placement teams.
-                <br>
-                Enter your username and password and click on the "Login" button. This will redirect you to the admin dashboard.
-                <br>
-                If you want to sign out of the admin dashboard, click on the dropdown in the top right corner and press signout.
-            </p>
-        </div>
+      </main>
     </div>
-    <script>document.title = "Tutorial";</script>
+  </div>
+  <script>document.title = "Tutorial - Login";</script>
 {% endblock content %}

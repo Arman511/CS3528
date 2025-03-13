@@ -1,7 +1,54 @@
 {% extends "base.html" %}
 {% block content %}
     {% include "/user/navbar.html" %}
-    <h2>Hello Team</h2>
-    <!-- Sign Out button only on this page -->
-    <!-- Hamburger Menu -->
+    <main class="content admin-dashboard card-wrapper">
+        <div class="container mt-5">
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <!-- 📅 Deadlines Card -->
+                    <div class="card shadow-lg border-0 rounded-lg">
+                        <div class="card-header bg-primary text-white text-center py-4">
+                            <h3 class="fw-bold mb-0">📅 Deadline Tracker</h3>
+                        </div>
+                        <div class="card-body p-5">
+                            <h4 class="text-center mb-4">Nearest Deadline</h4>
+                            {% if deadline_date %}
+                                <div class="alert alert-info text-center" role="alert">
+                                    <p class="lead mb-0">
+                                        <strong>{{ deadline_name }}</strong>
+                                    </p>
+                                    <p class="display-4 mt-2 mb-0">{{ deadline_date }}</p>
+                                </div>
+                            {% else %}
+                                <div class="alert alert-success text-center" role="alert">
+                                    <p class="lead mb-0">No upcoming deadlines</p>
+                                    <p class="display-4 mt-2 mb-0">🎉</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- 📊 Stats Card (Dynamic UI based on Deadline) -->
+                    <div class="card shadow-lg border-0 rounded-lg mt-4">
+                        <div class="card-header bg-success text-white text-center py-4">
+                            <h3 class="fw-bold mb-0">{{ stats_data.title }}</h3>
+                        </div>
+                        <div class="card-body p-5" id="stats-card">
+                            {% if stats_data.message %}
+                                <h4 class="text-center text-success">{{ stats_data.message }}</h4>
+                            {% else %}
+                                <div class="text-center">
+                                    <h5>{{ stats_data.label1 }}</h5>
+                                    <p class="display-4">{{ stats_data.count1 }}</p>
+                                    {% if stats_data.label2 %}
+                                        <h5 class="mt-4">{{ stats_data.label2 }}</h5>
+                                        <p class="display-4">{{ stats_data.count2 }}</p>
+                                    {% endif %}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
 {% endblock content %}

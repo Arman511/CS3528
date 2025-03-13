@@ -46,11 +46,11 @@ document.addEventListener("DOMContentLoaded", function () {
         const locationValue = locationSearchInput.value.toLowerCase();
 
         // Get values from Selectize inputs
-        let courseValue = $("#course").val();
+        let courseValue = $("#course").val() || [];
         let modulesValue = $("#modules").val() || [];
         let durationValue = $("#placement_duration").val();
 
-        courseValue = courseValue ? courseValue.toLowerCase() : null;
+        courseValue = courseValue.map(course => course.toLowerCase());
         modulesValue = modulesValue.map(module => module.toLowerCase());
         durationValue = durationValue ? durationValue.toLowerCase() : null;
 
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (companyValue && !opportunity.company.includes(companyValue)) shouldShow = false;
             if (descriptionValue && !opportunity.description.includes(descriptionValue)) shouldShow = false;
             if (locationValue && !opportunity.location.includes(locationValue)) shouldShow = false;
-            if (courseValue && !opportunity.courses_required.includes(courseValue)) shouldShow = false;
+            if (courseValue.length && !courseValue.every(course => opportunity.courses_required.includes(course))) shouldShow = false;
             if (modulesValue.length && !modulesValue.every(module => opportunity.modules_required.includes(module))) shouldShow = false;
             if (opportunity.spots_available < spotsMinValue || opportunity.spots_available > spotsMaxValue) shouldShow = false;
             if (durationValue && !durationValue.includes(opportunity.duration)) shouldShow = false;
@@ -83,6 +83,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Initialize Selectize for the select elements
     $("#course").selectize({
+        plugins: ["remove_button"],
         sortField: 'text',
         dropdownParent: 'body',
         onChange: filterOpportunities
@@ -102,3 +103,12 @@ document.addEventListener("DOMContentLoaded", function () {
         onChange: filterOpportunities
     });
 });
+
+function toggleText(btn, target) {
+    const element = document.querySelector(target);
+    if (element.classList.contains('show')) {
+        btn.textContent = 'Show More';
+    } else {
+        btn.textContent = 'Show Less';
+    }
+}
