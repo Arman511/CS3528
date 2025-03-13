@@ -268,7 +268,9 @@ def configure_routes(app, cache: Cache, _compress: Compress):
                 "tutorials/tutorial_employer.html", user_type="employer"
             )
         if user_type == "student":
-            return render_template("tutorials/tutorial_student.html")
+            return render_template(
+                "tutorials/tutorial_student.html", user_type="student"
+            )
         if user_type == "superuser":
             return render_template(
                 "tutorials/tutorial_superuser.html", user_type="superuser"
