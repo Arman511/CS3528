@@ -8,8 +8,6 @@ from flask import redirect, jsonify, session, send_file
 import pandas as pd
 from core import email_handler
 
-employers_cache = {"data": None, "last_updated": None}
-
 
 class Employers:
     """Employer class."""
@@ -39,12 +37,6 @@ class Employers:
         DATABASE_MANAGER.insert("employers", employer)
 
         if employer:
-            if DATABASE_MANAGER.get_all("employers"):
-                if employers_cache["data"] is None:
-                    employers_cache["data"] = []
-                employers_cache["data"].append(employer)
-                employers_cache["last_updated"] = datetime.now()
-
             return jsonify(employer), 200
 
         return jsonify({"error": "Employer not added"}), 400
@@ -77,14 +69,8 @@ class Employers:
         """Gets all employers."""
         from app import DATABASE_MANAGER
 
-        if employers_cache["data"] and datetime.now() - employers_cache[
-            "last_updated"
-        ] < timedelta(minutes=5):
-            return employers_cache["data"]
-
         employers = DATABASE_MANAGER.get_all("employers")
-        employers_cache["data"] = employers
-        employers_cache["last_updated"] = datetime.now()
+
         return employers
 
     def get_employer_by_id(self, employer_id):
@@ -105,8 +91,6 @@ class Employers:
         if not employer:
             return jsonify({"error": "Employer not found"}), 404
         DATABASE_MANAGER.delete_by_id("employers", _id)
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         for opportunity in opportunities:
@@ -124,10 +108,6 @@ class Employers:
             return jsonify({"error": "Employer not found"}), 404
 
         DATABASE_MANAGER.update_one_by_id("employers", employer_id, update_data)
-
-        # Update cache
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         return jsonify({"message": "Employer updated successfully"}), 200
 
@@ -160,8 +140,6 @@ class Employers:
         from app import DATABASE_MANAGER
 
         DATABASE_MANAGER.delete_all("employers")
-        employers_cache["data"] = []
-        employers_cache["last_updated"] = datetime.now()
 
         DATABASE_MANAGER.delete_all("opportunities")
 
@@ -266,8 +244,6 @@ class Employers:
         DATABASE_MANAGER.insert_many("employers", clean_data)
 
         # Update cache
-        employers_cache["data"] = DATABASE_MANAGER.get_all("employers")
-        employers_cache["last_updated"] = datetime.now()
 
         return (
             jsonify({"message": f"{len(clean_data)} employers uploaded successfully"}),
