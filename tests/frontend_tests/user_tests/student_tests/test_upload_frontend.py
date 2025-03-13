@@ -82,9 +82,6 @@ def test_successful_upload(user_logged_in_browser, students_collection):
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
     )
     submit_button.click()
-
-    # user_logged_in_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-
     WebDriverWait(user_logged_in_browser, 10).until(EC.alert_is_present())
     alert = user_logged_in_browser.switch_to.alert
     alert.accept()
@@ -105,7 +102,6 @@ def test_failure_email_upload(user_logged_in_browser, students_collection):
         EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
     )
     submit_button.click()
-    # user_logged_in_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
 
     WebDriverWait(user_logged_in_browser, 20).until(EC.alert_is_present())
     alert = user_logged_in_browser.switch_to.alert
