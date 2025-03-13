@@ -325,11 +325,14 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             "text/css",
             "application/javascript",
             "application/font-woff2",
+            "application/font-ttf",
         }:
             response.cache_control.max_age = 3600
         elif "image" in response.content_type:
             response.cache_control.max_age = 31536000
             response.cache_control.public = True
+        elif response.content_type == "text/html":
+            response.cache_control.no_store = True
         else:
             response.cache_control.max_age = 86400
         response.cache_control.stale_while_revalidate = 2592000
