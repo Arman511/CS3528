@@ -36,58 +36,31 @@ class Opportunity:
 
         return jsonify({"error": "Opportunity not added"}), 400
 
-    def search_opportunities(self, title, company_name):
-        """Search opportunities by title and/or company."""
-        opportunities = []
+    def get_opportunities_for_search(self, _id):
+        """Get opportunities for search."""
         from app import DATABASE_MANAGER
 
-        try:
-            # Build the query dynamically based on the provided parameters
-            opportunities = []
-            if title and company_name:
-                company = DATABASE_MANAGER.get_one_by_field(
-                    "employers",
-                    "company_name",
-                    {"$regex": company_name, "$options": "i"},
-                )
-                opportunities = DATABASE_MANAGER.get_all_by_two_fields(
-                    "opportunities",
-                    "title",
-                    {"$regex": title, "$options": "i"},
-                    "employer_id",
-                    company["_id"],
-                )
-            elif title:
-                opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", "title", {"$regex": title, "$options": "i"}
-                )
-            elif company_name:
-                company = DATABASE_MANAGER.get_one_by_field(
-                    "employers",
-                    "company_name",
-                    {"$regex": company_name, "$options": "i"},
-                )
-                opportunities = DATABASE_MANAGER.get_all_by_field(
-                    "opportunities", "employer_id", company["_id"]
-                )
-            else:
-                opportunities = DATABASE_MANAGER.get_all("opportunities")
-
-            # Add the company name to each opportunity if available
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
+        if not _id:
+            employers_map = {
+                employer["_id"]: employer["company_name"]
+                for employer in Employers().get_employers()
+            }
             for opportunity in opportunities:
-                employer = Employers().get_employer_by_id(opportunity["employer_id"])
-                opportunity["company_name"] = (
-                    employer["company_name"] if employer else "Unknown Company"
+                opportunity["company_name"] = employers_map.get(
+                    opportunity["employer_id"], "Unknown Company"
                 )
-
-            print(
-                f"[DEBUG] Retrieved {len(opportunities)} opportunities after filtering."
-            )
             return opportunities
 
-        except Exception as e:
-            print(f"[ERROR] Failed to search opportunities: {e}")
-            return []
+        filtered_opportunities = [
+            opportunity
+            for opportunity in opportunities
+            if opportunity["employer_id"] == _id
+        ]
+        employer = Employers().get_employer_by_id(_id)
+        for opportunity in opportunities:
+            opportunity["company_name"] = employer["company_name"]
+        return filtered_opportunities
 
     def get_opportunities_by_title(self, title):
         """Fetch opportunities by title."""
