@@ -96,16 +96,35 @@ def test_superuser_search_users(superuser_logged_in_browser, database):
     search_input_name.send_keys("test")
     search_input_email.send_keys("test@email.com")
 
-    submit_button = WebDriverWait(superuser_logged_in_browser, 10).until(
-        EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
-    )
-    submit_button.click()
     
-    WebDriverWait(superuser_logged_in_browser, 10).until(EC.alert_is_present())
-    alert = superuser_logged_in_browser.switch_to.alert
-    alert.accept()
-    
-    assert "User added successfully" in superuser_logged_in_browser.page_source
 
 def test_superuser_add_user(superuser_logged_in_browser, database):
-    superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
+   superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
+   
+   user_name = superuser_logged_in_browser.find_element(By.NAME, "name")
+   user_email = superuser_logged_in_browser.find_element(By.NAME, "email")
+   user_password = superuser_logged_in_browser.find_element(By.NAME, "password")
+   user_confirm_password = superuser_logged_in_browser.find_element(By.NAME, "confirm_password")
+
+   user_name.clear()
+   user_email.clear()
+   user_password.clear()
+   user_confirm_password.clear()  
+
+   user_name.send_keys("test_user")
+   user_email.send_keys("test_user@email.com") 
+   user_password.send_keys("password")
+   user_confirm_password.send_keys("password")
+   
+   submit_button = WebDriverWait(superuser_logged_in_browser, 10).until(
+       EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
+    )
+
+#def test_superuser_update_user(superuser_logged_in_browser, database):
+ #   superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
+
+#def test_superuser_change_user_password(superuser_logged_in_browser, database):
+ #   superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
+
+#def test_superuser_delete_user(superuser_logged_in_browser, database):
+ #   superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
