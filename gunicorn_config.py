@@ -8,8 +8,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Gunicorn settings
-workers = (multiprocessing.cpu_count() * 2) + 1
-threads = workers
+workers = int(os.getenv("GUNICORN_PROCESSES", (multiprocessing.cpu_count() * 2) + 1))
+threads = int(os.getenv("GUNICORN_THREADS", workers))
 bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8080")
 timeout = 120
 max_requests = 1000
