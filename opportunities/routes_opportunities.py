@@ -29,20 +29,17 @@ def add_opportunities_routes(app):
         Determines user type from session.
         """
         # Fetch user session details
-        user = session.get("user")
-        employer = session.get("employer")
 
-        user_type = "admin" if user else "employer"
+        user_type = handlers.get_user_type()
+        employer = session.get("employer", None)
         print(f"[DEBUG] User type: {user_type}")
-
-        # Common opportunity search parameters
-        company_name = employer.get("company_name") if employer else ""
-        title = ""
-
         # Fetch opportunities based on user type
-        opportunities = Opportunity().search_opportunities(
-            title=title, company_name=company_name
-        )
+        if user_type == "admin":
+            opportunities = Opportunity().get_opportunities_for_search(_id=None)
+        else:
+            opportunities = Opportunity().get_opportunities_for_search(
+                _id=employer.get("_id", None)
+            )
 
         # Prepare context for rendering
         context = {

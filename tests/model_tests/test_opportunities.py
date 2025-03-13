@@ -221,64 +221,8 @@ def test_search_opportunities_exception(opportunity_model, app):
 
     with app.app_context():  # Set up Flask application context
         with app.test_request_context():  # Set up request context for session
-            opportunities = opportunity_model.search_opportunities("Job 1", "Company1")
+            opportunities = opportunity_model.get_opportunities_for_search("dfasdf")
             assert opportunities == []
-
-
-def test_search_opportunities_both_title_and_company(opportunity_model, database, app):
-    """Test searching opportunities by both title and company name."""
-
-    # Clear any existing data
-    database.delete_all_by_field("opportunities", "_id", "123")
-    database.delete_all_by_field("employers", "_id", "456")
-
-    # Insert test data
-    database.insert("employers", {"_id": "456", "company_name": "Company1"})
-    database.insert(
-        "opportunities", {"_id": "123", "title": "Job 1", "employer_id": "456"}
-    )
-
-    with app.app_context():  # Set up Flask application context
-        # Call the function
-        opportunities = opportunity_model.search_opportunities("Job 1", "Company1")
-
-        # Assert the results
-        assert len(opportunities) == 1
-        assert opportunities[0]["_id"] == "123"
-        assert opportunities[0]["title"] == "Job 1"
-        assert opportunities[0]["company_name"] == "Company1"
-
-    # Clean up
-    database.delete_all_by_field("opportunities", "_id", "123")
-    database.delete_all_by_field("employers", "_id", "456")
-
-
-def test_search_opportunities_by_title(opportunity_model, database, app):
-    """Test searching opportunities by title only."""
-
-    # Clear any existing data
-    database.delete_all_by_field("opportunities", "_id", "123")
-    database.delete_all_by_field("employers", "_id", "456")
-
-    # Insert test data
-    database.insert(
-        "opportunities", {"_id": "123", "title": "SE", "employer_id": "456"}
-    )
-    database.insert("employers", {"_id": "456", "company_name": "Company1"})
-
-    with app.app_context():  # Set up Flask application context
-        # Call the function with only the title
-        opportunities = opportunity_model.search_opportunities("SE", "")
-
-        # Assert the results
-        assert len(opportunities) == 1
-        assert opportunities[0]["_id"] == "123"
-        assert opportunities[0]["title"] == "SE"
-        assert opportunities[0]["company_name"] == "Company1"
-
-    # Clean up
-    database.delete_all_by_field("opportunities", "_id", "123")
-    database.delete_all_by_field("employers", "_id", "456")
 
 
 def test_search_opportunities_by_company(opportunity_model, database, app):
@@ -296,7 +240,7 @@ def test_search_opportunities_by_company(opportunity_model, database, app):
 
     with app.app_context():  # Set up Flask application context
         # Call the function with only the company name
-        opportunities = opportunity_model.search_opportunities("", "Company1")
+        opportunities = opportunity_model.get_opportunities_for_search("456")
 
         # Assert the results
         assert len(opportunities) == 1
