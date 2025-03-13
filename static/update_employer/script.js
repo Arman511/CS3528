@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 const data = await response.json();
                 alert(data.message || "Employer updated successfully.");
                 errorParagraph.classList.add("error--hidden");
-                window.location.href = "/employers/search_employers"; // Redirect on success
+                window.location.href = "/employers/search"; // Redirect on success
             } else {
                 const errorData = await response.json();
                 errorParagraph.textContent =
