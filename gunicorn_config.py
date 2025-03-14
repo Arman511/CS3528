@@ -1,5 +1,6 @@
 """Gunicorn configuration file."""
 
+import multiprocessing
 import os
 import logging
 from dotenv import load_dotenv
@@ -7,9 +8,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Gunicorn settings
-workers = int(os.getenv("GUNICORN_PROCESSES", "2"))
-threads = int(os.getenv("GUNICORN_THREADS", "4"))
+workers = int(os.getenv("GUNICORN_PROCESSES", (multiprocessing.cpu_count() * 2) + 1))
+threads = int(os.getenv("GUNICORN_THREADS", workers))
 bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8080")
+timeout = 120
+max_requests = 1000
+max_requests_jitter = 50
 FORWARD_ALLOW_IPS = "*"
 secure_scheme_headers = {"X-Forwarded-Proto": "https"}
 
