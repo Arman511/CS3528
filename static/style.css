@@ -53,18 +53,23 @@ html[data-bs-theme="dark"] .title {
 }
 
 html[data-bs-theme="dark"] p,
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+html[data-bs-theme="dark"] h1,
+html[data-bs-theme="dark"] h2,
+html[data-bs-theme="dark"] h3,
+html[data-bs-theme="dark"] h4,
+html[data-bs-theme="dark"] h5,
+html[data-bs-theme="dark"] h6 {
     color: #fff;
 }
 
+.form-group label {
+    background-color: #fff;
+    color: #000;
+}
+
 html[data-bs-theme="dark"] .form-group .field,
-.form-group label,
-select {
+html[data-bs-theme="dark"] .form-group label,
+html[data-bs-theme="dark"] select {
     background-color: #444;
     color: #fff;
 }
@@ -156,7 +161,7 @@ html[data-bs-theme="dark"] .table th {
 }
 
 html[data-bs-theme="dark"] .table th,
-.table td {
+html[data-bs-theme="dark"] .table td {
     border-color: #666;
 }
 
@@ -289,6 +294,14 @@ a:hover {
     color: #142859;
 }
 
+html[data-bs-theme="dark"] a {
+    color: #3187c5;
+}
+
+html[data-bs-theme="dark"] a:hover {
+    color: #22699a;
+}
+
 html,
 body {
     height: 100%;
@@ -349,6 +362,11 @@ html[data-bs-theme="dark"] .dropdown-item {
 .dropdown-item:hover {
     background-color: #22699a;
     color: white;
+}
+
+html[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: #3187c5;
+    color: #fff;
 }
 
 .content {
@@ -517,6 +535,37 @@ footer {
 }
 
 html[data-bs-theme="dark"] .tutorial-content {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] #section-nav a {
+    color: #3187c5;
+}
+
+main h1 {
+    color: #000;
+}
+
+html[data-bs-theme="dark"] main h1,
+main a.btn {
+    color: #fff;
+}
+
+.opportunity-item-card-card,
+.opportunity-item-card .card-body,
+.opportunity-item-card .card-body label {
+    background-color: #fff;
+    color: #000;
+}
+
+.opportunity-item-card h3 {
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .opportunity-item,
+html[data-bs-theme="dark"] .opportunity-item-card .card-body,
+html[data-bs-theme="dark"] .opportunity-item-card .card-body label {
     background-color: #333;
     color: #fff;
 }
