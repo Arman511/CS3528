@@ -149,39 +149,35 @@
     </nav>
 </div>
 <script>
+    let allDropdownMenu = document.querySelectorAll(".dropdown-menu");
 
     function enableDropdownHover(dropdownId, menuId) {
+        const HOVER_DELAY = 500;
         const dropdown = document.getElementById(dropdownId);
         const menu = document.getElementById(menuId);
         let hoverTimeout;
 
-        if (dropdown && menu) {
-            dropdown.addEventListener("mouseenter", function() {
-                hoverTimeout = setTimeout(() => {
-                    menu.classList.add("show");
-                }, 500);
-            });
-
-            dropdown.addEventListener("mouseleave", function() {
-                clearTimeout(hoverTimeout);
-                hoverTimeout = setTimeout(() => {
-                    if (!menu.matches(":hover")) { 
-                        menu.classList.remove("show");
-                    }
-                }, 500); 
-            });
-
-            menu.addEventListener("mouseenter", function() {
-                clearTimeout(hoverTimeout);
-                this.classList.add("show");
-            });
-
-            menu.addEventListener("mouseleave", function() {
-                hoverTimeout = setTimeout(() => {
-                    this.classList.remove("show");
-                }, 500); 
-            });
+        function showMenu() {
+            clearTimeout(hoverTimeout);
+            for (let i = 0; i < allDropdownMenu.length; i++) {
+                allDropdownMenu[i].classList.remove("show");
+            }
+            menu.classList.add("show");
         }
+
+        function hideMenu() {
+            hoverTimeout = setTimeout(() => {
+                if (dropdown.matches(":hover") || menu.matches(":hover")) {
+                    return;
+                }
+                menu.classList.remove("show");
+            }, HOVER_DELAY);
+        }
+
+        dropdown.addEventListener("mouseenter", showMenu);
+        dropdown.addEventListener("mouseleave", hideMenu);
+        menu.addEventListener("mouseenter", showMenu);
+        menu.addEventListener("mouseleave", hideMenu);
     }
 
     enableDropdownHover("studentsDropdown", "studentsMenu");
