@@ -3,7 +3,7 @@
   {% include "/employers/navbar.html" %}
   <div class="card-wrapper">
     <div class="row">
-      <div class="col-12">
+      <div class="col-12 mb-5">
         <h1>Rank Students</h1>
         <p>
           Rank the students below in order of preference. You can only rank each student once. 1 is most
@@ -13,8 +13,8 @@
       </div>
       <p class="d-none" id="opp_id">{{ opportunity_id }}</p>
       {% for student in students %}
-        <div class="col-md-6 col-lg-4 mb-1 px-1">
-          <div class="student-item card h-100 p-2 bg-light">
+        <div class="col-md-6 col-lg-4 mb-2">
+          <div class="student-item card h-100 p-2">
             <div class="card-body">
               <p class="student-id d-none">{{ student._id }}</p>
               <p class="student-course">Course: {{ student.course + ": "+get_course_name(student.course) }}</p>
