@@ -25,6 +25,85 @@
     overflow: hidden;
 }
 
+html[data-bs-theme="dark"] .card h1 {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .card-wrapper {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .card {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] main.content {
+    background-color: #333;
+    color: #fff;
+}
+
+.title {
+    color: #22699a;
+}
+
+html[data-bs-theme="dark"] .title {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] p,
+html[data-bs-theme="dark"] h1,
+html[data-bs-theme="dark"] h2,
+html[data-bs-theme="dark"] h3,
+html[data-bs-theme="dark"] h4,
+html[data-bs-theme="dark"] h5,
+html[data-bs-theme="dark"] h6 {
+    color: #fff;
+}
+
+.form-group label {
+    background-color: #fff;
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .form-group .field,
+html[data-bs-theme="dark"] .form-group label,
+html[data-bs-theme="dark"] select {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-input {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] form input {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] form input.btn {
+    background-color: #22699a;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-input .item {
+    background-color: #000;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-dropdown {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-dropdown-content {
+    background-color: #444;
+    color: #fff;
+}
+
 .login-card {
     max-width: 600px;
 }
@@ -66,6 +145,24 @@
 
 .table th {
     background-color: #f4f4f4;
+}
+
+html[data-bs-theme="dark"] .table-wrapper {
+    background-color: #333;
+}
+
+html[data-bs-theme="dark"] .table {
+    border-color: #444;
+}
+
+html[data-bs-theme="dark"] .table th {
+    background-color: #555;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .table th,
+html[data-bs-theme="dark"] .table td {
+    border-color: #666;
 }
 
 .hidden-fields {
@@ -197,6 +294,14 @@ a:hover {
     color: #142859;
 }
 
+html[data-bs-theme="dark"] a {
+    color: #3187c5;
+}
+
+html[data-bs-theme="dark"] a:hover {
+    color: #22699a;
+}
+
 html,
 body {
     height: 100%;
@@ -235,6 +340,11 @@ body {
     z-index: 1000;
 }
 
+html[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #333;
+    color: #fff;
+}
+
 .dropdown-menu.show {
     display: block;
 }
@@ -245,9 +355,18 @@ body {
     text-decoration: none;
 }
 
+html[data-bs-theme="dark"] .dropdown-item {
+    color: #fff;
+}
+
 .dropdown-item:hover {
     background-color: #22699a;
     color: white;
+}
+
+html[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: #3187c5;
+    color: #fff;
 }
 
 .content {
@@ -267,6 +386,11 @@ body {
     align-items: center;
 }
 
+html[data-bs-theme="dark"] #otpModal {
+    background-color: rgba(51, 51, 51, 0.5);
+    color: #fff;
+}
+
 .modal-content {
     background-color: #fff;
     padding: 30px;
@@ -275,6 +399,20 @@ body {
     max-width: 500px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     text-align: center;
+}
+
+html[data-bs-theme="dark"] .modal-content {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .modal-content label {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .modal-content input {
+    background-color: #444;
+    color: #fff;
 }
 
 /* Custom Input Group Styling (For form fields with icons) */
@@ -394,4 +532,40 @@ footer {
 
 .tutorial-content {
     background-color: #f1f1f1;
+}
+
+html[data-bs-theme="dark"] .tutorial-content {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] #section-nav a {
+    color: #3187c5;
+}
+
+main h1 {
+    color: #000;
+}
+
+html[data-bs-theme="dark"] main h1,
+main a.btn {
+    color: #fff;
+}
+
+.opportunity-item-card-card,
+.opportunity-item-card .card-body,
+.opportunity-item-card .card-body label {
+    background-color: #fff;
+    color: #000;
+}
+
+.opportunity-item-card h3 {
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .opportunity-item,
+html[data-bs-theme="dark"] .opportunity-item-card .card-body,
+html[data-bs-theme="dark"] .opportunity-item-card .card-body label {
+    background-color: #333;
+    color: #fff;
 }

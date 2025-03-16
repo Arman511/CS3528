@@ -147,6 +147,14 @@ def get_user_type():
     return user_type
 
 
+def is_dark_mode():
+    """Check if dark mode is enabled."""
+
+    if "theme" not in session:
+        session["theme"] = "light"
+    return session["theme"] == "dark"
+
+
 def configure_routes(app, cache: Cache, _compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
@@ -179,6 +187,16 @@ def configure_routes(app, cache: Cache, _compress: Compress):
         if user == "superuser":
             return redirect("/superuser/home")
         return render_template("landing_page.html")
+
+    @app.route("/toggle_theme", methods=["GET"])
+    def toggle_theme():
+        """Toggle the theme between light and dark mode."""
+        if "theme" not in session:
+            session["theme"] = "light"
+            return redirect(request.referrer)
+
+        session["theme"] = "dark" if session["theme"] == "light" else "light"
+        return redirect(request.referrer)
 
     @app.route("/api/session", methods=["GET"])
     @admin_or_employers_required
@@ -225,7 +243,9 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     @app.route("/signout")
     def signout():
         """Clears the current session and redirects to the home page."""
+        theme = session.get("theme")
         session.clear()
+        session["theme"] = theme
         return redirect("/")
 
     @app.route("/favicon.ico")

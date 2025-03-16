@@ -22,7 +22,10 @@ class Superuser:
             session["user"] = {"email": attempt_user["email"]}
             session["superuser"] = True
             return jsonify({"message": "/user/search"}), 200
+
+        theme = session["theme"] if "theme" in session else "light"
         session.clear()
+        session["theme"] = theme
 
         return jsonify({"error": "Invalid login credentials"}), 401
 

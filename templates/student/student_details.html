@@ -3,8 +3,8 @@
     {% include "navgbar.html" %}
     <div class="card-wrapper">
         <div class="card">
-            <h2 class="center">Update your Details</h2>
-            <form id="updateForm">
+            <form id="updateForm" class="form-group">
+                <h1 class="center">Update your Details</h1>
                 <label for="student_id">Student Number:</label>
                 <input name="student_id"
                        id="student_id"
@@ -60,7 +60,7 @@
                        name="new_skill"
                        class="form-control"
                        placeholder="Type a new skill" />
-                <button type="button" id="add_skill" for="new_skill" class="btn">Add Skill</button>
+                <button type="button" id="add_skill" for="new_skill" class="btn mt-1">Add Skill</button>
                 <label for="placement_duration">Placement Duration:</label>
                 <select id="placement_duration"
                         name="placement_duration"
