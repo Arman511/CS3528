@@ -27,7 +27,11 @@
                     </div>
                     <div>
                         <label for="course">Course:</label>
-                        <select id="course" name="course" class="field" select="course">
+                        <select id="course"
+                                name="course"
+                                class="field"
+                                select="course"
+                                title="Select a course">
                             <option value="">Select Course</option>
                             {% for course in courses %}
                                 <option value="{{ course.course_id }}">{{ course.course_id }}: {{ course.course_name }}</option>

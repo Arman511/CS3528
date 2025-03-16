@@ -37,7 +37,7 @@ def add_course_routes(app):
         courses = Course().get_courses()
 
         return render_template(
-            "/courses/search.html", courses=courses, user_type="admin", page="courses"
+            "/courses/search.html", courses=courses, user_type="admin"
         )
 
     @app.route("/courses/update", methods=["GET", "POST"])
