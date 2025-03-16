@@ -330,7 +330,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             "application/font-ttf",
         }:
             response.cache_control.max_age = 3600
-        elif "image" in response.content_type:
+        elif "image" in response.content_type or "audio" in response.content_type:
             response.cache_control.max_age = 31536000
             response.cache_control.public = True
         elif response.content_type == "text/html":
