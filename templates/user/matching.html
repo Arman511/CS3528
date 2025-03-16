@@ -2,7 +2,7 @@
 {% block content %}
     {% include "/user/navbar.html" %}
     <div class="card-wrapper">
-        <div class="card">
+        <div class="card card-dynamic-width">
             <div class="container">
                 <div class="alert alert-info text-center">
                     <p data-last-updated="{{ last_updated }}" id="time-message" class="mb-0">
@@ -11,7 +11,7 @@
                     <span id="time-until-update" class="font-weight-bold"></span>
                 </div>
                 <h1 class="text-center">Matching</h1>
-                <button type="button" class="btn btn-primary" id="send-all-emails">Send all Emails</button>
+                <button type="button" class="btn btn-primary mb-2" id="send-all-emails">Send all Emails</button>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -45,8 +45,9 @@
                     </table>
                 </div>
             </div>
-            <br>
-            <div class="container mt-5">
+        </div>
+        <div class="card card-dynamic-width">
+            <div class="container">
                 <h1 class="text-center">Unmatched</h1>
                 <div class="table-responsive">
                     <table class="table table-striped">
