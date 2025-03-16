@@ -16,7 +16,7 @@
 
 ## Project Overview
 
-This project is part of the CS3028 course. Using model route framework ontop of flask. We have decied to allow the placement team to upload students and opportunities. The students will rank opportuniites and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
+This project is part of the CS3028 course. Using model route framework on top of flask. We have decided to allow the placement team to upload students and opportunities. The students will rank opportunities and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
 
 -   **Flask**: A lightweight WSGI web application framework in Python.
 -   **Pymongo**: An MongoDB toolkit and Object-Relational Mapping (ORM) library for Python.
@@ -26,8 +26,6 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 ## Website
 
 [Deployment Official](https://www.abdn.skillpilot.co.uk/)
-
-[Deployment Vercel](https://cs-3528.vercel.app/)
 
 [Coverage Report](https://arman511.github.io/CS3528/)
 
@@ -54,25 +52,25 @@ This project is part of the CS3028 course. Using model route framework ontop of 
 
 ## Environment Variables
 
-To configure the application, you need to create a `.env` file in the root directory of the project with the following parameters:
+To run the application, you need to create a `.env` file in the root directory of the project with the following parameters:
 
 ```
-MONGO_URI=
-SECRET_KEY=
+MONGO_URI= The link to the used MongoDB instance for the application
+SECRET_KEY= The secret key for Flask to use to handle encryption
 GUNICORN_PROCESSES=2
 GUNICORN_THREADS=4
 GUNICORN_BIND="0.0.0.0:8080"
 IS_GITHUB_ACTION="False"
-EMAIL_PASSWORD=
-EMAIL=
-SMTP=
-MONGO_DB_TEST="_test"
-MONGO_DB_PROD="_prod"
-BASE_EMAIL_FOR_STUDENTS=
-SUPERUSER_EMAIL=
-SUPERUSER_PASSWORD=
+EMAIL_PASSWORD= The password for the email service used
+EMAIL= The email for the email service used
+SMTP= The SMTP server used for the email service
+MONGO_DB_TEST="_test" The name of the test collection
+MONGO_DB_PROD="_prod" The name of the prod collection
+BASE_EMAIL_FOR_STUDENTS= The base email for adding students e.g. abdn.ac.uk
+SUPERUSER_EMAIL= The superuser admin login email, this accounts handles the user accounts for the placement team
+SUPERUSER_PASSWORD= The password for the superuser account
 OFFLINE="False" - Set to true if you are using local MongoDB deployment
-PORT="8080"
+PORT="8080" If changed change also in the Dockerfile
 GUNICORN_LOG_LEVEL="info"
 GUNICORN_ACCESS_LOG="-"
 GUNICORN_ERROR_LOG="-"
@@ -82,7 +80,7 @@ GUNICORN_ERROR_LOG="-"
 
 ## How to Run
 
--   To run the project, execute the following command:
+-   To run the project, execute the following command (make sure the `.env` is set):
 
     -   On macOS/Linux:
         ```
