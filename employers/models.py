@@ -53,7 +53,9 @@ class Employers:
 
     def employer_login(self, email):
         """Logs in the employer."""
+        theme = session["theme"] if "theme" in session else "light"
         session.clear()
+        session["theme"] = theme
         from app import DATABASE_MANAGER
 
         employer = DATABASE_MANAGER.get_by_email("employers", email)

@@ -25,6 +25,80 @@
     overflow: hidden;
 }
 
+html[data-bs-theme="dark"] .card h1 {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .card-wrapper {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .card {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] main.content {
+    background-color: #333;
+    color: #fff;
+}
+
+.title {
+    color: #22699a;
+}
+
+html[data-bs-theme="dark"] .title {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .form-group .field,
+.form-group label,
+select {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-input {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] form input {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] form input.btn {
+    background-color: #22699a;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-input .item {
+    background-color: #000;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-dropdown {
+    background-color: #444;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .selectize-dropdown-content {
+    background-color: #444;
+    color: #fff;
+}
+
 .login-card {
     max-width: 600px;
 }
@@ -66,6 +140,24 @@
 
 .table th {
     background-color: #f4f4f4;
+}
+
+html[data-bs-theme="dark"] .table-wrapper {
+    background-color: #333;
+}
+
+html[data-bs-theme="dark"] .table {
+    border-color: #444;
+}
+
+html[data-bs-theme="dark"] .table th {
+    background-color: #555;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .table th,
+.table td {
+    border-color: #666;
 }
 
 .hidden-fields {
@@ -235,6 +327,11 @@ body {
     z-index: 1000;
 }
 
+html[data-bs-theme="dark"] .dropdown-menu {
+    background-color: #333;
+    color: #fff;
+}
+
 .dropdown-menu.show {
     display: block;
 }
@@ -243,6 +340,10 @@ body {
     padding: 8px 15px;
     color: black;
     text-decoration: none;
+}
+
+html[data-bs-theme="dark"] .dropdown-item {
+    color: #fff;
 }
 
 .dropdown-item:hover {
@@ -267,6 +368,11 @@ body {
     align-items: center;
 }
 
+html[data-bs-theme="dark"] #otpModal {
+    background-color: rgba(51, 51, 51, 0.5);
+    color: #fff;
+}
+
 .modal-content {
     background-color: #fff;
     padding: 30px;
@@ -275,6 +381,20 @@ body {
     max-width: 500px;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
     text-align: center;
+}
+
+html[data-bs-theme="dark"] .modal-content {
+    background-color: #333;
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .modal-content label {
+    color: #fff;
+}
+
+html[data-bs-theme="dark"] .modal-content input {
+    background-color: #444;
+    color: #fff;
 }
 
 /* Custom Input Group Styling (For form fields with icons) */
@@ -394,4 +514,9 @@ footer {
 
 .tutorial-content {
     background-color: #f1f1f1;
+}
+
+html[data-bs-theme="dark"] .tutorial-content {
+    background-color: #333;
+    color: #fff;
 }

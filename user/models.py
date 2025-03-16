@@ -48,7 +48,9 @@ class User:
         invalid login credentials."""
         from app import DATABASE_MANAGER
 
+        theme = session["theme"] if "theme" in session else "light"
         session.clear()
+        session["theme"] = theme
         user = DATABASE_MANAGER.get_by_email("users", attempt_user["email"])
 
         if user and pbkdf2_sha512.verify(attempt_user["password"], user["password"]):
@@ -173,9 +175,9 @@ class User:
     def get_nearest_deadline_for_dashboard(self):
         """Retrieves the nearest deadline for the dashboard."""
         from app import DEADLINE_MANAGER, DATABASE_MANAGER
-        
+
         students = DATABASE_MANAGER.get_all("students")
-        opportunities = DATABASE_MANAGER.get_all("opportunities") 
+        opportunities = DATABASE_MANAGER.get_all("opportunities")
 
         number_of_students = 0
         number_of_opportunities = 0
@@ -198,11 +200,11 @@ class User:
         if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             for student in students:
                 student = student.get("preferences")
-                if student is not None: 
+                if student is not None:
                     number_of_students += 1
 
             number_of_students = len(students) - number_of_students
-            
+
             return (
                 "Students Ranking Opportunities Deadline",
                 DEADLINE_MANAGER.get_student_ranking_deadline(),
@@ -212,19 +214,17 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
             for opportunity in opportunities:
-                if opportunity.get(
-                    "preferences"
-                ):  
+                if opportunity.get("preferences"):
                     number_of_opportunities += 1
 
-            number_of_opportunities = len(opportunities) - number_of_opportunities    
-                
+            number_of_opportunities = len(opportunities) - number_of_opportunities
+
             return (
                 "Employers Ranking Students Deadline",
                 DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
-                None, 
+                None,
                 number_of_opportunities,
             )
 
         # 4️⃣ No upcoming deadlines
-        return "No Upcoming Deadlines", None, None, None 
+        return "No Upcoming Deadlines", None, None, None
