@@ -343,4 +343,14 @@ def configure_routes(app, cache: Cache, _compress: Compress):
 
     @app.route("/static/<path:filename>")
     def serve_static(filename):
-        return send_from_directory(os.path.join(app.root_path, "static"), filename)
+        response = send_from_directory(os.path.join(app.root_path, "static"), filename)
+        if filename.endswith(".woff2"):
+            response.headers["Content-Type"] = "font/woff2"
+        elif filename.endswith(".webp"):
+            response.headers["Content-Type"] = "image/webp"
+        elif filename.endswith(".mp3"):
+            response.headers["Content-Type"] = "audio/mpeg"
+
+        # Add security headers
+        response.headers["X-Content-Type-Options"] = "nosniff"
+        return response
