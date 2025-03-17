@@ -125,7 +125,7 @@ def add_student_routes(app):
     @app.route("/students/passed_deadline")
     def past_deadline():
         """Page for when the deadline has passed."""
-        session.clear()
+        handlers.clear_session_save_theme()
         return render_template("student/past_deadline.html")
 
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
@@ -136,7 +136,7 @@ def add_student_routes(app):
         from app import CONFIG_MANAGER
 
         if session["student"]["student_id"] != str(student_id):
-            session.clear()
+            handlers.clear_session_save_theme()
             return redirect("/students/login")
 
         # Handle deadlines (applicable to students only)
@@ -272,14 +272,14 @@ def add_student_routes(app):
             return redirect("/students/login")
 
         if session["student"]["student_id"] != str(student_id):
-            session.clear()
+            handlers.clear_session_save_theme()
             return redirect("/students/login")
 
         if (
             DEADLINE_MANAGER.is_past_student_ranking_deadline()
             and request.method == "GET"
         ):
-            session.clear()
+            handlers.clear_session_save_theme()
             render_template("student/past_deadline.html")
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
@@ -313,7 +313,7 @@ def add_student_routes(app):
     @handlers.student_login_required
     def student_update_successful():
         """Routing to deal with success"""
-        session.clear()
+        handlers.clear_session_save_theme()
         return render_template("student/update_successful_page.html")
 
     @app.route("/students/download", methods=["GET"])

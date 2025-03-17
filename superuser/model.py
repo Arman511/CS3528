@@ -3,6 +3,8 @@
 import os
 from flask import session, jsonify
 
+from core import handlers
+
 
 class Superuser:
     """A class used to represent a Superuser and handle superuser-related"""
@@ -22,7 +24,8 @@ class Superuser:
             session["user"] = {"email": attempt_user["email"]}
             session["superuser"] = True
             return jsonify({"message": "/user/search"}), 200
-        session.clear()
+
+        handlers.clear_session_save_theme()
 
         return jsonify({"error": "Invalid login credentials"}), 401
 

@@ -1,7 +1,7 @@
 {% include "navgbar.html" %}
 <div class="d-flex justify-content-center">
     <nav class="navbar navbar-expand-lg navbar-light">
-        <button class="navbar-toggler bg-light ms-2"
+        <button class="navbar-toggler {% if session.theme == 'dark' %}bg-dark{% else %}bg-light{% endif %} ms-2"
                 type="button"
                 data-bs-toggle="collapse"
                 data-bs-target="#navbarNav"

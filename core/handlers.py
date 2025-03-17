@@ -190,6 +190,16 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             return redirect("/superuser/home")
         return render_template("landing_page.html")
 
+    @app.route("/toggle_theme", methods=["GET"])
+    def toggle_theme():
+        """Toggle the theme between light and dark mode."""
+        if "theme" not in session:
+            session["theme"] = "light"
+            return redirect(request.referrer)
+
+        session["theme"] = "dark" if session["theme"] == "light" else "light"
+        return redirect(request.referrer)
+
     @app.route("/api/session", methods=["GET"])
     @admin_or_employers_required
     def get_session():
@@ -235,7 +245,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     @app.route("/signout")
     def signout():
         """Clears the current session and redirects to the home page."""
-        session.clear()
+        clear_session_save_theme()
         return redirect("/")
 
     @app.route("/favicon.ico")

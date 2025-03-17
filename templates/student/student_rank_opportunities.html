@@ -9,12 +9,12 @@
                     Rank the opportunities below in order of preference. You can only rank each opportunity once. 1 is most preferable {{ (opportunities|length) }} is least preferable. Do at least {{ min_ranked }} or as many as you can.
                 </p>
             </div>
-            <div class="col-12">
+            <div class="col-12 mb-4">
                 <button id="submit-ranks" class="btn btn-primary">Submit</button>
             </div>
             {% for opportunity in opportunities %}
-                <div class="col-md-6 col-lg-4 mb-1 px-1">
-                    <div class="opportunity-item card h-100 p-2 bg-light">
+                <div class="opportunity-item-card col-md-6 col-lg-4 mb-1">
+                    <div class="opportunity-item card h-100 p-2">
                         <div class="card-body">
                             <h3 class="opportunity-title">{{ opportunity.title }}</h3>
                             <p class="opportunity-id d-none">{{ opportunity._id }}</p>
