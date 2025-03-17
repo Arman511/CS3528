@@ -9,7 +9,7 @@ from passlib.hash import pbkdf2_sha512
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException, UnexpectedAlertPresentException
 
 import random
 import string
@@ -195,6 +195,30 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
         )
         browser.execute_script("arguments[0].click();", submit_button)
 
+    def delete_user(browser, name, email):
+        browser.get("http://127.0.0.1:5000/user/search")
+        
+        search_input_name = browser.find_element(By.NAME, "name")
+        search_input_email = browser.find_element(By.NAME, "email")
+        
+        search_input_name.clear()
+        search_input_email.clear()
+
+        search_input_name.send_keys(name)
+        search_input_email.send_keys(email)
+
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.ID, "user-table"))
+        )
+
+        user_table = browser.find_element(By.ID, "user-table")
+        if name in user_table.text:
+            delete_button = user_table.find_element(By.XPATH, f"//tr[td[text()='{name}']]/td/button[text()='Delete']")
+            delete_button.click()
+            WebDriverWait(browser, 10).until(EC.alert_is_present())
+            alert = browser.switch_to.alert
+            alert.accept()
+
     # Generate random user details
     random_name = generate_random_string()
     random_email = f"{random_name}@example.com"
@@ -264,9 +288,15 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
             user_table = superuser_logged_in_browser.find_element(By.ID, "user-table")
             assert random_name in user_table.text
             assert random_email in user_table.text
+
+            # Delete the test user after verification
+            delete_user(superuser_logged_in_browser, random_name, random_email)
             break
         except (TimeoutException, NoSuchElementException):
             superuser_logged_in_browser.refresh()
+        except UnexpectedAlertPresentException:
+            alert = superuser_logged_in_browser.switch_to.alert
+            alert.accept()
 
 def test_superuser_change_user_password(superuser_logged_in_browser, database):
     def register_user(browser, name, email, password):
