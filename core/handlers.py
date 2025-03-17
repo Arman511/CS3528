@@ -147,6 +147,16 @@ def get_user_type():
     return user_type
 
 
+def clear_session_save_theme():
+    """Clear the session and save the theme."""
+    if "theme" not in session:
+        session["theme"] = "light"
+
+    theme = session["theme"]
+    session.clear()
+    session["theme"] = theme
+
+
 def configure_routes(app, cache: Cache, _compress: Compress):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
