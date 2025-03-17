@@ -195,6 +195,11 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
         )
         browser.execute_script("arguments[0].click();", submit_button)
 
+        WebDriverWait(browser, 10).until(EC.alert_is_present())
+        alert = browser.switch_to.alert
+        assert alert.text == "User registered successfully"
+        alert.accept()
+
     def delete_user(browser, name, email):
         browser.get("http://127.0.0.1:5000/user/search")
         
@@ -266,6 +271,12 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
                 EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
             )
             superuser_logged_in_browser.execute_script("arguments[0].click();", submit_button)
+
+            # Wait for the alert and accept it
+            WebDriverWait(superuser_logged_in_browser, 10).until(EC.alert_is_present())
+            alert = superuser_logged_in_browser.switch_to.alert
+            assert alert.text == "User updated successfully"
+            alert.accept()
 
             # Verify that the user is redirected back to the search page
             WebDriverWait(superuser_logged_in_browser, 10).until(
