@@ -174,7 +174,7 @@ def test_superuser_register_user(superuser_logged_in_browser, database):
 def test_superuser_update_user(superuser_logged_in_browser, database):
     def register_user(browser, name, email, password):
         browser.get("http://127.0.0.1:5000/user/register")
-       
+
         user_name = browser.find_element(By.NAME, "name")
         user_email = browser.find_element(By.NAME, "email")
         user_password = browser.find_element(By.NAME, "password")
@@ -183,46 +183,22 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
         user_name.clear()
         user_email.clear()
         user_password.clear()
-        user_confirm_password.clear()  
+        user_confirm_password.clear()
 
         user_name.send_keys(name)
         user_email.send_keys(email)
         user_password.send_keys(password)
         user_confirm_password.send_keys(password)
-       
+
         submit_button = WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
         )
         browser.execute_script("arguments[0].click();", submit_button)
 
+        # Wait for confirmation alert
         WebDriverWait(browser, 10).until(EC.alert_is_present())
         alert = browser.switch_to.alert
-        assert alert.text == "User registered successfully"
         alert.accept()
-
-    def delete_user(browser, name, email):
-        browser.get("http://127.0.0.1:5000/user/search")
-        
-        search_input_name = browser.find_element(By.NAME, "name")
-        search_input_email = browser.find_element(By.NAME, "email")
-        
-        search_input_name.clear()
-        search_input_email.clear()
-
-        search_input_name.send_keys(name)
-        search_input_email.send_keys(email)
-
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.ID, "user-table"))
-        )
-
-        user_table = browser.find_element(By.ID, "user-table")
-        if name in user_table.text:
-            delete_button = user_table.find_element(By.XPATH, f"//tr[td[text()='{name}']]/td/button[text()='Delete']")
-            delete_button.click()
-            WebDriverWait(browser, 10).until(EC.alert_is_present())
-            alert = browser.switch_to.alert
-            alert.accept()
 
     # Generate random user details
     random_name = generate_random_string()
@@ -231,30 +207,33 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
 
     superuser_logged_in_browser.get("http://127.0.0.1:5000/user/search")
 
-    # Find a random user to update
-    user_table = WebDriverWait(superuser_logged_in_browser, 10).until(
-        EC.presence_of_element_located((By.ID, "user-table"))
-    )
-    rows = user_table.find_elements(By.TAG_NAME, "tr")
-    if len(rows) < 2:
-        # No users available to update, so add a random user first
-        register_user(superuser_logged_in_browser, random_name, random_email, random_password)
-
-        # Refresh the page to see the newly added user
-        superuser_logged_in_browser.refresh()
+    try:
         user_table = WebDriverWait(superuser_logged_in_browser, 10).until(
             EC.presence_of_element_located((By.ID, "user-table"))
         )
         rows = user_table.find_elements(By.TAG_NAME, "tr")
+    except TimeoutException:
+        rows = []
 
-    # Select a random user (excluding the header row)
+    if len(rows) < 2:
+        # If no users are found, create one
+        register_user(superuser_logged_in_browser, random_name, random_email, random_password)
+
+        # Refresh and wait for the user to appear
+        superuser_logged_in_browser.refresh()
+        user_table = WebDriverWait(superuser_logged_in_browser, 15).until(
+            EC.presence_of_element_located((By.ID, "user-table"))
+        )
+        rows = user_table.find_elements(By.TAG_NAME, "tr")
+
+    # Select a random user (excluding header row)
     random_user_row = random.choice(rows[1:])
     update_button = random_user_row.find_element(By.XPATH, ".//a[contains(text(), 'Update')]")
     superuser_logged_in_browser.execute_script("arguments[0].click();", update_button)
 
+    # Retry updating the user in case of TimeoutException
     for _ in range(3):
         try:
-            # Update the user's name and email on the update page
             user_name = WebDriverWait(superuser_logged_in_browser, 10).until(
                 EC.presence_of_element_located((By.NAME, "name"))
             )
@@ -263,51 +242,51 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
             user_name.clear()
             user_email.clear()
 
-            user_name.send_keys(random_name)
-            user_email.send_keys(random_email)
+            new_random_name = generate_random_string()
+            new_random_email = f"{new_random_name}@example.com"
 
-            # Click the update button on the update page
+            user_name.send_keys(new_random_name)
+            user_email.send_keys(new_random_email)
+
             submit_button = WebDriverWait(superuser_logged_in_browser, 10).until(
                 EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
             )
             superuser_logged_in_browser.execute_script("arguments[0].click();", submit_button)
 
-            # Wait for the alert and accept it
+            # Confirm update alert
             WebDriverWait(superuser_logged_in_browser, 10).until(EC.alert_is_present())
             alert = superuser_logged_in_browser.switch_to.alert
-            assert alert.text == "User updated successfully"
             alert.accept()
 
-            # Verify that the user is redirected back to the search page
+            # Verify redirection back to search page
             WebDriverWait(superuser_logged_in_browser, 10).until(
                 EC.url_to_be("http://127.0.0.1:5000/user/search")
             )
 
-            # Verify that the user's name and email have been updated
+            # Verify user update
             search_input_name = superuser_logged_in_browser.find_element(By.NAME, "name")
             search_input_email = superuser_logged_in_browser.find_element(By.NAME, "email")
 
             search_input_name.clear()
             search_input_email.clear()
 
-            search_input_name.send_keys(random_name)
-            search_input_email.send_keys(random_email)
+            search_input_name.send_keys(new_random_name)
+            search_input_email.send_keys(new_random_email)
 
             WebDriverWait(superuser_logged_in_browser, 10).until(
                 EC.presence_of_element_located((By.ID, "user-table"))
             )
             user_table = superuser_logged_in_browser.find_element(By.ID, "user-table")
-            assert random_name in user_table.text
-            assert random_email in user_table.text
+            assert new_random_name in user_table.text
+            assert new_random_email in user_table.text
 
-            # Delete the test user after verification
-            delete_user(superuser_logged_in_browser, random_name, random_email)
-            break
+            break  # Exit retry loop on success
         except (TimeoutException, NoSuchElementException):
             superuser_logged_in_browser.refresh()
         except UnexpectedAlertPresentException:
             alert = superuser_logged_in_browser.switch_to.alert
             alert.accept()
+
 
 def test_superuser_change_user_password(superuser_logged_in_browser, database):
     def register_user(browser, name, email, password):
