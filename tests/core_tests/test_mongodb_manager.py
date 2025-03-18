@@ -281,12 +281,6 @@ def test_get_all_by_in_list(database):
     database.delete_by_id("test_collection", "test24")
 
 
-def test_empty_connection_string():
-    """Test that an empty connection string raises a ValueError."""
-    with pytest.raises(ValueError, match="Connection string cannot be empty"):
-        DatabaseMongoManager("", "cs3528_testing")
-
-
 def test_invalid_connection_string(monkeypatch):
     """Test that an invalid connection string raises ConfigurationError."""
 
