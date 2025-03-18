@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+    {% if user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% elif user_type == "employer" %}
+        {% include "employer/navbar.html" %}
+    {% else %}
+        {% include "navgbar.html" %}
+    {% endif %}
+    <div class="card-wrapper  text-center">
+        <div class="card card-dynamic-width">
+            <div class="card-body">
+                <h1 class="display-4 text-danger">{{ code }} - {{ name }}</h1>
+                <p class="lead text-muted">{{ msg }}</p>
+                <a class="btn btn-primary mt-4" href="{{ url_for("index") }}">Go to Homepage</a>
+            </div>
+        </div>
+    </div>
+    <script>document.title = "{{ code }} - {{ name }}";</script>
+{% endblock content %}

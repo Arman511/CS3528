@@ -12,7 +12,7 @@ from dotenv import load_dotenv
 from flask import Flask
 from flask_caching import Cache
 
-from flask_compress import Compress
+from flask_compress import Compress  # type: ignore
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -72,7 +72,7 @@ compress = Compress()
 compress.init_app(app)
 
 
-handlers.configure_routes(app, cache, compress)
+handlers.configure_routes(app, cache)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 

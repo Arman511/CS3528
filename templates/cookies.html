@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "/navgbar.html" %}
+    {% if user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% elif user_type == "employer" %}
+        {% include "employer/navbar.html" %}
+    {% else %}
+        {% include "navgbar.html" %}
+    {% endif %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Cookies Policy</h2>

@@ -7,6 +7,7 @@ from datetime import datetime, timezone
 from functools import wraps
 import os
 from flask import (
+    json,
     jsonify,
     render_template,
     send_from_directory,
@@ -16,8 +17,9 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-from flask_compress import Compress  # type: ignore
+import werkzeug  # type: ignore
 from core import routes_debug
+from core.error_routes import routes_error
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -157,7 +159,7 @@ def clear_session_save_theme():
     session["theme"] = theme
 
 
-def configure_routes(app, cache: Cache, _compress: Compress):
+def configure_routes(app, cache: Cache):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -174,6 +176,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
     routes_debug.add_debug_routes(app)
+    routes_error.add_error_routes(app)
 
     @app.route("/landing_page")
     @app.route("/")
@@ -222,7 +225,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
         Returns:
             str: Rendered HTML template for the privacy policy page.
         """
-        return render_template("privacy_policy.html")
+        return render_template("privacy_policy.html", user_type=get_user_type())
 
     @app.route("/cookies_policy")
     def cookies_policy():
@@ -231,7 +234,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
         Returns:
             str: Rendered HTML template for the cookies policy page.
         """
-        return render_template("cookies.html")
+        return render_template("cookies.html", user_type=get_user_type())
 
     @app.route("/robots.txt")
     def robots():
@@ -256,24 +259,6 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             str: Rendered favicon.ico template.
         """
         return app.send_static_file("favicon.ico")
-
-    @app.route("/404")
-    def error_404():
-        """The 404 route which renders the '404.html' template.
-
-        Returns:
-            str: Rendered 404.html template.
-        """
-        return render_template("404.html", user_type=get_user_type()), 404
-
-    @app.route("/500")
-    def error_500():
-        """The 500 route which renders the '500.html' template.
-
-        Returns:
-            str: Rendered 500.html template.
-        """
-        return render_template("500.html", user_type=get_user_type()), 500
 
     @app.route("/tutorial")
     def tutorial():
@@ -354,6 +339,8 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             response.cache_control.max_age = 31536000
             response.cache_control.public = True
         elif response.content_type == "text/html":
+            response.cache_control.no_store = True
+        elif response.content_type == "application/json":
             response.cache_control.no_store = True
         else:
             response.cache_control.max_age = 86400
