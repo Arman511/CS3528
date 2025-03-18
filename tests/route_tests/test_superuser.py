@@ -13,6 +13,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -34,7 +35,7 @@ def database():
     """Fixture to create a test database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"), shared.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
     yield database
@@ -48,8 +49,8 @@ def superuser_logged_in_client(client, database: DatabaseMongoManager):
     """Fixture to login a superuser."""
     database.add_table("users")
 
-    superuser_email = os.getenv("SUPERUSER_EMAIL")
-    superuser_password = os.getenv("SUPERUSER_PASSWORD")
+    superuser_email = shared.getenv("SUPERUSER_EMAIL")
+    superuser_password = shared.getenv("SUPERUSER_PASSWORD")
 
     url = "/user/login"
 
@@ -68,8 +69,8 @@ def superuser_logged_in_client(client, database: DatabaseMongoManager):
 def test_login(client):
     """Test logging in a user."""
     attempt_user = {
-        "email": os.getenv("SUPERUSER_EMAIL"),
-        "password": os.getenv("SUPERUSER_PASSWORD"),
+        "email": shared.getenv("SUPERUSER_EMAIL"),
+        "password": shared.getenv("SUPERUSER_PASSWORD"),
     }
 
     response = client.post(

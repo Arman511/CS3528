@@ -1,12 +1,11 @@
 """Employer model."""
 
-from datetime import datetime, timedelta
 import tempfile
 import time
 import uuid
 from flask import redirect, jsonify, session, send_file
 import pandas as pd
-from core import email_handler
+from core import email_handler, handlers
 
 
 class Employers:
@@ -53,9 +52,7 @@ class Employers:
 
     def employer_login(self, email):
         """Logs in the employer."""
-        theme = session["theme"] if "theme" in session else "light"
-        session.clear()
-        session["theme"] = theme
+        handlers.clear_session_save_theme()
         from app import DATABASE_MANAGER
 
         employer = DATABASE_MANAGER.get_by_email("employers", email)

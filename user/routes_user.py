@@ -3,12 +3,11 @@ Handles routes for the user module.
 """
 
 from datetime import datetime
-import os
 import uuid
 from flask import jsonify, redirect, render_template, session, request
 from passlib.hash import pbkdf2_sha512
 from algorithm.matching import Matching
-from core import handlers
+from core import handlers, shared
 from employers.models import Employers
 from opportunities.models import Opportunity
 from students.models import Student
@@ -56,7 +55,7 @@ def add_user_routes(app, cache):
     def login():
         """Gives login form to user."""
         if request.method == "POST":
-            session.clear()
+            handlers.clear_session_save_theme()
             attempt_user = {
                 "email": request.form.get("email"),
                 "password": request.form.get("password"),
@@ -64,13 +63,13 @@ def add_user_routes(app, cache):
             if not attempt_user["email"] or not attempt_user["password"]:
                 return jsonify({"error": "Missing email or password"}), 400
             attempt_user["email"] = attempt_user["email"].lower()
-            if attempt_user["email"] == os.getenv("SUPERUSER_EMAIL") and attempt_user[
-                "password"
-            ] == os.getenv("SUPERUSER_PASSWORD"):
+            if attempt_user["email"] == shared.getenv(
+                "SUPERUSER_EMAIL"
+            ) and attempt_user["password"] == shared.getenv("SUPERUSER_PASSWORD"):
                 return Superuser().login(attempt_user)
             return User().login(attempt_user)
         if "logged_in" in session:
-            session.clear()
+            handlers.clear_session_save_theme()
         return render_template("user/login.html")
 
     @app.route("/user/delete", methods=["DELETE"])

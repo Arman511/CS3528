@@ -2,12 +2,11 @@
 Handles routes for the student module.
 """
 
-import os
 import uuid
 from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
 from itsdangerous import URLSafeSerializer
-from core import handlers
+from core import handlers, shared
 from courses.models import Course
 from employers.models import Employers
 from skills.models import Skill
@@ -61,7 +60,7 @@ def add_student_routes(app):
                 "/student/upload_student_data.html", user_type="admin", page="students"
             )
         load_dotenv()
-        base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
+        base_email = shared.getenv("BASE_EMAIL_FOR_STUDENTS")
         if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
         file = request.files["file"]
@@ -112,7 +111,7 @@ def add_student_routes(app):
 
         if "student" not in session:
             return jsonify({"error": "Employer not logged in."}), 400
-        otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+        otp_serializer = URLSafeSerializer(str(shared.getenv("SECRET_KEY", "secret")))
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
         if request.form.get("otp") != otp_serializer.loads(session["OTP"]):
@@ -125,7 +124,7 @@ def add_student_routes(app):
     @app.route("/students/passed_deadline")
     def past_deadline():
         """Page for when the deadline has passed."""
-        session.clear()
+        handlers.clear_session_save_theme()
         return render_template("student/past_deadline.html")
 
     @app.route("/students/details/<int:student_id>", methods=["GET", "POST"])
@@ -136,7 +135,7 @@ def add_student_routes(app):
         from app import CONFIG_MANAGER
 
         if session["student"]["student_id"] != str(student_id):
-            session.clear()
+            handlers.clear_session_save_theme()
             return redirect("/students/login")
 
         # Handle deadlines (applicable to students only)
@@ -272,14 +271,14 @@ def add_student_routes(app):
             return redirect("/students/login")
 
         if session["student"]["student_id"] != str(student_id):
-            session.clear()
+            handlers.clear_session_save_theme()
             return redirect("/students/login")
 
         if (
             DEADLINE_MANAGER.is_past_student_ranking_deadline()
             and request.method == "GET"
         ):
-            session.clear()
+            handlers.clear_session_save_theme()
             render_template("student/past_deadline.html")
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
@@ -313,7 +312,7 @@ def add_student_routes(app):
     @handlers.student_login_required
     def student_update_successful():
         """Routing to deal with success"""
-        session.clear()
+        handlers.clear_session_save_theme()
         return render_template("student/update_successful_page.html")
 
     @app.route("/students/download", methods=["GET"])

@@ -16,8 +16,8 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-from flask_compress import Compress  # type: ignore
 from core import routes_debug
+from core import routes_error
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities
@@ -147,15 +147,17 @@ def get_user_type():
     return user_type
 
 
-def is_dark_mode():
-    """Check if dark mode is enabled."""
-
+def clear_session_save_theme():
+    """Clear the session and save the theme."""
     if "theme" not in session:
         session["theme"] = "light"
-    return session["theme"] == "dark"
+
+    theme = session["theme"]
+    session.clear()
+    session["theme"] = theme
 
 
-def configure_routes(app, cache: Cache, _compress: Compress):
+def configure_routes(app, cache: Cache):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -172,6 +174,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
     routes_debug.add_debug_routes(app)
+    routes_error.add_error_routes(app)
 
     @app.route("/landing_page")
     @app.route("/")
@@ -192,7 +195,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     def toggle_theme():
         """Toggle the theme between light and dark mode."""
         if "theme" not in session:
-            session["theme"] = "light"
+            session["theme"] = "dark"
             return redirect(request.referrer)
 
         session["theme"] = "dark" if session["theme"] == "light" else "light"
@@ -220,7 +223,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
         Returns:
             str: Rendered HTML template for the privacy policy page.
         """
-        return render_template("privacy_policy.html")
+        return render_template("privacy_policy.html", user_type=get_user_type())
 
     @app.route("/cookies_policy")
     def cookies_policy():
@@ -229,7 +232,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
         Returns:
             str: Rendered HTML template for the cookies policy page.
         """
-        return render_template("cookies.html")
+        return render_template("cookies.html", user_type=get_user_type())
 
     @app.route("/robots.txt")
     def robots():
@@ -243,9 +246,7 @@ def configure_routes(app, cache: Cache, _compress: Compress):
     @app.route("/signout")
     def signout():
         """Clears the current session and redirects to the home page."""
-        theme = session.get("theme")
-        session.clear()
-        session["theme"] = theme
+        clear_session_save_theme()
         return redirect("/")
 
     @app.route("/favicon.ico")
@@ -256,24 +257,6 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             str: Rendered favicon.ico template.
         """
         return app.send_static_file("favicon.ico")
-
-    @app.route("/404")
-    def error_404():
-        """The 404 route which renders the '404.html' template.
-
-        Returns:
-            str: Rendered 404.html template.
-        """
-        return render_template("404.html", user_type=get_user_type()), 404
-
-    @app.route("/500")
-    def error_500():
-        """The 500 route which renders the '500.html' template.
-
-        Returns:
-            str: Rendered 500.html template.
-        """
-        return render_template("500.html", user_type=get_user_type()), 500
 
     @app.route("/tutorial")
     def tutorial():
@@ -354,6 +337,8 @@ def configure_routes(app, cache: Cache, _compress: Compress):
             response.cache_control.max_age = 31536000
             response.cache_control.public = True
         elif response.content_type == "text/html":
+            response.cache_control.no_store = True
+        elif response.content_type == "application/json":
             response.cache_control.no_store = True
         else:
             response.cache_control.max_age = 86400

@@ -3,10 +3,9 @@ User model.
 """
 
 from email.mime.text import MIMEText
-import os
 from flask import jsonify, session
 from passlib.hash import pbkdf2_sha512
-from core import email_handler
+from core import email_handler, handlers, shared
 from employers.models import Employers
 from opportunities.models import Opportunity
 from students.models import Student
@@ -35,7 +34,7 @@ class User:
             return jsonify({"error": "Missing name"}), 400
         if DATABASE_MANAGER.get_by_email("users", user["email"]):
             return jsonify({"error": "Email address already in use"}), 400
-        if user["email"] == os.getenv("SUPERUSER_EMAIL"):
+        if user["email"] == shared.getenv("SUPERUSER_EMAIL"):
             return jsonify({"error": "Email address already in use"}), 400
 
         # Insert the user into the database
@@ -48,9 +47,8 @@ class User:
         invalid login credentials."""
         from app import DATABASE_MANAGER
 
-        theme = session["theme"] if "theme" in session else "light"
-        session.clear()
-        session["theme"] = theme
+        handlers.clear_session_save_theme()
+
         user = DATABASE_MANAGER.get_by_email("users", attempt_user["email"])
 
         if user and pbkdf2_sha512.verify(attempt_user["password"], user["password"]):
@@ -102,13 +100,9 @@ class User:
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <p style="font-size: 16px;">Dear {student['first_name']},</p>
-            
             <p style="font-size: 16px;"><strong>Congratulations!<strong> We’re thrilled to inform you that you have been <strong>matched</strong> with <strong>{employer_name}</strong> for an exciting opportunity!</p>
-
             <p style="font-size: 20px; font-weight: bold; color: #2c3e50;">{opportunity['title']}</p>
-            
             <p style="font-size: 16px;">This is a great chance to connect and explore potential collaboration. We encourage you to reach out to <strong>{employer_name}</strong> at <a href='mailto:{employer_email}' style="color: #3498db; text-decoration: none;">{employer_email}</a> to discuss the next steps.</p>
-            
             <p style="font-size: 16px;">If you have any questions or need any assistance, feel free to get in touch with our support team.</p>
 
             <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
@@ -165,7 +159,7 @@ class User:
             return jsonify({"error": "Email address already in use"}), 400
         if not original:
             return jsonify({"error": "User not found"}), 404
-        if email == os.getenv("SUPERUSER_EMAIL"):
+        if email == shared.getenv("SUPERUSER_EMAIL"):
             return jsonify({"error": "Email address already in use"}), 400
 
         update_data = {"name": name, "email": email}

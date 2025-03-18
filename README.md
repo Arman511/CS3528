@@ -13,6 +13,7 @@
 - [Student Login](#student-login)
 - [Deadlines](#deadlines)
 - [Coverage](#coverage)
+- [Export/Import MongoDB](#mongodb-backup-and-restore)
 
 ## Project Overview
 
@@ -110,6 +111,18 @@ If all else fails, try running the application directly with:
     ./gunicorn_run
     ```
 
+-   To build and run the project using Docker:
+
+    1. Build the Docker image:
+        ```
+        docker build --network=host -t cs3528_alpha . 
+        ```
+
+    2. Run the Docker container, exposing port 8080:
+        ```
+        docker run --env-file .env -p 8080:8080 cs3528_alpha
+        ```
+
 ## Administration Login Details - Example
 
 -   Email : admin@example.com
@@ -163,4 +176,38 @@ To run the tests and generate an HTML coverage report:
 
 ```
 coverage run -m pytest && coverage html
+```
+
+## MongoDB Backup and Restore
+
+### For Local
+
+#### Local Dump
+To create a backup of a local MongoDB database:
+```
+mongodump -d cs3528_prod -o ./mongo-backup
+mongodump -d cs3528_test -o ./mongo-backup
+```
+
+#### Local Restore
+To restore a local MongoDB database from a backup:
+```
+mongorestore -d cs3528_prod ./mongo-backup/cs3528_prod
+mongorestore -d cs3528_test ./mongo-backup/cs3528_test
+```
+
+### For Remote
+REPLACE URI WITH YOUR OWN
+#### Remote Dump
+To create a backup of a remote MongoDB database:
+```
+mongodump --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_prod" -o ./mongo-backup
+mongodump --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_test" -o ./mongo-backup
+```
+
+#### Remote Restore
+To restore a remote MongoDB database from a backup:
+```
+mongorestore --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_prod" ./mongo-backup/cs3528_prod
+mongorestore --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_test" ./mongo-backup/cs3528_test
 ```

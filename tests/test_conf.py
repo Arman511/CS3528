@@ -13,6 +13,7 @@ os.environ["IS_TEST"] = "True"
 # pylint: disable=redefined-outer-name
 # flake8: noqa: F811
 
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 
@@ -30,7 +31,8 @@ def database():
     """Fixture to create a test database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
 
     yield database

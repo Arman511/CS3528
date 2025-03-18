@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -31,7 +32,8 @@ def app():
 def database():
     """Fixture to create a test database."""
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     modules = database.get_all("modules")
     database.delete_all("modules")

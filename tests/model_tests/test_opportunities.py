@@ -17,6 +17,7 @@ import pandas as pd
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -56,7 +57,8 @@ def database():
     """Fixture to create a database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     current_opportunities = database.get_all("opportunities")
     database.delete_all("opportunities")
