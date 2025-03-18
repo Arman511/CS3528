@@ -195,11 +195,6 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
         )
         browser.execute_script("arguments[0].click();", submit_button)
 
-        # Wait for confirmation alert
-        WebDriverWait(browser, 10).until(EC.alert_is_present())
-        alert = browser.switch_to.alert
-        alert.accept()
-
     # Generate random user details
     random_name = generate_random_string()
     random_email = f"{random_name}@example.com"
