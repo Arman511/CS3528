@@ -2,18 +2,19 @@
 
 import smtplib
 from email.mime.text import MIMEText
-import os
 import math
 import random
 from dotenv import load_dotenv
 from flask import session
 from itsdangerous.url_safe import URLSafeSerializer
 
+from core import shared
+
 load_dotenv()
 
-SENDER: str = str(os.getenv("EMAIL"))
-PASSWORD: str = str(os.getenv("EMAIL_PASSWORD"))
-SMTP: str = str(os.getenv("SMTP"))
+SENDER: str = str(shared.getenv("EMAIL"))
+PASSWORD: str = str(shared.getenv("EMAIL_PASSWORD"))
+SMTP: str = str(shared.getenv("SMTP"))
 
 
 def generate_otp():
@@ -28,12 +29,12 @@ def generate_otp():
 
 def send_otp(recipient):
     """Sends an OTP"""
-    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+    otp_serializer = URLSafeSerializer(str(shared.getenv("SECRET_KEY", "secret")))
     otp = generate_otp()
     print(f"Generated OTP: {otp}")
     session["OTP"] = otp_serializer.dumps(otp)
 
-    if os.getenv("IS_TEST") == "True":
+    if shared.getenv("IS_TEST") == "True":
         return
 
     body = f"""
@@ -70,7 +71,7 @@ def send_otp(recipient):
 
 def send_email(msg, recipients):
     """Sends an email"""
-    if os.getenv("IS_TEST") == "True":
+    if shared.getenv("IS_TEST") == "True":
         return
     msg["From"] = SENDER
     with smtplib.SMTP_SSL(SMTP, 465) as smtp_server:

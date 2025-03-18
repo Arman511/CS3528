@@ -15,6 +15,7 @@ load_dotenv()
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 
@@ -31,7 +32,7 @@ def database():
     """Fixture to create a test database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"), shared.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
 
     yield database
@@ -51,8 +52,8 @@ def data_model():
 def test_login_success(app, data_model):
     """Test logging in a user successfully."""
     attempt_user = {
-        "email": os.getenv("SUPERUSER_EMAIL"),
-        "password": os.getenv("SUPERUSER_PASSWORD"),
+        "email": shared.getenv("SUPERUSER_EMAIL"),
+        "password": shared.getenv("SUPERUSER_PASSWORD"),
     }
 
     with app.app_context():

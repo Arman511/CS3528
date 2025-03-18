@@ -1,6 +1,5 @@
 """Employer model."""
 
-from datetime import datetime, timedelta
 import tempfile
 import time
 import uuid

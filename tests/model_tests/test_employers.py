@@ -7,6 +7,7 @@ from io import BytesIO
 import pytest
 import pandas as pd
 from dotenv import load_dotenv
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 sys.path.append(
@@ -30,7 +31,8 @@ def database():
     """Fixture to create a test database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     employers = database.get_all("employers")
     database.delete_all("employers")

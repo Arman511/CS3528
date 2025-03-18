@@ -13,6 +13,7 @@ sys.path.append(
 os.environ["IS_TEST"] = "True"
 
 load_dotenv()
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 from core.deadline_manager import DeadlineManager
 
@@ -22,7 +23,8 @@ def database():
     """Fixture to create a test database."""
 
     DATABASE = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     deadlines = DATABASE.get_all("deadline")
     DATABASE.delete_all("deadline")

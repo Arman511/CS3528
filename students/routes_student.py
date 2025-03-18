@@ -2,12 +2,11 @@
 Handles routes for the student module.
 """
 
-import os
 import uuid
 from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
 from itsdangerous import URLSafeSerializer
-from core import handlers
+from core import handlers, shared
 from courses.models import Course
 from employers.models import Employers
 from skills.models import Skill
@@ -61,7 +60,7 @@ def add_student_routes(app):
                 "/student/upload_student_data.html", user_type="admin", page="students"
             )
         load_dotenv()
-        base_email = os.getenv("BASE_EMAIL_FOR_STUDENTS")
+        base_email = shared.getenv("BASE_EMAIL_FOR_STUDENTS")
         if "file" not in request.files:
             return jsonify({"error": "No file part"}), 400
         file = request.files["file"]
@@ -112,7 +111,7 @@ def add_student_routes(app):
 
         if "student" not in session:
             return jsonify({"error": "Employer not logged in."}), 400
-        otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+        otp_serializer = URLSafeSerializer(str(shared.getenv("SECRET_KEY", "secret")))
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
         if request.form.get("otp") != otp_serializer.loads(session["OTP"]):

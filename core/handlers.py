@@ -7,7 +7,6 @@ from datetime import datetime, timezone
 from functools import wraps
 import os
 from flask import (
-    json,
     jsonify,
     render_template,
     send_from_directory,
@@ -17,9 +16,8 @@ from flask import (
     request,
 )
 from flask_caching import Cache
-import werkzeug  # type: ignore
 from core import routes_debug
-from core.error_routes import routes_error
+from core import routes_error
 from user import routes_user
 from students import routes_student
 from opportunities import routes_opportunities

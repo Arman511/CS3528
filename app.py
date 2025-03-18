@@ -17,7 +17,7 @@ from flask_compress import Compress  # type: ignore
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
 from core.database_mongo_manager import DatabaseMongoManager  # noqa: E402
-from core import handlers  # noqa: E402
+from core import handlers, shared  # noqa: E402
 
 DATABASE_MANAGER = None
 DEADLINE_MANAGER = None
@@ -28,14 +28,14 @@ load_dotenv()
 
 DATABASE = "cs3528_testing"
 
-if os.getenv("IS_TEST") == "True":
+if shared.getenv("IS_TEST") == "True":
     print("In test mode")
-    DATABASE = os.getenv("MONGO_DB_TEST", "")
+    DATABASE = shared.getenv("MONGO_DB_TEST", "")
 else:
     print("In production mode")
-    DATABASE = os.getenv("MONGO_DB_PROD", "")
+    DATABASE = shared.getenv("MONGO_DB_PROD", "")
 
-DATABASE_MANAGER = DatabaseMongoManager(os.getenv("MONGO_URI"), DATABASE)
+DATABASE_MANAGER = DatabaseMongoManager(shared.getenv("MONGO_URI"), DATABASE)
 
 tables = [
     "users",
@@ -56,8 +56,8 @@ for table in tables:
 CONFIG_MANAGER = Config(DATABASE_MANAGER)
 
 app = Flask(__name__)
-PORT = int(os.getenv("PORT", "5000"))
-app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
+PORT = int(shared.getenv("PORT", "5000"))
+app.config["SECRET_KEY"] = shared.getenv("SECRET_KEY")
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024  # 16 MB
 app.config["CACHE_TYPE"] = "SimpleCache"
 app.config["CACHE_DEFAULT_TIMEOUT"] = 300

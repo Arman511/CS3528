@@ -16,6 +16,7 @@ sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
 
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -37,7 +38,7 @@ def database():
     """Fixture to create a test database."""
 
     database = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"), shared.getenv("MONGO_DB_TEST", "cs3528_testing")
     )
     deadlines = database.get_all("deadline")
     database.delete_all("deadline")
@@ -71,7 +72,7 @@ def employer_logged_in_client(client, database: DatabaseMongoManager):
         data={"email": "dummy@dummy.com"},
         content_type="application/x-www-form-urlencoded",
     )
-    otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+    otp_serializer = URLSafeSerializer(str(shared.getenv("SECRET_KEY", "secret")))
     with client.session_transaction() as session:
         otp = otp_serializer.loads(session["OTP"])
 

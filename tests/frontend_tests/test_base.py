@@ -12,6 +12,7 @@ from itsdangerous import URLSafeSerializer
 
 # from selenium.webdriver.chrome.service import Service as ChromeService
 # from webdriver_manager.chrome import ChromeDriverManager
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 # sys.path.append(
@@ -45,7 +46,8 @@ def chrome_browser():
 def database():
     """Fixture to create a test database."""
     DATABASE = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
 
     yield DATABASE
@@ -253,7 +255,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
         "return fetch('/debug/session').then(res => res.json());"
     )
     serialised_otp = session_content["OTP"]
-    secret_key = os.getenv("SECRET_KEY", "secret")
+    secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
 
     otp = serializer.loads(serialised_otp)
@@ -279,7 +281,7 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
         "return fetch('/debug/session').then(res => res.json());"
     )
     serialised_otp = session_content["OTP"]
-    secret_key = os.getenv("SECRET_KEY", "secret")
+    secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
 
     otp = serializer.loads(serialised_otp)

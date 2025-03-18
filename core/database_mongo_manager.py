@@ -1,6 +1,5 @@
 """Module for managing MongoDB database operations."""
 
-import os
 import sys
 from dotenv import load_dotenv
 import pymongo
@@ -9,8 +8,10 @@ from pymongo.errors import (
     OperationFailure,
     ServerSelectionTimeoutError,
 )
-from .database_interface import DatabaseInterface
 from colorama import Fore, Style
+
+from core import shared
+from .database_interface import DatabaseInterface
 
 
 class DatabaseMongoManager(DatabaseInterface):
@@ -29,9 +30,9 @@ class DatabaseMongoManager(DatabaseInterface):
         load_dotenv()
         self.connection = pymongo.MongoClient(serverSelectionTimeoutMS=5000)
         if (
-            os.getenv("IS_GITHUB_ACTION") == "False"
+            shared.getenv("IS_GITHUB_ACTION") == "False"
             and connection is not None
-            and os.getenv("OFFLINE") != "True"
+            and shared.getenv("OFFLINE") != "True"
         ):
             self.connection = pymongo.MongoClient(
                 connection, serverSelectionTimeoutMS=5000

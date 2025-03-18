@@ -1,9 +1,10 @@
 """Debug routes for the app."""
 
 from functools import wraps
-import os
 
 from flask import jsonify, redirect, session
+
+from core import shared
 
 
 def is_test_required(f):
@@ -11,7 +12,7 @@ def is_test_required(f):
 
     @wraps(f)
     def wrap(*args, **kwargs):
-        if os.getenv("IS_TEST") == "True":
+        if shared.getenv("IS_TEST") == "True":
             return f(*args, **kwargs)
 
         return redirect("/students/login")

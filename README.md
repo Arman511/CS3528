@@ -111,6 +111,18 @@ If all else fails, try running the application directly with:
     ./gunicorn_run
     ```
 
+-   To build and run the project using Docker:
+
+    1. Build the Docker image:
+        ```
+        docker build --network=host -t cs3528_alpha . 
+        ```
+
+    2. Run the Docker container, exposing port 8080:
+        ```
+        docker run --env-file .env -p 8080:8080 cs3528_alpha
+        ```
+
 ## Administration Login Details - Example
 
 -   Email : admin@example.com

@@ -18,6 +18,7 @@ from pymongo.errors import (
 sys.path.append(
     os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 )
+from core import shared
 from core.database_mongo_manager import DatabaseMongoManager
 
 os.environ["IS_TEST"] = "True"
@@ -29,7 +30,8 @@ load_dotenv()
 def database():
     """Fixture to create a test database."""
     DATABASE = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     DATABASE.delete_all("test_collection")  # Cleanup after tests
     DATABASE.delete_collection("test_collection")
@@ -95,7 +97,8 @@ def test_get_by_email(database):
 
 def test_connection_success():
     db = DatabaseMongoManager(
-        os.getenv("MONGO_URI"), os.getenv("MONGO_DB_TEST", "cs3528_testing")
+        shared.getenv("MONGO_URI"),
+        shared.getenv("MONGO_DB_TEST", "cs3528_testing"),
     )
     assert db.connection is not None
     db.close_connection()
@@ -340,5 +343,5 @@ def test_server_selection_timeout(monkeypatch):
 
 def test_default_database_if_empty():
     """Test that an empty database name defaults to 'cs3528_testing'."""
-    db_manager = DatabaseMongoManager(os.getenv("MONGO_URI"), "")
+    db_manager = DatabaseMongoManager(shared.getenv("MONGO_URI"), "")
     assert db_manager.database.name == "cs3528_testing"

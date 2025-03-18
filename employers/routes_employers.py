@@ -1,6 +1,5 @@
 """Routes for employers module"""
 
-import os
 import uuid
 from flask import (
     flash,
@@ -13,7 +12,7 @@ from flask import (
     url_for,
 )
 from itsdangerous import URLSafeSerializer
-from core import handlers
+from core import handlers, shared
 from course_modules.models import Module
 from courses.models import Course
 from opportunities.models import Opportunity
@@ -44,7 +43,7 @@ def add_employer_routes(app):
 
         if "employer" not in session:
             return jsonify({"error": "Employer not logged in."}), 400
-        otp_serializer = URLSafeSerializer(str(os.getenv("SECRET_KEY", "secret")))
+        otp_serializer = URLSafeSerializer(str(shared.getenv("SECRET_KEY", "secret")))
         if "OTP" not in session:
             return jsonify({"error": "OTP not sent."}), 400
         if request.form.get("otp") != otp_serializer.loads(session["OTP"]):

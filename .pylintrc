@@ -2,4 +2,4 @@
 disable=E0401
 
 [FORMAT]
-max-line-length=150
+max-line-length=400
