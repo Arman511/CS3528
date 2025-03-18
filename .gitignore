@@ -40,3 +40,4 @@ temp/modules.xlsx
 package-lock.json
 package.json
 node_modules/
+mongo-backup/
