@@ -1,6 +1,12 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "/navgbar.html" %}
+    {% if user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% elif user_type == "employer" %}
+        {% include "employer/navbar.html" %}
+    {% else %}
+        {% include "navgbar.html" %}
+    {% endif %}
     <div class="card-wrapper">
         <div class="card">
             <h2 class="center">Cookies Policy</h2>
@@ -31,7 +37,7 @@
                 The only other additional cookies are the necessary cookies for the website to function.
                 For example, cookies that manage the appearance for the footer for each university. To see the extra cookies go the university's cookies policy page.
             </p>
-            <button type="button" class="btn btn-primary" onclick="window.history.back()">Back</button>
+            <a class="btn btn-primary mt-4" href="{{ url_for("index") }}">Go to Homepage</a>
         </div>
     </div>
 {% endblock content %}

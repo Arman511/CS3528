@@ -10,6 +10,7 @@ from pymongo.errors import (
     ServerSelectionTimeoutError,
 )
 from .database_interface import DatabaseInterface
+from colorama import Fore, Style
 
 
 class DatabaseMongoManager(DatabaseInterface):
@@ -26,25 +27,31 @@ class DatabaseMongoManager(DatabaseInterface):
     def connect(self, connection, database):
         """Connect to the MongoDB database."""
         load_dotenv()
-        self.connection = pymongo.MongoClient()
+        self.connection = pymongo.MongoClient(serverSelectionTimeoutMS=5000)
         if (
             os.getenv("IS_GITHUB_ACTION") == "False"
             and connection is not None
             and os.getenv("OFFLINE") != "True"
         ):
-            self.connection = pymongo.MongoClient(connection)
+            self.connection = pymongo.MongoClient(
+                connection, serverSelectionTimeoutMS=5000
+            )
 
         try:
             self.connection.admin.command("ping")
-            print("Pinged your deployment. You successfully connected to MongoDB!")
+            print(
+                Fore.GREEN
+                + "Pinged your deployment. You successfully connected to MongoDB!"
+                + Style.RESET_ALL
+            )
         except ConfigurationError as e:
-            print(f"Configuration error: {e}")
+            print(Fore.RED + f"Configuration error: {e}" + Style.RESET_ALL)
             sys.exit(1)
         except OperationFailure as e:
-            print(f"Operation failure: {e}")
+            print(Fore.RED + f"Operation failure: {e}" + Style.RESET_ALL)
             sys.exit(1)
         except ServerSelectionTimeoutError as e:
-            print(f"Server selection timeout error: {e}")
+            print(Fore.RED + f"Server selection timeout error: {e}" + Style.RESET_ALL)
             sys.exit(1)
         if database == "":
             database = "cs3528_testing"
