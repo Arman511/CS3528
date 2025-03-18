@@ -210,7 +210,7 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
     except TimeoutException:
         rows = []
 
-    if len(rows) < 2:
+    if len(rows) < 0:
         # If no users are found, create one
         register_user(superuser_logged_in_browser, random_name, random_email, random_password)
 
