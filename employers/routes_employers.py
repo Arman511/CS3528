@@ -1,5 +1,7 @@
 """Routes for employers module"""
 
+from datetime import datetime
+import os
 import uuid
 from flask import (
     flash,
@@ -34,8 +36,21 @@ def add_employer_routes(app):
     @app.route("/employers/home", methods=["GET"])
     @handlers.employers_login_required
     def employer_home(employer):
+        deadline_info = Employers().get_deadlines_for_employer_dashboard()
+        deadline_name, deadline_date = deadline_info
+
+        formatted_date = (
+            datetime.strptime(deadline_date, "%Y-%m-%d").strftime("%d-%m-%Y")
+            if deadline_date
+            else None
+        )
+
         return render_template(
-            "employers/employer_home.html", employer=employer, user_type="employer"
+            "employers/employer_home.html",
+            deadline_name=deadline_name,
+            deadline_date=formatted_date,
+            employer=employer,
+            user_type="employer",
         )
 
     @app.route("/employers/otp", methods=["POST"])
