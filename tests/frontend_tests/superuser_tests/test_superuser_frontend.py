@@ -173,35 +173,27 @@ def test_superuser_register_user(superuser_logged_in_browser, database):
 
 def test_superuser_update_user(superuser_logged_in_browser, database):
     def register_user(browser, name, email, password):
-        random_name = generate_random_string()
-        random_email = f"{random_name}@example.com"
-        random_password = generate_random_string()
+        browser.get("http://127.0.0.1:5000/user/register")
 
-        # Delete the user if it exists before registration
-        delete_user_if_exists(superuser_logged_in_browser, random_name, random_email)
-
-        # Register the user
-        superuser_logged_in_browser.get("http://127.0.0.1:5000/user/register")
-   
-        user_name = superuser_logged_in_browser.find_element(By.NAME, "name")
-        user_email = superuser_logged_in_browser.find_element(By.NAME, "email")
-        user_password = superuser_logged_in_browser.find_element(By.NAME, "password")
-        user_confirm_password = superuser_logged_in_browser.find_element(By.NAME, "confirm_password")
+        user_name = browser.find_element(By.NAME, "name")
+        user_email = browser.find_element(By.NAME, "email")
+        user_password = browser.find_element(By.NAME, "password")
+        user_confirm_password = browser.find_element(By.NAME, "confirm_password")
 
         user_name.clear()
         user_email.clear()
         user_password.clear()
-        user_confirm_password.clear()  
+        user_confirm_password.clear()
 
-        user_name.send_keys(random_name)
-        user_email.send_keys(random_email)
-        user_password.send_keys(random_password)
-        user_confirm_password.send_keys(random_password)
-   
-        submit_button = WebDriverWait(superuser_logged_in_browser, 10).until(
+        user_name.send_keys(name)
+        user_email.send_keys(email)
+        user_password.send_keys(password)
+        user_confirm_password.send_keys(password)
+
+        submit_button = WebDriverWait(browser, 10).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, "input[type='submit']"))
         )
-        superuser_logged_in_browser.execute_script("arguments[0].click();", submit_button)
+        browser.execute_script("arguments[0].click();", submit_button)
 
     # Generate random user details
     random_name = generate_random_string()
