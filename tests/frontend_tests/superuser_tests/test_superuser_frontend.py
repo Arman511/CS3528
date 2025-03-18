@@ -247,7 +247,6 @@ def test_superuser_update_user(superuser_logged_in_browser, database):
     # Refresh the page and verify that the user's details have been updated
     superuser_logged_in_browser.get("http://127.0.0.1:5000/user/search")
     superuser_logged_in_browser.refresh()
-    superuser_logged_in_browser.refresh()
     user_table = WebDriverWait(superuser_logged_in_browser, 10).until(
         EC.presence_of_element_located((By.ID, "user-table"))
     )
