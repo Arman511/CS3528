@@ -197,7 +197,7 @@ def configure_routes(app, cache: Cache):
     def toggle_theme():
         """Toggle the theme between light and dark mode."""
         if "theme" not in session:
-            session["theme"] = "light"
+            session["theme"] = "dark"
             return redirect(request.referrer)
 
         session["theme"] = "dark" if session["theme"] == "light" else "light"
