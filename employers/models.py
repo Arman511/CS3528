@@ -251,3 +251,26 @@ class Employers:
             jsonify({"message": f"{len(clean_data)} employers uploaded successfully"}),
             200,
         )
+
+    def get_deadlines_for_employer_dashboard(self):
+        from app import DEADLINE_MANAGER, DATABASE_MANAGER
+
+        if not DEADLINE_MANAGER.is_past_details_deadline():
+            return (
+                "Add Any Number of Opportunities Deadline",
+                DEADLINE_MANAGER.get_details_deadline(),
+            )
+
+        if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
+            return (
+                "Students Ranking Opportunities/Roles Deadline",
+                DEADLINE_MANAGER.get_student_ranking_deadline(),
+            )
+
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
+            return (
+                "Ranking Student For Individual Opportunities/Roles Deadline",
+                DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
+            )
+
+        return "All Deadlines Passed", None
