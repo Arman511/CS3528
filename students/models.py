@@ -219,7 +219,6 @@ class Student:
             session["student"] = student
             return jsonify({"message": "OTP sent"}), 200
 
-        time.sleep(1.5)
         return jsonify({"error": "Student not found"}), 404
 
     def rank_preferences(self, student_id, preferences):

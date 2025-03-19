@@ -61,7 +61,6 @@ class Employers:
             session["employer"] = employer
             return jsonify({"message": "OTP sent"}), 200
 
-        time.sleep(1.5)
         return jsonify({"error": "Email not found"}), 404
 
     def get_employers(self):
