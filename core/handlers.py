@@ -340,10 +340,8 @@ def configure_routes(app, cache: Cache):
             response.cache_control.no_store = True
         elif response.content_type == "application/json":
             response.cache_control.no_store = True
-        else:
-            response.cache_control.max_age = 86400
-        response.cache_control.stale_while_revalidate = 2592000
-        response.cache_control.immutable = True
+
+        response.cache_control.stale_while_revalidate = 3600
         return response
 
     @app.route("/static/<path:filename>")
