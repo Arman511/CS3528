@@ -140,6 +140,22 @@ To sign in as an employer, the employers email address should be in the database
 
 To sign in as an student, the employers email address should be in the database which can only be added by the placement team. once completed, the student fill in their university number and receive an OTP (check spam folder).
 
+## Adding Students via Form
+
+To add students to the system, the placement team provides a Microsoft Form for students to fill out their details. The form collects necessary information such as university number, course, modules, skills, and any additional comments.
+
+### Steps for Students:
+1. Open the provided Microsoft Form link: [Student Details Form](https://forms.office.com/Pages/ShareFormPage.aspx?id=rRkrjJxf1EmQdz7Dz8UrP4IeTAtJRPZPo35G_0dYC7tUMDNIMUs4Q0g5SEhPQzYzUEhQUEJCNFBXUi4u&sharetoken=DcasEWgsYBV3cvhURZ03).
+2. Fill in all required fields accurately.
+3. Submit the form.
+
+### Steps for the Placement Team:
+1. Download the submitted responses from the Microsoft Form as an Excel or CSV file.
+2. Use the provided script or upload functionality in the system to import the student data into the database.
+3. Verify that all student details have been successfully added to the system.
+
+⚠️ Ensure that the data is reviewed for accuracy before uploading to avoid errors in the matchmaking process.
+
 
 ## Deadlines
 

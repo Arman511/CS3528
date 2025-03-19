@@ -26,11 +26,13 @@ def add_student_routes(app):
                 "student/add_student.html",
                 courses=Course().get_courses(),
                 modules=Module().get_modules(),
+                skills=Skill().get_skills(),
                 user_type="admin",
                 page="students",
             )
         student = request.json
-
+        if isinstance(student["modules"], str):
+            student["modules"] = student["modules"].split(",")
         if student["modules"] == [""]:
             student["modules"] = []
 
@@ -46,6 +48,11 @@ def add_student_routes(app):
             return jsonify({"error": "Please select a course"}), 400
         if not student["comments"]:
             student["comments"] = ""
+
+        student["skills"] = []
+        student["attempted_skills"] = []
+        student["has_car"] = False
+        student["placement_duration"] = []
 
         student["_id"] = uuid.uuid4().hex
 

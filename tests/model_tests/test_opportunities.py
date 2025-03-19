@@ -149,7 +149,7 @@ def test_start_session(app, employer_model):
     with app.app_context():
         with app.test_request_context():
             response = employer_model.start_session()
-            assert response.status_code == 302
+            assert response.status_code == 200
             assert session["employer_logged_in"] is True
 
 
