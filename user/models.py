@@ -54,6 +54,7 @@ class User:
         if user and pbkdf2_sha512.verify(attempt_user["password"], user["password"]):
             return self.start_session(user)
 
+        handlers.clear_session_save_theme()
         return jsonify({"error": "Invalid login credentials"}), 401
 
     def change_password(self, uuid, new_password, confirm_password):
