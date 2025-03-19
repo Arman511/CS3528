@@ -59,10 +59,10 @@ class Employers:
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
-        else:
-            time.sleep(1.5)
+            return jsonify({"message": "OTP sent"}), 200
 
-        return jsonify({"message": "OTP sent if valid"}), 200
+        time.sleep(1.5)
+        return jsonify({"message": "Email not found"}), 404
 
     def get_employers(self):
         """Gets all employers."""

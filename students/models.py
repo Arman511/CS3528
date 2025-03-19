@@ -217,10 +217,10 @@ class Student:
         if student:
             email_handler.send_otp(student["email"])
             session["student"] = student
-        else:
-            time.sleep(1.5)
+            return jsonify({"message": "OTP sent"}), 200
 
-        return jsonify({"message": "OTP sent"}), 200
+        time.sleep(1.5)
+        return jsonify({"error": "Student not found"}), 404
 
     def rank_preferences(self, student_id, preferences):
         """Sets a students preferences."""
