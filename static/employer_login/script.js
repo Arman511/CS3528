@@ -61,10 +61,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 otpErrorParagraph.classList.remove("error--hidden");
             } finally {
                 hideOtpModal();
+                fetch("/signout");
             }
         } else {
             otpErrorParagraph.textContent = "OTP was empty";
             otpErrorParagraph.classList.remove("error--hidden");
+            fetch("/signout");
         }
     };
 
