@@ -32,12 +32,11 @@ def add_course_routes(app):
         return Course().delete_course_by_uuid(uuid)
 
     @app.route("/courses/search", methods=["GET"])
-    @handlers.login_required
+    @handlers.admin_or_employers_required
     def search_course():
         courses = Course().get_courses()
-
         return render_template(
-            "/courses/search.html", courses=courses, user_type="admin"
+            "/courses/search.html", courses=courses, user_type=handlers.get_user_type()
         )
 
     @app.route("/courses/update", methods=["GET", "POST"])

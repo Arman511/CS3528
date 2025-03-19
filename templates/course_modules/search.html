@@ -30,7 +30,7 @@
                             <th>Module ID</th>
                             <th>Module Name</th>
                             <th>Description</th>
-                            <th>Actions</th>
+                            {% if user_type == "admin" %}<th>Actions</th>{% endif %}
                         </tr>
                     </thead>
                     <tbody id="module-table">
@@ -39,11 +39,13 @@
                                 <td>{{ module.module_id }}</td>
                                 <td>{{ module.module_name }}</td>
                                 <td>{{ module.module_description }}</td>
-                                <td>
-                                    <a href="{{ url_for('update_module', uuid=module._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Update</a>
-                                    <a data-id="{{ module._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
-                                </td>
+                                {% if user_type == "admin" %}
+                                    <td>
+                                        <a href="{{ url_for('update_module', uuid=module._id) }}"
+                                           class="btn btn-info btn-sm mb-2">Update</a>
+                                        <a data-id="{{ module._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>
