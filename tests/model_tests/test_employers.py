@@ -174,7 +174,7 @@ def test_employer_login(database, employer_model, app, sample_employer):
         with app.test_request_context():
             response = employer_model.employer_login(sample_employer["email"])
             assert response[1] == 200
-            assert response[0].json["message"] == "OTP sent"
+            assert response[0].json["error"] == "OTP sent"
 
 
 def test_get_employers(database, employer_model, app, sample_employer):

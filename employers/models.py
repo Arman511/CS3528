@@ -62,7 +62,7 @@ class Employers:
             return jsonify({"message": "OTP sent"}), 200
 
         time.sleep(1.5)
-        return jsonify({"message": "Email not found"}), 404
+        return jsonify({"error": "Email not found"}), 404
 
     def get_employers(self):
         """Gets all employers."""
