@@ -14,7 +14,7 @@ class Employers:
     def start_session(self):
         """Starts a session."""
         session["employer_logged_in"] = True
-        return redirect("/employers/home")
+        return redirect("/employers/home", code=200)
 
     def register_employer(self, employer):
         """Adding new employer."""
@@ -250,7 +250,7 @@ class Employers:
         )
 
     def get_deadlines_for_employer_dashboard(self):
-        from app import DEADLINE_MANAGER, DATABASE_MANAGER
+        from app import DEADLINE_MANAGER
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
             return (

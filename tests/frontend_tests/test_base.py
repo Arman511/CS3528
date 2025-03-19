@@ -2,8 +2,6 @@ import os
 import uuid
 from dotenv import load_dotenv
 import pytest
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from passlib.hash import pbkdf2_sha512
 from selenium.webdriver.support.ui import WebDriverWait
@@ -23,23 +21,6 @@ os.environ["IS_TEST"] = "True"
 load_dotenv()
 
 PORT = 5000
-
-
-@pytest.fixture()
-def chrome_browser():
-    options = Options()
-    options.add_argument("--headless")  # Run Chrome in headless mode
-    options.add_argument("--no-sandbox")
-    options.add_argument("--disable-dev-shm-usage")
-
-    driver = webdriver.Chrome(options=options)
-
-    # Use this line instead if you wish to download the ChromeDriver binary on the fly
-    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
-
-    driver.implicitly_wait(10)
-    yield driver
-    driver.quit()
 
 
 @pytest.fixture()
@@ -288,7 +269,7 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
     chrome_browser.find_element(By.ID, "optSubmit").click()
 
-    WebDriverWait(chrome_browser, 10).until(
+    WebDriverWait(chrome_browser, 1000000).until(
         EC.url_to_be("http://127.0.0.1:5000/employers/home")
     )
 

@@ -1,7 +1,6 @@
 """Routes for employers module"""
 
 from datetime import datetime
-import os
 import uuid
 from flask import (
     flash,

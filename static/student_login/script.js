@@ -55,6 +55,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     error_paragraph.classList.remove("error--hidden");
                     otpErrorParagraph.textContent = "OTP was invalid";
                     otpErrorParagraph.classList.remove("error--hidden");
+                    fetch("/signout");
                 }
             } catch (error) {
                 console.log(error);
@@ -62,7 +63,6 @@ document.addEventListener("DOMContentLoaded", () => {
                 otpErrorParagraph.classList.remove("error--hidden");
             } finally {
                 hideOtpModal();
-                fetch("/signout");
             }
         } else {
             otpErrorParagraph.textContent = "OTP was empty";
@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
         error_paragraph.textContent = "OTP entry canceled.";
         error_paragraph.classList.remove("error--hidden");
         hideOtpModal();
+        fetch("/signout");
     };
 
     function hideOtpModal() {
