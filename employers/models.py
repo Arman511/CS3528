@@ -1,7 +1,6 @@
 """Employer model."""
 
 import tempfile
-import time
 import uuid
 from flask import redirect, jsonify, session, send_file
 import pandas as pd

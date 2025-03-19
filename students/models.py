@@ -3,7 +3,6 @@ This module defines the User class which handles user authentication and session
 """
 
 import tempfile
-import time
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
