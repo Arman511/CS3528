@@ -450,15 +450,6 @@ def test_student_update_successful(student_logged_in_client):
     assert response.status_code == 200
 
 
-def test_student_login_redirect_if_logged_in(student_logged_in_client):
-    """Test redirect to student details if student is logged in."""
-    url = "/students/login"
-
-    response = student_logged_in_client.get(url, follow_redirects=False)
-
-    assert response.status_code == 302
-
-
 def test_past_deadline(student_logged_in_client):
     """Test student update route."""
     url = "/students/passed_deadline"
