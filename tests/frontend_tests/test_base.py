@@ -261,6 +261,8 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     session_content = chrome_browser.execute_script(
         "return fetch('/debug/session').then(res => res.json());"
     )
+    if "OTP" not in session_content:
+        raise KeyError("OTP key is not found in the session content")
     serialised_otp = session_content["OTP"]
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)

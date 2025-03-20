@@ -12,7 +12,6 @@ document.addEventListener("DOMContentLoaded", () => {
         let formData = new FormData(form);
 
         try {
-            fetch("/signout");
             const response = await fetch("/students/login", {
                 method: "POST",
                 body: formData,

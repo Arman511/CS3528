@@ -103,6 +103,7 @@ def add_student_routes(app):
     @app.route("/students/login", methods=["GET", "POST"])
     def login_student():
         """Logins a student"""
+        handlers.clear_session_save_theme()
         if request.method == "POST":
             student_id = request.form.get("student_id")
             return Student().student_login(student_id)
