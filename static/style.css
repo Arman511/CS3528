@@ -49,7 +49,7 @@ html[data-bs-theme="dark"] main.content {
 }
 
 .title {
-    color: #22699a;
+    color: #2B7BB5;
 }
 
 html[data-bs-theme="dark"] .title {
@@ -89,7 +89,7 @@ html[data-bs-theme="dark"] form input {
 }
 
 html[data-bs-theme="dark"] form input.btn {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     color: #fff;
 }
 
@@ -270,7 +270,7 @@ select {
 
 /* Button Styling */
 .btn {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -288,7 +288,7 @@ select {
 
 /* Link Styling */
 a {
-    color: #22699a;
+    color: #2B7BB5;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
@@ -299,11 +299,11 @@ a:hover {
 }
 
 html[data-bs-theme="dark"] a {
-    color: #3187c5;
+    color: #2B7BB5;
 }
 
 html[data-bs-theme="dark"] a:hover {
-    color: #22699a;
+    color: #2B7BB5;
 }
 
 html,
@@ -322,7 +322,7 @@ body {
 }
 
 .navbar {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     width: 100%;
 }
 
@@ -364,26 +364,26 @@ html[data-bs-theme="dark"] .dropdown-item {
 }
 
 .dropdown-item:hover {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     color: white;
 }
 
 .text-danger {
-    color: #A72835;
+    color: #DD3030;
 }
 
 .text-danger:hover {
-    background-color: #A72835;
+    background-color: #DD3030;
     color: #fff !important;
 }
 
 html[data-bs-theme="dark"] .text-danger:hover {
-    background-color: #A72835 !important;
+    background-color: #DD3030 !important;
     color: #fff !important;
 }
 
 html[data-bs-theme="dark"] .dropdown-item:hover {
-    background-color: #3187c5;
+    background-color: #2B7BB5;
     color: #fff;
 }
 
@@ -558,7 +558,7 @@ html[data-bs-theme="dark"] .tutorial-content {
 }
 
 html[data-bs-theme="dark"] #section-nav a {
-    color: #3187c5;
+    color: #2B7BB5;
 }
 
 main h1 {
