@@ -241,7 +241,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
 
     otp = serializer.loads(serialised_otp)
     chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
-    chrome_browser.find_element(By.ID, "optSubmit").click()
+    chrome_browser.find_element(By.ID, "otpSubmit").click()
 
     WebDriverWait(chrome_browser, 10).until(
         EC.url_changes("http://127.0.0.1:5000/students/login")
@@ -267,7 +267,7 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
 
     otp = serializer.loads(serialised_otp)
     chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
-    chrome_browser.find_element(By.ID, "optSubmit").click()
+    chrome_browser.find_element(By.ID, "otpSubmit").click()
 
     WebDriverWait(chrome_browser, 1000000).until(
         EC.url_to_be("http://127.0.0.1:5000/employers/home")

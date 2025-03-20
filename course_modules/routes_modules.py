@@ -26,15 +26,14 @@ def add_module_routes(app):
         return Module().add_module(module)
 
     @app.route("/course_modules/search", methods=["GET"])
-    @handlers.login_required
+    @handlers.admin_or_employers_required
     def search_modules():
         """Search modules page"""
         modules = Module().get_modules()
         return render_template(
             "course_modules/search.html",
             modules=modules,
-            user_type="admin",
-            page="modules",
+            user_type=handlers.get_user_type(),
         )
 
     @app.route("/course_modules/delete", methods=["DELETE"])

@@ -30,7 +30,7 @@
                             <th>Course ID</th>
                             <th>Course Name</th>
                             <th>Description</th>
-                            <th>Actions</th>
+                            {% if user_type == "admin" %}<th>Actions</th>{% endif %}
                         </tr>
                     </thead>
                     <tbody id="course-table">
@@ -39,14 +39,16 @@
                                 <td>{{ course.course_id }}</td>
                                 <td>{{ course.course_name }}</td>
                                 <td>{{ course.course_description }}</td>
-                                <td>
-                                    <a href="{{ url_for('update_course', uuid=course._id) }}"
-                                       class="btn btn-info btn-sm mb-2"
-                                       role="button">Update</a>
-                                    <a data-id="{{ course._id }}"
-                                       class="btn btn-danger btn-sm delete-btn"
-                                       role="button">Delete</a>
-                                </td>
+                                {% if user_type == "admin" %}
+                                    <td>
+                                        <a href="{{ url_for('update_course', uuid=course._id) }}"
+                                           class="btn btn-info btn-sm mb-2"
+                                           role="button">Update</a>
+                                        <a data-id="{{ course._id }}"
+                                           class="btn btn-danger btn-sm delete-btn"
+                                           role="button">Delete</a>
+                                    </td>
+                                {% endif %}
                             </tr>
                         {% endfor %}
                     </tbody>

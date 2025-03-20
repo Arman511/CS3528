@@ -4,8 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let submitButton = form.querySelector("input[type='submit']");
     let otpModal = document.getElementById("otpModal");
     let otpInput = document.getElementById("otpInput");
-    let otpErrorParagraph = document.querySelector(".otp_error");
-
+    let otpForm = document.getElementById("otpForm");
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
         submitButton.disabled = true;
@@ -35,13 +34,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.submitOtp = async function () {
+    otpForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
         let otp = otpInput.value;
         if (otp) {
             let otpFormData = new FormData();
             otpFormData.append("otp", otp);
             let student_id = document.getElementById("student_id").value;
-
             try {
                 const otp_response = await fetch("/students/otp", {
                     method: "POST",
@@ -53,23 +53,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     error_paragraph.textContent = "OTP was invalid";
                     error_paragraph.classList.remove("error--hidden");
-                    otpErrorParagraph.textContent = "OTP was invalid";
-                    otpErrorParagraph.classList.remove("error--hidden");
+
                     fetch("/signout");
                 }
             } catch (error) {
                 console.log(error);
-                otpErrorParagraph.textContent = "An error occurred";
-                otpErrorParagraph.classList.remove("error--hidden");
+                error_paragraph.textContent = "An error occurred";
+                error_paragraph.classList.remove("error--hidden");
             } finally {
                 hideOtpModal();
             }
         } else {
-            otpErrorParagraph.textContent = "OTP was empty";
-            otpErrorParagraph.classList.remove("error--hidden");
+            error_paragraph.textContent = "OTP was empty";
+            error_paragraph.classList.remove("error--hidden");
             fetch("/signout");
         }
-    };
+    });
 
     window.cancelOtp = function () {
         error_paragraph.textContent = "OTP entry canceled.";

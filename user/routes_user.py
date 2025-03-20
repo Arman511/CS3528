@@ -67,7 +67,9 @@ def add_user_routes(app, cache):
                 "SUPERUSER_EMAIL"
             ) and attempt_user["password"] == shared.getenv("SUPERUSER_PASSWORD"):
                 return Superuser().login(attempt_user)
-            return User().login(attempt_user)
+            result = User().login(attempt_user)
+            return result
+
         if "logged_in" in session:
             handlers.clear_session_save_theme()
         return render_template("user/login.html")

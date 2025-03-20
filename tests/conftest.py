@@ -1,13 +1,19 @@
 """This file contains the fixtures for the tests."""
 
 import logging
+import os
 import sys
 import threading
+from dotenv import load_dotenv
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 import pytest
 
 SERVER_THREAD = None
+
+load_dotenv()
+
+os.environ["IS_TEST"] = "True"
 
 
 @pytest.fixture(scope="session")
