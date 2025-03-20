@@ -1,7 +1,6 @@
 """Employer model."""
 
 import tempfile
-import time
 import uuid
 from flask import redirect, jsonify, session, send_file
 import pandas as pd
@@ -59,10 +58,9 @@ class Employers:
         if employer:
             email_handler.send_otp(employer["email"])
             session["employer"] = employer
-        else:
-            time.sleep(1.5)
+            return jsonify({"message": "OTP sent"}), 200
 
-        return jsonify({"message": "OTP sent if valid"}), 200
+        return jsonify({"error": "Email not found"}), 404
 
     def get_employers(self):
         """Gets all employers."""

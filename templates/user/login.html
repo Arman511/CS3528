@@ -6,17 +6,25 @@
             <h1 class="center">Log In</h1>
             <form class="login_form" name="login_form">
                 <label for="email" class="label">Email</label>
-                <input type="email" name="email" class="field" placeholder="Email" required />
+                <input id="email"
+                       type="email"
+                       name="email"
+                       class="field"
+                       placeholder="Email"
+                       autocomplete="email"
+                       required />
                 <div class="password-container">
                     <label for="password" class="label">Password</label>
-                    <input type="password"
+                    <input id="password"
+                           type="password"
                            name="password"
                            class="field"
                            placeholder="Password"
+                           autocomplete="password"
                            required />
                 </div>
                 <p class="error error--hidden"></p>
-                <input type="submit" value="Log In" class="btn" />
+                <input type="submit" value="Log In" class="btn" id="submit" />
             </form>
             <p class="center">
                 Are you a student?

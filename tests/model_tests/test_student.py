@@ -757,8 +757,8 @@ def test_student_login_non_existant(app, database):
         with app.test_request_context():
             response = Student().student_login(student1["student_id"])
             json_response = response[0].get_json()
-            assert response[1] == 200
-            assert json_response["message"] == "OTP sent"
+            assert response[1] == 404
+            assert json_response["error"] == "Student not found"
 
 
 def test_rank_preferences(app, database):

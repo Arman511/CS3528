@@ -60,3 +60,6 @@ node_modules/
 tests/data/~$valid_students.xlsx
 temp/
 temp/modules.xlsx
+mongo-backup/
+mongo-backup.zip
+.flake8
