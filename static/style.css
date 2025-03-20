@@ -368,13 +368,17 @@ html[data-bs-theme="dark"] .dropdown-item {
     color: white;
 }
 
+.text-danger {
+    color: #A72835;
+}
+
 .text-danger:hover {
-    background-color: #DC3545;
+    background-color: #A72835;
     color: #fff !important;
 }
 
 html[data-bs-theme="dark"] .text-danger:hover {
-    background-color: #DC3545 !important;
+    background-color: #A72835 !important;
     color: #fff !important;
 }
 
