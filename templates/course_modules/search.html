@@ -41,8 +41,11 @@
                                 <td>{{ module.module_description }}</td>
                                 <td>
                                     <a href="{{ url_for('update_module', uuid=module._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Update</a>
-                                    <a data-id="{{ module._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                                       class="btn btn-info btn-sm mb-2"
+                                       role="button">Update</a>
+                                    <a data-id="{{ module._id }}"
+                                       class="btn btn-danger btn-sm delete-btn"
+                                       role="button">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}

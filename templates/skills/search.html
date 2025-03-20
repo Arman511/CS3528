@@ -31,8 +31,11 @@
                                 <td>{{ skill.skill_description }}</td>
                                 <td>
                                     <a href="{{ url_for('update_skill', skill_id=skill._id) }}"
-                                       class="btn btn-info btn-sm mb-2">Update</a>
-                                    <a data-id="{{ skill._id }}" class="btn btn-danger btn-sm delete-btn">Delete</a>
+                                       class="btn btn-info btn-sm mb-2"
+                                       role="button">Update</a>
+                                    <a data-id="{{ skill._id }}"
+                                       class="btn btn-danger btn-sm delete-btn"
+                                       role="button">Delete</a>
                                 </td>
                             </tr>
                         {% endfor %}
