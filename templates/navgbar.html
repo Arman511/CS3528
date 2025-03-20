@@ -8,7 +8,8 @@
               type="button"
               id="userGreetingButton"
               data-bs-toggle="dropdown"
-              aria-expanded="false">
+              aria-expanded="false"
+              role="button">
         <span id="userGreetingText">
           {% if user_type == 'admin' %}
             Account, {{ session.user.name }}
@@ -26,10 +27,12 @@
       <ul class="dropdown-menu dropdown-menu-end"
           aria-labelledby="userGreetingButton">
         <li>
-          <a class="dropdown-item" href="{{ url_for("tutorial") }}">Tutorial</a>
+          <a class="dropdown-item" href="{{ url_for("tutorial") }}" role="button">Tutorial</a>
         </li>
         <li>
-          <a class="dropdown-item" href="{{ url_for("toggle_theme") }}"> Toggle
+          <a class="dropdown-item"
+             href="{{ url_for("toggle_theme") }}"
+             role="button"> Toggle
             {% if session["theme"] == "light" %}
               dark
             {% else %}
@@ -39,12 +42,14 @@
         </li>
         {% if user_type == 'student' %}
           <li>
-            <a class="dropdown-item" href="{{ url_for("login_student") }}">Task</a>
+            <a class="dropdown-item"
+               href="{{ url_for("login_student") }}"
+               role="button">Task</a>
           </li>
         {% endif %}
         {% if user_type in ['admin', 'employer', 'student', 'superuser'] %}
           <li>
-            <a class="dropdown-item" href="{{ url_for("signout") }}">Sign Out</a>
+            <a class="dropdown-item" href="{{ url_for("signout") }}" role="button">Sign Out</a>
           </li>
         {% endif %}
       </ul>

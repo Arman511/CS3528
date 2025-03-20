@@ -7,7 +7,8 @@
                 data-bs-target="#navbarNav"
                 aria-controls="navbarNav"
                 aria-expanded="false"
-                aria-label="Toggle navigation">
+                aria-label="Toggle navigation"
+                role="button">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center"
@@ -15,31 +16,39 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                       href="{{ url_for("employer_home") }}">Home</a>
+                       href="{{ url_for("employer_home") }}"
+                       role="button">Home</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                       href="{{ url_for("search_opportunities") }}">Search Opportunities</a>
+                       href="{{ url_for("search_opportunities") }}"
+                       role="button">Search Opportunities</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                       href="{{ url_for("employer_add_update_opportunity") }}">Add Opportunity</a>
+                       href="{{ url_for("employer_add_update_opportunity") }}"
+                       role="button">Add Opportunity</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                       href="{{ url_for("upload_opportunities") }}">Upload Opportunities</a>
+                       href="{{ url_for("upload_opportunities") }}"
+                       role="button">Upload Opportunities</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white"
-                       href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
+                       href="{{ url_for("download_opportunities") }}"
+                       role="button">Download All Opportunities</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-danger font-weight-bold delete-button-employers"
                        href="#"
-                       id="delete-all-opportunities">Delete All Opportunities</a>
+                       id="delete-all-opportunities"
+                       role="button">Delete All Opportunities</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="{{ url_for("tutorial") }}">Help</a>
+                    <a class="nav-link text-white"
+                       href="{{ url_for("tutorial") }}"
+                       role="button">Help</a>
                 </li>
             </ul>
         </div>
