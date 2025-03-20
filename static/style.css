@@ -300,7 +300,7 @@ a {
 }
 
 a:hover {
-    color: #2B7BB5;
+    color: #7BB0D6;
 }
 
 a::after {
@@ -312,7 +312,7 @@ html[data-bs-theme="dark"] a {
 }
 
 html[data-bs-theme="dark"] a:hover {
-    color: #2B7BB5;
+    color: #7BB0D6;
 }
 
 
@@ -625,4 +625,123 @@ html[data-bs-theme="dark"] .delete-button-employers {
 
 html[data-bs-theme="dark"] .toggle-btn {
     color: #a9dbff !important;
+}
+
+.fab.fa-youtube {
+    color: #FF0000;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-youtube:hover {
+    color: #FF6347;
+}
+
+html[data-bs-theme="dark"] .fab.fa-youtube {
+    color: #FF6347;
+}
+
+html[data-bs-theme="dark"] .fab.fa-youtube:hover {
+    color: #FF4500;
+}
+
+.fab.fa-twitter {
+    color: #1DA1F2;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-twitter:hover {
+    color: #87CEEB;
+}
+
+html[data-bs-theme="dark"] .fab.fa-twitter {
+    color: #87CEEB;
+}
+
+html[data-bs-theme="dark"] .fab.fa-twitter:hover {
+    color: #1E90FF;
+}
+
+.fab.fa-facebook-square {
+    color: #1877F2;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-facebook-square:hover {
+    color: #3B5998;
+}
+
+html[data-bs-theme="dark"] .fab.fa-facebook-square {
+    color: #3B5998;
+}
+
+html[data-bs-theme="dark"] .fab.fa-facebook-square:hover {
+    color: #1877F2;
+}
+
+.fab.fa-pinterest {
+    color: #E60023;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-pinterest:hover {
+    color: #FF6F61;
+}
+
+html[data-bs-theme="dark"] .fab.fa-pinterest {
+    color: #FF6F61;
+}
+
+html[data-bs-theme="dark"] .fab.fa-pinterest:hover {
+    color: #E60023;
+}
+
+.fab.fa-instagram {
+    color: #C13584;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-instagram:hover {
+    color: #E1306C;
+}
+
+html[data-bs-theme="dark"] .fab.fa-instagram {
+    color: #E1306C;
+}
+
+html[data-bs-theme="dark"] .fab.fa-instagram:hover {
+    color: #C13584;
+}
+
+.fab.fa-linkedin {
+    color: #0077B5;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-linkedin:hover {
+    color: #005582;
+}
+
+html[data-bs-theme="dark"] .fab.fa-linkedin {
+    color: #005582;
+}
+
+html[data-bs-theme="dark"] .fab.fa-linkedin:hover {
+    color: #0077B5;
+}
+
+.fab.fa-weibo {
+    color: #DF2029;
+    transition: color 0.3s ease;
+}
+
+.fab.fa-weibo:hover {
+    color: #FF4500;
+}
+
+html[data-bs-theme="dark"] .fab.fa-weibo {
+    color: #FF4500;
+}
+
+html[data-bs-theme="dark"] .fab.fa-weibo:hover {
+    color: #DF2029;
 }
