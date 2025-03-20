@@ -63,6 +63,3 @@ temp/modules.xlsx
 mongo-backup/
 mongo-backup.zip
 .flake8
-.gitignore
-Dockerfile
-.dockerignore
