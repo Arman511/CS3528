@@ -63,7 +63,7 @@ def add_user_routes(app, cache):
             }
             if not attempt_user["email"] or not attempt_user["password"]:
                 return jsonify({"error": "Missing email or password"}), 400
-            attempt_user["email"] = attempt_user["email"].lower()
+            attempt_user["email"] = escape(attempt_user["email"].lower())
             if attempt_user["email"] == shared.getenv(
                 "SUPERUSER_EMAIL"
             ) and attempt_user["password"] == shared.getenv("SUPERUSER_PASSWORD"):
