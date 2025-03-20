@@ -1,5 +1,6 @@
 """Handles the routes for the Module module."""
 
+from html import escape
 import uuid
 from flask import redirect, render_template, request, send_file
 from core import handlers
@@ -19,10 +20,11 @@ def add_module_routes(app):
 
         module = {
             "_id": uuid.uuid1().hex,
-            "module_id": request.form.get("module_id"),
-            "module_name": request.form.get("module_name"),
-            "module_description": request.form.get("module_description"),
+            "module_id": escape(request.form.get("module_id")),
+            "module_name": escape(request.form.get("module_name")),
+            "module_description": escape(request.form.get("module_description")),
         }
+
         return Module().add_module(module)
 
     @app.route("/course_modules/search", methods=["GET"])
@@ -58,9 +60,9 @@ def add_module_routes(app):
             )
         uuid = request.args.get("uuid")
 
-        module_id = request.form.get("module_id")
-        module_name = request.form.get("module_name")
-        module_description = request.form.get("module_description")
+        module_id = escape(request.form.get("module_id"))
+        module_name = escape(request.form.get("module_name"))
+        module_description = escape(request.form.get("module_description"))
         return Module().update_module_by_uuid(
             uuid, module_id, module_name, module_description
         )

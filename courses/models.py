@@ -2,6 +2,7 @@
 Courses model."""
 
 from datetime import datetime, timedelta
+from html import escape
 import tempfile
 import uuid
 from flask import jsonify, send_file
@@ -263,9 +264,11 @@ class Course:
         for i, course in enumerate(courses):
             temp = {
                 "_id": uuid.uuid4().hex,
-                "course_id": course.get("UCAS_code", ""),
-                "course_name": f"{course.get('Course_name', '')}, {course.get('Qualification', '')}",
-                "course_description": course.get("Course_description", ""),
+                "course_id": escape(course.get("UCAS_code", "")),
+                "course_name": escape(
+                    f"{course.get('Course_name', '')}, {course.get('Qualification', '')}"
+                ),
+                "course_description": escape(course.get("Course_description", "")),
             }
             if not temp["course_id"] or not temp["course_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400

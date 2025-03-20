@@ -1,5 +1,6 @@
 """Employer model."""
 
+from html import escape
 import tempfile
 import uuid
 from flask import redirect, jsonify, session, send_file
@@ -195,8 +196,8 @@ class Employers:
         for i, employer in enumerate(employers):
             temp = {
                 "_id": uuid.uuid4().hex,
-                "company_name": employer["Company_name"],
-                "email": employer["Email"],
+                "company_name": escape(employer["Company_name"]),
+                "email": escape(employer["Email"]),
             }
             if not temp["company_name"] or not temp["email"]:
                 return jsonify({"error": "Company name and email are required"}), 400
@@ -239,8 +240,6 @@ class Employers:
             company_names.add(temp["company_name"].lower())
 
         DATABASE_MANAGER.insert_many("employers", clean_data)
-
-        # Update cache
 
         return (
             jsonify({"message": f"{len(clean_data)} employers uploaded successfully"}),

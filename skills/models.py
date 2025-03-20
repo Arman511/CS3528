@@ -2,6 +2,7 @@
 Skills model.
 """
 
+from html import escape
 import tempfile
 import uuid
 from flask import jsonify, send_file
@@ -303,6 +304,9 @@ class Skill:
                 ):
                     continue
                 skill_names.add(temp["skill_name"].lower())
+
+                temp["skill_name"] = escape(temp["skill_name"])
+                temp["skill_description"] = escape(temp["skill_description"])
 
                 clean_data.append(temp)
         except Exception:

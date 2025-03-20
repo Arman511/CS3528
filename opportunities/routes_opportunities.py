@@ -1,5 +1,6 @@
 """Routes for opportunities"""
 
+from html import escape
 import uuid
 from flask import (
     flash,
@@ -85,7 +86,7 @@ def add_opportunities_routes(app):
                     "_id": request.form.get("_id"),
                     "title": request.form.get("title"),
                     "description": request.form.get("description"),
-                    "url": request.form.get("url"),
+                    "url": request.form.get("url", ""),
                     "employer_id": None,
                     "location": request.form.get("location"),
                     "modules_required": [
@@ -106,7 +107,7 @@ def add_opportunities_routes(app):
 
                 # Check if any required field is empty
                 for key, value in opportunity.items():
-                    if not value and key != "employer_id":
+                    if not value and key not in {"employer_id", "url"}:
                         raise ValueError(
                             f"Field {key} is required and cannot be empty."
                         )
@@ -124,6 +125,19 @@ def add_opportunities_routes(app):
                     raise ValueError("Invalid duration value.")
             except Exception as e:
                 return jsonify({"error": str(e)}), 400
+
+            opportunity["title"] = escape(opportunity["title"])
+            opportunity["description"] = escape(opportunity["description"])
+            opportunity["url"] = escape(opportunity["url"])
+            opportunity["location"] = escape(opportunity["location"])
+            opportunity["duration"] = escape(opportunity["duration"])
+            opportunity["modules_required"] = [
+                escape(module) for module in opportunity["modules_required"]
+            ]
+            opportunity["courses_required"] = [
+                escape(course) for course in opportunity["courses_required"]
+            ]
+
             if handlers.is_admin():
                 opportunity["employer_id"] = request.form.get("employer_id")
                 return Opportunity().add_update_opportunity(opportunity, True)

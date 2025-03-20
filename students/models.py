@@ -2,6 +2,7 @@
 This module defines the User class which handles user authentication and session management.
 """
 
+from html import escape
 import tempfile
 import uuid
 from flask import jsonify, send_file, session
@@ -196,6 +197,12 @@ class Student:
                 DATABASE_MANAGER.delete_all_by_field(
                     "students", "student_id", temp_student["student_id"]
                 )
+
+                temp_student["first_name"] = escape(temp_student["first_name"])
+                temp_student["last_name"] = escape(temp_student["last_name"])
+                temp_student["email"] = escape(temp_student["email"])
+                temp_student["student_id"] = escape(temp_student["student_id"])
+
                 data.append(temp_student)
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)

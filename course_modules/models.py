@@ -3,6 +3,7 @@ Course module model.
 """
 
 from datetime import datetime, timedelta
+from html import escape
 import tempfile
 import uuid
 import pandas as pd
@@ -300,9 +301,9 @@ class Module:
         for i, module in enumerate(modules):
             temp = {
                 "_id": uuid.uuid4().hex,
-                "module_id": module.get("Module_id", ""),
-                "module_name": module.get("Module_name", ""),
-                "module_description": module.get("Module_description", ""),
+                "module_id": escape(module.get("Module_id", "")),
+                "module_name": escape(module.get("Module_name", "")),
+                "module_description": escape(module.get("Module_description", "")),
             }
             if not temp["module_id"] or not temp["module_name"]:
                 return jsonify({"error": "Invalid data in row " + str(i + 1)}), 400
