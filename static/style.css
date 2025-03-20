@@ -49,11 +49,11 @@ html[data-bs-theme="dark"] main.content {
 }
 
 .title {
-    color: #22699a;
+    color: #2B7BB5;
 }
 
 html[data-bs-theme="dark"] .title {
-    color: #fff;
+    color: #59BAFF;
 }
 
 html[data-bs-theme="dark"] p,
@@ -89,7 +89,7 @@ html[data-bs-theme="dark"] form input {
 }
 
 html[data-bs-theme="dark"] form input.btn {
-    background-color: #22699a;
+    background-color: #59BAFF;
     color: #fff;
 }
 
@@ -270,7 +270,7 @@ select {
 
 /* Button Styling */
 .btn {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     color: #fff;
     padding: 0.5rem 1rem;
     border: none;
@@ -286,9 +286,14 @@ select {
     background-color: #0056b3;
 }
 
-/* Link Styling */
+.danger-box {
+    display: inline;
+    background-color: red;
+    color: white
+}
+
 a {
-    color: #22699a;
+    color: #2B7BB5;
     text-decoration: none;
     font-weight: 600;
     transition: color 0.3s ease;
@@ -298,12 +303,27 @@ a:hover {
     color: #142859;
 }
 
+a::after {
+    content: none !important;
+}
+
 html[data-bs-theme="dark"] a {
-    color: #3187c5;
+    color: #d6c000;
 }
 
 html[data-bs-theme="dark"] a:hover {
-    color: #22699a;
+    color: #2B7BB5;
+}
+
+
+html[data-bs-theme="dark"] .btn {
+    background-color: #83B5D9;
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .btn:hover {
+    background-color: #59BAFF;
+    color: #000;
 }
 
 html,
@@ -322,16 +342,11 @@ body {
 }
 
 .navbar {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     width: 100%;
 }
 
-.delete-button-employers {
-    background-color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block
-}
+
 
 
 .dropdown-menu {
@@ -364,12 +379,30 @@ html[data-bs-theme="dark"] .dropdown-item {
 }
 
 .dropdown-item:hover {
-    background-color: #22699a;
+    background-color: #2B7BB5;
     color: white;
 }
 
+.text-danger {
+    color: #DD3030;
+}
+
+.text-danger:hover {
+    background-color: #DD3030;
+    color: #fff !important;
+}
+
+html[data-bs-theme="dark"] .text-danger {
+    color: #FF9393 !important;
+}
+
+html[data-bs-theme="dark"] .text-danger:hover {
+    background-color: #DD3030 !important;
+    color: #fff !important;
+}
+
 html[data-bs-theme="dark"] .dropdown-item:hover {
-    background-color: #3187c5;
+    background-color: #2B7BB5;
     color: #fff;
 }
 
@@ -406,7 +439,7 @@ html[data-bs-theme="dark"] #otpModal {
 }
 
 html[data-bs-theme="dark"] .modal-content {
-    background-color: #333;
+    background-color: #444;
     color: #fff;
 }
 
@@ -544,7 +577,7 @@ html[data-bs-theme="dark"] .tutorial-content {
 }
 
 html[data-bs-theme="dark"] #section-nav a {
-    color: #3187c5;
+    color: #fff;
 }
 
 main h1 {
@@ -572,4 +605,24 @@ html[data-bs-theme="dark"] .opportunity-item-card .card-body,
 html[data-bs-theme="dark"] .opportunity-item-card .card-body label {
     background-color: #333;
     color: #fff;
+}
+
+.delete-button-employers {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    color: #DD3030 !important;
+}
+
+html[data-bs-theme="dark"] .delete-button-employers {
+    color: #DD3030 !important;
+}
+
+.toggle-btn {
+    color: #55aaff;
+}
+
+html[data-bs-theme="dark"] .toggle-btn {
+    color: #a9dbff !important;
 }

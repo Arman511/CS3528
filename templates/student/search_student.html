@@ -108,7 +108,8 @@
                                                 <a href="#"
                                                    class="toggle-btn text-primary small"
                                                    data-bs-toggle="collapse"
-                                                   data-bs-target="#skills-{{ student.student_id }}">Show More</a>
+                                                   data-bs-target="#skills-{{ student.student_id }}"
+                                                   role="button">Show More</a>
                                             {% endif %}
                                         </div>
                                     </td>
@@ -132,7 +133,8 @@
                                                 <a href="#"
                                                    class="toggle-btn text-primary small"
                                                    data-bs-toggle="collapse"
-                                                   data-bs-target="#modules-{{ student.student_id }}">Show More</a>
+                                                   data-bs-target="#modules-{{ student.student_id }}"
+                                                   role="button">Show More</a>
                                             {% endif %}
                                         </div>
                                     </td>
@@ -142,10 +144,12 @@
                                 <td>
                                     <a href="{{ url_for('update_student', uuid=student._id) }}">
                                         <button class="btn btn-info btn-sm update-button mb-2"
-                                                data-id="{{ student.student_id }}">Update</button>
+                                                data-id="{{ student.student_id }}"
+                                                role="button">Update</button>
                                     </a>
                                     <button class="btn btn-info btn-sm delete-button"
-                                            data-id="{{ student.student_id }}">Delete</button>
+                                            data-id="{{ student.student_id }}"
+                                            role="button">Delete</button>
                                 </td>
                             </tr>
                         {% endfor %}

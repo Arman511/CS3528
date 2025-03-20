@@ -7,25 +7,32 @@
                 data-bs-target="#navbarNav"
                 aria-controls="navbarNav"
                 aria-expanded="false"
-                aria-label="Toggle navigation">
+                aria-label="Toggle navigation"
+                role="button">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center"
              id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("search_users") }}">Search Users</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("search_users") }}"
+                       role="button">Search Users</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white ms-2"
-                       href="{{ url_for("register_user") }}">Add User</a>
+                       href="{{ url_for("register_user") }}"
+                       role="button">Add User</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link text-white ms-2"
-                       href="{{ url_for("configure_settings") }}">Configure</a>
+                       href="{{ url_for("configure_settings") }}"
+                       role="button">Configure</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("tutorial") }}">Help</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("tutorial") }}"
+                       role="button">Help</a>
                 </li>
             </ul>
         </div>

@@ -26,6 +26,7 @@ def add_employer_routes(app):
 
     @app.route("/employers/login", methods=["GET", "POST"])
     def employer_login():
+        handlers.clear_session_save_theme()
         if request.method == "POST":
             email = request.form.get("email")
             return Employers().employer_login(email)

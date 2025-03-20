@@ -7,14 +7,17 @@
                 data-bs-target="#navbarNav"
                 aria-controls="navbarNav"
                 aria-expanded="false"
-                aria-label="Toggle navigation">
+                aria-label="Toggle navigation"
+                role="button">
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse justify-content-center"
              id="navbarNav">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("user_home") }}">Home</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("user_home") }}"
+                       role="button">Home</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link text-white dropdown-toggle ms-2"
@@ -22,16 +25,25 @@
                        id="studentsDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Students</a>
+                       aria-expanded="false"
+                       role="button">Students</a>
                     <div class="dropdown-menu" id="studentsMenu">
-                        <a class="dropdown-item" href="{{ url_for("search_page") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_page") }}">Upload Students</a>
                         <a class="dropdown-item"
-                           href="{{ url_for("register_student_attempt") }}">Add Student</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_students") }}">Download All Students</a>
+                           href="{{ url_for("search_page") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_page") }}"
+                           role="button">Upload Students</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("register_student_attempt") }}"
+                           role="button">Add Student</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_students") }}"
+                           role="button">Download All Students</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-students">Delete All Students</a>
+                           id="delete-all-students"
+                           role="button">Delete All Students</a>
                     </div>
                 </li>
                 <!-- Opportunities Dropdown -->
@@ -41,16 +53,25 @@
                        id="opportunitiesDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Opportunities</a>
+                       aria-expanded="false"
+                       role="button">Opportunities</a>
                     <div class="dropdown-menu" id="opportunitiesMenu">
-                        <a class="dropdown-item" href="{{ url_for("search_opportunities") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_opportunities") }}">Upload Opportunities</a>
                         <a class="dropdown-item"
-                           href="{{ url_for("employer_add_update_opportunity") }}">Add Opportunity</a>
-                        <a class="dropdown-item" href="{{ url_for("download_opportunities") }}">Download All Opportunities</a>
+                           href="{{ url_for("search_opportunities") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_opportunities") }}"
+                           role="button">Upload Opportunities</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("employer_add_update_opportunity") }}"
+                           role="button">Add Opportunity</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_opportunities") }}"
+                           role="button">Download All Opportunities</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-opportunities">Delete All Opportunities</a>
+                           id="delete-all-opportunities"
+                           role="button">Delete All Opportunities</a>
                     </div>
                 </li>
                 <!-- Employers Dropdown -->
@@ -60,15 +81,25 @@
                        id="employersDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Employers</a>
+                       aria-expanded="false"
+                       role="button">Employers</a>
                     <div class="dropdown-menu" id="employersMenu">
-                        <a class="dropdown-item" href="{{ url_for("search_employers") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_employers") }}">Upload Employers</a>
-                        <a class="dropdown-item" href="{{ url_for("add_employer") }}">Add Employer</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_employers") }}">Download All Employers</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("search_employers") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_employers") }}"
+                           role="button">Upload Employers</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("add_employer") }}"
+                           role="button">Add Employer</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_employers") }}"
+                           role="button">Download All Employers</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-employers">Delete All Employers</a>
+                           id="delete-all-employers"
+                           role="button">Delete All Employers</a>
                     </div>
                 </li>
                 <!-- Courses Dropdown -->
@@ -78,15 +109,25 @@
                        id="coursesDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Courses</a>
+                       aria-expanded="false"
+                       role="button">Courses</a>
                     <div class="dropdown-menu" id="coursesMenu">
-                        <a class="dropdown-item" href="{{ url_for("search_course") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_courses") }}">Upload Courses</a>
-                        <a class="dropdown-item" href="{{ url_for("add_course") }}">Add Course</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_courses") }}">Download All Courses</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("search_course") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_courses") }}"
+                           role="button">Upload Courses</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("add_course") }}"
+                           role="button">Add Course</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_courses") }}"
+                           role="button">Download All Courses</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-courses">Delete All Courses</a>
+                           id="delete-all-courses"
+                           role="button">Delete All Courses</a>
                     </div>
                 </li>
                 <!-- Course Modules Dropdown -->
@@ -96,16 +137,25 @@
                        id="modulesDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Course Modules</a>
+                       aria-expanded="false"
+                       role="button">Course Modules</a>
                     <div class="dropdown-menu" id="modulesMenu">
-                        <a class="dropdown-item" href="{{ url_for("search_modules") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_course_modules") }}">Upload Modules</a>
-                        <a class="dropdown-item" href="{{ url_for("add_course_module") }}">Add Module</a>
                         <a class="dropdown-item"
-                           href="{{ url_for("download_all_course_modules") }}">Download All Modules</a>
+                           href="{{ url_for("search_modules") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_course_modules") }}"
+                           role="button">Upload Modules</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("add_course_module") }}"
+                           role="button">Add Module</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_course_modules") }}"
+                           role="button">Download All Modules</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-modules">Delete All Modules</a>
+                           id="delete-all-modules"
+                           role="button">Delete All Modules</a>
                     </div>
                 </li>
                 <!-- Skills Dropdown -->
@@ -115,34 +165,54 @@
                        id="skillsDropdown"
                        role="button"
                        data-bs-toggle="dropdown"
-                       aria-expanded="false">Skills</a>
+                       aria-expanded="false"
+                       role="button">Skills</a>
                     <div class="dropdown-menu" id="skillsMenu">
-                        <a class="dropdown-item" href="{{ url_for("list_skills") }}">Search</a>
-                        <a class="dropdown-item" href="{{ url_for("search_attempt_skills") }}">Search Attempted</a>
-                        <a class="dropdown-item" href="{{ url_for("upload_skills") }}">Upload Skills</a>
-                        <a class="dropdown-item" href="{{ url_for("add_skill") }}">Add Skill</a>
-                        <a class="dropdown-item" href="{{ url_for("download_all_skills") }}">Download All Skills</a>
                         <a class="dropdown-item"
-                           href="{{ url_for("download_all_attempted_skills") }}">Download All Attempted Skills</a>
+                           href="{{ url_for("list_skills") }}"
+                           role="button">Search</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("search_attempt_skills") }}"
+                           role="button">Search Attempted</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("upload_skills") }}"
+                           role="button">Upload Skills</a>
+                        <a class="dropdown-item" href="{{ url_for("add_skill") }}"role="button">Add Skill</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_skills") }}"
+                           role="button">Download All Skills</a>
+                        <a class="dropdown-item"
+                           href="{{ url_for("download_all_attempted_skills") }}"
+                           role="button">Download All Attempted Skills</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-skills">Delete All Skills</a>
+                           id="delete-all-skills"
+                           role="button">Delete All Skills</a>
                         <a class="dropdown-item text-danger font-weight-bold"
                            href="#"
-                           id="delete-all-attempted-skills">Delete All Attempted Skills</a>
+                           id="delete-all-attempted-skills"
+                           role="button">Delete All Attempted Skills</a>
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("matching") }}">Matching</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("matching") }}"
+                       role="button">Matching</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("problems") }}">Problems</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("problems") }}"
+                       role="button">Problems</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("deadline") }}">Change Deadline</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("deadline") }}"
+                       role="button">Change Deadline</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white ms-2" href="{{ url_for("tutorial") }}">Help</a>
+                    <a class="nav-link text-white ms-2"
+                       href="{{ url_for("tutorial") }}"
+                       role="button">Help</a>
                 </li>
             </ul>
         </div>

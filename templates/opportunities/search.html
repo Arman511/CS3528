@@ -71,7 +71,7 @@
           </div>
         </div>
         <div class="form-group">
-          <button type="button" id="toggleMore" class="btn btn-secondary">Show More</button>
+          <button type="button" id="toggleMore" class="btn btn-secondary" role="button">Show More</button>
           <p class="error error--hidden"></p>
         </div>
       </form>
@@ -123,7 +123,8 @@
                          class="toggle-btn text-primary small"
                          data-bs-toggle="collapse"
                          data-bs-target="#courses-{{ opportunity._id }}"
-                         onclick="toggleText(this, '#courses-{{ opportunity._id }}')">Show More</a>
+                         onclick="toggleText(this, '#courses-{{ opportunity._id }}')"
+                         role="button">Show More</a>
                     {% endif %}
                   </div>
                 </td>
@@ -144,7 +145,8 @@
                          class="toggle-btn text-primary small"
                          data-bs-toggle="collapse"
                          data-bs-target="#modules-{{ opportunity._id }}"
-                         onclick="toggleText(this, '#modules-{{ opportunity._id }}')">Show More</a>
+                         onclick="toggleText(this, '#modules-{{ opportunity._id }}')"
+                         role="button">Show More</a>
                     {% endif %}
                   </div>
                 </td>
@@ -153,12 +155,15 @@
                 <td>
                   {% if user_type == "employer" %}
                     <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"
-                       class="btn btn-info btn-sm mb-2">Rank</a>
+                       class="btn btn-info btn-sm mb-2"
+                       role="button">Rank</a>
                   {% endif %}
                   <a href="{{ url_for('employer_add_update_opportunity', opportunity_id=opportunity._id) }}"
-                     class="btn btn-info btn-sm mb-2">Update</a>
+                     class="btn btn-info btn-sm mb-2"
+                     role="button">Update</a>
                   <a href="{{ url_for('employer_delete_opportunity', opportunity_id=opportunity._id) }}"
-                     class="btn btn-danger btn-sm">Delete</a>
+                     class="btn btn-danger btn-sm"
+                     role="button">Delete</a>
                 </td>
               </tr>
             {% endfor %}
