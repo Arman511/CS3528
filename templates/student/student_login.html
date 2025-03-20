@@ -11,7 +11,8 @@
                        class="field"
                        placeholder="Student Number (e.g. 52327765)"
                        id="student_id"
-                       required />
+                       required
+                       autocomplete="false" />
                 <p class="error error--hidden"></p>
                 <input type="submit" value="Log In" class="btn" />
             </form>
@@ -26,14 +27,21 @@
         </div>
         <div id="otpModal" class="modal">
             <div class="modal-content">
-                <label for="otpInput">Enter the OTP sent to your email:</label>
-                <input type="text" id="otpInput" class="field" />
-                <p class="error error--hidden otp_error"></p>
-                <br>
-                <br>
-                <button onclick="submitOtp()" class="btn" id="optSubmit">Submit</button>
-                <br>
-                <button onclick="cancelOtp()" class="btn" id="otpCancel">Cancel</button>
+                <form class="otp_form form-group" name="otp_form" id="otpForm">
+                    <p>
+                        An <strong>OTP</strong> has been sent to your email.
+                    </p>
+                    <label for="otpInput" class="text-start">OTP:</label>
+                    <input id="otpInput"
+                           type="text"
+                           name="otp"
+                           class="field"
+                           placeholder="OTP"
+                           required />
+                    <button class="btn" id="otpSubmit" type="submit">Submit</button>
+                    <button onclick="cancelOtp()" class="btn" id="otpCancel" type="button">Cancel</button>
+                    <p class="error error--hidden"></p>
+                </form>
             </div>
         </div>
         <script src="/static/student_login/script.js"></script>

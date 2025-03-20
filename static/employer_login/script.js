@@ -3,8 +3,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let error_paragraph = document.querySelector(".error");
     let submitButton = form.querySelector("input[type='submit']");
     let otpModal = document.getElementById("otpModal");
+    let otpForm = document.getElementById("otpForm");
     let otpInput = document.getElementById("otpInput");
-    let otpErrorParagraph = document.querySelector(".otp_error");
 
     form.addEventListener("submit", async (event) => {
         event.preventDefault();
@@ -35,7 +35,9 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    window.submitOtp = async function () {
+    otpForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
         let otp = otpInput.value;
         if (otp) {
             let otpFormData = new FormData();
@@ -52,23 +54,22 @@ document.addEventListener("DOMContentLoaded", () => {
                 } else {
                     error_paragraph.textContent = "OTP was invalid";
                     error_paragraph.classList.remove("error--hidden");
-                    otpErrorParagraph.textContent = "OTP was invalid";
-                    otpErrorParagraph.classList.remove("error--hidden");
+
                     fetch("/signout");
                 }
             } catch (error) {
                 console.log(error);
-                otpErrorParagraph.textContent = "An error occurred";
-                otpErrorParagraph.classList.remove("error--hidden");
+                error_paragraph.textContent = "An error occurred";
+                error_paragraph.classList.remove("error--hidden");
             } finally {
                 hideOtpModal();
             }
         } else {
-            otpErrorParagraph.textContent = "OTP was empty";
-            otpErrorParagraph.classList.remove("error--hidden");
+            error_paragraph.textContent = "OTP was empty";
+            error_paragraph.classList.remove("error--hidden");
             fetch("/signout");
         }
-    };
+    });
 
     window.cancelOtp = function () {
         error_paragraph.textContent = "OTP entry canceled.";
@@ -83,5 +84,4 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     document.title = "SkillPilot - Employer Login";
-
 });
