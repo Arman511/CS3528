@@ -332,12 +332,7 @@ body {
     width: 100%;
 }
 
-.delete-button-employers {
-    background-color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    display: inline-block
-}
+
 
 
 .dropdown-menu {
@@ -381,6 +376,10 @@ html[data-bs-theme="dark"] .dropdown-item {
 .text-danger:hover {
     background-color: #DD3030;
     color: #fff !important;
+}
+
+html[data-bs-theme="dark"] .text-danger {
+    color: #FF9393 !important;
 }
 
 html[data-bs-theme="dark"] .text-danger:hover {
@@ -592,4 +591,16 @@ html[data-bs-theme="dark"] .opportunity-item-card .card-body,
 html[data-bs-theme="dark"] .opportunity-item-card .card-body label {
     background-color: #333;
     color: #fff;
+}
+
+.delete-button-employers {
+    background-color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    display: inline-block;
+    color: #DD3030 !important;
+}
+
+html[data-bs-theme="dark"] .delete-button-employers {
+    color: #DD3030 !important;
 }

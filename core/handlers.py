@@ -189,6 +189,7 @@ def configure_routes(app, cache: Cache):
             return redirect("/user/home")
         if user == "superuser":
             return redirect("/superuser/home")
+        clear_session_save_theme()
         return render_template("landing_page.html")
 
     @app.route("/toggle_theme", methods=["GET"])
