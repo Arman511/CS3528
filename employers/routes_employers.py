@@ -1,6 +1,7 @@
 """Routes for employers module"""
 
 from datetime import datetime
+from html import escape
 import uuid
 from flask import (
     flash,
@@ -71,8 +72,8 @@ def add_employer_routes(app):
         if request.method == "POST":
             employer = {
                 "_id": uuid.uuid4().hex,
-                "company_name": request.form.get("company_name"),
-                "email": request.form.get("email"),
+                "company_name": escape(request.form.get("company_name")),
+                "email": escape(request.form.get("email")),
             }
             return Employers().register_employer(employer)
         return render_template(
@@ -100,8 +101,8 @@ def add_employer_routes(app):
             employer_id = request.form.get("employer_id")
 
             update_data = {
-                "company_name": request.form.get("company_name"),
-                "email": request.form.get("email"),
+                "company_name": escape(request.form.get("company_name")),
+                "email": escape(request.form.get("email")),
             }
             return Employers().update_employer(employer_id, update_data)
 

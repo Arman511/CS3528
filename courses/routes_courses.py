@@ -1,5 +1,6 @@
 """Handles the routes for the course module."""
 
+from html import escape
 import uuid
 from flask import render_template, request, send_file
 from core import handlers
@@ -19,9 +20,9 @@ def add_course_routes(app):
 
         course = {
             "_id": uuid.uuid1().hex,
-            "course_id": request.form.get("course_id"),
-            "course_name": request.form.get("course_name"),
-            "course_description": request.form.get("course_description"),
+            "course_id": escape(request.form.get("course_id")),
+            "course_name": escape(request.form.get("course_name")),
+            "course_description": escape(request.form.get("course_description")),
         }
         return Course().add_course(course)
 
@@ -50,9 +51,9 @@ def add_course_routes(app):
             )
 
         course = {
-            "course_id": request.form.get("course_id").upper(),
-            "course_name": request.form.get("course_name"),
-            "course_description": request.form.get("course_description"),
+            "course_id": escape(request.form.get("course_id").upper()),
+            "course_name": escape(request.form.get("course_name")),
+            "course_description": escape(request.form.get("course_description")),
         }
         return Course().update_course(id_val, course)
 

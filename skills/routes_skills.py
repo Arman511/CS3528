@@ -1,5 +1,6 @@
 """Handles the routes for the skills module."""
 
+from html import escape
 import uuid
 from flask import jsonify, redirect, render_template, request, send_file
 from core import handlers
@@ -14,6 +15,7 @@ def add_skills_routes(app):
     def attempt_add_skill_student():
         """Attempt to add a skill to a student."""
         skill_name = request.json.get("skill_name").lower()
+        skill_name = escape(skill_name)
         if not skill_name:
             return jsonify({"error": "Missing skill name"}), 400
 
@@ -34,9 +36,10 @@ def add_skills_routes(app):
 
         skill = {
             "_id": uuid.uuid1().hex,
-            "skill_name": request.form.get("skill_name"),
-            "skill_description": request.form.get("skill_description"),
+            "skill_name": escape(request.form.get("skill_name")),
+            "skill_description": escape(request.form.get("skill_description")),
         }
+
         if skill["skill_name"] == "" or skill["skill_description"] == "":
             return jsonify({"error": "One of the inputs is blank"}), 400
         return Skill().add_skill(skill)

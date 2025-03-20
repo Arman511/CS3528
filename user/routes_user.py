@@ -3,6 +3,7 @@ Handles routes for the user module.
 """
 
 from datetime import datetime
+from html import escape
 import uuid
 from flask import jsonify, redirect, render_template, session, request
 from passlib.hash import pbkdf2_sha512
@@ -29,8 +30,8 @@ def add_user_routes(app, cache):
                 return jsonify({"error": "Passwords don't match"}), 400
             user = {
                 "_id": uuid.uuid1().hex,
-                "name": request.form.get("name").title(),
-                "email": request.form.get("email").lower(),
+                "name": escape(request.form.get("name").title()),
+                "email": escape(request.form.get("email").lower()),
                 "password": pbkdf2_sha512.hash(password),  # Hash only the password
             }
             return User().register(user)
@@ -47,8 +48,8 @@ def add_user_routes(app, cache):
                 return redirect("/404")
             return render_template("user/update.html", user=user, user_type="superuser")
         uuid = request.args.get("uuid")
-        name = request.form.get("name")
-        email = request.form.get("email")
+        name = escape(request.form.get("name"))
+        email = escape(request.form.get("email"))
         return User().update_user(uuid, name, email)
 
     @app.route("/user/login", methods=["GET", "POST"])

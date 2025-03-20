@@ -2,6 +2,7 @@
 Opportunity model.
 """
 
+from html import escape
 import tempfile
 import uuid
 from flask import jsonify, send_file, session
@@ -444,6 +445,17 @@ class Opportunity:
                     else ""
                 )
 
+                temp["title"] = escape(temp["title"])
+                temp["description"] = escape(temp["description"])
+                temp["url"] = escape(temp["url"])
+                temp["location"] = escape(temp["location"])
+                temp["duration"] = escape(temp["duration"])
+                temp["modules_required"] = [
+                    escape(module) for module in temp["modules_required"]
+                ]
+                temp["courses_required"] = [
+                    escape(course) for course in temp["courses_required"]
+                ]
                 clean_data.append(temp)
 
             if clean_data:

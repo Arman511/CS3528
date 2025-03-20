@@ -2,6 +2,7 @@
 Handles routes for the student module.
 """
 
+from html import escape
 import uuid
 from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
@@ -55,6 +56,13 @@ def add_student_routes(app):
         student["placement_duration"] = []
 
         student["_id"] = uuid.uuid4().hex
+
+        student["student_id"] = escape(student["student_id"])
+        student["first_name"] = escape(student["first_name"])
+        student["last_name"] = escape(student["last_name"])
+        student["email"] = escape(student["email"])
+        student["course"] = escape(student["course"])
+        student["comments"] = escape(student["comments"])
 
         return Student().add_student(student)
 
@@ -189,6 +197,18 @@ def add_student_routes(app):
             if student["course"] == "":
                 return jsonify({"error": "Please select a course"}), 400
             student["course"] = student["course"].upper()
+
+            student["comments"] = escape(student["comments"])
+            student["skills"] = [escape(skill) for skill in student["skills"]]
+            student["attempted_skills"] = [
+                escape(skill) for skill in student["attempted_skills"]
+            ]
+            student["has_car"] = escape(student["has_car"])
+            student["placement_duration"] = [
+                escape(duration) for duration in student["placement_duration"]
+            ]
+            student["modules"] = [escape(module) for module in student["modules"]]
+
             return Student().update_student_by_id(student_id, student)
 
         # Render the template
@@ -252,6 +272,23 @@ def add_student_routes(app):
             if student["course"] == "":
                 return jsonify({"error": "Please select a course"}), 400
             student["course"] = student["course"].upper()
+
+            student["student_id"] = escape(student["student_id"])
+            student["first_name"] = escape(student["first_name"])
+            student["last_name"] = escape(student["last_name"])
+            student["email"] = escape(student["email"])
+            student["course"] = escape(student["course"])
+            student["comments"] = escape(student["comments"])
+            student["skills"] = [escape(skill) for skill in student["skills"]]
+            student["attempted_skills"] = [
+                escape(skill) for skill in student["attempted_skills"]
+            ]
+            student["has_car"] = escape(student["has_car"])
+            student["placement_duration"] = [
+                escape(duration) for duration in student["placement_duration"]
+            ]
+            student["modules"] = [escape(module) for module in student["modules"]]
+
             return Student().update_student_by_uuid(uuid, student)
 
         uuid = request.args.get("uuid")
