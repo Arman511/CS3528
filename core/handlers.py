@@ -336,10 +336,15 @@ def configure_routes(app, cache: Cache):
         elif "image" in response.content_type or "audio" in response.content_type:
             response.cache_control.max_age = 31536000
             response.cache_control.public = True
-        elif response.content_type == "text/html":
+        elif (
+            response.content_type == "text/html; charset=utf-8"
+            or response.content_type == "text/html"
+        ):
             response.cache_control.no_store = True
         elif response.content_type == "application/json":
             response.cache_control.no_store = True
+        else:
+            response.cache_control.max_age = 3600
 
         response.cache_control.stale_while_revalidate = 3600
         return response
