@@ -53,7 +53,7 @@ html[data-bs-theme="dark"] main.content {
 }
 
 html[data-bs-theme="dark"] .title {
-    color: #fff;
+    color: #59BAFF;
 }
 
 html[data-bs-theme="dark"] p,
@@ -89,7 +89,7 @@ html[data-bs-theme="dark"] form input {
 }
 
 html[data-bs-theme="dark"] form input.btn {
-    background-color: #2B7BB5;
+    background-color: #59BAFF;
     color: #fff;
 }
 
@@ -292,7 +292,6 @@ select {
     color: white
 }
 
-/* Link Styling */
 a {
     color: #2B7BB5;
     text-decoration: none;
@@ -304,12 +303,27 @@ a:hover {
     color: #142859;
 }
 
+a::after {
+    content: none !important;
+}
+
 html[data-bs-theme="dark"] a {
     color: #d6c000;
 }
 
 html[data-bs-theme="dark"] a:hover {
     color: #2B7BB5;
+}
+
+
+html[data-bs-theme="dark"] .btn {
+    background-color: #83B5D9;
+    color: #000;
+}
+
+html[data-bs-theme="dark"] .btn:hover {
+    background-color: #59BAFF;
+    color: #000;
 }
 
 html,
@@ -603,4 +617,12 @@ html[data-bs-theme="dark"] .opportunity-item-card .card-body label {
 
 html[data-bs-theme="dark"] .delete-button-employers {
     color: #DD3030 !important;
+}
+
+.toggle-btn {
+    color: #55aaff;
+}
+
+html[data-bs-theme="dark"] .toggle-btn {
+    color: #a9dbff !important;
 }
