@@ -286,6 +286,12 @@ select {
     background-color: #0056b3;
 }
 
+.danger-box {
+    display: inline;
+    background-color: red;
+    color: white
+}
+
 /* Link Styling */
 a {
     color: #2B7BB5;
@@ -558,7 +564,7 @@ html[data-bs-theme="dark"] .tutorial-content {
 }
 
 html[data-bs-theme="dark"] #section-nav a {
-    color: #2B7BB5;
+    color: #fff;
 }
 
 main h1 {
