@@ -1,6 +1,10 @@
 {% extends "base.html" %}
 {% block content %}
-    {% include "user/navbar.html" %}
+    {% if user_type == "admin" %}
+        {% include "user/navbar.html" %}
+    {% else %}
+        {% include "employers/navbar.html" %}
+    {% endif %}
     <div class="card-wrapper card-dynamic-width">
         <div class="card search-card">
             <h1 class="center">Search module</h1>
