@@ -27,6 +27,7 @@ venv/
 ENV/
 env.bak/
 venv.bak/
+.env
 
 .vscode/
 .pytest_cache/
@@ -50,6 +51,10 @@ run.ps1
 run.sh
 offline_run.sh
 .github/
+.git/
+.gitignore
+mongo-backup/
+mongo-backup.zip
 .mypy_cache/
 .pytest_cache/
 .vscode/
@@ -59,3 +64,4 @@ node_modules/
 tests/data/~$valid_students.xlsx
 temp/
 temp/modules.xlsx
+README.md
