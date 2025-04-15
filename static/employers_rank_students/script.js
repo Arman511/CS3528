@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", function () {
 		const actualRanks = ranks.map(rank => rank[1]);
 
 		const formData = new FormData();
-		formData.append("ranks", JSON.stringify(actualRanks));
+		formData.append("ranks", actualRanks);
 
 		try {
 			const response = await fetch(
