@@ -217,7 +217,6 @@ def add_user_routes(app, cache):
 
     @app.route("/user/matching", methods=["GET"])
     @handlers.login_required
-    @cache.cached(timeout=300)
     def matching():
         from app import DEADLINE_MANAGER
 
