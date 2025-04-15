@@ -15,7 +15,8 @@ document.addEventListener("DOMContentLoaded", function () {
             window.location.href = "/students/search";
         } else {
             console.log("Error");
-            alert("Error: " + response.json().error);
+            let responseText = await response.json();
+            alert("Error: " + responseText.error);
         }
     });
 });
