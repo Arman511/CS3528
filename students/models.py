@@ -258,12 +258,16 @@ class Student:
 
         valid_opportunities = []
         for opportunity in opportunities:
+            if opportunity["modules_required"] == [""]:
+                opportunity["modules_required"] = []
+            if opportunity["courses_required"] == [""]:
+                opportunity["courses_required"] = []
             modules_required = set(opportunity["modules_required"])
 
             if modules_required.issubset(student["modules"]):
                 if (
                     student["course"] in opportunity.get("courses_required", "")
-                    or opportunity.get("courses_required", "") == ""
+                    or opportunity.get("courses_required") == []
                 ):
                     if opportunity["duration"] in student["placement_duration"]:
                         valid_opportunities.append(opportunity)
