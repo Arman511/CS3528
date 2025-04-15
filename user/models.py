@@ -221,5 +221,5 @@ class User:
                 number_of_opportunities,
             )
 
-        # 4️⃣ No upcoming deadlines
+        # 4️ No upcoming deadlines
         return "No Upcoming Deadlines", None, None, None
