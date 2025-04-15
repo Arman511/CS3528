@@ -328,6 +328,15 @@ def add_student_routes(app):
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
             return redirect("/students/details/" + str(student_id))
+
+        if "modules" not in session["student"]:
+            return render_template(
+                "error_page.html",
+                code="400",
+                name="Missing details",
+                msg="You have not filled in your details and the deadline has passed. If you see this page contact your admin to fill them in for you.",
+                user_type="student",
+            )
         opportunities = Student().get_opportunities_by_student(student_id)
         if request.method == "POST":
             preferences = [a[5:].strip() for a in request.form.get("ranks").split(",")]
