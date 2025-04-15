@@ -107,10 +107,19 @@ def add_opportunities_routes(app):
 
                 # Check if any required field is empty
                 for key, value in opportunity.items():
-                    if not value and key not in {"employer_id", "url"}:
+                    if not value and key not in {
+                        "employer_id",
+                        "url",
+                        "modules_required",
+                        "courses_required",
+                    }:
                         raise ValueError(
                             f"Field {key} is required and cannot be empty."
                         )
+                if opportunity["modules_required"] == [""]:
+                    opportunity["modules_required"] = []
+                if opportunity["courses_required"] == [""]:
+                    opportunity["courses_required"] = []
 
                 if opportunity["spots_available"] < 1:
                     raise ValueError("Spots available must be at least 1.")
@@ -139,7 +148,7 @@ def add_opportunities_routes(app):
             ]
 
             if handlers.is_admin():
-                opportunity["employer_id"] = request.form.get("employer_id")
+                opportunity["employer_id"] = request.form.get("company")
                 return Opportunity().add_update_opportunity(opportunity, True)
 
             original = Opportunity().get_opportunity_by_id(opportunity["_id"])

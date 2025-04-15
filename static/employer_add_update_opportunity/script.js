@@ -57,8 +57,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 errorParagraph.classList.add("error--hidden");
                 window.location.href = "/opportunities/search";
             } else {
+                let data = await response.json();
                 errorParagraph.textContent =
-                    "Error adding/updating opportunity.";
+                    "Error: " + data.error;
                 errorParagraph.classList.remove("error--hidden");
             }
         } catch (error) {
