@@ -180,7 +180,7 @@ class User:
         if not DEADLINE_MANAGER.is_past_details_deadline():
             for student in students:
                 student = student.get("course")
-                if len(student) > 0:  # Ensure student has added details
+                if student and len(student) > 0:  # Ensure student has added details
                     number_of_students += 1
             number_of_students = len(students) - number_of_students
             number_of_opportunities = len(DATABASE_MANAGER.get_all("opportunities"))
