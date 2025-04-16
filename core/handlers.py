@@ -16,6 +16,7 @@ from flask import (
     request,
 )
 from flask_caching import Cache
+import pandas as pd
 from core import routes_debug
 from core import routes_error
 from user import routes_user
@@ -155,6 +156,47 @@ def clear_session_save_theme():
     theme = session["theme"]
     session.clear()
     session["theme"] = theme
+
+
+def excel_verifier_and_reader(file, expected_columns: set[str]):
+    """
+    Verifies and reads an Excel file.
+    Args:
+        file (FileStorage): The uploaded Excel file.
+        expected_columns (set): A set of expected column names.
+    Returns:
+        pd.DataFrame: The DataFrame containing the data from the Excel file.
+    Raises:
+        ValueError: If the file is not a valid Excel file, if the file size exceeds the limit,
+                    or if the expected columns are missing.
+    """
+    dataframe = None
+    if not file.lower().endswith(".xlsx"):
+        raise ValueError("Invalid file type. Please upload a .xlsx file.")
+
+    file.seek(0, os.SEEK_END)
+    file_length = file.tell()
+    file.seek(0)
+
+    MAX_SIZE_MB = 5
+    try:
+        dataframe = pd.read_excel(file, engine="openpyxl")
+    except Exception as e:
+        raise ValueError(f"Invalid Excel file: {e}. Please upload a valid .xlsx file.")
+    if file_length > MAX_SIZE_MB * 1024 * 1024:
+        raise ValueError(
+            f"File size exceeds {MAX_SIZE_MB} MB. Please upload a smaller file."
+        )
+    if dataframe.empty:
+        raise ValueError("The uploaded file is empty. Please upload a valid file.")
+
+    missing_columns = expected_columns - set(dataframe.columns)
+    if missing_columns:
+        raise ValueError(
+            f"Missing columns: {missing_columns}. Please upload a valid file."
+        )
+
+    return dataframe
 
 
 def configure_routes(app, cache: Cache):

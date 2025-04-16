@@ -8,6 +8,8 @@ import uuid
 from flask import jsonify, send_file
 import pandas as pd
 
+from core import handlers
+
 
 class Skill:
     """
@@ -277,9 +279,11 @@ class Skill:
         """Upload skills"""
 
         try:
-            df = pd.read_excel(file)
-        except (pd.errors.EmptyDataError, pd.errors.ParserError, FileNotFoundError):
-            return jsonify({"error": "Invalid file"}), 400
+            df = handlers.excel_verifier_and_reader(
+                file, {"Skill_Name", "Skill_Description"}
+            )
+        except Exception as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
         skills = df.to_dict(orient="records")
 
