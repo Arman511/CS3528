@@ -9,24 +9,30 @@ ENV PYTHONUNBUFFERED=1 \
 # Set the working directory
 WORKDIR /app
 
-# Install dependencies and create virtual environment in one step
-RUN apt-get update && apt-get install -y --no-install-recommends gcc libpq-dev && \
+# Install system dependencies and create a virtual environment
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+    gcc \
+    libpq-dev \
+    curl \
+    build-essential && \
     python -m venv $VENV_PATH && \
-    $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip && \
+    $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
+    apt-get purge -y --auto-remove gcc build-essential && \
     rm -rf /var/lib/apt/lists/*
 
-# Copy dependency file first to leverage Docker cache
-COPY requirements.txt /app/
+# Pre-copy requirements to leverage Docker cache
+COPY requirements.txt .
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy application files
-COPY . /app
+# Copy the rest of the application
+COPY . .
 
-# Expose the application port
+# Expose application port
 EXPOSE 8080
 
-# Use Gunicorn with a configuration file
+# Gunicorn entrypoint
 ENTRYPOINT ["gunicorn"]
 CMD ["--config", "gunicorn_config.py", "app:app"]

@@ -2,18 +2,18 @@
 
 ## Contents
 
-- [Project Overview](#project-overview)
-- [Website](#website)
-- [Setup Instructions](#setup-instructions)
-- [Environment Variables](#environment-variables)
-- [How to Run](#how-to-run)
-- [Administration Login Details - Example](#administration-login-details---example)
-- [Superuser Login](#superuser-login)
-- [Employer Login](#employer-login)
-- [Student Login](#student-login)
-- [Deadlines](#deadlines)
-- [Coverage](#coverage)
-- [Export/Import MongoDB](#mongodb-backup-and-restore)
+-   [Project Overview](#project-overview)
+-   [Website](#website)
+-   [Setup Instructions](#setup-instructions)
+-   [Environment Variables](#environment-variables)
+-   [How to Run](#how-to-run)
+-   [Administration Login Details - Example](#administration-login-details---example)
+-   [Superuser Login](#superuser-login)
+-   [Employer Login](#employer-login)
+-   [Student Login](#student-login)
+-   [Deadlines](#deadlines)
+-   [Coverage](#coverage)
+-   [Export/Import MongoDB](#mongodb-backup-and-restore)
 
 ## Project Overview
 
@@ -83,30 +83,34 @@ GUNICORN_ERROR_LOG="-"
 
 -   To run the project, execute the following command (make sure the `.env` is set):
 
-    -   On macOS/Linux:
-        ```
-        ./run
-        ```
-    -   On Windows(powershell):
-        ```
-        .\run.ps1
-        ```
-If all else fails, try running the application directly with:
+        -   On macOS/Linux:
+            ```
+            ./run
+            ```
+        -   On Windows(powershell):
+            ```
+            .\run.ps1
+            ```
 
-    - On macOS/Linux:
-        ```
-        python3 app.py
-        ```
-    - On Windows(powershell):
-        ```
-        python app.py
-        ```
+    If all else fails, try running the application directly with:
+
+        - On macOS/Linux:
+            ```
+            python3 app.py
+            ```
+        - On Windows(powershell):
+            ```
+            python app.py
+            ```
 
 -   To run the production version, use the following command:
+
     ```
     gunicorn --config gunicorn_config.py app:app
     ```
+
     or
+
     ```
     ./gunicorn_run
     ```
@@ -114,14 +118,20 @@ If all else fails, try running the application directly with:
 -   To build and run the project using Docker:
 
     1. Build the Docker image:
+
         ```
-        docker build --network=host -t cs3528_alpha . 
+        docker build --network=host -t cs3528_alpha .
         ```
 
     2. Run the Docker container, exposing port 8080:
         ```
         docker run --env-file .env -p 8080:8080 cs3528_alpha
         ```
+
+-   To run from the premade docker images
+    ```
+    docker run --env-file .env -p 8080:8080 arman511/cs3528_alpha
+    ```
 
 ## Administration Login Details - Example
 
@@ -145,38 +155,44 @@ To sign in as an student, the employers email address should be in the database 
 To add students to the system, the placement team provides a Microsoft Form for students to fill out their details. The form collects necessary information such as university number, course, modules, skills, and any additional comments.
 
 ### Steps for Students:
+
 1. Open the provided Microsoft Form link: [Student Details Form](https://forms.office.com/Pages/ShareFormPage.aspx?id=rRkrjJxf1EmQdz7Dz8UrP4IeTAtJRPZPo35G_0dYC7tUMDNIMUs4Q0g5SEhPQzYzUEhQUEJCNFBXUi4u&sharetoken=DcasEWgsYBV3cvhURZ03).
 2. Fill in all required fields accurately.
 3. Submit the form.
 
 ### Steps for the Placement Team:
+
 1. Download the submitted responses from the Microsoft Form as an Excel or CSV file.
 2. Use the provided script or upload functionality in the system to import the student data into the database.
 3. Verify that all student details have been successfully added to the system.
 
 ⚠️ Ensure that the data is reviewed for accuracy before uploading to avoid errors in the matchmaking process.
 
-
 ## Deadlines
 
 The admin team manages three key deadlines that restrict data input and user views throughout their duration:
 
 ### Stage 1
+
 1. The placement team adds employers to the system.
 2. Students fill in their profile information using the provided MS form.
 
 ### Stage 2
+
 1. Students log in and add their university information (course, modules, skills, and any comments).
 2. Employers upload the placements offered using the template file or add them manually.
 
 ### Stage 3 - After the Details Deadline
+
 1. Students log in to see a list of eligible placements based on their degree and course modules.
 2. Students rank their placement preferences.
 
 ### Stage 4 - After the Student Ranking Deadline
+
 1. Employers rank students for each placement.
 
 ### Stage 5 - After Opportunities Ranking Deadline
+
 1. The placement team reviews the list of students matched to placements based on preferences.
 2. The team sends matchmaking results to companies and students via email.
 
@@ -199,30 +215,40 @@ coverage run -m pytest && coverage html
 ### For Local
 
 #### Local Dump
+
 To create a backup of a local MongoDB database:
+
 ```
 mongodump -d cs3528_prod -o ./mongo-backup
 mongodump -d cs3528_test -o ./mongo-backup
 ```
 
 #### Local Restore
+
 To restore a local MongoDB database from a backup:
+
 ```
 mongorestore -d cs3528_prod ./mongo-backup/cs3528_prod
 mongorestore -d cs3528_test ./mongo-backup/cs3528_test
 ```
 
 ### For Remote
+
 REPLACE URI WITH YOUR OWN
+
 #### Remote Dump
+
 To create a backup of a remote MongoDB database:
+
 ```
 mongodump --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_prod" -o ./mongo-backup
 mongodump --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_test" -o ./mongo-backup
 ```
 
 #### Remote Restore
+
 To restore a remote MongoDB database from a backup:
+
 ```
 mongorestore --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_prod" ./mongo-backup/cs3528_prod
 mongorestore --uri "mongodb+srv://Admin:MYPASS@appcluster.15lf4.mongodb.net/cs3528_test" ./mongo-backup/cs3528_test
