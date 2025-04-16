@@ -1,5 +1,5 @@
 # Use Python slim image
-FROM python:3.13-slim
+FROM python:alpine
 
 # Set environment variables
 ENV PYTHONUNBUFFERED=1 \
@@ -10,16 +10,8 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR /app
 
 # Install system dependencies and create a virtual environment
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
-    gcc \
-    libpq-dev \
-    curl \
-    build-essential && \
-    python -m venv $VENV_PATH && \
-    $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip setuptools wheel && \
-    apt-get purge -y --auto-remove gcc build-essential && \
-    rm -rf /var/lib/apt/lists/*
+RUN python -m venv $VENV_PATH && \
+    $VENV_PATH/bin/pip install --no-cache-dir --upgrade pip setuptools wheel
 
 # Pre-copy requirements to leverage Docker cache
 COPY requirements.txt .

@@ -65,3 +65,4 @@ tests/data/~$valid_students.xlsx
 temp/
 temp/modules.xlsx
 README.md
+*-docker-compose.yml
