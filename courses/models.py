@@ -8,6 +8,8 @@ import uuid
 from flask import jsonify, send_file
 import pandas as pd
 
+from core import handlers
+
 
 # Cache to store courses and the last update time
 courses_cache = {"data": None, "last_updated": None}
@@ -250,7 +252,13 @@ class Course:
         from app import DATABASE_MANAGER
 
         # Read the Excel file
-        df = pd.read_excel(file)
+        try:
+            df = handlers.excel_verifier_and_reader(
+                file,
+                {"UCAS_code", "Course_name", "Qualification", "Course_description"},
+            )
+        except Exception as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
         # Convert the DataFrame to a list of dictionaries
         courses = df.to_dict(orient="records")

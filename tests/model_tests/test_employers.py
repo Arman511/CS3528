@@ -150,6 +150,7 @@ def test_upload_employers(database, employer_model, app):
     excel_buffer = BytesIO()
     df.to_excel(excel_buffer, index=False)
     excel_buffer.seek(0)
+    excel_buffer.name = "employers.xlsx"
     with app.app_context():
         response = employer_model.upload_employers(excel_buffer)
         assert response[1] == 200

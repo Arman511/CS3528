@@ -9,6 +9,8 @@ import uuid
 import pandas as pd
 from flask import send_file, jsonify
 
+from core import handlers
+
 # Cache to store modules and the last update time
 modules_cache = {"data": None, "last_updated": None}
 
@@ -286,7 +288,13 @@ class Module:
         from app import DATABASE_MANAGER
 
         # Read the Excel file
-        df = pd.read_excel(file)
+        try:
+            df = handlers.excel_verifier_and_reader(
+                file,
+                {"Module_id", "Module_name", "Module_description"},
+            )
+        except Exception as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
         # Convert the DataFrame to a list of dictionaries
         modules = df.to_dict(orient="records")

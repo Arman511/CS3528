@@ -692,6 +692,7 @@ def test_upload_skills(database, skill_model, app):
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "skills.xlsx"
 
     with app.app_context():
         with app.test_request_context():

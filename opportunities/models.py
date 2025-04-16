@@ -323,8 +323,21 @@ class Opportunity:
         """Upload opportunities from an Excel file."""
         from app import DATABASE_MANAGER
 
+        expected_columns = {
+            "Title",
+            "Description",
+            "URL",
+            "Modules_required",
+            "Courses_required",
+            "Spots_available",
+            "Location",
+            "Duration",
+        }
+        if is_admin:
+            expected_columns.add("Employer_email")
+
         try:
-            df = pd.read_excel(file)
+            df = handlers.excel_verifier_and_reader(file, expected_columns)
             opportunities = df.to_dict(orient="records")
 
             email_to_employers_map = {

@@ -339,6 +339,7 @@ def test_upload_course_data(database, course_model, app):
     excel_buffer = BytesIO()
     df.to_excel(excel_buffer, index=False)
     excel_buffer.seek(0)
+    excel_buffer.name = "courses.xlsx"
     with app.app_context():
         response = course_model.upload_course_data(excel_buffer)
         assert response[1] == 200

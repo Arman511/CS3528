@@ -7,7 +7,7 @@ import tempfile
 import uuid
 from flask import jsonify, send_file, session
 import pandas as pd
-from core import email_handler
+from core import email_handler, handlers
 from opportunities.models import Opportunity
 
 
@@ -166,7 +166,9 @@ class Student:
         from app import DATABASE_MANAGER
 
         try:
-            df = pd.read_excel(file)
+            df = handlers.excel_verifier_and_reader(
+                file, {"First Name", "Last Name", "Email (Uni)", "Student Number"}
+            )
             students = df.to_dict(orient="records")
             data = []
             for student in students:

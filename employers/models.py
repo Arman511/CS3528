@@ -176,7 +176,10 @@ class Employers:
         from app import DATABASE_MANAGER
 
         # Read the file
-        df = pd.read_excel(file)
+        try:
+            df = handlers.excel_verifier_and_reader(file, {"Company_name", "Email"})
+        except ValueError as e:
+            return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 
         # Convert DataFrame to list of dictionaries
         employers = df.to_dict(orient="records")
@@ -270,4 +273,4 @@ class Employers:
                 "Rank students for your placements now!",
             )
 
-        return "All Deadlines Passed", None
+        return "All Deadlines Passed", None, "All deadlines have passed."

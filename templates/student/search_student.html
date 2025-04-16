@@ -54,11 +54,18 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div>
+                        <label for="ranked">Ranked:</label>
+                        <select id="ranked" name="ranked" class="field">
+                            <option value="">Select Ranked</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                        </select>
+                    </div>
                 </div>
                 <div class="form-group">
                     <button type="button" id="toggleMore" class="btn btn-secondary">Show More</button>
                     <p class="error error--hidden"></p>
-                    <input type="submit" value="Search" class="btn" />
                 </div>
             </form>
         </div>
@@ -75,6 +82,7 @@
                             <th>Course</th>
                             <th>Skills</th>
                             <th>Modules</th>
+                            <th>Ranked</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
@@ -140,6 +148,15 @@
                                     </td>
                                 {% else %}
                                     <td></td>
+                                {% endif %}
+                                {% if student.ranked %}
+                                    <td>
+                                        <span class="text-success">Yes</span>
+                                    </td>
+                                {% else %}
+                                    <td>
+                                        <span class="text-danger">No</span>
+                                    </td>
                                 {% endif %}
                                 <td>
                                     <a href="{{ url_for('update_student', uuid=student._id) }}">
