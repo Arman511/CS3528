@@ -19,6 +19,10 @@
                                     </p>
                                     <p class="display-4 mt-2 mb-0">{{ deadline_date }}</p>
                                 </div>
+                                <div class="alert alert-warning text-center mt-4">
+                                    <h5 class="fw-bold">Current Task:</h5>
+                                    <p class="lead">{{ deadline_task }}</p>
+                                </div>
                             {% else %}
                                 <div class="alert alert-success text-center" role="alert">
                                     <p class="lead mb-0">No upcoming deadlines</p>

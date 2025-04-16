@@ -139,3 +139,16 @@ class DeadlineManager:
         )
 
         return jsonify({"message": "All deadlines updated successfully"}), 200
+
+    def get_deadline_type(self):
+
+        if not self.is_past_details_deadline():
+            return 0
+
+        if not self.is_past_student_ranking_deadline():
+            return 1
+
+        if not self.is_past_opportunities_ranking_deadline():
+            return 2
+
+        return None

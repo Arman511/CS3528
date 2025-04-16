@@ -36,8 +36,13 @@ def add_course_routes(app):
     @handlers.admin_or_employers_required
     def search_course():
         courses = Course().get_courses()
+        from app import DEADLINE_MANAGER
+
         return render_template(
-            "/courses/search.html", courses=courses, user_type=handlers.get_user_type()
+            "/courses/search.html",
+            courses=courses,
+            user_type=handlers.get_user_type(),
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
         )
 
     @app.route("/courses/update", methods=["GET", "POST"])

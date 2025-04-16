@@ -78,6 +78,7 @@ def add_opportunities_routes(app):
                 referrer=request.referrer,
                 employer=session["employer"],  # Pass employer to the template
                 user_type="employer",
+                deadline_type=DEADLINE_MANAGER.get_deadline_type(),
             )
 
         if request.method == "POST":
@@ -177,6 +178,7 @@ def add_opportunities_routes(app):
             employer=employer,  # Add employer to the template context
             page="opportunities",
             employers=employers,
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
         )
 
     @app.route("/opportunities/employer_delete_opportunity", methods=["POST", "GET"])
@@ -194,6 +196,8 @@ def add_opportunities_routes(app):
     @app.route("/opportunities/upload", methods=["GET", "POST"])
     @handlers.admin_or_employers_required
     def upload_opportunities():
+        from app import DEADLINE_MANAGER
+
         user_type = "admin" if handlers.is_admin() else "employer"
 
         if request.method == "POST":
@@ -212,6 +216,7 @@ def add_opportunities_routes(app):
             "opportunities/upload.html",
             user_type=user_type,
             page="opportunities",
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
         )
 
     @app.route("/opportunities/download_all", methods=["GET"])
