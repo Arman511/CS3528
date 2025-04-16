@@ -89,6 +89,10 @@ def add_student_routes(app):
     @handlers.login_required
     def search_page():
         """Getting student."""
+        students = Student().get_students()
+        for student in students:
+            if "preferences" in student:
+                student["ranked"] = True
         return render_template(
             "student/search_student.html",
             skills_map=Skill().get_skills_map(),
@@ -97,7 +101,7 @@ def add_student_routes(app):
             courses=Course().get_courses(),
             modules_map=Module().get_modules_map(),
             modules=Module().get_modules(),
-            students=Student().get_students(),
+            students=students,
             user_type="admin",
             page="students",
         )

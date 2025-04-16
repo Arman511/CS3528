@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-    const searchForm = document.getElementById("searchForm");
     const studentTable = document.getElementById("student-table");
     const deleteButtons = document.querySelectorAll(".delete-button");
     const students = [];
@@ -24,73 +23,76 @@ document.addEventListener("DOMContentLoaded", () => {
             last_name: row.cells[1].innerText.toLowerCase() || "",
             email: row.cells[2].innerText.toLowerCase() || "",
             student_id: row.cells[3].innerText || "",
-            course_id: row.cells[4].innerText || "",
-            skills: (row.cells[5].dataset.skills || "")
-                .toLowerCase()
-                .split(", ")
-                .filter(Boolean),
-            modules: (row.cells[6].dataset.modules || "")
-                .toLowerCase()
-                .split(", ")
-                .filter(Boolean),
+            course_id: row.cells[4].innerText.toLowerCase() || "",
+            skills: (row.cells[5].dataset.skills || "").toLowerCase().split(", ").filter(Boolean),
+            modules: (row.cells[6].dataset.modules || "").toLowerCase().split(", ").filter(Boolean),
+            ranked: row.cells[7].innerText.toLowerCase() || "",
         });
     }
 
-    searchForm.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const formData = new FormData(searchForm);
-        const filters = {
-            first_name: formData.get("first_name").toLowerCase(),
-            last_name: formData.get("last_name").toLowerCase(),
-            email: formData.get("email").toLowerCase(),
-            student_id: formData.get("student_id").toLowerCase(),
-            course_id: formData.get("course"),
-            skills: formData
-                .getAll("skills")
-                .map((skill) => skill.toLowerCase()),
-            modules: formData
-                .getAll("modules")
-                .map((module) => module.toLowerCase()),
-        };
+    const firstNameInput = document.getElementById("first_name");
+    const lastNameInput = document.getElementById("last_name");
+    const emailInput = document.getElementById("email");
+    const studentIdInput = document.getElementById("student_id");
+    const courseSelect = document.getElementById("course");
+    const skillsSelect = document.getElementById("skills");
+    const modulesSelect = document.getElementById("modules");
+    const rankedSelect = document.getElementById("ranked");
+
+    function filterOptions() {
+        const firstNameValue = firstNameInput.value.toLowerCase();
+        const lastNameValue = lastNameInput.value.toLowerCase();
+        const emailValue = emailInput.value.toLowerCase();
+        const studentIdValue = studentIdInput.value.toLowerCase();
+        const courseValue = courseSelect ? courseSelect.value.toLowerCase() : "";
+        let skillsValue = $("#skills").val() || [];
+        let modulesValue = $("#modules").val() || [];
+
+        skillsValue = skillsValue.map((skill) => skill.toLowerCase());
+        modulesValue = modulesValue.map((module) => module.toLowerCase());
+
+        const rankedValue = rankedSelect.value.toLowerCase();
 
         for (const row of studentTable.rows) {
             const student = students[row.rowIndex - 1];
             let shouldShow = true;
 
-            if (
-                filters.first_name &&
-                !student.first_name.includes(filters.first_name)
-            )
-                shouldShow = false;
-            if (
-                filters.last_name &&
-                !student.last_name.includes(filters.last_name)
-            )
-                shouldShow = false;
-            if (filters.email && !student.email.includes(filters.email))
-                shouldShow = false;
-            if (
-                filters.student_id &&
-                !student.student_id.includes(filters.student_id)
-            )
-                shouldShow = false;
-            if (filters.course_id && student.course_id !== filters.course_id)
-                shouldShow = false;
-            if (
-                filters.skills.length &&
-                !filters.skills.every((skill) => student.skills.includes(skill))
-            )
-                shouldShow = false;
-            if (
-                filters.modules.length &&
-                !filters.modules.every((module) =>
-                    student.modules.includes(module)
-                )
-            )
-                shouldShow = false;
+            if (firstNameValue && !student.first_name.includes(firstNameValue)) shouldShow = false;
+            if (lastNameValue && !student.last_name.includes(lastNameValue)) shouldShow = false;
+            if (emailValue && !student.email.includes(emailValue)) shouldShow = false;
+            if (studentIdValue && !student.student_id.includes(studentIdValue)) shouldShow = false;
+            if (courseValue && student.course_id !== courseValue) shouldShow = false;
+            if (skillsValue.length && !skillsValue.every((skill) => student.skills.includes(skill))) shouldShow = false;
+            if (modulesValue.length && !modulesValue.every((module) => student.modules.includes(module))) shouldShow = false;
+            if (rankedValue && student.ranked !== rankedValue) shouldShow = false;
 
             row.style.display = shouldShow ? "" : "none";
         }
+    }
+
+    firstNameInput.addEventListener("input", filterOptions);
+    lastNameInput.addEventListener("input", filterOptions);
+    emailInput.addEventListener("input", filterOptions);
+    studentIdInput.addEventListener("input", filterOptions);
+    rankedSelect.addEventListener("input", filterOptions);
+
+    $("#skills").selectize({
+        plugins: ["remove_button"],
+        maxItems: 10,
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOptions,
+    });
+    $("#modules").selectize({
+        plugins: ["remove_button"],
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOptions,
+    });
+    $("#course").selectize({
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOptions,
     });
 
     document.querySelectorAll(".toggle-btn").forEach((btn) => {
@@ -113,10 +115,7 @@ document.addEventListener("DOMContentLoaded", () => {
         deleteButton.addEventListener("click", async () => {
             const studentId = deleteButton.getAttribute("data-id");
             if (confirm("Are you sure you want to delete this student?")) {
-                const response = await fetch(
-                    `/students/delete_student/${studentId}`,
-                    { method: "DELETE" }
-                );
+                const response = await fetch(`/students/delete_student/${studentId}`, { method: "DELETE" });
                 if (response.ok) {
                     window.location.reload();
                 } else {
