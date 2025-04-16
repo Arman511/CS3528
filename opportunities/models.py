@@ -42,15 +42,18 @@ class Opportunity:
         from app import DATABASE_MANAGER
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
+        employers_map = {
+            employer["_id"]: employer["company_name"]
+            for employer in Employers().get_employers()
+        }
+        for opportunity in opportunities:
+            if "preferences" in opportunity:
+                opportunity["ranked"] = True
+            opportunity["company_name"] = employers_map.get(
+                opportunity["employer_id"], "Unknown Company"
+            )
+
         if not _id:
-            employers_map = {
-                employer["_id"]: employer["company_name"]
-                for employer in Employers().get_employers()
-            }
-            for opportunity in opportunities:
-                opportunity["company_name"] = employers_map.get(
-                    opportunity["employer_id"], "Unknown Company"
-                )
             return opportunities
 
         filtered_opportunities = [
@@ -58,9 +61,6 @@ class Opportunity:
             for opportunity in opportunities
             if opportunity["employer_id"] == _id
         ]
-        employer = Employers().get_employer_by_id(_id)
-        for opportunity in opportunities:
-            opportunity["company_name"] = employer["company_name"]
         return filtered_opportunities
 
     def get_opportunities_by_title(self, title):

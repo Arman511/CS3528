@@ -120,7 +120,7 @@ GUNICORN_ERROR_LOG="-"
     1. Build the Docker image:
 
         ```
-        docker build --network=host -t cs3528_alpha .
+        docker build -t cs3528_alpha .
         ```
 
     2. Run the Docker container, exposing port 8080:

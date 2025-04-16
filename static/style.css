@@ -745,3 +745,8 @@ html[data-bs-theme="dark"] .fab.fa-weibo {
 html[data-bs-theme="dark"] .fab.fa-weibo:hover {
     color: #DF2029;
 }
+
+.dropdown-arrow {
+    font-size: 10px;
+    margin-left: 3px;
+}

@@ -32,10 +32,13 @@ def add_module_routes(app):
     def search_modules():
         """Search modules page"""
         modules = Module().get_modules()
+        from app import DEADLINE_MANAGER
+
         return render_template(
             "course_modules/search.html",
             modules=modules,
             user_type=handlers.get_user_type(),
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
         )
 
     @app.route("/course_modules/delete", methods=["DELETE"])

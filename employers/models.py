@@ -253,18 +253,21 @@ class Employers:
             return (
                 "Add Any Number of Opportunities Deadline",
                 DEADLINE_MANAGER.get_details_deadline(),
+                "Add your placements now!",
             )
 
         if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             return (
                 "Students Ranking Opportunities/Roles Deadline",
                 DEADLINE_MANAGER.get_student_ranking_deadline(),
+                "Wait till this deadline passes.",
             )
 
         if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
             return (
                 "Ranking Student For Individual Opportunities/Roles Deadline",
                 DEADLINE_MANAGER.get_opportunities_ranking_deadline(),
+                "Rank students for your placements now!",
             )
 
         return "All Deadlines Passed", None

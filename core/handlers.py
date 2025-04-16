@@ -262,6 +262,7 @@ def configure_routes(app, cache: Cache):
     @app.route("/tutorial")
     def tutorial():
         """The tutorial route which renders the page specific to a user type."""
+        from app import DEADLINE_MANAGER
 
         user_type = get_user_type()
 
@@ -269,7 +270,9 @@ def configure_routes(app, cache: Cache):
             return render_template("tutorials/tutorial_admin.html", user_type="admin")
         if user_type == "employer":
             return render_template(
-                "tutorials/tutorial_employer.html", user_type="employer"
+                "tutorials/tutorial_employer.html",
+                user_type="employer",
+                deadline_type=DEADLINE_MANAGER.get_deadline_type(),
             )
         if user_type == "student":
             return render_template(

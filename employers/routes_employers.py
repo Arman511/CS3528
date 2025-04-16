@@ -38,20 +38,27 @@ def add_employer_routes(app):
     @handlers.employers_login_required
     def employer_home(employer):
         deadline_info = Employers().get_deadlines_for_employer_dashboard()
-        deadline_name, deadline_date = deadline_info
+        deadline_name, deadline_date, deadline_task = deadline_info
 
         formatted_date = (
             datetime.strptime(deadline_date, "%Y-%m-%d").strftime("%d-%m-%Y")
             if deadline_date
             else None
         )
+        from app import DEADLINE_MANAGER
+
+        deadline_type = DEADLINE_MANAGER.get_deadline_type()
+        if deadline_type == 3:
+            deadline_task = "Your ranking is complete. To make changes, visit the 'Opportunities' page and click 'Rank' to update your preferences."
 
         return render_template(
             "employers/employer_home.html",
             deadline_name=deadline_name,
             deadline_date=formatted_date,
+            deadline_task=deadline_task,
             employer=employer,
             user_type="employer",
+            deadline_type=deadline_type,
         )
 
     @app.route("/employers/otp", methods=["POST"])
@@ -148,6 +155,7 @@ def add_employer_routes(app):
                 referrer=request.referrer,
                 employer=session["employer"],
                 user_type="employer",
+                deadline_type=DEADLINE_MANAGER.get_deadline_type(),
             )
         opportunity_id = request.args.get("opportunity_id")
         if not opportunity_id:
@@ -180,6 +188,7 @@ def add_employer_routes(app):
             get_module_name=Module().get_module_name_by_id,
             get_skill_name=Skill().get_skill_name_by_id,
             user_type="employer",
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
         )
 
     @app.route("/employers/upload", methods=["GET", "POST"])

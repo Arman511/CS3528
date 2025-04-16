@@ -101,7 +101,7 @@ class User:
         <html>
         <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <p style="font-size: 16px;">Dear {student['first_name']},</p>
-            <p style="font-size: 16px;"><strong>Congratulations!<strong> We’re thrilled to inform you that you have been <strong>matched</strong> with <strong>{employer_name}</strong> for an exciting opportunity!</p>
+            <p style="font-size: 16px;"><strong>Congratulations!</strong> We’re thrilled to inform you that you have been <strong>matched</strong> with <strong>{employer_name}</strong> for an exciting opportunity!</p>
             <p style="font-size: 20px; font-weight: bold; color: #2c3e50;">{opportunity['title']}</p>
             <p style="font-size: 16px;">This is a great chance to connect and explore potential collaboration. We encourage you to reach out to <strong>{employer_name}</strong> at <a href='mailto:{employer_email}' style="color: #3498db; text-decoration: none;">{employer_email}</a> to discuss the next steps.</p>
             <p style="font-size: 16px;">If you have any questions or need any assistance, feel free to get in touch with our support team.</p>
@@ -179,8 +179,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
             for student in students:
-                student = student.get("course")
-                if student and len(student) > 0:  # Ensure student has added details
+                if student.get("course"):  # Ensure student has added details
                     number_of_students += 1
             number_of_students = len(students) - number_of_students
             number_of_opportunities = len(DATABASE_MANAGER.get_all("opportunities"))
@@ -194,8 +193,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             for student in students:
-                student = student.get("preferences")
-                if student is not None:
+                if student.get("preferences") is not None:
                     number_of_students += 1
 
             number_of_students = len(students) - number_of_students
@@ -209,7 +207,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
             for opportunity in opportunities:
-                if opportunity.get("preferences"):
+                if opportunity.get("preferences") is not None:
                     number_of_opportunities += 1
 
             number_of_opportunities = len(opportunities) - number_of_opportunities
