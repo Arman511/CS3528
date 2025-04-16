@@ -1,0 +1,25 @@
+version: "3.8"
+
+services:
+  cs3528_app:
+    image: arman511/cs3528_alpha
+    ports:
+      - "8080:8080"
+    environment:
+      MONGO_URI: "mongodb://mongo:27017"
+      SECRET_KEY: "secret"
+      GUNICORN_BIND: "0.0.0.0:8080"
+      IS_GITHUB_ACTION: "False"
+      EMAIL: "no-reply@skillpilot.co.uk"
+      EMAIL_PASSWORD: ""
+      SMTP: ""
+      MONGO_DB_TEST: "cs3528_test"
+      MONGO_DB_PROD: "cs3528_prod"
+      BASE_EMAIL_FOR_STUDENTS: ""
+      SUPERUSER_EMAIL: ""
+      SUPERUSER_PASSWORD: ""
+      OFFLINE: "False"
+      PORT: "8080"
+      GUNICORN_LOG_LEVEL: "info"
+      GUNICORN_ACCESS_LOG: "-"
+      GUNICORN_ERROR_LOG: "-"
