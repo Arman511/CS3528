@@ -704,7 +704,7 @@ def test_import_from_wrong_format(app, database):
             assert response[1] == 400
             assert (
                 response[0].get_json()["error"]
-                == "Failed to read file: No such keys(s): 'io.excel.zip.reader'"
+                == "Failed to read file: Invalid file type. Please upload a .xlsx file."
             )
 
     students = database.get_all_by_field("students", "email", "dummy@dummy.com")

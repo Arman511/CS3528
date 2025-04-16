@@ -273,4 +273,4 @@ class Employers:
                 "Rank students for your placements now!",
             )
 
-        return "All Deadlines Passed", None
+        return "All Deadlines Passed", None, "All deadlines have passed."

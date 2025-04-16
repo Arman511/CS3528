@@ -171,7 +171,14 @@ def excel_verifier_and_reader(file, expected_columns: set[str]):
                     or if the expected columns are missing.
     """
     dataframe = None
-    if not file.filename.lower().endswith(".xlsx"):
+    try:
+        filename = file.filename
+    except AttributeError:
+        try:
+            filename = file.name
+        except AttributeError:
+            filename = file.file_path
+    if not filename.lower().endswith(".xlsx"):
         raise ValueError("Invalid file type. Please upload a .xlsx file.")
 
     file.seek(0, os.SEEK_END)

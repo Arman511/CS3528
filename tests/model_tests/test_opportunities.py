@@ -739,6 +739,7 @@ def test_upload_opportunities(opportunity_model, database, app, dummy_data):
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "opportunities.xlsx"
 
     with app.app_context():
         with app.test_request_context():
@@ -769,7 +770,7 @@ def test_upload_opportunities_employer(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
-
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             employer_model.start_session()
@@ -797,7 +798,7 @@ def test_upload_opportunities_wrong_spot_available(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
-
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -820,7 +821,7 @@ def test_upload_opportunities_wrong_duration(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
-
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -837,7 +838,7 @@ def test_upload_opportunities_no_employer(opportunity_model, database, app, dumm
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
-
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -867,7 +868,7 @@ def test_upload_opportunities_failed_modules(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
-
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -896,6 +897,7 @@ def test_upload_opportunities_failed_courses(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -920,6 +922,7 @@ def test_upload_opportunities_wrong_title(opportunity_model, database, app, dumm
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -942,6 +945,7 @@ def test_upload_opportunities_wrong_description(
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
@@ -960,6 +964,7 @@ def test_upload_opportunities_wrong_spots(opportunity_model, database, app, dumm
     file = BytesIO()
     df.to_excel(file, index=False)
     file.seek(0)
+    file.name = "opportunities.xlsx"
     with app.app_context():
         with app.test_request_context():
             response = opportunity_model.upload_opportunities(file, is_admin=True)
