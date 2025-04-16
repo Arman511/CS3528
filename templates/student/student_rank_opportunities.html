@@ -22,6 +22,7 @@
                             <p class="opportunity-url">{{ opportunity.url }}</p>
                             <p class="opportunity-location">{{ opportunity.location }}</p>
                             <p class="opportunity-company">Company: {{ employers_col(opportunity.employer_id).company_name }}</p>
+                            <p class="opportunity-length">Length: {{ opportunity.duration|replace('_', ' ') |capitalize }}</p>
                             <label for="rank-{{ opportunity._id }}">Rank:</label>
                             <select id="rank-{{ opportunity._id }}"
                                     name="rank-{{ opportunity._id }}"
