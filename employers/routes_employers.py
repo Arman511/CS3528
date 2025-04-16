@@ -47,6 +47,10 @@ def add_employer_routes(app):
         )
         from app import DEADLINE_MANAGER
 
+        deadline_type = DEADLINE_MANAGER.get_deadline_type()
+        if deadline_type == 3:
+            deadline_task = "Your ranking is complete. To make changes, visit the search page and click 'Rank' to update your preferences."
+
         return render_template(
             "employers/employer_home.html",
             deadline_name=deadline_name,
@@ -54,7 +58,7 @@ def add_employer_routes(app):
             deadline_task=deadline_task,
             employer=employer,
             user_type="employer",
-            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
+            deadline_type=deadline_type,
         )
 
     @app.route("/employers/otp", methods=["POST"])

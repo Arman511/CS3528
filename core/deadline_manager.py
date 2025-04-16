@@ -3,7 +3,7 @@ Handles connection to the MongoDB database and provides access to the collection
 """
 
 import datetime
-from flask import jsonify
+from flask import jsonify, session
 
 
 class DeadlineManager:
@@ -142,13 +142,28 @@ class DeadlineManager:
 
     def get_deadline_type(self):
 
+        if "employer" in session:
+            pass
+
         if not self.is_past_details_deadline():
             return 0
 
         if not self.is_past_student_ranking_deadline():
             return 1
 
-        if not self.is_past_opportunities_ranking_deadline():
-            return 2
+        if not self.is_past_opportunities_ranking_deadline() and session.get(
+            "employer"
+        ):
+            employer_id = session["employer"]["_id"]
+            opps = self.database_manager.get_all_by_field(
+                "opportunities", "employer_id", employer_id
+            )
+            for opp in opps:
+                if "preferences" not in opp:
+                    return 2
+            return 3
+
+        elif not self.is_past_opportunities_ranking_deadline():
+            return 3
 
         return None

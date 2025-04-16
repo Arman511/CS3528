@@ -30,6 +30,7 @@ def add_opportunities_routes(app):
         Determines user type from session.
         """
         # Fetch user session details
+        from app import DEADLINE_MANAGER
 
         user_type = handlers.get_user_type()
         employer = session.get("employer", None)
@@ -58,7 +59,11 @@ def add_opportunities_routes(app):
             context["employers_map"] = employers_map
             context["page"] = "opportunities"
 
-        return render_template("opportunities/search.html", **context)
+        return render_template(
+            "opportunities/search.html",
+            **context,
+            deadline_type=DEADLINE_MANAGER.get_deadline_type(),
+        )
 
     @app.route(
         "/opportunities/employer_add_update_opportunity", methods=["GET", "POST"]
