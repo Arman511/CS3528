@@ -21,6 +21,14 @@
               <input type="text" id="company" name="company" class="field" />
             </div>
           {% endif %}
+          <div>
+            <label for="ranked">Ranked:</label>
+            <select id="ranked" name="ranked">
+              <option value="">Select Ranked</option>
+              <option value="yes">Yes</option>
+              <option value="no">No</option>
+            </select>
+          </div>
         </div>
         <div class="form-group hidden-fields">
           <div>
@@ -86,13 +94,13 @@
               <th>Title</th>
               <th>Description</th>
               <th>Company Name</th>
-              <!-- Display Company Name for Both Admin and Employer -->
               <th>URL</th>
               <th>Location</th>
               <th>Courses Required</th>
               <th>Modules Required</th>
               <th>Spots Available</th>
               <th>Duration</th>
+              <th>Ranked</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -152,6 +160,13 @@
                 </td>
                 <td>{{ opportunity.spots_available }}</td>
                 <td>{{ opportunity.duration.replace('_', ' ').title() }}</td>
+                <td>
+                  {% if opportunity.ranked %}
+                    <span class="text-success">Yes</span>
+                  {% else %}
+                    <span class="text-danger">No</span>
+                  {% endif %}
+                </td>
                 <td>
                   {% if user_type == "employer" %}
                     <a href="{{ url_for('employers_rank_students', opportunity_id=opportunity._id) }}"

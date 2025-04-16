@@ -61,6 +61,8 @@ class Opportunity:
         employer = Employers().get_employer_by_id(_id)
         for opportunity in opportunities:
             opportunity["company_name"] = employer["company_name"]
+            if "preferences" in opportunity:
+                opportunity["ranked"] = True
         return filtered_opportunities
 
     def get_opportunities_by_title(self, title):

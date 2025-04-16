@@ -24,10 +24,11 @@ document.addEventListener("DOMContentLoaded", function () {
             company: row.cells[2].innerText.toLowerCase(),
             url: row.cells[3].innerText.toLowerCase(),
             location: row.cells[4].innerText.toLowerCase(),
-            courses_required: row.cells[5].dataset.courses.toLowerCase().split(', ').filter(Boolean),
-            modules_required: row.cells[6].dataset.modules.toLowerCase().split(', ').filter(Boolean),
+            courses_required: row.cells[5].dataset.courses.toLowerCase().split(", ").filter(Boolean),
+            modules_required: row.cells[6].dataset.modules.toLowerCase().split(", ").filter(Boolean),
             spots_available: parseInt(row.cells[7].innerText.trim(), 10) || 0,
             duration: row.cells[8].innerText.trim().replace(" ", "_").toLowerCase(),
+            ranked: row.cells[9].innerText.trim().toLowerCase(),
         });
     }
 
@@ -38,6 +39,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const spotsMinSearchInput = document.getElementById("spots_min");
     const spotsMaxSearchInput = document.getElementById("spots_max");
+    const rankedSearchInput = document.getElementById("ranked");
 
     function filterOpportunities() {
         const titleValue = titleSearchInput.value.toLowerCase();
@@ -50,12 +52,14 @@ document.addEventListener("DOMContentLoaded", function () {
         let modulesValue = $("#modules").val() || [];
         let durationValue = $("#placement_duration").val();
 
-        courseValue = courseValue.map(course => course.toLowerCase());
-        modulesValue = modulesValue.map(module => module.toLowerCase());
+        courseValue = courseValue.map((course) => course.toLowerCase());
+        modulesValue = modulesValue.map((module) => module.toLowerCase());
         durationValue = durationValue ? durationValue.toLowerCase() : null;
 
         const spotsMinValue = parseInt(spotsMinSearchInput.value, 10) || 0;
         const spotsMaxValue = parseInt(spotsMaxSearchInput.value, 10) || Number.MAX_SAFE_INTEGER;
+
+        const rankedValue = rankedSearchInput ? rankedSearchInput.value.toLowerCase() : null;
 
         for (const row of opportunityTable.rows) {
             const opportunity = opportunities[row.rowIndex - 1];
@@ -65,10 +69,11 @@ document.addEventListener("DOMContentLoaded", function () {
             if (companyValue && !opportunity.company.includes(companyValue)) shouldShow = false;
             if (descriptionValue && !opportunity.description.includes(descriptionValue)) shouldShow = false;
             if (locationValue && !opportunity.location.includes(locationValue)) shouldShow = false;
-            if (courseValue.length && !courseValue.every(course => opportunity.courses_required.includes(course))) shouldShow = false;
-            if (modulesValue.length && !modulesValue.every(module => opportunity.modules_required.includes(module))) shouldShow = false;
+            if (courseValue.length && !courseValue.every((course) => opportunity.courses_required.includes(course))) shouldShow = false;
+            if (modulesValue.length && !modulesValue.every((module) => opportunity.modules_required.includes(module))) shouldShow = false;
             if (opportunity.spots_available < spotsMinValue || opportunity.spots_available > spotsMaxValue) shouldShow = false;
             if (durationValue && !durationValue.includes(opportunity.duration)) shouldShow = false;
+            if (rankedValue && rankedValue !== opportunity.ranked) shouldShow = false;
             row.style.display = shouldShow ? "" : "none";
         }
     }
@@ -80,35 +85,36 @@ document.addEventListener("DOMContentLoaded", function () {
     locationSearchInput.addEventListener("input", filterOpportunities);
     spotsMinSearchInput.addEventListener("input", filterOpportunities);
     spotsMaxSearchInput.addEventListener("input", filterOpportunities);
+    rankedSearchInput.addEventListener("input", filterOpportunities);
 
     // Initialize Selectize for the select elements
     $("#course").selectize({
         plugins: ["remove_button"],
-        sortField: 'text',
-        dropdownParent: 'body',
-        onChange: filterOpportunities
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOpportunities,
     });
 
     $("#modules").selectize({
         plugins: ["remove_button"],
-        sortField: 'text',
-        dropdownParent: 'body',
-        onChange: filterOpportunities
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOpportunities,
     });
 
     $("#placement_duration").selectize({
         plugins: ["remove_button"],
-        sortField: 'text',
-        dropdownParent: 'body',
-        onChange: filterOpportunities
+        sortField: "text",
+        dropdownParent: "body",
+        onChange: filterOpportunities,
     });
 });
 
 function toggleText(btn, target) {
     const element = document.querySelector(target);
-    if (element.classList.contains('show')) {
-        btn.textContent = 'Show More';
+    if (element.classList.contains("show")) {
+        btn.textContent = "Show More";
     } else {
-        btn.textContent = 'Show Less';
+        btn.textContent = "Show Less";
     }
 }
