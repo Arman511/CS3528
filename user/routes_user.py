@@ -321,7 +321,7 @@ def add_user_routes(app, cache):
             stats_data = {
                 "title": "📊 Student & Employer Details Stats",
                 "label1": "Remaining Students To Fill In Their Details",
-                "label2": "Opportunities Added by Employers",
+                "label2": "Opportunities Added By Employers",
                 "count1": num_students,
                 "count2": num_opportunities,
             }
@@ -336,7 +336,7 @@ def add_user_routes(app, cache):
         elif "Employers Ranking" in deadline_name:
             stats_data = {
                 "title": "📊 Employer Rankings",
-                "label1": "Remaining Employers To Rank Students",
+                "label1": "Remaining Opportunities That Student Have Not Been Ranked In",
                 "label2": None,
                 "count1": num_opportunities,
                 "count2": None,

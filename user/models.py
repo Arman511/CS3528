@@ -179,8 +179,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_details_deadline():
             for student in students:
-                student = student.get("course")
-                if student and len(student) > 0:  # Ensure student has added details
+                if student.get("course"):  # Ensure student has added details
                     number_of_students += 1
             number_of_students = len(students) - number_of_students
             number_of_opportunities = len(DATABASE_MANAGER.get_all("opportunities"))
@@ -194,8 +193,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_student_ranking_deadline():
             for student in students:
-                student = student.get("preferences")
-                if student is not None:
+                if student.get("preferences") is not None:
                     number_of_students += 1
 
             number_of_students = len(students) - number_of_students
@@ -209,7 +207,7 @@ class User:
 
         if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
             for opportunity in opportunities:
-                if opportunity.get("preferences"):
+                if opportunity.get("preferences") is not None:
                     number_of_opportunities += 1
 
             number_of_opportunities = len(opportunities) - number_of_opportunities
