@@ -360,14 +360,10 @@ def test_send_match_email(app, database, user_model):
         "email": "dummy@dummy.com",
     }
     database.insert("employers", employer)
-    student_email = "student@example.com"
-    employer_email = "employer@example.com"
 
     with app.app_context():
         with app.test_request_context():
-            response = user_model.send_match_email(
-                student_uuid, opportunity_uuid, student_email, employer_email
-            )
+            response = user_model.send_match_email(student_uuid, opportunity_uuid)
             json_data = response[0].get_json()
             assert response[1] == 200
             assert json_data["message"] == "Email Sent"
