@@ -348,7 +348,7 @@ class Student:
 
         for opportunity in opportunities:
             if "preferences" in opportunity:
-                opportunity["preferences"] = []
+                del opportunity["preferences"]
                 DATABASE_MANAGER.update_one_by_id(
                     "opportunities", opportunity["_id"], opportunity
                 )
