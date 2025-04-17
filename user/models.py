@@ -207,12 +207,13 @@ class User:
             msg = MIMEText(body, "html")
             msg["Subject"] = "🎯 Skillpilot: You’ve Been Matched!"
             msg["To"] = student_email
-            # email_handler.send_email(msg, student_email)
+            email_handler.send_email(msg, student_email)
 
             # Collect for employer
             employer_emails.setdefault(opportunity["employer_id"], []).append(
                 (
                     student["first_name"],
+                    student["last_name"],
                     student_email,
                     opportunity["title"],
                     opportunity_uuid,
@@ -227,38 +228,47 @@ class User:
 
             # HTML email with a table
             table_rows = ""
-            for student_name, student_email, title, opportunity_uuid in matches:
+            for (
+                student_first_name,
+                student_last_name,
+                student_email,
+                title,
+                opportunity_uuid,
+            ) in matches:
                 table_rows += f"""
                 <tr>
-                    <td style="padding: 8px; border: 1px solid #ccc;">{student_name}</td>
-                    <td style="padding: 8px; border: 1px solid #ccc;">{student_email}</td>
-                    <td style="padding: 8px; border: 1px solid #ccc;">{title}</td>
-                    <td style="padding: 8px; border: 1px solid #ccc;">{opportunity_uuid}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px;">{student_first_name}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px;">{student_last_name}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px;"><a href="mailto:{student_email}" style="color: #3498db; text-decoration: none;">{student_email}</a></td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px;">{title}</td>
+                    <td style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">{opportunity_uuid}</td>
                 </tr>
                 """
 
             html_body = f"""
             <html>
-            <body style="font-family: Arial, sans-serif; color: #333;">
-                <p>Dear {employer_name},</p>
-                <p>You’ve been matched with the following students:</p>
-                <table style="border-collapse: collapse; width: 100%;">
-                    <thead>
-                        <tr style="background-color: #f2f2f2;">
-                            <th style="padding: 8px; border: 1px solid #ccc;">Student Name</th>
-                            <th style="padding: 8px; border: 1px solid #ccc;">Email</th>
-                            <th style="padding: 8px; border: 1px solid #ccc;">Opportunity Title</th>
-                            <th style="padding: 8px; border: 1px solid #ccc;">Opportunity UUID</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {table_rows}
-                    </tbody>
-                </table>
-                <p>Please reach out to the students to discuss the next steps.</p>
-                <p>We've also attached this information as an Excel file for your convenience.</p>
-                <hr style="margin: 20px 0;">
-                <p><strong>Best regards,</strong><br>The Skillpilot Team</p>
+            <body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6; background-color: #f9f9f9; padding: 20px;">
+                <div style="max-width: 100%; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); padding: 20px; overflow-x: auto;">
+                    <p style="font-size: 16px; color: #2c3e50;">Dear <strong>{employer_name}</strong>,</p>
+                    <p style="font-size: 16px; color: #2c3e50;">We’re excited to share that you’ve been matched with the following students for your opportunities:</p>
+                    <table style="border-collapse: collapse; width: 100%; margin-top: 20px; font-size: 14px;">
+                        <thead>
+                            <tr style="background-color: #f2f2f2;">
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">Student First Name</th>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">Student Last Name</th>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">Email</th>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">Opportunity Title</th>
+                                <th style="padding: 12px; border: 1px solid #ddd; text-align: left; font-size: 14px; color: #555;">Opportunity UUID</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {table_rows}
+                        </tbody>
+                    </table>
+                    <p style="font-size: 16px; color: #2c3e50; margin-top: 20px;">Please feel free to reach out to the students to discuss the next steps. For your convenience, we’ve also attached this information as an Excel file.</p>
+                    <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
+                    <p style="font-size: 16px; color: #2c3e50;"><strong>Best regards,</strong><br>The Skillpilot Team</p>
+                </div>
             </body>
             </html>
             """
@@ -266,12 +276,13 @@ class User:
             # Create a DataFrame for the matches
             data = [
                 {
-                    "Student Name": student_name,
+                    "Student First Name": student_first_name,
+                    "Student Last Name": student_last_name,
                     "Email": student_email,
                     "Opportunity Title": title,
                     "Opportunity UUID": opportunity_uuid,
                 }
-                for student_name, student_email, title, opportunity_uuid in matches
+                for student_first_name, student_last_name, student_email, title, opportunity_uuid in matches
             ]
             df = pd.DataFrame(data)
 
