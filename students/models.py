@@ -348,9 +348,8 @@ class Student:
 
         for opportunity in opportunities:
             if "preferences" in opportunity:
-                del opportunity["preferences"]
-                DATABASE_MANAGER.update_one_by_id(
-                    "opportunities", opportunity["_id"], opportunity
+                DATABASE_MANAGER.delete_field_by_id(
+                    "opportunities", opportunity["_id"], "preferences"
                 )
 
         return jsonify({"message": "All students deleted"}), 200

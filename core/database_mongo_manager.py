@@ -140,6 +140,15 @@ class DatabaseMongoManager(DatabaseInterface):
         """
         return self.database[table].find_one({"email": email})
 
+    def delete_field_by_id(self, table, id_val, field):
+        """Delete a field by ID.
+        Args:
+            table: The table to update
+            id_val: The ID of the record to update
+            field: The field to delete
+        """
+        return self.database[table].update_one({"_id": id_val}, {"$unset": {field: ""}})
+
     def get_one_by_field(self, table, field, value):
         """Get one record by field."""
         return self.database[table].find_one({field: value})
