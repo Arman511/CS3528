@@ -144,8 +144,9 @@ class Employers:
         students = DATABASE_MANAGER.get_all("students")
         for student in students:
             if "preferences" in student:
-                student["preferences"] = []
-                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+                DATABASE_MANAGER.delete_field_by_id(
+                    "students", student["_id"], "preferences"
+                )
 
         return jsonify({"message": "All employers deleted"}), 200
 

@@ -186,16 +186,7 @@ class Course:
         courses_cache["data"] = []
         courses_cache["last_updated"] = datetime.now()
 
-        students = DATABASE_MANAGER.get_all("students")
         DATABASE_MANAGER.delete_all("students")
-        updated_students = []
-        for student in students:
-            if "course" in student:
-                student["course"] = None
-            updated_students.append(student)
-
-        if updated_students:
-            DATABASE_MANAGER.insert_many("students", updated_students)
 
         opportunities = DATABASE_MANAGER.get_all("opportunities")
         DATABASE_MANAGER.delete_all("opportunities")

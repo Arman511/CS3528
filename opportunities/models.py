@@ -187,14 +187,6 @@ class Opportunity:
 
         return jsonify({"message": "Opportunity deleted"}), 200
 
-    def delete_opportunities(self):
-        """Deleting all opportunities."""
-        from app import DATABASE_MANAGER
-
-        DATABASE_MANAGER.delete_all("opportunities")
-
-        return jsonify({"message": "All opportunities deleted"}), 200
-
     def get_valid_students(self, opportunity_id):
         """Get valid students for an opportunity."""
         # pylint: disable=import-outside-toplevel
@@ -268,8 +260,9 @@ class Opportunity:
 
         for student in students:
             if "preferences" in student:
-                student["preferences"] = []
-                DATABASE_MANAGER.update_one_by_id("students", student["_id"], student)
+                DATABASE_MANAGER.delete_field_by_id(
+                    "students", student["_id"], "preferences"
+                )
 
         DATABASE_MANAGER.delete_all("opportunities")
 
