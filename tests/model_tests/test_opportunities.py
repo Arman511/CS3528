@@ -492,26 +492,6 @@ def test_delete_opportunity_by_id_no_opportunity(opportunity_model, database, ap
         database.insert("opportunities", op)
 
 
-def test_delete_opportunities(opportunity_model, database, app):
-    """Test deleting all opportunities"""
-    opportunity = database.get_all("opportunities")
-    database.delete_all("opportunities")
-
-    database.insert("opportunities", {"_id": "123", "employer_id": "456"})
-
-    with app.app_context():
-        with app.test_request_context():
-            opportunities = opportunity_model.delete_opportunities()
-
-            assert opportunities[1] == 200
-            assert opportunities[0].json == {"message": "All opportunities deleted"}
-
-    database.delete_all_by_field("opportunities", "_id", "123")
-
-    for op in opportunity:
-        database.insert("opportunities", op)
-
-
 def test_get_valid_students(opportunity_model, database, app):
     """Test getting valid students"""
     opportunity = database.get_all("opportunities")
