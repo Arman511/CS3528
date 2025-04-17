@@ -4,14 +4,11 @@
     <div class="card-wrapper">
         <div class="card card-dynamic-width">
             <div class="container">
-                <div class="alert alert-info text-center">
-                    <p data-last-updated="{{ last_updated }}" id="time-message" class="mb-0">
-                        Last updated: {{ last_updated }}, updates every 5 minutes
-                    </p>
-                    <span id="time-until-update" class="font-weight-bold"></span>
-                </div>
                 <h1 class="text-center">Matching</h1>
-                <button type="button" class="btn btn-primary mb-2" id="send-all-emails">Send all Emails</button>
+                <div>
+                    <button type="button" class="btn btn-primary mb-2" id="send-all-emails">Send all Emails</button>
+                    <p id="response-all" class="plain-center"></p>
+                </div>
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>
@@ -25,7 +22,7 @@
                         <tbody>
                             {% for match in matches %}
                                 {% for student in match.students %}
-                                    <tr>
+                                    <tr class="student-row">
                                         <td>{{ opportunities_map[match.opportunity].title }}</td>
                                         <td>{{ employers_map[opportunities_map[match.opportunity].employer_id].company_name }}</td>
                                         <td>{{ students_map[student].first_name }} {{ students_map[student].last_name }}</td>
@@ -33,8 +30,6 @@
                                             <button type="button"
                                                     class="btn btn-sm btn-primary send-email"
                                                     data-student="{{ student }}"
-                                                    data-student-email="{{ students_map[student].email }}"
-                                                    data-employer="{{ employers_map[opportunities_map[match.opportunity].employer_id].email }}"
                                                     data-opportunity="{{ match.opportunity }}">Send Email</button>
                                             <p id="response-{{ student }}" class="plain-center"></p>
                                         </td>

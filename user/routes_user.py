@@ -207,13 +207,38 @@ def add_user_routes(app, cache):
     @handlers.login_required
     def send_match_email():
         """Send match email."""
+        from app import DEADLINE_MANAGER
+
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
+            return (
+                jsonify(
+                    {"error": "The final deadline must have passed to send emails"}
+                ),
+                400,
+            )
         student_uuid = request.form.get("student")
         opportunity_uuid = request.form.get("opportunity")
-        student_email = request.form.get("student_email")
-        employer_email = request.form.get("employer_email")
-        return User().send_match_email(
-            student_uuid, opportunity_uuid, student_email, employer_email
-        )
+        return User().send_match_email(student_uuid, opportunity_uuid)
+
+    @app.route("/user/send_all_emails", methods=["POST"])
+    @handlers.login_required
+    def send_all_match_email():
+        """Send all match emails."""
+        from app import DEADLINE_MANAGER
+
+        if not DEADLINE_MANAGER.is_past_opportunities_ranking_deadline():
+            return (
+                jsonify(
+                    {"error": "The final deadline must have passed to send emails"}
+                ),
+                400,
+            )
+        student_map_to_placements = request.get_json()
+        if not student_map_to_placements:
+            return jsonify({"error": "No data provided"}), 400
+        if not isinstance(student_map_to_placements, dict):
+            return jsonify({"error": "Invalid data format"}), 400
+        return User().send_all_match_email(student_map_to_placements)
 
     @app.route("/user/matching", methods=["GET"])
     @handlers.login_required
@@ -296,7 +321,6 @@ def add_user_routes(app, cache):
             opportunities_map={
                 opportunity["_id"]: opportunity for opportunity in opportunities
             },
-            last_updated=datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
             user_type="admin",
             user=session["user"].get("name"),
             page="matching",

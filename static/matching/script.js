@@ -3,17 +3,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
     sendEmailButtons.forEach((button) => {
         button.addEventListener("click", async function () {
+            if (!confirm("Please confirm that you want to send the email to the student.")) {
+                return;
+            }
             const student = this.getAttribute("data-student");
-            const student_email = this.getAttribute("data-student-email");
-            const employer_email = this.getAttribute("data-employer");
             const opportunity = this.getAttribute("data-opportunity");
-            const responseElement = document.getElementById(
-                `response-${student}`
-            );
+            const responseElement = document.getElementById(`response-${student}`);
             const formData = new FormData();
             formData.append("student", student);
-            formData.append("student_email", student_email);
-            formData.append("employer_email", employer_email);
             formData.append("opportunity", opportunity);
             try {
                 const response = await fetch("/user/send_match_email", {
@@ -36,26 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
     });
-    const last_updated = document
-        .getElementById("time-message")
-        .getAttribute("data-last-updated");
-    function updateTimeUntilNextUpdate() {
-        const lastUpdated = new Date(last_updated);
-        const now = new Date();
-        const fiveMinutes = 5 * 60 * 1000;
-        const nextUpdate = new Date(lastUpdated.getTime() + fiveMinutes);
-        const timeUntilUpdate = Math.max(0, nextUpdate - now);
-        const minutesUntilUpdate = Math.floor(timeUntilUpdate / (60 * 1000));
-        const secondsUntilUpdate = Math.floor(
-            (timeUntilUpdate % (60 * 1000)) / 1000
-        );
-        document.getElementById(
-            "time-until-update"
-        ).innerText = ` (${minutesUntilUpdate} minutes and ${secondsUntilUpdate} seconds remaining)`;
-    }
-
-    setInterval(updateTimeUntilNextUpdate, 1000);
-    updateTimeUntilNextUpdate();
 
     const deleteButtons = document.querySelectorAll(".delete-button");
 
@@ -66,18 +43,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
             console.log(`Delete student with ID: ${studentId}`);
             try {
-                const response = await fetch(
-                    `/students/delete_student/${studentId}`,
-                    {
-                        method: "DELETE",
-                    }
-                );
+                const response = await fetch(`/students/delete_student/${studentId}`, {
+                    method: "DELETE",
+                });
 
                 if (response.ok) {
                     row.remove();
-                    console.log(
-                        `Student with ID: ${studentId} deleted successfully`
-                    );
+                    console.log(`Student with ID: ${studentId} deleted successfully`);
                 } else {
                     const error = await response.json();
                     console.error("Error:", error);
@@ -94,9 +66,42 @@ document.addEventListener("DOMContentLoaded", function () {
     const sendAllEmailsButton = document.getElementById("send-all-emails");
 
     sendAllEmailsButton.addEventListener("click", async function () {
-        for (const button of sendEmailButtons) {
-            await new Promise((resolve) => setTimeout(resolve, 100));
-            await button.click();
+        if (!confirm("Please confirm that you want to send the email to the student.")) {
+            return;
+        }
+        const students = [];
+        const studentRows = document.querySelectorAll(".student-row");
+        studentRows.forEach((row) => {
+            const student = row.querySelector(".send-email").getAttribute("data-student");
+            const opportunity = row.querySelector(".send-email").getAttribute("data-opportunity");
+            students.push({ student, opportunity });
+        });
+
+        try {
+            const response = await fetch("/user/send_all_emails", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ students }),
+            });
+
+            const data = await response.json();
+            const responseElement = document.getElementById("response-all");
+            if (response.ok) {
+                console.log("All emails sent successfully");
+                responseElement.textContent = data.message;
+                responseElement.className = "text-success plain-center";
+            } else {
+                console.error("Error:", response.statusText);
+                responseElement.textContent = data.error;
+                responseElement.className = "text-danger plain-center";
+            }
+        } catch (error) {
+            console.error("Fetch error:", error);
+            const responseElement = document.getElementById("response-all");
+            responseElement.textContent = "An error occurred while sending emails.";
+            responseElement.className = "text-danger plain-center";
         }
     });
 });

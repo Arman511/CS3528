@@ -636,13 +636,18 @@ def test_send_match_email(user_logged_in_client, database):
     database.insert("opportunities", opportunity)
     database.insert("employers", employer)
 
+    deadlines = database.get_all("deadline")
+    if deadlines:
+        database.delete_all("deadline")
+    database.insert("deadline", {"type": 0, "deadline": "2022-10-10"})
+    database.insert("deadline", {"type": 1, "deadline": "2022-10-12"})
+    database.insert("deadline", {"type": 2, "deadline": "2022-10-15"})
+
     response = user_logged_in_client.post(
         url,
         data={
             "student": student["_id"],
             "opportunity": opportunity["_id"],
-            "student_email": student["email"],
-            "employer_email": employer["email"],
         },
         content_type="application/x-www-form-urlencoded",
     )
@@ -653,6 +658,9 @@ def test_send_match_email(user_logged_in_client, database):
     database.delete_all_by_field("students", "email", "dummy_student@dummy.com")
     database.delete_all_by_field("employers", "email", "dummy_employer@dummy.com")
     database.delete_all_by_field("opportunities", "title", "dummy_opportunity")
+    database.delete_all("deadline")
+    for deadline in deadlines:
+        database.insert("deadline", deadline)
 
 
 def test_user_home(user_logged_in_client):
