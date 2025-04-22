@@ -258,13 +258,28 @@ def add_user_routes(app, cache):
                 page="matching",
             )
 
+        opportunities = Opportunity().get_opportunities()
+        opportunities_preference = {}
+        used_opportunities = set()
+        for opportunity in opportunities:
+            if "preferences" in opportunity:
+                temp = {}
+                temp["positions"] = opportunity["spots_available"]
+                for i, student in enumerate(opportunity["preferences"]):
+                    temp[student] = i + 1
+                opportunities_preference[opportunity["_id"]] = temp
+                used_opportunities.add(opportunity["_id"])
+                continue
+
         students = Student().get_students()
         unmatched_students = []
         students_preference = {}
         for student in students:
             if "preferences" in student:
                 filtered_preferences = [
-                    pref.strip() for pref in student["preferences"] if pref.strip()
+                    pref.strip()
+                    for pref in student["preferences"]
+                    if pref.strip() and pref.strip() in used_opportunities
                 ]
                 if filtered_preferences:
                     students_preference[student["_id"]] = filtered_preferences
@@ -279,17 +294,6 @@ def add_user_routes(app, cache):
                     "reason": "Student has not ranked their opportunities or has invalid preferences",
                 }
             )
-
-        opportunities = Opportunity().get_opportunities()
-        opportunities_preference = {}
-        for opportunity in opportunities:
-            if "preferences" in opportunity:
-                temp = {}
-                temp["positions"] = opportunity["spots_available"]
-                for i, student in enumerate(opportunity["preferences"]):
-                    temp[student] = i + 1
-                opportunities_preference[opportunity["_id"]] = temp
-                continue
 
         result = Matching(
             students_preference, opportunities_preference
