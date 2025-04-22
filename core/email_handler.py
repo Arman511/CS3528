@@ -15,6 +15,7 @@ load_dotenv()
 SENDER: str = str(shared.getenv("EMAIL"))
 PASSWORD: str = str(shared.getenv("EMAIL_PASSWORD"))
 SMTP: str = str(shared.getenv("SMTP"))
+COMPANY_NAME: str = str(shared.getenv("COMPANY_NAME"))
 
 
 def generate_otp():
@@ -58,7 +59,7 @@ def send_otp(recipient):
     # Set up email headers
     msg = MIMEText(body, "html")
     msg["Subject"] = "Skillpilot: OTP Verification"
-    msg["From"] = SENDER
+    msg["From"] = f"{COMPANY_NAME} <{SENDER}>"
     msg["To"] = recipient
 
     # Send the email
@@ -73,7 +74,7 @@ def send_email(msg, recipients):
     """Sends an email"""
     if shared.getenv("IS_TEST") == "True":
         return
-    msg["From"] = SENDER
+    msg["From"] = f"{COMPANY_NAME} <{SENDER}>"
     with smtplib.SMTP_SSL(SMTP, 465) as smtp_server:
         smtp_server.login(SENDER, PASSWORD)
         smtp_server.sendmail(SENDER, recipients, msg.as_string())

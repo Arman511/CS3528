@@ -75,6 +75,7 @@ PORT="8080" If changed change also in the Dockerfile
 GUNICORN_LOG_LEVEL="info"
 GUNICORN_ACCESS_LOG="-"
 GUNICORN_ERROR_LOG="-"
+COMPANY_NAME="SkillPilot"
 ```
 
 ⚠️ Make sure to replace placeholder values with your actual configuration settings.
