@@ -10,7 +10,6 @@ import signal
 import threading
 from dotenv import load_dotenv
 from flask import Flask
-from flask_compress import Compress  # type: ignore
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -63,22 +62,6 @@ app.config["SESSION_COOKIE_SAMESITE"] = "Strict"
 app.config["SESSION_COOKIE_SECURE"] = True
 app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
-
-compress = Compress()
-compress.init_app(app)
-app.config["COMPRESS_MIMETYPES"] = [
-    "text/html",
-    "text/css",
-    "text/xml",
-    "application/json",
-    "application/javascript",
-    "application/x-javascript",
-]
-app.config["COMPRESS_LEVEL"] = 6
-app.config["COMPRESS_MIN_SIZE"] = 500
-app.config["COMPRESS_PRECOMPRESS"] = False
-app.config["COMPRESS_REGISTER"] = False
-app.config["COMPRESS_CSS_HASHING_METHOD"] = "crc32"
 
 
 handlers.configure_routes(app)
