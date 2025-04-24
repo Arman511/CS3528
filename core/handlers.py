@@ -15,7 +15,6 @@ from flask import (
     make_response,
     request,
 )
-from flask_caching import Cache
 import pandas as pd
 from core import routes_debug
 from core import routes_error
@@ -206,7 +205,7 @@ def excel_verifier_and_reader(file, expected_columns: set[str]):
     return dataframe
 
 
-def configure_routes(app, cache: Cache):
+def configure_routes(app):
     """Configures the routes for the given Flask application.
     This function sets up the routes for user and student modules by calling their respective
     route configuration functions. It also defines the home route and the privacy policy route.
@@ -214,7 +213,7 @@ def configure_routes(app, cache: Cache):
         app (Flask): The Flask application instance.
     """
 
-    routes_user.add_user_routes(app, cache)
+    routes_user.add_user_routes(app)
     routes_student.add_student_routes(app)
     routes_opportunities.add_opportunities_routes(app)
     routes_skills.add_skills_routes(app)
@@ -337,7 +336,6 @@ def configure_routes(app, cache: Cache):
     @app.route("/sitemap")
     @app.route("/sitemap/")
     @app.route("/sitemap.xml")
-    @cache.cached(timeout=300)
     def sitemap():
         """
         Route to dynamically generate a sitemap of your website/application.

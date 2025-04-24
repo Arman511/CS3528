@@ -10,9 +10,7 @@ import signal
 import threading
 from dotenv import load_dotenv
 from flask import Flask
-from flask_caching import Cache
 
-from flask_compress import Compress  # type: ignore
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from core.configuration_settings import Config  # noqa: E402
@@ -67,12 +65,7 @@ app.config["SESSION_COOKIE_HTTPONLY"] = True
 app.permanent_session_lifetime = timedelta(minutes=30)
 
 
-cache = Cache(app)
-compress = Compress()
-compress.init_app(app)
-
-
-handlers.configure_routes(app, cache)
+handlers.configure_routes(app)
 
 from core.deadline_manager import DeadlineManager  # noqa: E402
 

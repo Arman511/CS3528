@@ -16,7 +16,7 @@ from superuser.model import Superuser
 from .models import User
 
 
-def add_user_routes(app, cache):
+def add_user_routes(app):
     """Add user routes."""
 
     @app.route("/user/register", methods=["GET", "POST"])
