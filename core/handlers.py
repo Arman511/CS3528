@@ -415,3 +415,10 @@ def configure_routes(app, cache: Cache):
         # Add security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
+
+    @app.route("/accessibility")
+    def accessibility():
+        """
+        Route to render the accessibility page.
+        """
+        return render_template("accessibility.html", user_type=get_user_type())
