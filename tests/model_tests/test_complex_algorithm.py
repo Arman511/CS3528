@@ -2,6 +2,8 @@
 
 import os
 import sys
+import time
+import random
 
 # flake8: noqa: F811
 
@@ -586,3 +588,36 @@ def test_complex_student_employer_preferences_v4():
     )
 
     assert result == expected
+
+
+def test_large_scale_matching_under_30_seconds():
+    """Tests the matching algorithm with 5000 students and enough employers under 30 seconds."""
+    num_students = 5000
+    num_companies = 1000
+    student_ids = [f"Student_{i+1}" for i in range(num_students)]
+    company_ids = [f"company_{i+1}" for i in range(num_companies)]
+
+    # Generate random student preferences
+    students_preference = {}
+    for student in student_ids:
+        preferred_companies = random.sample(company_ids, k=random.randint(5, 10))
+        students_preference[student] = preferred_companies
+
+    # Generate random employer preferences
+    employer_preference = {}
+    for company in company_ids:
+        positions = random.randint(2, 10)  # Each company offers 2-10 positions
+        ranked_students = random.sample(student_ids, k=len(student_ids))
+        preference = {student: rank + 1 for rank, student in enumerate(ranked_students)}
+        preference["positions"] = positions
+        employer_preference[company] = preference
+
+    # Run the matching algorithm and time it
+    match = Matching(students_preference, employer_preference)
+
+    start_time = time.time()
+    result = match.find_best_match()
+    end_time = time.time()
+
+    duration = end_time - start_time
+    assert duration < 30, f"Matching took too long: {duration:.2f} seconds"
