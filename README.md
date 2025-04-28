@@ -12,13 +12,12 @@
 -   [Employer Login](#employer-login)
 -   [Student Login](#student-login)
 -   [Deadlines](#deadlines)
--   [Maintenace](#maintenance)
 -   [Coverage](#coverage)
 -   [Export/Import MongoDB](#mongodb-backup-and-restore)
 
 ## Project Overview
 
-This project is part of the CS3528 course. Using model route framework on top of flask. We have decided to allow the placement team to upload students and opportunities. The students will rank opportunities and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
+This project is part of the CS3028 course. Using model route framework on top of flask. We have decided to allow the placement team to upload students and opportunities. The students will rank opportunities and employers would rank students. We will then use the Gale-Shapley algorithm to compare the rankings each give. We will then using email integration send a confirmation out to the employer.
 
 -   **Flask**: A lightweight WSGI web application framework in Python.
 -   **Pymongo**: An MongoDB toolkit and Object-Relational Mapping (ORM) library for Python.
@@ -197,10 +196,6 @@ The admin team manages three key deadlines that restrict data input and user vie
 
 1. The placement team reviews the list of students matched to placements based on preferences.
 2. The team sends matchmaking results to companies and students via email.
-
-## Maintenance
-
-To keep the system up to date, you need to update the courses and course module list every year and also make sure to delete all students and placements every round.
 
 ## Coverage
 
