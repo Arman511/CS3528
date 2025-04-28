@@ -165,6 +165,15 @@ class Student:
         """Importing students from Excel file."""
         from app import DATABASE_MANAGER
 
+        current_ids = set()
+        current_emails = set()
+
+        students = DATABASE_MANAGER.get_all("students")
+
+        for student in students:
+            current_ids.add(student["student_id"])
+            current_emails.add(student["email"])
+
         try:
             df = handlers.excel_verifier_and_reader(
                 file, {"First Name", "Last Name", "Email (Uni)", "Student Number"}
@@ -196,14 +205,28 @@ class Student:
                     }
                     return jsonify(error_msg), 400
 
-                DATABASE_MANAGER.delete_all_by_field(
-                    "students", "student_id", temp_student["student_id"]
-                )
-
                 temp_student["first_name"] = escape(temp_student["first_name"])
                 temp_student["last_name"] = escape(temp_student["last_name"])
                 temp_student["email"] = escape(temp_student["email"])
                 temp_student["student_id"] = escape(temp_student["student_id"])
+
+                if temp_student["student_id"] in current_ids:
+                    error_msg = {
+                        "error": (
+                            f"Student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']} student id already exists"
+                        )
+                    }
+                    return jsonify(error_msg), 400
+
+                if temp_student["email"] in current_emails:
+                    error_msg = {
+                        "error": (
+                            f"Student {temp_student['first_name']}, "
+                            f"{temp_student['last_name']} email already exists"
+                        )
+                    }
+                    return jsonify(error_msg), 400
 
                 data.append(temp_student)
             for temp_student in data:

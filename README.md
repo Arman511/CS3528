@@ -197,6 +197,14 @@ The admin team manages three key deadlines that restrict data input and user vie
 1. The placement team reviews the list of students matched to placements based on preferences.
 2. The team sends matchmaking results to companies and students via email.
 
+## Maintence
+
+You need to:
+
+1. Update Courses
+2. Update Course Modules
+3. Delete Students between placement rounds
+
 ## Coverage
 
 To run the tests and generate a coverage report in the terminal:
