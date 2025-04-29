@@ -1,0 +1,36 @@
+name: Merge on Main Update
+
+on:
+    push:
+        branches:
+            - main
+
+permissions:
+    contents: write
+
+jobs:
+    merge-branch:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Configure Git
+              run: |
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+
+            - name: Fetch all branches
+              run: git fetch --all
+
+            - name: Checkout and track vercel-version
+              run: git checkout -B vercel-version origin/vercel-version
+
+            - name: Merge main into vercel-version
+              run: git merge origin/main
+
+            - name: Push changes
+              run: git push origin vercel-version
