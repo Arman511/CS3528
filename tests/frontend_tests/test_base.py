@@ -240,19 +240,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     )
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        employer_login_info = chrome_browser.execute_script(
-            """
-            const formData = new FormData();
-            formData.append('email', 'dummy@dummy.com');
-            return fetch('/employers/login', {
-            method: 'POST',
-            body: formData,
-            }).then(res => res.json());
-            """
-        )
-        pytest.fail(
-            f"OTP not found in session content: {session_content}, {employer_login_info}"
-        )
+        pytest.fail(f"OTP not found in session content: {session_content}")
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
 
@@ -282,19 +270,7 @@ def test_employer_login(chrome_browser, employer_member, flask_server, database)
 
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        employer_login_info = chrome_browser.execute_script(
-            """
-            const formData = new FormData();
-            formData.append('email', 'dummy@dummy.com');
-            return fetch('/employers/login', {
-            method: 'POST',
-            body: formData,
-            }).then(res => res.json());
-            """
-        )
-        pytest.fail(
-            f"OTP not found in session content: {session_content}, {employer_login_info}"
-        )
+        pytest.fail(f"OTP not found in session content: {session_content}")
 
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
