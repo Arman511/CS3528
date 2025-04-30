@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         modal.innerHTML = `
             <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; max-width: 400px; width: 100%;">
-                <h2>Privacy Policy</h2>
+                <h2>Cookies and Privacy Policy</h2>
                 <iframe src="/modal_privacy_policy" style="width: 100%; height: 300px; border: 1px solid #ccc; margin-top: 10px; border-radius: 4px;" scrolling="yes"></iframe>
                 <button id="agree-btn" style="margin-top: 10px;" class="btn">I Agree</button>
             </div>
