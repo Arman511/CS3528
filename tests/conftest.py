@@ -55,4 +55,5 @@ def chrome_browser():
 
     driver.implicitly_wait(10)
     yield driver
+    driver.delete_all_cookies()
     driver.quit()
