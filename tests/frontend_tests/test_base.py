@@ -253,7 +253,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     assert chrome_browser.current_url != "http://127.0.0.1:5000/students/login"
 
 
-def test_employer_login(chrome_browser, database, employer_member, flask_server):
+def test_employer_login(chrome_browser):
     chrome_browser.get("http://127.0.0.1:5000/employers/login")
     chrome_browser.find_element(By.ID, "agree-btn").click()
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
@@ -265,7 +265,11 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     session_content = chrome_browser.execute_script(
         "return fetch('/debug/session').then(res => res.json());"
     )
-    serialised_otp = session_content["OTP"]
+
+    serialised_otp = session_content.get("OTP")
+    if not serialised_otp:
+        pytest.fail(f"OTP not found in session content: {session_content}")
+
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
 
@@ -273,7 +277,7 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
     chrome_browser.find_element(By.ID, "otpSubmit").click()
 
-    WebDriverWait(chrome_browser, 1000000).until(
+    WebDriverWait(chrome_browser, 10).until(
         EC.url_to_be("http://127.0.0.1:5000/employers/home")
     )
 
