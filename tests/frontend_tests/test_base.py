@@ -240,7 +240,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     )
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "p.error")
+        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "error")
         pytest.fail(
             f"OTP not found in session content: {session_content}, {error_element.text}"
         )
@@ -273,7 +273,7 @@ def test_employer_login(chrome_browser, employer_member, flask_server, database)
 
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "p.error")
+        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "error")
         pytest.fail(
             f"OTP not found in session content: {session_content}, {error_element.text}"
         )
