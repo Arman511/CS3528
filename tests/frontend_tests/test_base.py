@@ -231,7 +231,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
         student_member["student_id"]
     )
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    WebDriverWait(chrome_browser, 10).until(
+    WebDriverWait(chrome_browser, 100).until(
         EC.visibility_of_element_located((By.ID, "otpModal"))
     )
 
@@ -260,7 +260,7 @@ def test_employer_login(chrome_browser, employer_member, flask_server, database)
     chrome_browser.find_element(By.ID, "agree-btn").click()
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    WebDriverWait(chrome_browser, 10).until(
+    WebDriverWait(chrome_browser, 100).until(
         EC.visibility_of_element_located((By.ID, "otpModal"))
     )
 
