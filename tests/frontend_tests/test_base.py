@@ -240,7 +240,8 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     )
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        pytest.fail(f"OTP not found in session content: {session_content}")
+        student = database.get_one("students", student_member["_id"])
+        pytest.fail(f"OTP not found in session content: {session_content}, {student}")
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
 
