@@ -415,3 +415,8 @@ def configure_routes(app, cache: Cache):
         # Add security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
         return response
+
+    @app.before_request
+    def refresh_session():
+        session.permanent = True
+        session.modified = True
