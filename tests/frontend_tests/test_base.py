@@ -253,7 +253,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
     assert chrome_browser.current_url != "http://127.0.0.1:5000/students/login"
 
 
-def test_employer_login(chrome_browser):
+def test_employer_login(chrome_browser, employer_member):
     chrome_browser.get("http://127.0.0.1:5000/employers/login")
     chrome_browser.find_element(By.ID, "agree-btn").click()
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
