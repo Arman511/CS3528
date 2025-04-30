@@ -271,7 +271,8 @@ def test_employer_login(chrome_browser, employer_member, flask_server, database)
 
     serialised_otp = session_content.get("OTP")
     if not serialised_otp:
-        pytest.fail(f"OTP not found in session content: {session_content}")
+        employer = database.get_one_by_id("employers", employer_member["_id"])
+        pytest.fail(f"OTP not found in session content: {session_content}, {employer}")
 
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)
