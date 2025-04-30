@@ -211,6 +211,7 @@ def employer_member(database):
 
 def test_placement_team_login(chrome_browser, flask_server, database, placement_member):
     chrome_browser.get("http://127.0.0.1:5000/user/login")
+    chrome_browser.find_element(By.ID, "agree-btn").click()
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.NAME, "password").send_keys("dummy")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
@@ -224,6 +225,8 @@ def test_placement_team_login(chrome_browser, flask_server, database, placement_
 
 def test_student_login(chrome_browser, flask_server, database, student_member):
     chrome_browser.get("http://127.0.0.1:5000/students/login")
+    chrome_browser.find_element(By.ID, "agree-btn").click()
+
     chrome_browser.find_element(By.NAME, "student_id").send_keys(
         student_member["student_id"]
     )
@@ -252,6 +255,7 @@ def test_student_login(chrome_browser, flask_server, database, student_member):
 
 def test_employer_login(chrome_browser, database, employer_member, flask_server):
     chrome_browser.get("http://127.0.0.1:5000/employers/login")
+    chrome_browser.find_element(By.ID, "agree-btn").click()
     chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
     chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
     WebDriverWait(chrome_browser, 10).until(
@@ -261,8 +265,6 @@ def test_employer_login(chrome_browser, database, employer_member, flask_server)
     session_content = chrome_browser.execute_script(
         "return fetch('/debug/session').then(res => res.json());"
     )
-    if "OTP" not in session_content:
-        raise KeyError("OTP key is not found in the session content")
     serialised_otp = session_content["OTP"]
     secret_key = shared.getenv("SECRET_KEY", "secret")
     serializer = URLSafeSerializer(secret_key)

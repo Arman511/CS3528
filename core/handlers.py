@@ -251,6 +251,25 @@ def configure_routes(app, cache: Cache):
         session["theme"] = "dark" if session["theme"] == "light" else "light"
         return redirect(request.referrer)
 
+    @app.route("/privacy-agreement", methods=["POST", "GET"])
+    def privacy_agreement():
+        """
+        Handles the privacy agreement submission.
+        This route is triggered when a user agrees to the privacy policy.
+        """
+        if request.method == "GET":
+            if session.get("privacy_agreed"):
+                return jsonify({"message": True}), 200
+            else:
+                return jsonify({"message": False}), 200
+        data = request.get_json()
+        if data and data.get("agreed"):
+            session["privacy_agreed"] = True
+            response = jsonify({"message": "Agreement recorded successfully."})
+            response.set_cookie("privacy_agreed", "true", max_age=30 * 24 * 60 * 60)
+            return response, 200
+        return jsonify({"error": "Invalid request or missing agreement data."}), 400
+
     @app.route("/api/session", methods=["GET"])
     @admin_or_employers_required
     def get_session():
@@ -274,6 +293,15 @@ def configure_routes(app, cache: Cache):
             str: Rendered HTML template for the privacy policy page.
         """
         return render_template("privacy_policy.html", user_type=get_user_type())
+
+    @app.route("/modal_privacy_policy")
+    def modal_privacy_policy():
+        """The modal privacy policy route which renders the 'modal_privacy_policy.html' template.
+
+        Returns:
+            str: Rendered HTML template for the modal privacy policy page.
+        """
+        return render_template("modal_privacy_policy.html", user_type=get_user_type())
 
     @app.route("/cookies_policy")
     def cookies_policy():
