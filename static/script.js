@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", function () {
+document.addEventListener("DOMContentLoaded", async function () {
     const click_sfx = new Audio("/static/sfx/click.mp3");
 
     const buttons = document.querySelectorAll("button, .btn");
@@ -31,11 +31,20 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.style.alignItems = "center";
         modal.style.zIndex = "1000";
 
+        const content = await fetch("/modal_privacy_policy", {
+            method: "POST",
+        })
+            .then((response) => response.json())
+            .then((data) => data);
+        const backgroundColor = document.documentElement.getAttribute("data-bs-theme");
+
         modal.innerHTML = `
-            <div style="background: white; padding: 20px; border-radius: 8px; text-align: center; max-width: 400px; width: 100%;">
-                <h2>Cookies and Privacy Policy</h2>
-                <iframe src="/modal_privacy_policy" style="width: 100%; height: 300px; border: 1px solid #ccc; margin-top: 10px; border-radius: 4px;" scrolling="yes"></iframe>
-                <button id="agree-btn" style="margin-top: 10px;" class="btn">I Agree</button>
+            <div class="p-4 rounded text-center bg-${backgroundColor}" style="max-width: 400px; width: 100%;">
+            <h2>Cookies and Privacy Policy</h2>
+            <div class="w-100 overflow-auto border mt-2 rounded" style="height: 300px;">
+                ${content[1]}
+            </div>
+            <button id="agree-btn" class="btn btn-primary mt-3">I Agree</button>
             </div>
         `;
 

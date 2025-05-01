@@ -2,13 +2,12 @@
 
 import smtplib
 from email.mime.text import MIMEText
-import math
-import random
 from dotenv import load_dotenv
 from flask import session
 from itsdangerous.url_safe import URLSafeSerializer
 
 from core import shared
+import uuid
 
 load_dotenv()
 
@@ -19,13 +18,8 @@ COMPANY_NAME: str = str(shared.getenv("COMPANY_NAME"))
 
 
 def generate_otp():
-    """Makes an otp"""
-    digits = "0123456789"
-    otp = ""
-    for _i in range(6):
-        otp += digits[math.floor(random.random() * 10)]
-
-    return otp
+    """Generates an OTP using UUID"""
+    return str(uuid.uuid4().int)[:6]
 
 
 def send_otp(recipient):
