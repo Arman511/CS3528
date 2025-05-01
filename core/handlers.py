@@ -462,13 +462,6 @@ def configure_routes(app, cache: Cache):
         response.cache_control.stale_while_revalidate = 3600
         return response
 
-    @app.after_request
-    def add_cache_headers(response):
-        if request.path.startswith("/static/"):
-            response.cache_control.max_age = 31536000  # 1 year
-            response.cache_control.public = True
-        return response
-
     @app.route("/static/<path:filename>")
     def serve_static(filename):
         response = send_from_directory(os.path.join(app.root_path, "static"), filename)
@@ -485,18 +478,6 @@ def configure_routes(app, cache: Cache):
 
         # Add security headers
         response.headers["X-Content-Type-Options"] = "nosniff"
-        return response
-
-    @app.route("/static/images/<path:filename>")
-    def serve_static_images(filename):
-        response = send_from_directory(
-            os.path.join(app.root_path, "static", "images"), filename
-        )
-        if filename.endswith(".webp"):
-            response.headers["Content-Type"] = "image/webp"
-        elif filename.endswith(".svg"):
-            response.headers["Content-Type"] = "image/svg+xml"
-
         return response
 
     @app.before_request
