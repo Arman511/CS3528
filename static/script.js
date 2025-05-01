@@ -73,4 +73,38 @@ document.addEventListener("DOMContentLoaded", async function () {
                 });
         });
     }
+
+    const theme = document.cookie.split("; ").find((row) => row.startsWith("theme="));
+    if (theme) {
+        const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
+        const themeValue = theme.split("=")[1];
+        if (currentThemeValue !== themeValue) {
+            document.documentElement.setAttribute("data-bs-theme", themeValue);
+            fetch("/set_theme", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ theme: themeValue }),
+            }).catch((error) => {
+                console.error("Error setting theme:", error);
+            });
+        }
+    } else {
+        const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
+        if (currentThemeValue !== "dark" && currentThemeValue !== "light") {
+            document.documentElement.setAttribute("data-bs-theme", "light");
+            fetch("/set_theme", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ theme: "light" }),
+            }).catch((error) => {
+                console.error("Error setting theme:", error);
+            });
+            return;
+        }
+        document.cookie = `theme=${currentThemeValue}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict; Secure`;
+    }
 });

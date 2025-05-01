@@ -241,12 +241,35 @@ def configure_routes(app):
     @app.route("/toggle_theme", methods=["GET"])
     def toggle_theme():
         """Toggle the theme between light and dark mode."""
+
         if "theme" not in session:
             session["theme"] = "dark"
-            return redirect(request.referrer)
+            response = redirect(request.referrer)
+            response.set_cookie("theme", "dark", max_age=30 * 24 * 60 * 60)
+            return response
 
         session["theme"] = "dark" if session["theme"] == "light" else "light"
-        return redirect(request.referrer)
+        response = redirect(request.referrer)
+        response.set_cookie(
+            "theme",
+            session["theme"],
+            max_age=30 * 24 * 60 * 60,
+            samesite="Strict",
+            secure=True,
+            path="/",
+        )
+        return response
+
+    @app.route("/set_theme", methods=["POST"])
+    def set_theme():
+        """Set the theme based on the user's preference."""
+        data = request.get_json()
+        if data and "theme" in data:
+            session["theme"] = data["theme"]
+            response = jsonify({"theme": session["theme"]})
+            response.set_cookie("theme", session["theme"], max_age=30 * 24 * 60 * 60)
+            return response, 200
+        return jsonify({"error": "Invalid request or missing theme data."}), 400
 
     @app.route("/privacy-agreement", methods=["POST", "GET"])
     def privacy_agreement():
@@ -263,7 +286,14 @@ def configure_routes(app):
         if data and data.get("agreed"):
             session["privacy_agreed"] = True
             response = jsonify({"message": "Agreement recorded successfully."})
-            response.set_cookie("privacy_agreed", "true", max_age=30 * 24 * 60 * 60)
+            response.set_cookie(
+                "privacy_agreed",
+                "true",
+                max_age=30 * 24 * 60 * 60,
+                samesite="Strict",
+                secure=True,
+                path="/",
+            )
             return response, 200
         return jsonify({"error": "Invalid request or missing agreement data."}), 400
 
@@ -437,6 +467,10 @@ def configure_routes(app):
             response.headers["Content-Type"] = "font/woff2"
         elif filename.endswith(".webp"):
             response.headers["Content-Type"] = "image/webp"
+        elif filename.endswith(".svg"):
+            response.headers["Content-Type"] = "image/svg+xml"
+        elif filename.endswith(".ico"):
+            response.headers["Content-Type"] = "image/x-icon"
         elif filename.endswith(".mp3"):
             response.headers["Content-Type"] = "audio/mpeg"
 
