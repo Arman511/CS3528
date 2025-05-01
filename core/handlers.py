@@ -17,7 +17,6 @@ from flask import (
 )
 from flask_caching import Cache
 import pandas as pd
-from core import routes_debug
 from core import routes_error
 from user import routes_user
 from students import routes_student
@@ -222,7 +221,6 @@ def configure_routes(app, cache: Cache):
     routes_modules.add_module_routes(app)
     routes_employers.add_employer_routes(app)
     routes_superuser.add_superuser_routes(app)
-    routes_debug.add_debug_routes(app)
     routes_error.add_error_routes(app)
 
     @app.route("/landing_page")

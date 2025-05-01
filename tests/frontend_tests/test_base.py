@@ -6,7 +6,6 @@ from selenium.webdriver.common.by import By
 from passlib.hash import pbkdf2_sha512
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from itsdangerous import URLSafeSerializer
 
 # from selenium.webdriver.chrome.service import Service as ChromeService
 # from webdriver_manager.chrome import ChromeDriverManager
@@ -221,72 +220,3 @@ def test_placement_team_login(chrome_browser, flask_server, database, placement_
     )
 
     assert chrome_browser.current_url == "http://127.0.0.1:5000/user/home"
-
-
-def test_student_login(chrome_browser, flask_server, database, student_member):
-    chrome_browser.get("http://127.0.0.1:5000/students/login")
-    chrome_browser.find_element(By.ID, "agree-btn").click()
-
-    chrome_browser.find_element(By.NAME, "student_id").send_keys(
-        student_member["student_id"]
-    )
-    chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    WebDriverWait(chrome_browser, 100).until(
-        EC.visibility_of_element_located((By.ID, "otpModal"))
-    )
-
-    session_content = chrome_browser.execute_script(
-        "return fetch('/debug/session').then(res => res.json());"
-    )
-    serialised_otp = session_content.get("OTP")
-    if not serialised_otp:
-        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "error")
-        pytest.fail(
-            f"OTP not found in session content: {session_content}, {error_element.text}"
-        )
-    secret_key = shared.getenv("SECRET_KEY", "secret")
-    serializer = URLSafeSerializer(secret_key)
-
-    otp = serializer.loads(serialised_otp)
-    chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
-    chrome_browser.find_element(By.ID, "otpSubmit").click()
-
-    WebDriverWait(chrome_browser, 10).until(
-        EC.url_changes("http://127.0.0.1:5000/students/login")
-    )
-
-    assert chrome_browser.current_url != "http://127.0.0.1:5000/students/login"
-
-
-def test_employer_login(chrome_browser, employer_member, flask_server, database):
-    chrome_browser.get("http://127.0.0.1:5000/employers/login")
-    chrome_browser.find_element(By.ID, "agree-btn").click()
-    chrome_browser.find_element(By.NAME, "email").send_keys("dummy@dummy.com")
-    chrome_browser.find_element(By.CSS_SELECTOR, "input[type='submit']").click()
-    WebDriverWait(chrome_browser, 100).until(
-        EC.visibility_of_element_located((By.ID, "otpModal"))
-    )
-
-    session_content = chrome_browser.execute_script(
-        "return fetch('/debug/session').then(res => res.json());"
-    )
-
-    serialised_otp = session_content.get("OTP")
-    if not serialised_otp:
-        error_element = chrome_browser.find_element(By.CSS_SELECTOR, "error")
-        pytest.fail(
-            f"OTP not found in session content: {session_content}, {error_element.text}"
-        )
-
-    secret_key = shared.getenv("SECRET_KEY", "secret")
-    serializer = URLSafeSerializer(secret_key)
-
-    otp = serializer.loads(serialised_otp)
-    chrome_browser.find_element(By.ID, "otpInput").send_keys(otp)
-    chrome_browser.find_element(By.ID, "otpSubmit").click()
-
-    WebDriverWait(chrome_browser, 10).until(
-        EC.url_to_be("http://127.0.0.1:5000/employers/home")
-    )
-
-    assert chrome_browser.current_url == "http://127.0.0.1:5000/employers/home"
