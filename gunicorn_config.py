@@ -22,7 +22,7 @@ secure_scheme_headers = {"X-Forwarded-Proto": "https"}
 
 # Logging settings
 loglevel = shared.getenv("GUNICORN_LOG_LEVEL", "info")
-accesslog = shared.getenv("GUNICORN_ACCESS_LOG", "-")  # "-" means stdout
+accesslog = shared.getenv("GUNICORN_ACCESS_LOG", "-")
 errorlog = shared.getenv("GUNICORN_ERROR_LOG", "-")
 
 logger = logging.getLogger("gunicorn.error")
