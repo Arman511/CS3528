@@ -292,14 +292,18 @@ def configure_routes(app, cache: Cache):
         """
         return render_template("privacy_policy.html", user_type=get_user_type())
 
-    @app.route("/modal_privacy_policy")
+    @app.route("/modal_privacy_policy", methods=["POST"])
     def modal_privacy_policy():
         """The modal privacy policy route which renders the 'modal_privacy_policy.html' template.
 
         Returns:
             str: Rendered HTML template for the modal privacy policy page.
         """
-        return render_template("modal_privacy_policy.html", user_type=get_user_type())
+        with open(
+            os.path.join(app.root_path, "static", "modal_privacy_policy.html"), "r"
+        ) as file:
+            privacy_policy_content = file.read()
+        return jsonify("html", privacy_policy_content)
 
     @app.route("/cookies_policy")
     def cookies_policy():
