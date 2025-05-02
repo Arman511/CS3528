@@ -1,0 +1,7 @@
+services:
+  cs3528_app:
+    image: arman511/cs3528_alpha
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
