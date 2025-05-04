@@ -154,6 +154,9 @@ def add_student_routes(app):
         from app import DEADLINE_MANAGER
         from app import CONFIG_MANAGER
 
+        if "student" not in session:
+            return redirect("/students/login")
+
         if session["student"]["student_id"] != str(student_id):
             handlers.clear_session_save_theme()
             return redirect("/students/login")
@@ -182,6 +185,7 @@ def add_student_routes(app):
             student["skills"] = [skill for skill in skills if skill]
             student["attempted_skills"] = [skill for skill in attempted_skills if skill]
             student["has_car"] = request.form.get("has_car")
+
             student["placement_duration"] = request.form.get(
                 "placement_duration"
             ).split(",")
@@ -195,24 +199,46 @@ def add_student_routes(app):
             )
             if not set(student["placement_duration"]).issubset(valid_durations):
                 return jsonify({"error": "Invalid placement duration"}), 400
-            student["modules"] = request.form.get("modules").split(",")
-            if student["modules"] == [""]:
-                student["modules"] = []
-            student["course"] = request.form.get("course")
-            if student["course"] == "":
-                return jsonify({"error": "Please select a course"}), 400
-            student["course"] = student["course"].upper()
-
-            student["comments"] = escape(student["comments"])
-            student["skills"] = [escape(skill) for skill in student["skills"]]
-            student["attempted_skills"] = [
-                escape(skill) for skill in student["attempted_skills"]
-            ]
-            student["has_car"] = escape(student["has_car"])
             student["placement_duration"] = [
                 escape(duration) for duration in student["placement_duration"]
             ]
+
+            student["modules"] = request.form.get("modules").split(",")
+            if student["modules"] == [""]:
+                student["modules"] = []
             student["modules"] = [escape(module) for module in student["modules"]]
+            if not all(
+                Module().get_module_by_id(module) for module in student["modules"]
+            ):
+                return jsonify({"error": "Invalid module(s) provided"}), 400
+
+            student["course"] = request.form.get("course")
+            if student["course"] == "":
+                return jsonify({"error": "Please select a course"}), 400
+            if not Course().get_course_by_id(student["course"]):
+                return jsonify({"error": "Invalid course"}), 400
+            student["course"] = student["course"].upper()
+
+            student["comments"] = escape(student["comments"])
+
+            student["skills"] = [escape(skill) for skill in student["skills"]]
+            if not all(Skill().get_skill_by_id(skill) for skill in student["skills"]):
+                return jsonify({"error": "Invalid skill(s) provided"}), 400
+
+            student["attempted_skills"] = [
+                escape(skill) for skill in student["attempted_skills"]
+            ]
+            if not all(
+                Skill().get_attempted_skill(skill)
+                for skill in student["attempted_skills"]
+            ):
+                return jsonify({"error": "Invalid attempted skill(s) provided"}), 400
+
+            student["has_car"] = escape(student["has_car"])
+            if student["has_car"] == "":
+                return jsonify({"error": "Please select if you have a car"}), 400
+            if student["has_car"] not in ["true", "false"]:
+                return jsonify({"error": "Invalid car value"}), 400
 
             return Student().update_student_by_id(student_id, student)
 
@@ -294,10 +320,19 @@ def add_student_routes(app):
             student["attempted_skills"] = [
                 escape(skill) for skill in student["attempted_skills"]
             ]
+            if not all(
+                Skill().get_skill_by_id(skill) for skill in student["attempted_skills"]
+            ):
+                return jsonify({"error": "Invalid skill(s) provided"}), 400
             student["has_car"] = escape(student["has_car"])
+            if student["has_car"] == "":
+                return jsonify({"error": "Please select if you have a car"}), 400
+            if student["has_car"] not in ["True", "False"]:
+                return jsonify({"error": "Invalid car value"}), 400
             student["placement_duration"] = [
                 escape(duration) for duration in student["placement_duration"]
             ]
+
             student["modules"] = [escape(module) for module in student["modules"]]
             if not all(
                 Module().get_module_by_id(module) for module in student["modules"]
