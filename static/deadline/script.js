@@ -1,31 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.querySelector(".deadline_form");
     const errorElement = document.querySelector(".error");
+    const submitButton = document.getElementById("submit_button");
 
     form.addEventListener("submit", function (event) {
         event.preventDefault();
-
-        const detailsDeadline = new Date(
-            document.getElementById("details_deadline").value
-        );
-        const studentRankingDeadline = new Date(
-            document.getElementById("student_ranking_deadline").value
-        );
-        const opportunitiesRankingDeadline = new Date(
-            document.getElementById("opportunities_ranking_deadline").value
-        );
+        submitButton.disabled = true;
+        const detailsDeadline = new Date(document.getElementById("details_deadline").value);
+        const studentRankingDeadline = new Date(document.getElementById("student_ranking_deadline").value);
+        const opportunitiesRankingDeadline = new Date(document.getElementById("opportunities_ranking_deadline").value);
 
         if (detailsDeadline >= studentRankingDeadline) {
-            errorElement.textContent =
-                "Details deadline must be before student ranking deadline.";
+            errorElement.textContent = "Details deadline must be before student ranking deadline.";
             errorElement.classList.remove("error--hidden");
+            submitButton.disabled = false;
             return;
         }
 
         if (studentRankingDeadline >= opportunitiesRankingDeadline) {
-            errorElement.textContent =
-                "Student ranking deadline must be before opportunities ranking deadline.";
+            errorElement.textContent = "Student ranking deadline must be before opportunities ranking deadline.";
             errorElement.classList.remove("error--hidden");
+            submitButton.disabled = false;
             return;
         }
 
@@ -51,6 +46,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error:", error);
                 errorElement.textContent = error.message;
                 errorElement.classList.remove("error--hidden");
+            })
+            .finally(() => {
+                submitButton.disabled = false;
             });
     });
 });
