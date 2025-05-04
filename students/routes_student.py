@@ -283,8 +283,12 @@ def add_student_routes(app):
             student["last_name"] = escape(student["last_name"])
             student["email"] = escape(student["email"])
             student["course"] = escape(student["course"])
+            test_course_real = Course().get_course_by_id(student["course"])
+            if not test_course_real:
+                return jsonify({"error": "Invalid course"}), 400
             student["comments"] = escape(student["comments"])
             student["skills"] = [escape(skill) for skill in student["skills"]]
+
             student["attempted_skills"] = [
                 escape(skill) for skill in student["attempted_skills"]
             ]
@@ -293,6 +297,10 @@ def add_student_routes(app):
                 escape(duration) for duration in student["placement_duration"]
             ]
             student["modules"] = [escape(module) for module in student["modules"]]
+            if not all(
+                Module().get_module_by_id(module) for module in student["modules"]
+            ):
+                return jsonify({"error": "Invalid module(s) provided"}), 400
 
             return Student().update_student_by_uuid(uuid, student)
 
