@@ -213,7 +213,7 @@ class Student:
                 if temp_student["student_id"] in current_ids:
                     error_msg = {
                         "error": (
-                            f"Student {temp_student['first_name']}, "
+                            f"Student {temp_student['first_name']} "
                             f"{temp_student['last_name']} student id already exists"
                         )
                     }
@@ -222,12 +222,13 @@ class Student:
                 if temp_student["email"] in current_emails:
                     error_msg = {
                         "error": (
-                            f"Student {temp_student['first_name']}, "
+                            f"Student {temp_student['first_name']} "
                             f"{temp_student['last_name']} email already exists"
                         )
                     }
                     return jsonify(error_msg), 400
-
+                current_ids.add(temp_student["student_id"])
+                current_emails.add(temp_student["email"])
                 data.append(temp_student)
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)

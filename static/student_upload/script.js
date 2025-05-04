@@ -1,8 +1,9 @@
 document.addEventListener("DOMContentLoaded", function () {
     const xlsForm = document.forms["upload_xls_form"];
-
+    const subButton = document.getElementById("upload_button");
     xlsForm.addEventListener("submit", async function (event) {
         event.preventDefault();
+        subButton.disabled = true;
         const formData = new FormData(xlsForm);
         const response = await fetch("/students/upload", {
             method: "POST",
@@ -18,5 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let responseText = await response.json();
             alert("Error: " + responseText.error);
         }
+        subButton.disabled = false;
+        xlsForm.reset();
     });
 });
