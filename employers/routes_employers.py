@@ -173,13 +173,21 @@ def add_employer_routes(app):
                 referrer=request.referrer,
                 employer=session["employer"],
             )
+        valid_students = Opportunity().get_valid_students(opportunity_id)
         if request.method == "POST":
+            valid_ids = set([s["_id"] for s in valid_students])
+            if not request.form.get("ranks"):
+                return jsonify({"error": "No ranks provided."}), 400
             ranks = request.form.get("ranks").split(",")
             preferences = [a[5:].strip() for a in ranks]
             if preferences == [""]:
                 preferences = []
+            if len(preferences) > len(valid_students):
+                return jsonify({"error": "Too many ranks provided."}), 400
+            for p in preferences:
+                if p not in valid_ids:
+                    return jsonify({"error": "Invalid rank provided."}), 400
             return Opportunity().rank_preferences(opportunity_id, preferences)
-        valid_students = Opportunity().get_valid_students(opportunity_id)
         return render_template(
             "opportunities/employer_rank_students.html",
             opportunity_id=opportunity_id,
