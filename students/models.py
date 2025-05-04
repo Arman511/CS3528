@@ -233,7 +233,7 @@ class Student:
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)
 
-            return jsonify({"message": f"{len(students)} students imported"}), 200
+            return jsonify({"message": f"{len(data)} students imported"}), 200
         except Exception as e:
             return jsonify({"error": f"Failed to read file: {str(e)}"}), 400
 

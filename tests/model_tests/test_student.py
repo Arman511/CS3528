@@ -645,10 +645,10 @@ def test_import_from_xlsx_valid(app, database):
                 assert response[1] == 200
                 assert json_response["message"] == "27 students imported"
 
-        students = database.get_all_by_field("students", "email", "dummy@dummy.com")
+        students = database.get_all("students")
         assert len(students) == 27
 
-    database.delete_all_by_field("students", "email", "dummy@dummy.com")
+    database.delete_all("students")
 
 
 def test_import_from_xlsx_invalid_email(app, database):
