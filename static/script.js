@@ -75,6 +75,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     const theme = document.cookie.split("; ").find((row) => row.startsWith("theme="));
+    const navgationBarClasses = document.getElementById("navgbar").classList;
     if (theme) {
         const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
         const themeValue = theme.split("=")[1];
@@ -90,6 +91,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 console.error("Error setting theme:", error);
             });
         }
+        setNavTheme(themeValue);
     } else {
         const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
         if (currentThemeValue !== "dark" && currentThemeValue !== "light") {
@@ -106,5 +108,17 @@ document.addEventListener("DOMContentLoaded", async function () {
             return;
         }
         document.cookie = `theme=${currentThemeValue}; path=/; max-age=${30 * 24 * 60 * 60}; SameSite=Strict; Secure`;
+        setNavTheme(currentThemeValue);
     }
 });
+
+const setNavTheme = (theme) => {
+    const navgationBarClasses = document.getElementById("navgbar").classList;
+    if (theme === "dark") {
+        navgationBarClasses.remove("navbar-light", "bg-light");
+        navgationBarClasses.add("navbar-dark", "bg-dark");
+    } else {
+        navgationBarClasses.remove("navbar-dark", "bg-dark");
+        navgationBarClasses.add("navbar-light", "bg-light");
+    }
+};
