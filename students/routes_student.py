@@ -288,6 +288,8 @@ def add_student_routes(app):
                 return jsonify({"error": "Invalid course"}), 400
             student["comments"] = escape(student["comments"])
             student["skills"] = [escape(skill) for skill in student["skills"]]
+            if not all(Skill().get_skill_by_id(skill) for skill in student["skills"]):
+                return jsonify({"error": "Invalid skill(s) provided"}), 400
 
             student["attempted_skills"] = [
                 escape(skill) for skill in student["attempted_skills"]
