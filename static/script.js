@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     const theme = document.cookie.split("; ").find((row) => row.startsWith("theme="));
     if (theme) {
         const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
+        const navgationBarClasses = document.getElementById("navgbar").classList;
         const themeValue = theme.split("=")[1];
         if (currentThemeValue !== themeValue) {
             document.documentElement.setAttribute("data-bs-theme", themeValue);
@@ -89,6 +90,13 @@ document.addEventListener("DOMContentLoaded", async function () {
             }).catch((error) => {
                 console.error("Error setting theme:", error);
             });
+        }
+        if (themeValue === "dark") {
+            navgationBarClasses.remove("navbar-light", "bg-light");
+            navgationBarClasses.add("navbar-dark", "bg-dark");
+        } else {
+            navgationBarClasses.remove("navbar-dark", "bg-dark");
+            navgationBarClasses.add("navbar-light", "bg-light");
         }
     } else {
         const currentThemeValue = document.documentElement.getAttribute("data-bs-theme");
