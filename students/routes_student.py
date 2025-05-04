@@ -351,9 +351,6 @@ def add_student_routes(app):
             )
         opportunities = Student().get_opportunities_by_student(student_id)
         if request.method == "POST":
-            opportunity_ids = set([opportunity["_id"] for opportunity in opportunities])
-            if not request.form.get("ranks"):
-                return jsonify({"error": "No ranks provided."}), 400
             preferences = [a[5:].strip() for a in request.form.get("ranks").split(",")]
             min_ranked = CONFIG_MANAGER.get_min_num_ranking_student_to_opportunities()
             if len(opportunities) > min_ranked:
@@ -366,12 +363,6 @@ def add_student_routes(app):
                                 + " opportunities"
                             }
                         ),
-                        400,
-                    )
-            for p in preferences:
-                if p not in opportunity_ids:
-                    return (
-                        jsonify({"error": "Invalid opportunity: " + str(p)}),
                         400,
                     )
             return Student().rank_preferences(student_id, preferences)
