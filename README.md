@@ -4,6 +4,7 @@
 
 -   [Project Overview](#project-overview)
 -   [Website](#website)
+-   [Requirments](#requirments)
 -   [Setup Instructions](#setup-instructions)
 -   [Environment Variables](#environment-variables)
 -   [How to Run](#how-to-run)
