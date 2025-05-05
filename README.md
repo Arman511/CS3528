@@ -110,6 +110,10 @@ zstandard>=0.23.0
         ```
         .\venv\Scripts\activate.ps1
         ```
+    - On Windows(git bash)
+        ```
+        source ./venv/Scripts/activate
+        ```
 4. Install packages
     ```
     pip3 install -r ./requirements.txt -U
