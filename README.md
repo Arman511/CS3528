@@ -30,6 +30,69 @@ This project is part of the CS3028 course. Using model route framework on top of
 
 [Coverage Report](https://arman511.github.io/CS3528/)
 
+## Requirements
+### OS
+Windows 10+, Linux (Ubuntu 20.04 LTS+), MacOS 
+
+### Recommended Hardware
+- 4GB of RAM
+- Dual-Core 1.5GHz
+- Network Access
+
+### Software
+Python3.10+
+MongoDB
+attrs>=25.3.0
+blinker>=1.9.0
+Brotli>=1.1.0
+cachelib>=0.13.0
+certifi>=2025.1.31
+click>=8.1.8
+colorama>=0.4.6
+coverage>=7.7.0
+dnspython>=2.7.0
+dotenv>=0.9.9
+et_xmlfile>=2.0.0
+Flask>=3.1.0
+Flask-Caching>=2.3.1
+Flask-Compress>=1.17
+gunicorn>=23.0.0
+h11>=0.14.0
+idna>=3.10
+iniconfig>=2.0.0
+itsdangerous>=2.2.0
+Jinja2>=3.1.6
+MarkupSafe>=3.0.2
+numpy>=2.2.4
+openpyxl>=3.1.5
+outcome>=1.3.0.post0
+packaging>=24.2
+pandas>=2.2.3
+pandas-stubs>=2.2.3.250308
+passlib>=1.7.4
+pluggy>=1.5.0
+pymongo>=4.11.3
+PySocks>=1.7.1
+pytest>=8.3.5
+python-dateutil>=2.9.0.post0
+python-dotenv>=1.0.1
+pytz>=2025.1
+selenium>=4.29.0
+six>=1.17.0
+sniffio>=1.3.1
+sortedcontainers>=2.4.0
+trio>=0.29.0
+trio-websocket>=0.12.2
+types-passlib>=1.7.7.20250318
+types-pytz>=2025.1.0.20250318
+typing_extensions>=4.12.2
+tzdata>=2025.1
+urllib3>=2.3.0
+websocket-client>=1.8.0
+Werkzeug>=3.1.3
+wsproto>=1.2.0
+zstandard>=0.23.0
+
 ## Setup Instructions
 
 1. Clone the repository to your local machine.
