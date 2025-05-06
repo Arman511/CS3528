@@ -8,6 +8,7 @@ from itsdangerous.url_safe import URLSafeSerializer
 
 from core import shared
 import uuid
+import requests
 
 load_dotenv()
 
@@ -15,6 +16,7 @@ SENDER: str = str(shared.getenv("EMAIL"))
 PASSWORD: str = str(shared.getenv("EMAIL_PASSWORD"))
 SMTP: str = str(shared.getenv("SMTP"))
 COMPANY_NAME: str = str(shared.getenv("COMPANY_NAME"))
+EMAIL_VERIFICATION: bool = shared.getenv("EMAIL_VERIFICATION", "False") == "True"
 
 
 def generate_otp():
@@ -74,3 +76,57 @@ def send_email(msg, recipients):
         smtp_server.sendmail(SENDER, recipients, msg.as_string())
 
     print(f"Email sent to {recipients}")
+
+
+def verify_email_batch(emails: list[str]):
+    """Verify a batch of emails using the Kickbox API."""
+    if shared.getenv("IS_TEST") == "True" or not EMAIL_VERIFICATION:
+        return True
+    API_KEY = shared.getenv("KICKBOX_API_KEY")
+    if not API_KEY:
+        print("Kickbox API key is not configured.")
+        return False, None
+
+    endpoint = "https://api.kickbox.com/v2/verify"
+    for i, email in enumerate(emails):
+        try:
+            response = requests.get(
+                endpoint, params={"email": email, "apikey": API_KEY}, timeout=10
+            )
+            response.raise_for_status()
+            data = response.json()
+            if data.get("result") != "deliverable":
+                print(
+                    f"Invalid email: {email}, reason: {data.get('reason')}, position: {i}"
+                )
+                return False, i, data.get("reason")
+        except requests.RequestException as e:
+            print(f"Error verifying email {email}: {e}")
+            return False, i, e
+    return True, None, None
+
+
+def verify_email(email: str):
+    """Verify a of emails using the Kickbox API."""
+    if shared.getenv("IS_TEST") == "True" or not EMAIL_VERIFICATION:
+        return True, None
+
+    API_KEY = shared.getenv("KICKBOX_API_KEY")
+    if not API_KEY:
+        print("Kickbox API key is not configured.")
+        return False, None
+
+    endpoint = "https://api.kickbox.com/v2/verify"
+    try:
+        response = requests.get(
+            endpoint, params={"email": email, "apikey": API_KEY}, timeout=10
+        )
+        response.raise_for_status()
+        data = response.json()
+        if data.get("result") != "deliverable":
+            print(f"Invalid email: {email}, reason: {data.get('reason')}")
+            return False, data.get("reason")
+    except requests.RequestException as e:
+        print(f"Error verifying email {email}: {e}")
+        return False, e
+    return True, None

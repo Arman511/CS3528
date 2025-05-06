@@ -3,6 +3,7 @@ This module defines the User class which handles user authentication and session
 """
 
 from html import escape
+import re
 import tempfile
 import uuid
 from flask import jsonify, send_file, session
@@ -167,6 +168,7 @@ class Student:
 
         current_ids = set()
         current_emails = set()
+        new_emails = set()
 
         students = DATABASE_MANAGER.get_all("students")
 
@@ -186,11 +188,17 @@ class Student:
                 temp_student["first_name"] = student["First Name"]
                 temp_student["last_name"] = student["Last Name"]
                 temp_student["email"] = student["Email (Uni)"]
-                if temp_student["email"].split("@")[1] != base_email:
+                match = re.match(
+                    r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                    temp_student["email"],
+                )
+
+                if match is None or temp_student["email"].endswith("@" + base_email):
                     error_msg = {
                         "error": (
                             f"Invalid student {temp_student['first_name']}, "
-                            f"{temp_student['last_name']}"
+                            f"{temp_student['last_name']} email: "
+                            f"{temp_student['email']}"
                         )
                     }
                     return jsonify(error_msg), 400
@@ -200,7 +208,8 @@ class Student:
                     error_msg = {
                         "error": (
                             f"Invalid student {temp_student['first_name']}, "
-                            f"{temp_student['last_name']}"
+                            f"{temp_student['last_name']} student id: "
+                            f"{temp_student['student_id']}"
                         )
                     }
                     return jsonify(error_msg), 400
@@ -229,7 +238,17 @@ class Student:
                     return jsonify(error_msg), 400
                 current_ids.add(temp_student["student_id"])
                 current_emails.add(temp_student["email"])
+                new_emails.add(temp_student["email"])
                 data.append(temp_student)
+            check_email, index, reason = email_handler.verify_email_batch(new_emails)
+            if not check_email:
+                error_msg = {
+                    "error": (
+                        f"Invalid email: {list(new_emails)[index]} at position {index} of student "
+                        f"{data[index]['first_name']} {data[index]['last_name']}, reason: {reason}"
+                    )
+                }
+                return jsonify(error_msg), 400
             for temp_student in data:
                 DATABASE_MANAGER.insert("students", temp_student)
 

@@ -3,11 +3,12 @@ Handles routes for the student module.
 """
 
 from html import escape
+import re
 import uuid
 from dotenv import load_dotenv
 from flask import jsonify, redirect, render_template, request, session
 from itsdangerous import URLSafeSerializer
-from core import handlers, shared
+from core import email_handler, handlers, shared
 from courses.models import Course
 from employers.models import Employers
 from skills.models import Skill
@@ -243,6 +244,17 @@ def add_student_routes(app):
             student["first_name"] = request.form.get("first_name")
             student["last_name"] = request.form.get("last_name")
             student["email"] = request.form.get("email")
+            match = re.match(
+                r"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$",
+                student["email"],
+            )
+            if not match:
+                return jsonify({"error": "Invalid email address"}), 400
+
+            verify, reason = email_handler.verify_email(student["email"])
+            if not verify:
+                return jsonify({"error": f"Invalid email address: {reason}"}), 400
+
             student["course"] = request.form.get("course")
             student["comments"] = request.form.get("comments")
             student["skills"] = request.form.get("skills").split(",")

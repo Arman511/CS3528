@@ -32,15 +32,19 @@ This project is part of the CS3028 course. Using model route framework on top of
 [Coverage Report](https://arman511.github.io/CS3528/)
 
 ## Requirements
+
 ### OS
-Windows 10+, Linux (Ubuntu 20.04 LTS+), MacOS 
+
+Windows 10+, Linux (Ubuntu 20.04 LTS+), MacOS
 
 ### Recommended Hardware
-- 4GB of RAM
-- Dual-Core 1.5GHz
-- Network Access
+
+-   4GB of RAM
+-   Dual-Core 1.5GHz
+-   Network Access
 
 ### Software
+
 Python3.10+
 MongoDB
 attrs>=25.3.0
@@ -144,6 +148,8 @@ GUNICORN_LOG_LEVEL="info"
 GUNICORN_ACCESS_LOG="-"
 GUNICORN_ERROR_LOG="-"
 COMPANY_NAME="SkillPilot"
+EMAIL_VERIFICATION="False" Set to "True" to use email verification
+KICKBOX_API_KEY="test_api_key" Give api key here if using email verification
 ```
 
 ⚠️ Make sure to replace placeholder values with your actual configuration settings.

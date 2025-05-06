@@ -24,3 +24,5 @@ services:
       GUNICORN_ACCESS_LOG: "-"
       GUNICORN_ERROR_LOG: "-"
       COMPANY_NAME: "SkillPilot"
+      EMAIL_VERIFICATION: "False"
+      KICKBOX_API_KEY: "test_api_key"
