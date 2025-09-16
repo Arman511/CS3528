@@ -11,8 +11,10 @@ RUN apk add --no-cache \
     musl-dev \
     openssl-dev \
     python3-dev \
-    curl && \
+    curl \
+    ca-certificates && \
     pip install --no-cache-dir --upgrade pip setuptools wheel
+
 
 COPY requirements.txt .
 
