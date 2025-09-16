@@ -16,7 +16,7 @@ services:
     networks:
       default:
         aliases:
-          - myprofile
+          - cs3528
     command: ["--config", "gunicorn_config.py", "app:app"]
 
 networks:
