@@ -1,7 +1,6 @@
 FROM python:3.13-alpine
 
-ENV PYTHONUNBUFFERED=1 \
-    PATH="/app/.venv/bin:$PATH"
+ENV PYTHONUNBUFFERED=1
 
 WORKDIR /app
 
