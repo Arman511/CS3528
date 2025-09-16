@@ -16,8 +16,7 @@ services:
       default:
         aliases:
           - myprofile
-    command: ["gunicorn", "--config", "gunicorn_config.py", "app:app"]
-
+          
 networks:
   default:
     name: nginx_proxy
