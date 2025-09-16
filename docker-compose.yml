@@ -1,7 +1,23 @@
 services:
   cs3528_app:
-    image: arman511/cs3528_alpha
-    ports:
-      - "8080:8080"
+    build:
+      context: .
+      dockerfile: Dockerfile
     env_file:
       - .env
+    labels:
+      - "com.centurylinklabs.watchtower.enable=false"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      default:
+        aliases:
+          - myprofile
+
+networks:
+  default:
+    name: nginx_proxy
+    external: true
